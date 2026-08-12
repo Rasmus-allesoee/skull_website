@@ -6,7 +6,7 @@ This file is the mandatory entrypoint for every coding agent or maintainer worki
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **Phase 0/1 — documentation and repository foundation**. Consult `docs/project_status.md` for the exact current state and evidence. Do not begin Phase 2 or implement catalog/search/map/full-ingestion features without explicit user continuation after the Phase 0/1 gate.
+Current phase: **Phase 0/1 complete; awaiting explicit authorization for Phase 2 — validated vertical slice**. Consult `docs/project_status.md` for the exact current state and evidence. Do not begin Phase 2 or implement catalog/search/map/full-ingestion features without that continuation.
 
 Use the neutral working title **Skull Collection** from central site configuration until the final name is selected.
 

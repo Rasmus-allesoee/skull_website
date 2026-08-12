@@ -2,15 +2,15 @@
 
 **Snapshot date:** 2026-08-12
 
-**Current phase:** Phase 0/1 — documentation and repository foundation
+**Current phase:** Phase 0/1 — complete
 
-**Overall state:** Local foundation verified; GitHub publication in progress
+**Overall state:** Complete; awaiting explicit authorization for Phase 2
 
 **Next phase:** Phase 2 — validated vertical slice (not started; requires Phase 0/1 gate and user continuation)
 
 ## 1. Current objective
 
-Encode the approved master plan as canonical repository documentation, establish the reproducible Next.js/TypeScript baseline, initialize and publish the public GitHub repository, and verify a clean install/build/test checkpoint. No catalog, data compiler, specimen page, search, or map feature is in scope for this checkpoint.
+Phase 0/1 achieved its objective: the approved master plan is encoded as canonical repository documentation, the reproducible Next.js/TypeScript baseline is verified, and the public GitHub repository is live with green CI. No catalog, data compiler, specimen page, search, or map feature was implemented.
 
 ## 2. Completed in this checkpoint
 
@@ -24,12 +24,15 @@ Encode the approved master plan as canonical repository documentation, establish
 - Minimal accessible App Router foundation page, semantic design tokens, central site configuration, static icon, unit test, and browser/axe test implemented.
 - Git initialized on `main`; ignored staging/private/generated paths checked explicitly.
 - Local quality, build, browser, accessibility, desktop, and 390 px visual checks pass.
+- Clean local clone verified: 832 KB source checkout, private draft/staging absent, 450 packages restored from the frozen lockfile, full quality suite and static build passed, and the clone stayed clean.
+- GitHub CLI re-authenticated as `Rasmus-allesoee`; public `Rasmus-allesoee/skull_website` created with `main` as its default branch.
+- Foundation commit `07eea359cd4a4daf302639af52a0762ab53690f0` pushed and GitHub Actions CI run `31644826604` passed.
 
-## 3. In progress
+## 3. Awaiting authorization
 
-- Exact first-commit staged-file audit and commit.
-- Clean-clone installation/build verification.
-- GitHub CLI re-authentication, public repository creation, push, and Actions verification.
+- Phase 2 — validated vertical slice.
+- Selection/confirmation of the representative taxon and physical specimen, immutable IDs, and public rights/credits needed by that slice.
+- GitHub milestone/issues for Phase 2, created only when that phase becomes active.
 
 ## 4. Not started
 
@@ -62,13 +65,14 @@ These are deliberately not partially implemented in Phase 0/1.
 
 | Check | Observed | Impact/action |
 |---|---|---|
-| Local repository | Git repository on unborn `main` | Initialized; first commit pending exact staged-file audit |
+| Local repository | `main`, tracking `origin/main`; foundation implementation commit `07eea359cd4a4daf302639af52a0762ab53690f0` | Phase-closing status/CI checkpoint follows |
 | Local default Node | `v22.20.0` | Does not satisfy pin; all recorded checks used verified isolated Node `v24.18.0` |
 | Local default pnpm | Not installed | Checks used Corepack-managed pnpm `11.21.0`; repository declares exact version |
 | GitHub CLI | `gh 2.81.0` installed | Suitable for repository creation |
-| GitHub account entry | `Rasmus-allesoee` present but token invalid at preflight | Re-authentication required before remote creation/push |
+| GitHub account | `Rasmus-allesoee`, HTTPS Git protocol, `repo` and `workflow` scopes | Re-authenticated successfully through official device flow |
+| Public remote | `https://github.com/Rasmus-allesoee/skull_website` | Public; default branch `main` |
 
-The user requested use of the authenticated account, but `gh auth status` returned an invalid token during implementation preflight. Local work can continue; remote publication cannot be marked complete until authentication succeeds.
+The preflight invalid-token condition was resolved through `gh auth login`; no token value is stored in the repository or this document.
 
 ## 7. Context/data readiness
 
@@ -94,8 +98,9 @@ The user requested use of the authenticated account, but `gh auth status` return
 | Visual/browser console | Playwright CLI desktop and 390 px inspection; favicon 404 fixed and rechecked | Pass |
 | Ignore boundary | `git check-ignore -v` for draft CSV, 194 MB staged images, build/test/browser output, and OS files | Pass |
 | Clean Git scope | 61 staged paths inspected; no draft CSV, staged images, dependencies, build, OS, test, or browser-QA output | Pass |
-| Public remote | GitHub repository URL and default branch | Blocked on valid `gh` authentication at preflight |
-| CI | GitHub Actions run for pushed checkpoint | Pending remote |
+| Clean clone | 832 KB tracked checkout; frozen install restored 450 packages; `pnpm check` and `pnpm build`; no dirty diff | Pass |
+| Public remote | `Rasmus-allesoee/skull_website`; `PUBLIC`; default branch `main`; pushed commit matches local | Pass |
+| CI | [GitHub Actions run 31644826604](https://github.com/Rasmus-allesoee/skull_website/actions/runs/31644826604), push of `07eea359…` | Pass |
 
 Evidence is filled with exact results before Phase 0/1 is marked complete. A local pass does not substitute for remote/CI verification where the gate explicitly requires it.
 
@@ -110,15 +115,15 @@ Evidence is filled with exact results before Phase 0/1 is marked complete. A loc
 | Museum aesthetics obscure usability | WCAG rules, semantic controls, keyboard/mobile gate, visual approval |
 | Search/map duplicate data logic | Both compile from canonical records and use stable URLs |
 | New-feature enthusiasm expands phase | Phase gates and explicit deferred prerequisites |
-| Invalid GitHub credential stalls publication | Re-authenticate only at external checkpoint; preserve verified local commit |
+| GitHub credentials expire later | Verify `gh auth status` at external checkpoints; never store tokens in repository files |
 
 ## 10. Exact next actions
 
-1. Stage and audit every first-commit path; commit the verified foundation.
-2. Verify installation/build from a clean local clone on Node 24.18.0.
-3. Re-authenticate `gh`, create public `Rasmus-allesoee/skull_website`, and push `main`.
-4. Verify the GitHub Actions run and update this status with commit/remote evidence.
-5. Stop. Await explicit continuation before Phase 2.
+1. Stop Phase 0/1 work; preserve this verified checkpoint.
+2. Await explicit user authorization to begin Phase 2.
+3. When authorized, create the Phase 2 GitHub milestone/issues and a focused `agent/<short-description>` branch.
+4. Confirm the representative taxon/specimen, immutable IDs, and rights/credits before moving any local image into the public pipeline.
+5. Implement only the Phase 2 source → validation/media → taxon/specimen vertical slice and stop at its user-approval gate.
 
 ## 11. Decision/blocker protocol
 
@@ -137,5 +142,14 @@ Evidence is filled with exact results before Phase 0/1 is marked complete. A loc
 - GitHub token was found invalid despite a configured active account; remote work remains pending re-authentication.
 - Current framework releases were pinned, then compatibility-tested: TypeScript 7 and ESLint 10 were replaced by supported TypeScript 6.0.3 and ESLint 9.39.5 after the Next.js lint graph rejected the newer majors.
 - Pinned local install, peer check, formatting, lint, strict typecheck, unit test, static build, Chromium/axe smoke test, and visual desktop/mobile inspection passed.
+
+### 2026-08-12 — Phase 0/1 completed
+
+- Audited and committed 61 intended foundation files as `07eea359cd4a4daf302639af52a0762ab53690f0`; private/staging/generated paths remained ignored.
+- Verified the commit from a clean local clone using the exact pinned Node/pnpm toolchain; install, checks, and static build passed with no working-tree changes.
+- Re-authenticated GitHub CLI, created the public repository, pushed `main`, and verified the repository visibility/default branch.
+- GitHub Actions push run `31644826604` passed the full CI job.
+- Dependabot immediately opened three GitHub Actions update pull requests; their isolated CI runs were green, and the same reviewed version-only changes were folded into the phase-closing checkpoint for one combined CI verification.
+- Phase 2 remains intentionally unstarted.
 
 Future entries should be concise and evidence-based. Git history owns file-level chronology; this log owns phase outcomes, decisions, blockers, and next action.

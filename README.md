@@ -2,7 +2,7 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-The project is currently at the end of **Phase 0/1: documentation and repository foundation**. The application is intentionally a small foundation page; catalog features and real specimen ingestion begin in later, separately approved phases.
+**Phase 0/1: documentation and repository foundation is complete.** The application is intentionally a small foundation page; Phase 2 catalog/data work has not started and requires explicit user continuation.
 
 ## Project principles
 

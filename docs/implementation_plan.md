@@ -2,7 +2,7 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Phase 0/1 — documentation and repository foundation
+**Current phase:** Phase 0/1 complete; Phase 2 awaiting explicit authorization
 
 **Last reviewed:** 2026-08-12
 
@@ -91,11 +91,11 @@ Turn the approved conversational plan into durable sources of truth and create a
 
 ### GitHub and checkpoint
 
-- [ ] Verify GitHub CLI authentication for `Rasmus-allesoee`.
-- [ ] Create public `Rasmus-allesoee/skull_website` with the local repository as source.
-- [ ] Commit the reviewed foundation on `main` using a conventional commit.
-- [ ] Push and verify the remote/default branch and GitHub Actions run.
-- [ ] Record commit, remote, command evidence, and remaining environment notes in `project_status.md`.
+- [x] Verify GitHub CLI authentication for `Rasmus-allesoee`.
+- [x] Create public `Rasmus-allesoee/skull_website` with the local repository as source.
+- [x] Commit the reviewed foundation on `main` using a conventional commit.
+- [x] Push and verify the remote/default branch and GitHub Actions run.
+- [x] Record commit, remote, command evidence, and remaining environment notes in `project_status.md`.
 
 ### Acceptance gate
 
@@ -105,6 +105,8 @@ Turn the approved conversational plan into durable sources of truth and create a
 - The GitHub repository is public and points to the intended initial commit.
 - Ignored local draft metadata and staged images are absent from the remote.
 - All canonical documents and `AGENTS.md` agree that Phase 2 is next and no Phase 2 feature is presented as complete.
+
+**Gate result:** Passed on 2026-08-12. Phase 2 remains unstarted until the user explicitly continues.
 
 ## 5. Phase 2 — validated vertical slice
 
