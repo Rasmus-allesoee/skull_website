@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Sensitive rights or privacy concern
+    url: https://github.com/Rasmus-allesoee/skull_website/security
+    about: Do not disclose sensitive personal, location, or rights-confidential information in a public issue.

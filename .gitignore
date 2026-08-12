@@ -1,0 +1,65 @@
+# Dependencies and package-manager state
+node_modules/
+.pnpm-store/
+
+# Next.js and generated application output
+.next/
+out/
+dist/
+.generated/
+*.tsbuildinfo
+
+# Tests and reports
+coverage/
+playwright-report/
+test-results/
+blob-report/
+output/
+.playwright-cli/
+
+# Environment and hosting state
+.env
+.env.*
+!.env.example
+.vercel/
+
+# Logs and local tooling
+*.log
+.eslintcache
+.stylelintcache
+.turbo/
+.cache/
+
+# Operating-system and editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Private/raw collection sources and working exports
+agent_context/skulls_meta.csv
+agent_context/skull_images_clean/
+*.af
+*.afphoto
+*.afdesign
+*.psd
+*.psb
+*.tif
+*.tiff
+*.dng
+*.raw
+*.cr2
+*.cr3
+*.nef
+*.arw
+*.xlsx
+*.xls
+*.ods
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~

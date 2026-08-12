@@ -1,0 +1,13 @@
+.next/
+.playwright-cli/
+.generated/
+agent_context/
+coverage/
+docs/
+node_modules/
+playwright-report/
+public/media/
+test-results/
+*.md
+LICENSE
+pnpm-lock.yaml

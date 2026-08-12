@@ -1,0 +1,68 @@
+name: Bug report
+description: Report reproducible incorrect behavior in the website or repository workflow.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Do not include private specimen notes, unpublished coordinates, secrets,
+        or archival images. Use the repository security/contact route for sensitive reports.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Application UI
+        - Accessibility
+        - Content or taxonomy
+        - Media pipeline
+        - Search or filters
+        - Map
+        - Build, tests, or CI
+        - Documentation
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+      description: What happened? Include the exact route or command and safe error text.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      placeholder: |
+        1. Open or run ...
+        2. Select ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Commit, browser/device, Node/pnpm, or CI run as relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: accessibility
+    attributes:
+      label: Accessibility impact
+      description: Note keyboard, screen-reader, zoom, contrast, motion, or touch impact if known.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed private data, precise unpublished locations, secrets, and archival media from this report.
+          required: true

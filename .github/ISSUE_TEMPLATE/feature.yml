@@ -1,0 +1,51 @@
+name: Feature or improvement
+description: Propose scoped work aligned with the approved roadmap.
+title: "feat: "
+labels:
+  - enhancement
+body:
+  - type: input
+    id: problem
+    attributes:
+      label: Visitor or maintainer problem
+      description: State the problem before suggesting an implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: What observable behavior would resolve the problem?
+    validations:
+      required: true
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Roadmap relationship
+      options:
+        - Active phase deliverable
+        - Later approved phase
+        - Deferred backlog idea
+        - Documentation or maintenance
+        - Unsure
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Proposed acceptance evidence
+      description: Include relevant automated and manual checks.
+    validations:
+      required: true
+  - type: textarea
+    id: implications
+    attributes:
+      label: Data, rights, privacy, security, accessibility, and performance
+      description: Call out material implications or explain why none apply.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and non-goals
+      description: Which phase/decision/content does this depend on, and what stays out of scope?

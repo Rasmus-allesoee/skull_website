@@ -1,0 +1,8 @@
+engineStrict: true
+saveExact: true
+strictPeerDependencies: true
+
+allowBuilds:
+  "@tailwindcss/oxide@4.3.3": true
+  "sharp@0.34.5": true
+  "unrs-resolver@1.12.2": true

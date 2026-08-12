@@ -1,0 +1,2 @@
+# PROMPT - start phase 0/1
+The overall plan is approved, but do not implement the entire plan in one run. Let's start implementing Phase 0/1 of agent_context/website_plan_from_planmode.md. This includes creating the documentation suite (i.e. all the listed .md files; very important), update AGENTS.md, add the repository foundation, initialize Git, create the public GitHub repository using the authenticated gh account, add the CI skeleton, Node/pnpm pins, and the initial Next.js application.
