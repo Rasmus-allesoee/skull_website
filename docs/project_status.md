@@ -27,6 +27,7 @@ Phase 0/1 achieved its objective: the approved master plan is encoded as canonic
 - Clean local clone verified: 832 KB source checkout, private draft/staging absent, 450 packages restored from the frozen lockfile, full quality suite and static build passed, and the clone stayed clean.
 - GitHub CLI re-authenticated as `Rasmus-allesoee`; public `Rasmus-allesoee/skull_website` created with `main` as its default branch.
 - Foundation commit `07eea359cd4a4daf302639af52a0762ab53690f0` pushed and GitHub Actions CI run `31644826604` passed.
+- Phase-closing commit `e8d322dd12dab2bbbd4873c153cab867afe2c1b7` updated the three official CI actions to their current reviewed majors; combined GitHub Actions run `31645819494` passed.
 
 ## 3. Awaiting authorization
 
@@ -65,7 +66,7 @@ These are deliberately not partially implemented in Phase 0/1.
 
 | Check | Observed | Impact/action |
 |---|---|---|
-| Local repository | `main`, tracking `origin/main`; foundation implementation commit `07eea359cd4a4daf302639af52a0762ab53690f0` | Phase-closing status/CI checkpoint follows |
+| Local repository | `main`, tracking `origin/main`; verified phase-closing checkpoint `e8d322dd12dab2bbbd4873c153cab867afe2c1b7` | Final status-only commit records this evidence |
 | Local default Node | `v22.20.0` | Does not satisfy pin; all recorded checks used verified isolated Node `v24.18.0` |
 | Local default pnpm | Not installed | Checks used Corepack-managed pnpm `11.21.0`; repository declares exact version |
 | GitHub CLI | `gh 2.81.0` installed | Suitable for repository creation |
@@ -100,7 +101,7 @@ The preflight invalid-token condition was resolved through `gh auth login`; no t
 | Clean Git scope | 61 staged paths inspected; no draft CSV, staged images, dependencies, build, OS, test, or browser-QA output | Pass |
 | Clean clone | 832 KB tracked checkout; frozen install restored 450 packages; `pnpm check` and `pnpm build`; no dirty diff | Pass |
 | Public remote | `Rasmus-allesoee/skull_website`; `PUBLIC`; default branch `main`; pushed commit matches local | Pass |
-| CI | [GitHub Actions run 31644826604](https://github.com/Rasmus-allesoee/skull_website/actions/runs/31644826604), push of `07eea359…` | Pass |
+| CI | [GitHub Actions run 31645819494](https://github.com/Rasmus-allesoee/skull_website/actions/runs/31645819494), push of `e8d322dd…` with current action majors | Pass |
 
 Evidence is filled with exact results before Phase 0/1 is marked complete. A local pass does not substitute for remote/CI verification where the gate explicitly requires it.
 
@@ -150,6 +151,7 @@ Evidence is filled with exact results before Phase 0/1 is marked complete. A loc
 - Re-authenticated GitHub CLI, created the public repository, pushed `main`, and verified the repository visibility/default branch.
 - GitHub Actions push run `31644826604` passed the full CI job.
 - Dependabot immediately opened three GitHub Actions update pull requests; their isolated CI runs were green, and the same reviewed version-only changes were folded into the phase-closing checkpoint for one combined CI verification.
+- Phase-closing commit `e8d322dd12dab2bbbd4873c153cab867afe2c1b7` passed combined CI run `31645819494`; this final status update uses `[skip ci]` to avoid creating a recursive evidence-only run.
 - Phase 2 remains intentionally unstarted.
 
 Future entries should be concise and evidence-based. Git history owns file-level chronology; this log owns phase outcomes, decisions, blockers, and next action.
