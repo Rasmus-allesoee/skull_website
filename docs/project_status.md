@@ -69,9 +69,9 @@ The detailed field mapping is preserved in `docs/content_data_model.md`; compile
 | Manual visual/interaction | Playwright CLI at 1440, 390, and 360 px; all six labels/alt texts, controls, zoom/focus, reduced motion, and no-JS fallback checked | Pass |
 | Network boundary | Browser requests only `http://127.0.0.1:3000`; normal build uses no GBIF/font/map/runtime data call | Pass |
 | Clean committed clone | Commit `2b17568a1216a3858d8f1f3caf3193ecc7e098fb`; offline frozen install restored 470 packages; full check, build, 6 browser journeys; Git stayed clean | Pass |
-| Remote branch / CI | Branch pushed; draft [PR #4](https://github.com/Rasmus-allesoee/skull_website/pull/4) open | CI run pending |
+| Remote branch / CI | Draft [PR #4](https://github.com/Rasmus-allesoee/skull_website/pull/4); commit `ed1852c`; [GitHub Actions run 31743399720](https://github.com/Rasmus-allesoee/skull_website/actions/runs/31743399720), 1m39s | Pass |
 
-Remote CI evidence is filled only after GitHub Actions finishes. Local and clean-clone passes do not substitute for that external gate.
+The same Phase 2 implementation has now passed local, clean-clone, and remote CI gates. The remaining owner approval is a product gate, not an unverified technical requirement.
 
 ## 6. Known limitations and controls
 
@@ -85,15 +85,14 @@ Remote CI evidence is filled only after GitHub Actions finishes. Local and clean
 
 ## 7. Exact next action
 
-1. Finish GitHub Actions verification for draft PR #4 without merging it automatically.
-2. The owner reviews `/species/raccoon-dog` at desktop and mobile widths, including all six views and the exact specimen link.
-3. The owner either requests bounded Phase 2 refinements or explicitly approves:
+1. The owner reviews `/species/raccoon-dog` at desktop and mobile widths, including all six views and the exact specimen link.
+2. The owner either requests bounded Phase 2 refinements or explicitly approves:
    - visual direction and density;
    - gallery/zoom/mobile interactions;
    - measurement/provenance/preparation presentation; and
    - the two public credit strings.
-4. Record that decision here and in `docs/design_system.md`.
-5. Only after approval, authorize Phase 3 and create its focused milestone/issues/branch.
+3. Record that decision here and in `docs/design_system.md`.
+4. Only after approval, merge/checkpoint Phase 2 as directed, then authorize Phase 3 and create its focused milestone/issues/branch.
 
 No additional images or metadata are required merely to approve Phase 2. Phase 3 scope should be re-read from `docs/implementation_plan.md`; do not silently pull search, map, or full ingestion forward.
 
@@ -118,6 +117,7 @@ No additional images or metadata are required merely to approve Phase 2. Phase 3
 - Source contracts, taxonomy evidence, media pipeline, six derivatives, static taxon/specimen exhibit, tests, CI steps, and canonical documentation were implemented on `agent/phase-2-raccoon-dog-slice`.
 - Local content/media/fixture, type, unit/component/axe, production build, Chromium/no-JS/accessibility, real-image performance, and desktop/mobile visual checks passed.
 - Commit `2b17568a1216a3858d8f1f3caf3193ecc7e098fb` passed the complete gate again in a clean clone and was pushed; milestone 1, issues #5–#8, and draft PR #4 were created. Issues #5–#7 are complete; #8 owns remote evidence and owner approval.
+- Documentation checkpoint `ed1852c` passed GitHub Actions run `31743399720` in 1m39s. Issue #8 and milestone 1 remain open only for owner approval.
 - Work stopped at the required owner visual-approval boundary; no Phase 3 feature was introduced.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.
