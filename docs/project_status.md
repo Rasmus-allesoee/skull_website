@@ -68,10 +68,10 @@ The detailed field mapping is preserved in `docs/content_data_model.md`; compile
 | Responsive/performance | Browser tests at 390 px; hero transfer ≤ 250 KiB; manual 360 px `scrollWidth = clientWidth = 360` and zero failed images | Pass |
 | Manual visual/interaction | Playwright CLI at 1440, 390, and 360 px; all six labels/alt texts, controls, zoom/focus, reduced motion, and no-JS fallback checked | Pass |
 | Network boundary | Browser requests only `http://127.0.0.1:3000`; normal build uses no GBIF/font/map/runtime data call | Pass |
-| Clean committed clone | Frozen install, full check, build, browser suite, clean Git state | Pending checkpoint run |
-| Remote branch / CI | Draft pull request and GitHub Actions result | Pending checkpoint publication |
+| Clean committed clone | Commit `2b17568a1216a3858d8f1f3caf3193ecc7e098fb`; offline frozen install restored 470 packages; full check, build, 6 browser journeys; Git stayed clean | Pass |
+| Remote branch / CI | Branch pushed; draft [PR #4](https://github.com/Rasmus-allesoee/skull_website/pull/4) open | CI run pending |
 
-The final two rows are updated with exact commit/run evidence after the coherent checkpoint is published. Local passes never substitute for a clean-clone or remote CI gate.
+Remote CI evidence is filled only after GitHub Actions finishes. Local and clean-clone passes do not substitute for that external gate.
 
 ## 6. Known limitations and controls
 
@@ -81,11 +81,11 @@ The final two rows are updated with exact commit/run evidence after the coherent
 - Taxonomy and profile facts are reviewed for this slice only; bulk taxonomy remains Phase 6 work.
 - Public credit strings and visual/content preference remain intentionally open to owner correction before scaling.
 - The Next/Image preload warning seen only after repeated cached Playwright CLI navigation had no failed request or console error; cold browser acceptance and image delivery passed.
-- The connected GitHub app can read the repository but returned `403 Resource not accessible by integration` for Phase 2 issue creation on 2026-08-13. This does not affect the application gate; create the missing milestone/issues once the integration has Issues write permission rather than duplicating a tracker locally.
+- The connected GitHub app can read the repository but returned `403 Resource not accessible by integration` for issue/PR writes on 2026-08-13. The repository's existing authenticated `gh` session successfully created milestone `Phase 2 — validated vertical slice`, issues [#5–#8](https://github.com/Rasmus-allesoee/skull_website/milestone/1), and draft PR #4; no re-authentication or manual push was required.
 
 ## 7. Exact next action
 
-1. Publish and verify the focused Phase 2 branch/checkpoint without merging it automatically.
+1. Finish GitHub Actions verification for draft PR #4 without merging it automatically.
 2. The owner reviews `/species/raccoon-dog` at desktop and mobile widths, including all six views and the exact specimen link.
 3. The owner either requests bounded Phase 2 refinements or explicitly approves:
    - visual direction and density;
@@ -117,6 +117,7 @@ No additional images or metadata are required merely to approve Phase 2. Phase 3
 - User explicitly selected *Nyctereutes procyonoides*, staging metadata `ID = 1`, and the six matching `mårhund_*_1.png` files, and authorized Phase 2 only.
 - Source contracts, taxonomy evidence, media pipeline, six derivatives, static taxon/specimen exhibit, tests, CI steps, and canonical documentation were implemented on `agent/phase-2-raccoon-dog-slice`.
 - Local content/media/fixture, type, unit/component/axe, production build, Chromium/no-JS/accessibility, real-image performance, and desktop/mobile visual checks passed.
+- Commit `2b17568a1216a3858d8f1f3caf3193ecc7e098fb` passed the complete gate again in a clean clone and was pushed; milestone 1, issues #5–#8, and draft PR #4 were created. Issues #5–#7 are complete; #8 owns remote evidence and owner approval.
 - Work stopped at the required owner visual-approval boundary; no Phase 3 feature was introduced.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.
