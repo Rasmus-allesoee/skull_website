@@ -24,6 +24,8 @@ Third-party contributions retain the rights and licence explicitly recorded for 
 
 Taxonomic names, factual references, citations, software dependencies, fonts, map tiles, and third-party material remain subject to their respective terms. Attribution and licence notices must be preserved where required. The project does not claim ownership over public-domain scientific facts or third-party marks.
 
+The self-hosted Newsreader and IBM Plex Sans font files are distributed under the SIL Open Font License 1.1. Reviewed notice copies are retained in `docs/licenses/`.
+
 ## Requests and corrections
 
 Permission requests, attribution corrections, or takedown concerns will use the public contact address selected before launch. Until that address is configured, open a GitHub issue only if doing so will not disclose personal, sensitive, or rights-confidential information.

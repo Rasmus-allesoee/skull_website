@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "GBIF-2026-08-13-TAX-0001",
+  "provider": "GBIF Species Match API",
+  "endpoint": "https://api.gbif.org/v1/species/match",
+  "queried_on": "2026-08-13",
+  "query": {
+    "taxon_id": "TAX-0001",
+    "scientific_name": "Nyctereutes procyonoides"
+  },
+  "match": {
+    "usage_key": 2434552,
+    "scientific_name": "Nyctereutes procyonoides (Gray, 1834)",
+    "canonical_name": "Nyctereutes procyonoides",
+    "rank": "SPECIES",
+    "status": "ACCEPTED",
+    "confidence": 99,
+    "match_type": "EXACT",
+    "kingdom": "Animalia",
+    "phylum": "Chordata",
+    "class": "Mammalia",
+    "order": "Carnivora",
+    "family": "Canidae",
+    "genus": "Nyctereutes",
+    "species": "Nyctereutes procyonoides"
+  },
+  "review": {
+    "state": "accepted",
+    "reviewed_on": "2026-08-13",
+    "notes": "Exact accepted species match; scientific name and class/order/family/genus hierarchy agree with the curated record."
+  }
+}

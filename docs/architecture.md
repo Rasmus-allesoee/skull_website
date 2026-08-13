@@ -1,8 +1,8 @@
 # Architecture
 
-**Status:** Accepted baseline for phased implementation
+**Status:** Accepted baseline; Phase 2 pipeline and vertical slice implemented
 
-**Last reviewed:** 2026-08-12
+**Last reviewed:** 2026-08-13
 
 ## 1. Architectural goals
 
@@ -30,7 +30,7 @@ The architecture must make a photographically rich catalog feel fast while prote
 | Structured content | Two CSVs plus cited MDX | Familiar editing, Git diffs, schema validation, and suitable prose |
 | Search | Orama, added in Phase 4 | Browser-side weighted search over generated documents |
 | Map | MapLibre GL JS, added in Phase 5 | Provider-independent interactive vector map |
-| Media processing | Sharp, added in Phase 2 | Deterministic metadata stripping, validation, bounds, and derivatives |
+| Media processing | Sharp 0.35.3 | Deterministic metadata stripping, validation, bounds, and derivatives |
 | Unit/component tests | Vitest, Testing Library, axe | Fast domain and UI feedback |
 | Browser tests | Playwright with axe | Real navigation, responsive, and accessibility smoke coverage |
 | CI | GitHub Actions | Reproducible pull-request gate |
@@ -102,18 +102,18 @@ Rules:
 - Draft rows may be incomplete but must parse safely and remain excluded from public output.
 - Generated paths are ignored and regenerated in CI.
 
-Phase 2 defines executable schemas and the compiler. Phase 0/1 records the contract without pretending that empty placeholder validators exist.
+Phase 2 implements this pipeline with `content:build`, `validate:content`, `validate:media`, and committed invalid fixtures. `.generated/collection.json` and `.generated/media-manifest.json` are deterministic ignored outputs regenerated before application builds and relevant tests.
 
 ## 6. Repository boundaries
 
 ```text
 src/app/              routes, layouts, route metadata, error/loading surfaces
 src/components/       reusable museum UI and route-specific interactive islands
-src/config/           future public site/runtime configuration
-src/domain/           future pure types, schemas, normalization, invariants
-src/data/             future generated-data loading and read-only queries
-src/features/         future catalog, gallery, search, map feature modules
-src/styles/           future token and component style layers if globals grow
+src/config/           public site/runtime configuration
+src/domain/           pure types, executable schemas, compiler, normalization, invariants
+src/data/             generated-data loading and read-only queries
+src/features/         exhibit now; catalog, search, and map features later
+src/styles/           optional token/component layers if globals grow
 content/taxa/          canonical taxon CSV
 content/specimens/     canonical specimen CSV
 content/profiles/      cited taxon-profile MDX
@@ -147,7 +147,7 @@ See [content_data_model.md](content_data_model.md) and [ADR 0005](decisions/0005
 
 ## 8. Content compilation and validation
 
-The Phase 2 compiler will use explicit schemas at the input boundary and return typed canonical records. It will:
+The Phase 2 compiler uses strict Zod schemas at the input boundary and returns typed canonical records. It:
 
 1. read UTF-8 CSV and MDX sources;
 2. normalize headers and controlled tokens without rewriting identity;
@@ -158,7 +158,7 @@ The Phase 2 compiler will use explicit schemas at the input boundary and return 
 7. generate deterministic, sorted artifacts; and
 8. report errors with source file, row/key, field, invalid value, and recovery guidance.
 
-The content build and application build must be separately invocable and composable in CI. Invalid public records fail before Next.js renders routes.
+The content build and application build are separately invocable and composable in CI. Invalid public records fail before Next.js renders routes. `pnpm build` composes them and explicitly uses Next.js's supported webpack production compiler: the pinned Turbopack build did not terminate reliably during Phase 2 verification, while webpack produced deterministic static output. Reverting to the default compiler requires a focused toolchain check, not an unreviewed script edit.
 
 ## 9. Taxonomy maintenance
 
@@ -205,7 +205,7 @@ Security headers must explicitly support the chosen MapLibre worker and provider
 
 Archival `.af`, PSD, TIFF/PNG masters, and camera originals live in backed-up private storage outside Git. `agent_context/skull_images_clean/` is local staging, not a public source directory.
 
-Phase 2 adds a Sharp command that:
+The Phase 2 Sharp workflow:
 
 - validates `{specimen-id}__{canonical-view}` naming;
 - reads orientation and converts pixels to sRGB;
@@ -214,7 +214,7 @@ Phase 2 adds a Sharp command that:
 - calculates transparent subject bounds for future calibrated comparison; and
 - writes a transparent WebP master up to 3200 px, quality 90, alpha quality 100.
 
-Curated web masters are committed under `public/media/specimens/`. `next/image` creates controlled responsive variants. The original WebP is exposed only for a deliberate high-resolution zoom path.
+Curated web masters are committed under `public/media/specimens/`. `next/image` creates controlled responsive variants. The original WebP remains the validated source for the deliberate high-resolution zoom path.
 
 Page code consumes `MediaAsset` records rather than constructing filenames. That interface permits a later object-store/CDN migration when public media approaches approximately 500 MB.
 
@@ -271,7 +271,7 @@ No Vercel project is created in Phase 0/1. Phase 7 selects the final name/domain
 - unit/component tests;
 - production build;
 - Chromium Playwright smoke/accessibility tests;
-- content/media checks once Phase 2 introduces their real implementations.
+- content/media validation and invalid-fixture diagnostics.
 
 ### Phase and release gates
 

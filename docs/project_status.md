@@ -1,157 +1,122 @@
 # Project status
 
-**Snapshot date:** 2026-08-12
+**Snapshot date:** 2026-08-13
 
-**Current phase:** Phase 0/1 — complete
+**Current phase:** Phase 2 — implementation and technical verification complete; owner review open
 
-**Overall state:** Complete; awaiting explicit authorization for Phase 2
+**Overall state:** Technical acceptance requirements pass locally; the phase gate remains open for the owner's explicit visual/content approval
 
-**Next phase:** Phase 2 — validated vertical slice (not started; requires Phase 0/1 gate and user continuation)
+**Next phase:** Phase 3 — not started and not authorized
 
 ## 1. Current objective
 
-Phase 0/1 achieved its objective: the approved master plan is encoded as canonical repository documentation, the reproducible Next.js/TypeScript baseline is verified, and the public GitHub repository is live with green CI. No catalog, data compiler, specimen page, search, or map feature was implemented.
+Hold the validated raccoon-dog vertical slice stable while the owner reviews its real visual direction, information density, interactions, and public credit wording. Do not scale the catalog or begin any Phase 3 feature until that approval is recorded.
 
-## 2. Completed in this checkpoint
+## 2. Completed in Phase 2
 
-- Approved master plan read from `agent_context/website_plan_from_planmode.md`.
-- Current source context inspected: incomplete draft metadata, species notes, and local cleaned-image staging.
-- Complete documentation suite created under `docs/` plus root README, contribution, licence, and rights guidance.
-- Material baseline decisions recorded as ADRs.
-- `AGENTS.md` converted into the mandatory project index.
-- Repository policies, safe ignore boundaries, contribution workflow, issue forms, pull-request template, Dependabot, and CI skeleton created.
-- Node.js 24.18.0 and pnpm 11.21.0 pinned; dependency graph locked with explicit pnpm 11 build-script allowlisting and no peer issues.
-- Minimal accessible App Router foundation page, semantic design tokens, central site configuration, static icon, unit test, and browser/axe test implemented.
-- Git initialized on `main`; ignored staging/private/generated paths checked explicitly.
-- Local quality, build, browser, accessibility, desktop, and 390 px visual checks pass.
-- Clean local clone verified: 832 KB source checkout, private draft/staging absent, 450 packages restored from the frozen lockfile, full quality suite and static build passed, and the clone stayed clean.
-- GitHub CLI re-authenticated as `Rasmus-allesoee`; public `Rasmus-allesoee/skull_website` created with `main` as its default branch.
-- Foundation commit `07eea359cd4a4daf302639af52a0762ab53690f0` pushed and GitHub Actions CI run `31644826604` passed.
-- Phase-closing commit `e8d322dd12dab2bbbd4873c153cab867afe2c1b7` updated the three official CI actions to their current reviewed majors; combined GitHub Actions run `31645819494` passed.
+- Curated one representative taxon (`TAX-0001`) and physical specimen (`SPEC-0001`) from only staging metadata source row `ID = 1` and the six explicitly selected raccoon-dog PNGs.
+- Added the canonical linked UTF-8 CSV sources, cited MDX profile, reviewed GBIF snapshot, media declarations, strict Zod schemas, typed domain records, compiler, deterministic ignored artifacts, and actionable diagnostics.
+- Implemented explicit taxonomy refresh that writes a pending snapshot without changing curated identification; ordinary builds remain fully local.
+- Implemented an explicit staging map and Sharp pipeline for orientation, sRGB, metadata stripping, alpha/edge checks, dimensions, file budgets, transparent subject bounds, and canonical WebP naming.
+- Committed six curated public derivatives (1.48 MiB total) while keeping all selected PNGs, working metadata, `.staging/`, and `.generated/` outside Git.
+- Added statically generated `/species/raccoon-dog` and `/species/raccoon-dog/specimens/SPEC-0001` routes with distinct canonical metadata and default/exact specimen semantics.
+- Built the real dark museum exhibit: six-view gallery, direct selection, previous/next, keyboard and swipe control, native zoom dialog, focus return, reduced motion, taxonomic breadcrumb, confidence labels, selector, cited profile, measurement diagram/data, provenance, preparation, rights, missing values, and incomplete-media handling.
+- Self-hosted Newsreader and IBM Plex Sans with retained SIL OFL notices and no runtime font service.
+- Expanded unit, component, axe, invalid-fixture, browser, responsive, performance, reduced-motion, third-party-request, and no-JavaScript coverage.
+- Added real content/media/fixture steps to CI and documented all executable authoring/quality commands.
 
-## 3. Awaiting authorization
+## 3. Phase 2 acceptance gate
 
-- Phase 2 — validated vertical slice.
-- Selection/confirmation of the representative taxon and physical specimen, immutable IDs, and public rights/credits needed by that slice.
-- GitHub milestone/issues for Phase 2, created only when that phase becomes active.
-
-## 4. Not started
-
-- Phase 2 executable CSV schemas and compiler.
-- Taxonomy refresh/snapshot tooling.
-- Sharp media pipeline and representative processed assets.
-- Real taxon/specimen routes and gallery.
-- Catalog, taxonomy landing routes, search, map, full ingestion, and deployment.
-
-These are deliberately not partially implemented in Phase 0/1.
-
-## 5. Locked decisions
-
-| Decision | Current answer | Source |
+| Requirement | State | Evidence |
 |---|---|---|
-| Product | Visual-first online natural-history museum | `project_overview.md` |
-| Working title | Skull Collection, centrally configured | `project_overview.md` |
-| Interface/search | English UI; scientific, English, Danish aliases | `project_overview.md` |
-| Page identity | Species-first taxon page plus nested exact specimen pages | ADR 0005 |
-| Content source | Two linked CSVs plus cited MDX | ADR 0002 |
-| Rendering | Static-first Next.js App Router/RSC | ADR 0001 |
-| Media | Private masters; curated validated public WebP derivatives in Git | ADR 0003 |
-| Search/map | Generated Orama index; route-lazy MapLibre with list fallback | ADR 0004 |
-| Hosting | Vercel later, production from `main` | `architecture.md` |
-| Rights | MIT code; content/media/data reserved separately | `RIGHTS.md` |
-| Coordinates | Exact when known; explicit approximate/unknown semantics | `content_data_model.md` |
-| Contributions v1 | Requirements guide plus contact; no direct upload | `project_overview.md` |
+| Complete source → validation → generated data/media → static route journey in a clean build | Pass locally; clean-checkpoint evidence recorded before closing technical work | Canonical sources compile to one taxon, one specimen, six assets, one profile; both route forms prerender |
+| Invalid representative fixtures fail actionably | Pass | Four deliberate relationship/date/rights/media failures are detected with source, key/field, rule, and correction guidance |
+| No EXIF/GPS or archival source reaches public output | Pass | Six WebPs pass metadata inspection; Git/ignore audit excludes selected PNGs, draft CSV, `.staging/`, `.generated/`, and archival formats |
+| Owner approves visual direction, density, interactions, and content/credit wording | **Pending** | Must be provided explicitly after reviewing the real slice |
 
-## 6. Environment and external state
+**Gate conclusion:** the technical acceptance gate passes. The full Phase 2 gate does **not** close until the owner explicitly approves the rendered slice. Phase 3 remains blocked on that single review step, not on unfinished implementation.
 
-| Check | Observed | Impact/action |
+## 4. Representative slice and decisions
+
+| Decision | Phase 2 answer | Reason/evidence |
 |---|---|---|
-| Local repository | `main`, tracking `origin/main`; verified phase-closing checkpoint `e8d322dd12dab2bbbd4873c153cab867afe2c1b7` | Final status-only commit records this evidence |
-| Local default Node | `v22.20.0` | Does not satisfy pin; all recorded checks used verified isolated Node `v24.18.0` |
-| Local default pnpm | Not installed | Checks used Corepack-managed pnpm `11.21.0`; repository declares exact version |
-| GitHub CLI | `gh 2.81.0` installed | Suitable for repository creation |
-| GitHub account | `Rasmus-allesoee`, HTTPS Git protocol, `repo` and `workflow` scopes | Re-authenticated successfully through official device flow |
-| Public remote | `https://github.com/Rasmus-allesoee/skull_website` | Public; default branch `main` |
+| Stable identity | `TAX-0001`; `SPEC-0001`; slug `raccoon-dog` | Explicit local IDs, never derived from the source row or mutable scientific name |
+| Taxonomy | *Nyctereutes procyonoides*; Mammalia → Carnivora → Canidae → *Nyctereutes* | Reviewed exact accepted GBIF species match, key `2434552`, confidence `99`; corroborated by Mammal Diversity Database |
+| Canonical views | `lateral`, `oblique`, `frontal`, `dorsal`, `ventral`, `mandible-dorsal` | Direct mapping of the six approved staging images |
+| Legacy date | `2025-11` with month precision | Day `01` is used repeatedly as a legacy placeholder; no fabricated exact day |
+| Location | entered coordinates retained as approximate with 25,000 m uncertainty; public label “Wadden Sea region, Denmark” | Precision and locality come from the selected source row/narrative; names and anecdotal/private detail were omitted |
+| Source/biology | hunting; sex and body mass not recorded; adult (legacy stage 4); damaged anterior nasal tip | Direct canonical translation of `Shot`, `X`, age `4`, and `Ødelagt næsetip` |
+| Preparation | maceration; dish soap + ammonia for 7 days; hydrogen peroxide whitening for 168 hours; final concentration not recorded | A diluted commercial 12% hair product does not establish final peroxide percentage |
+| Rights/credit | all rights reserved; “Private collection of Rasmus”; “Photography by Rasmus” | User context establishes ownership/original photography; exact display strings remain reviewable at this gate |
+| Rendering | static App Router/RSC with one client gallery island | Matches accepted architecture and preserves useful no-JavaScript content |
+| Production compiler | `next build --webpack` | Pinned Turbopack production build did not terminate reliably locally; supported webpack build is deterministic and verified |
 
-The preflight invalid-token condition was resolved through `gh auth login`; no token value is stored in the repository or this document.
+The detailed field mapping is preserved in `docs/content_data_model.md`; compiled JSON and media manifests remain replaceable ignored outputs.
 
-## 7. Context/data readiness
-
-- `agent_context/skulls_meta.csv` is incomplete and illustrative. It is ignored by Git and must not feed production.
-- `agent_context/skull_images_clean/` contains high-resolution transparent staging images with inconsistent current names. It is ignored by Git and must not be published unprocessed.
-- `agent_context/species_list.md` is a rough inventory, not verified taxonomy.
-- Production ingestion waits for replacement metadata, stable IDs, rights/credits, public-note review, and image renaming.
-- Phase 2 may use one explicitly selected representative specimen after its ID and publication rights are confirmed.
-
-## 8. Verification evidence
+## 5. Verification evidence
 
 | Gate | Command/evidence | Status |
 |---|---|---|
-| Exact toolchain | verified Node `v24.18.0`; pnpm `11.21.0`; `.nvmrc`, `.node-version`, `packageManager` agree | Pass |
-| Frozen install | `CI=true pnpm install --frozen-lockfile --offline` against generated lockfile | Pass |
-| Dependency peers | `pnpm peers check` | Pass; no issues |
-| Formatting | `pnpm format:check` via `pnpm check` | Pass |
-| Lint | `pnpm lint` via `pnpm check` | Pass; zero warnings |
-| Strict typecheck | `next typegen && tsc --noEmit` via `pnpm check` | Pass |
-| Unit/component tests | Vitest: 1 file, 1 test | Pass |
-| Production build | Next.js 16.2.12: `/`, `/_not-found`, and `/icon.svg` statically prerendered | Pass |
-| Browser/accessibility smoke | Playwright Chromium: 1 test; axe violations equal `[]` | Pass |
-| Visual/browser console | Playwright CLI desktop and 390 px inspection; favicon 404 fixed and rechecked | Pass |
-| Ignore boundary | `git check-ignore -v` for draft CSV, 194 MB staged images, build/test/browser output, and OS files | Pass |
-| Clean Git scope | 61 staged paths inspected; no draft CSV, staged images, dependencies, build, OS, test, or browser-QA output | Pass |
-| Clean clone | 832 KB tracked checkout; frozen install restored 450 packages; `pnpm check` and `pnpm build`; no dirty diff | Pass |
-| Public remote | `Rasmus-allesoee/skull_website`; `PUBLIC`; default branch `main`; pushed commit matches local | Pass |
-| CI | [GitHub Actions run 31645819494](https://github.com/Rasmus-allesoee/skull_website/actions/runs/31645819494), push of `e8d322dd…` with current action majors | Pass |
+| Exact toolchain | Node `v24.18.0`; pnpm `11.21.0` | Pass |
+| Frozen install | `CI=true pnpm install --frozen-lockfile` | Pass |
+| Content validation | `pnpm validate:content`: 1 taxon, 1 specimen, 0 warnings | Pass |
+| Media validation | `pnpm validate:media`: 6 WebPs, 1.48 MiB; sRGB, alpha, dimensions, bounds, naming, no EXIF/IPTC/XMP | Pass |
+| Invalid fixtures | `pnpm test:fixtures`: all four expected failures detected | Pass |
+| Formatting/lint/types/tests | `CI=true pnpm check`; Vitest 3 files / 10 tests | Pass |
+| Production build | `pnpm build`: `/`, `/_not-found`, `/icon.svg`, both taxon/specimen paths static | Pass |
+| Browser/accessibility | `pnpm test:e2e`: 6 Chromium journeys; axe violations `[]` | Pass |
+| Responsive/performance | Browser tests at 390 px; hero transfer ≤ 250 KiB; manual 360 px `scrollWidth = clientWidth = 360` and zero failed images | Pass |
+| Manual visual/interaction | Playwright CLI at 1440, 390, and 360 px; all six labels/alt texts, controls, zoom/focus, reduced motion, and no-JS fallback checked | Pass |
+| Network boundary | Browser requests only `http://127.0.0.1:3000`; normal build uses no GBIF/font/map/runtime data call | Pass |
+| Clean committed clone | Frozen install, full check, build, browser suite, clean Git state | Pending checkpoint run |
+| Remote branch / CI | Draft pull request and GitHub Actions result | Pending checkpoint publication |
 
-Evidence is filled with exact results before Phase 0/1 is marked complete. A local pass does not substitute for remote/CI verification where the gate explicitly requires it.
+The final two rows are updated with exact commit/run evidence after the coherent checkpoint is published. Local passes never substitute for a clean-clone or remote CI gate.
 
-## 9. Known risks and controls
+## 6. Known limitations and controls
 
-| Risk | Control |
-|---|---|
-| Raw/private draft accidentally published | Explicit `.gitignore`, staged-file audit, public-source schema |
-| Schema grows from legacy spreadsheet accidents | Approved normalized contract; representative vertical slice first |
-| Taxonomy corrections break URLs | Immutable local IDs, curated slugs, redirects, reviewed snapshot |
-| Large imagery harms speed/repository | Private masters, Sharp derivatives, budgets, 500 MB review trigger |
-| Museum aesthetics obscure usability | WCAG rules, semantic controls, keyboard/mobile gate, visual approval |
-| Search/map duplicate data logic | Both compile from canonical records and use stable URLs |
-| New-feature enthusiasm expands phase | Phase gates and explicit deferred prerequisites |
-| GitHub credentials expire later | Verify `gh auth status` at external checkpoints; never store tokens in repository files |
+- Only the representative taxon/specimen exists; the Home page is still a phase entrance, not the Phase 3 museum shell or catalog.
+- No class/order/family/genus landing pages, catalog, search, map, full ingestion, deployment, analytics, 360°, 3D, upload, or AI overlay has been started.
+- The diagram is an accessible orientation guide, not a calibrated overlay or formal methodology publication.
+- Taxonomy and profile facts are reviewed for this slice only; bulk taxonomy remains Phase 6 work.
+- Public credit strings and visual/content preference remain intentionally open to owner correction before scaling.
+- The Next/Image preload warning seen only after repeated cached Playwright CLI navigation had no failed request or console error; cold browser acceptance and image delivery passed.
+- The connected GitHub app can read the repository but returned `403 Resource not accessible by integration` for Phase 2 issue creation on 2026-08-13. This does not affect the application gate; create the missing milestone/issues once the integration has Issues write permission rather than duplicating a tracker locally.
 
-## 10. Exact next actions
+## 7. Exact next action
 
-1. Stop Phase 0/1 work; preserve this verified checkpoint.
-2. Await explicit user authorization to begin Phase 2.
-3. When authorized, create the Phase 2 GitHub milestone/issues and a focused `agent/<short-description>` branch.
-4. Confirm the representative taxon/specimen, immutable IDs, and rights/credits before moving any local image into the public pipeline.
-5. Implement only the Phase 2 source → validation/media → taxon/specimen vertical slice and stop at its user-approval gate.
+1. Publish and verify the focused Phase 2 branch/checkpoint without merging it automatically.
+2. The owner reviews `/species/raccoon-dog` at desktop and mobile widths, including all six views and the exact specimen link.
+3. The owner either requests bounded Phase 2 refinements or explicitly approves:
+   - visual direction and density;
+   - gallery/zoom/mobile interactions;
+   - measurement/provenance/preparation presentation; and
+   - the two public credit strings.
+4. Record that decision here and in `docs/design_system.md`.
+5. Only after approval, authorize Phase 3 and create its focused milestone/issues/branch.
 
-## 11. Decision/blocker protocol
+No additional images or metadata are required merely to approve Phase 2. Phase 3 scope should be re-read from `docs/implementation_plan.md`; do not silently pull search, map, or full ingestion forward.
+
+## 8. Decision/blocker protocol
 
 - A failing test or lint rule is implementation work, not automatically a blocker.
-- A decision that changes public identity, rights, data publication, scope, or external account state is surfaced to the user.
-- Blockers record what was tried, exact evidence, safe work completed, and the smallest required user action.
+- A decision that changes public identity, rights, data publication, scope, or external account state is surfaced to the owner.
+- Blockers record what was tried, exact evidence, safe work completed, and the smallest required owner action.
 - When resolved, retain a short resolution in the checkpoint log rather than deleting history.
 
-## 12. Checkpoint log
-
-### 2026-08-12 — Phase 0/1 started
-
-- User explicitly approved the master plan and authorized Phase 0/1 only.
-- Source/context and GitHub/toolchain preflight completed.
-- Canonical documentation created before application feature work.
-- GitHub token was found invalid despite a configured active account; remote work remains pending re-authentication.
-- Current framework releases were pinned, then compatibility-tested: TypeScript 7 and ESLint 10 were replaced by supported TypeScript 6.0.3 and ESLint 9.39.5 after the Next.js lint graph rejected the newer majors.
-- Pinned local install, peer check, formatting, lint, strict typecheck, unit test, static build, Chromium/axe smoke test, and visual desktop/mobile inspection passed.
+## 9. Checkpoint log
 
 ### 2026-08-12 — Phase 0/1 completed
 
-- Audited and committed 61 intended foundation files as `07eea359cd4a4daf302639af52a0762ab53690f0`; private/staging/generated paths remained ignored.
-- Verified the commit from a clean local clone using the exact pinned Node/pnpm toolchain; install, checks, and static build passed with no working-tree changes.
-- Re-authenticated GitHub CLI, created the public repository, pushed `main`, and verified the repository visibility/default branch.
-- GitHub Actions push run `31644826604` passed the full CI job.
-- Dependabot immediately opened three GitHub Actions update pull requests; their isolated CI runs were green, and the same reviewed version-only changes were folded into the phase-closing checkpoint for one combined CI verification.
-- Phase-closing commit `e8d322dd12dab2bbbd4873c153cab867afe2c1b7` passed combined CI run `31645819494`; this final status update uses `[skip ci]` to avoid creating a recursive evidence-only run.
-- Phase 2 remains intentionally unstarted.
+- Foundation and canonical documentation were published in public `Rasmus-allesoee/skull_website`.
+- Foundation commit `07eea359cd4a4daf302639af52a0762ab53690f0` and phase-closing commit `e8d322dd12dab2bbbd4873c153cab867afe2c1b7` passed GitHub Actions.
+- Phase 2 remained unstarted until explicit user authorization.
 
-Future entries should be concise and evidence-based. Git history owns file-level chronology; this log owns phase outcomes, decisions, blockers, and next action.
+### 2026-08-13 — Phase 2 implemented locally
+
+- User explicitly selected *Nyctereutes procyonoides*, staging metadata `ID = 1`, and the six matching `mårhund_*_1.png` files, and authorized Phase 2 only.
+- Source contracts, taxonomy evidence, media pipeline, six derivatives, static taxon/specimen exhibit, tests, CI steps, and canonical documentation were implemented on `agent/phase-2-raccoon-dog-slice`.
+- Local content/media/fixture, type, unit/component/axe, production build, Chromium/no-JS/accessibility, real-image performance, and desktop/mobile visual checks passed.
+- Work stopped at the required owner visual-approval boundary; no Phase 3 feature was introduced.
+
+Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.

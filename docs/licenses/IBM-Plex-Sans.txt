@@ -1,0 +1,7 @@
+IBM Plex Sans font licence notice
+
+Copyright 2019 IBM Corp. All rights reserved.
+
+The bundled IBM Plex Sans font software is licensed under the SIL Open Font
+License, Version 1.1. The complete licence text is in OFL-1.1.txt in this
+directory.

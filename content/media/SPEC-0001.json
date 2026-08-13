@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "specimen_id": "SPEC-0001",
+  "assets": [
+    {
+      "view": "lateral",
+      "alt": "Lateral view of raccoon dog skull specimen SPEC-0001 with the cranium and mandibles in occlusion."
+    },
+    {
+      "view": "oblique",
+      "alt": "Oblique view of raccoon dog skull specimen SPEC-0001 showing the damaged anterior nasal region."
+    },
+    {
+      "view": "frontal",
+      "alt": "Frontal view of raccoon dog skull specimen SPEC-0001 showing the orbits, dentition, and damaged rostral tip."
+    },
+    {
+      "view": "dorsal",
+      "alt": "Dorsal view of raccoon dog skull specimen SPEC-0001 showing the cranial vault and zygomatic arches."
+    },
+    {
+      "view": "ventral",
+      "alt": "Ventral view of raccoon dog skull specimen SPEC-0001 showing the palate, tooth rows, and auditory bullae."
+    },
+    {
+      "view": "mandible-dorsal",
+      "alt": "Dorsal view of the separated mandibles from raccoon dog skull specimen SPEC-0001 showing both tooth rows."
+    }
+  ]
+}

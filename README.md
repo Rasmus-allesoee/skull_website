@@ -2,7 +2,9 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**Phase 0/1: documentation and repository foundation is complete.** The application is intentionally a small foundation page; Phase 2 catalog/data work has not started and requires explicit user continuation.
+**Phase 2: the validated raccoon-dog vertical slice is implemented and technically verified.** The remaining gate item is the owner's explicit approval of its visual direction, information density, and interactions. Phase 3 must not start before that review is recorded.
+
+The current exhibit is available at `/species/raccoon-dog`; the exact physical record is `/species/raccoon-dog/specimens/SPEC-0001`.
 
 ## Project principles
 
@@ -24,6 +26,8 @@ The approved scope and experience are specified in [docs/project_overview.md](do
 - React `19.2.8`
 - strict TypeScript
 - Tailwind CSS 4 with semantic CSS variables
+- Zod, csv-parse, gray-matter, and Sharp for the build-time content/media pipeline
+- self-hosted Newsreader and IBM Plex Sans
 - Vitest, Testing Library, axe, and Playwright
 - GitHub Actions CI and a later Vercel deployment
 
@@ -63,32 +67,39 @@ Open <http://localhost:3000>.
 | Command | Purpose |
 |---|---|
 | `pnpm dev` | Start the local development server |
-| `pnpm build` | Create the production Next.js build |
+| `pnpm build` | Compile content and create the production Next.js build |
 | `pnpm start` | Serve the production build |
+| `pnpm content:build` | Validate and compile canonical sources into ignored `.generated/` artifacts |
+| `pnpm validate:content` | Validate CSV, MDX, links, taxonomy evidence, rights, and publication invariants |
+| `pnpm validate:media` | Validate declared public WebP files, metadata, alpha, dimensions, naming, and bounds |
+| `pnpm test:fixtures` | Confirm intentionally invalid representative records fail actionably |
+| `pnpm media:stage:phase2` | Copy only the approved six local Phase 2 PNGs into ignored canonical staging names |
+| `pnpm media:process` | Build and validate public sRGB WebP derivatives from canonical staged PNGs |
+| `pnpm taxonomy:refresh -- --taxon-id TAX-0001 --dry-run` | Query GBIF explicitly without changing curated taxonomy or writing a snapshot |
 | `pnpm lint` | Run ESLint with the Next.js and repository rules |
 | `pnpm typecheck` | Run TypeScript without emitting files |
 | `pnpm format:check` | Verify formatting without modifying files |
 | `pnpm test` | Run unit and component tests once |
 | `pnpm test:watch` | Run Vitest in watch mode |
-| `pnpm test:e2e` | Run Playwright smoke and accessibility tests |
+| `pnpm test:e2e` | Run static-route, gallery, responsive, no-JS, performance, and accessibility journeys |
 | `pnpm check` | Run the local non-browser CI checks |
 
-Content and media validation commands are deliberately scheduled for Phase 2, when their schemas and first representative specimen are implemented. CI must not claim to validate contracts that do not yet exist.
+`pnpm build` currently requests Next.js's supported webpack compiler explicitly. The Phase 2 Turbopack production build did not terminate reliably in the pinned local environment; the deterministic webpack build passed locally and is the CI contract until a focused toolchain update proves that workaround unnecessary.
 
 ## Repository map
 
 ```text
-src/                 Next.js routes, components, domain and query code
-content/             future source CSV, MDX profiles, and guides
-public/media/        future generated, web-ready public specimen assets
-scripts/             future content, taxonomy, and image tooling
+src/                 Next.js routes, exhibit UI, domain/compiler, and data loading
+content/             canonical CSV, cited MDX, media declarations, taxonomy snapshots
+public/media/        curated validated WebP specimen derivatives
+scripts/             content, taxonomy, fixture, staging, and image tooling
 tests/e2e/           browser and accessibility journeys
 docs/                canonical product, design, architecture, and status docs
 .github/              CI, issue forms, PR template, and dependency updates
 agent_context/        planning context and local-only source/staging material
 ```
 
-Empty content and media directories contain `.gitkeep` files so the intended structure survives a clean clone.
+Generated `.generated/`, local `.staging/`, browser artifacts, dependencies, and private source material are ignored and replaceable.
 
 ## Documentation reading order
 
@@ -106,14 +117,16 @@ The original approved plan remains in `agent_context/website_plan_from_planmode.
 
 ## Content and image safety
 
-`agent_context/skulls_meta.csv` is an incomplete illustrative draft. `agent_context/skull_images_clean/` contains local source/staging images. Both paths are ignored and must not be published or treated as production data.
+`agent_context/skulls_meta.csv` is an incomplete illustrative draft. `agent_context/skull_images_clean/` contains local source/staging images. Both paths are ignored and must not be published or read by a normal application build.
 
-Future public content will use:
+Phase 2 established:
 
 - `content/taxa/taxa.csv` for taxonomic identities, names, hierarchy, and publication state;
 - `content/specimens/specimens.csv` for physical specimens, provenance, measurements, preparation, and rights;
 - cited MDX for editorial profiles and guides; and
 - `public/media/specimens/` for validated derivatives named `{specimen-id}__{view}.webp`.
+
+The first canonical records (`TAX-0001`, `SPEC-0001`) were curated from only the explicitly selected staging row `ID = 1` and six matching raccoon-dog PNGs. Staging values remain evidence rather than a production source of truth.
 
 See [docs/content_data_model.md](docs/content_data_model.md) before editing any future content source.
 
@@ -125,7 +138,7 @@ Do not commit secrets, raw workbooks, archival Affinity/PSD files, private notes
 
 ## Deployment
 
-Vercel is the planned hosting target, connected to GitHub after the release-hardening phase. Pull requests will receive preview deployments and `main` will become the only production source. No production project, domain, analytics, or runtime service is configured in Phase 0/1.
+Vercel is the planned hosting target, connected to GitHub after the release-hardening phase. Pull requests will later receive preview deployments and `main` will become the only production source. No production project, domain, analytics, or runtime service is configured in Phase 2.
 
 ## Rights and licence
 

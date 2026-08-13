@@ -1,6 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
+import "@fontsource-variable/newsreader/wght-italic.css";
+import "@fontsource-variable/newsreader/wght.css";
+import "@fontsource/ibm-plex-sans/latin-400-italic.css";
+import "@fontsource/ibm-plex-sans/latin-400.css";
+import "@fontsource/ibm-plex-sans/latin-500.css";
+import "@fontsource/ibm-plex-sans/latin-600.css";
+
 import { siteConfig } from "@/config/site";
 
 import "./globals.css";

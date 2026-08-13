@@ -24,7 +24,7 @@ export default function Home() {
         <Link className="wordmark" href="/" aria-current="page">
           {siteConfig.name}
         </Link>
-        <span className="phase-label">Foundation · Phase 0/1</span>
+        <span className="phase-label">Phase 2 · Vertical slice</span>
       </header>
 
       <main id="main-content">
@@ -40,10 +40,15 @@ export default function Home() {
             specimens, high-resolution photography, and transparent scientific
             records.
           </p>
-          <p className="phase-note">
-            The repository foundation is established. Catalog exhibits begin
-            with the next approved vertical slice.
-          </p>
+          <div className="home-actions">
+            <Link className="primary-link" href="/species/raccoon-dog">
+              View the raccoon dog exhibit
+            </Link>
+            <p className="phase-note">
+              One real specimen is ready for visual-direction review. The full
+              catalog remains intentionally unbuilt.
+            </p>
+          </div>
         </section>
 
         <section className="foundation" aria-labelledby="foundation-title">
@@ -70,7 +75,7 @@ export default function Home() {
 
       <footer className="site-footer">
         <p>{siteConfig.name}</p>
-        <p>Working foundation · No collection records published yet</p>
+        <p>Phase 2 review · One validated specimen</p>
       </footer>
     </div>
   );

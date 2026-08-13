@@ -2,9 +2,9 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Phase 0/1 complete; Phase 2 awaiting explicit authorization
+**Current phase:** Phase 2 technical implementation complete; owner visual approval pending before Phase 3
 
-**Last reviewed:** 2026-08-12
+**Last reviewed:** 2026-08-13
 
 ## 1. How to use this plan
 
@@ -118,44 +118,44 @@ Turn the approved conversational plan into durable sources of truth and create a
 
 ### Data and compiler
 
-- [ ] Add header-only/representative `taxa.csv` and `specimens.csv` sources matching the approved model.
-- [ ] Implement pure domain types and executable input schemas.
-- [ ] Implement CSV parsing with row/field diagnostics and missing-value semantics.
-- [ ] Implement relationship, publication, partial-date, coordinate, default-specimen, and measurement validation.
-- [ ] Define deterministic generated-artifact locations and build command.
-- [ ] Add real `validate:content` and tests for both valid and invalid fixtures.
-- [ ] Define MDX profile frontmatter, allowed components, and citation validation.
+- [x] Add header-only/representative `taxa.csv` and `specimens.csv` sources matching the approved model.
+- [x] Implement pure domain types and executable input schemas.
+- [x] Implement CSV parsing with row/field diagnostics and missing-value semantics.
+- [x] Implement relationship, publication, partial-date, coordinate, default-specimen, and measurement validation.
+- [x] Define deterministic generated-artifact locations and build command.
+- [x] Add real `validate:content` and tests for both valid and invalid fixtures.
+- [x] Define MDX profile frontmatter, allowed components, and citation validation.
 
 ### Taxonomy
 
-- [ ] Implement explicit GBIF/Catalogue of Life refresh command with cached dated snapshot.
-- [ ] Prevent normal builds from making network requests.
-- [ ] Require review for fuzzy, synonym, conflicting, or higher-rank matches.
-- [ ] Validate the representative taxon's scientific/common/Danish names and hierarchy.
+- [x] Implement explicit GBIF/Catalogue of Life refresh command with cached dated snapshot.
+- [x] Prevent normal builds from making network requests.
+- [x] Require review for fuzzy, synonym, conflicting, or higher-rank matches.
+- [x] Validate the representative taxon's scientific/common/Danish names and hierarchy.
 
 ### Media
 
-- [ ] Finalize canonical view names against the real six-view set.
-- [ ] Implement Sharp processing: sRGB, orientation, metadata stripping, alpha/dimension/file checks, subject bounds, WebP output.
-- [ ] Add `validate:media` with actionable diagnostics.
-- [ ] Rename representative inputs by immutable specimen ID and generate curated public derivatives.
-- [ ] Confirm repository/media size and visual alpha quality.
+- [x] Finalize canonical view names against the real six-view set.
+- [x] Implement Sharp processing: sRGB, orientation, metadata stripping, alpha/dimension/file checks, subject bounds, WebP output.
+- [x] Add `validate:media` with actionable diagnostics.
+- [x] Rename representative inputs by immutable specimen ID and generate curated public derivatives.
+- [x] Confirm repository/media size and visual alpha quality.
 
 ### Representative exhibit
 
-- [ ] Add static taxon and nested specimen routes with correct default selection and metadata.
-- [ ] Build the responsive six-view gallery with keyboard, swipe, zoom/fullscreen, and reduced-motion support.
-- [ ] Build taxonomic breadcrumb, identification/confidence labels, specimen selector, cited profile, measurement panel/diagram, provenance, preparation timeline, rights, and citations.
-- [ ] Implement missing/unknown/not-applicable and incomplete-media states.
-- [ ] Self-host Newsreader and IBM Plex Sans with licence files.
-- [ ] Validate real-image performance and responsive treatment.
+- [x] Add static taxon and nested specimen routes with correct default selection and metadata.
+- [x] Build the responsive six-view gallery with keyboard, swipe, zoom/fullscreen, and reduced-motion support.
+- [x] Build taxonomic breadcrumb, identification/confidence labels, specimen selector, cited profile, measurement panel/diagram, provenance, preparation timeline, rights, and citations.
+- [x] Implement missing/unknown/not-applicable and incomplete-media states.
+- [x] Self-host Newsreader and IBM Plex Sans with licence files.
+- [x] Validate real-image performance and responsive treatment.
 
 ### Automated and manual verification
 
-- [ ] Unit-test parser, identifiers, links, dates, missing values, taxonomy outcomes, rights, and media naming.
-- [ ] Component-test gallery, selector, data groups, timeline, focus, and axe output.
-- [ ] Browser-test taxon/default and exact-specimen deep links at desktop and 360–390 px.
-- [ ] Manually inspect all six views, focus paths, zoom, reduced motion, and no-JavaScript core content.
+- [x] Unit-test parser, identifiers, links, dates, missing values, taxonomy outcomes, rights, and media naming.
+- [x] Component-test gallery, selector, data groups, timeline, focus, and axe output.
+- [x] Browser-test taxon/default and exact-specimen deep links at desktop and 360–390 px.
+- [x] Manually inspect all six views, focus paths, zoom, reduced motion, and no-JavaScript core content.
 
 ### Acceptance gate
 
@@ -163,6 +163,8 @@ Turn the approved conversational plan into durable sources of truth and create a
 - Invalid representative fixtures fail with actionable messages.
 - No EXIF/GPS or archival source reaches public output.
 - The user explicitly approves the real vertical slice's visual direction, information density, and interactions before Phase 3 scales it.
+
+**Gate result:** All implementation, data/media, clean-build, automated, and manual technical requirements were completed on 2026-08-13. The gate is not fully closed until the owner explicitly approves the rendered vertical slice; Phase 3 remains blocked on that single review item.
 
 ## 6. Phase 3 — museum shell and catalog
 

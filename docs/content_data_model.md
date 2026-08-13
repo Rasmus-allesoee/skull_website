@@ -1,14 +1,14 @@
 # Content and data model
 
-**Status:** Approved contract; executable schemas begin in Phase 2
+**Status:** Approved contract; executable Phase 2 schemas and representative records implemented
 
-**Last reviewed:** 2026-08-12
+**Last reviewed:** 2026-08-13
 
 ## 1. Purpose
 
 This document defines how taxonomic identities, physical specimens, measurements, provenance, preparation, editorial profiles, citations, and media relate. It is the contract between human-maintained content and the application.
 
-The current `agent_context/skulls_meta.csv` is an incomplete illustrative working sheet. It must not be copied into production, published, or allowed to dictate this schema. Phase 6 ingests a reviewed replacement export after stable IDs, public notes, and image filenames are complete.
+The current `agent_context/skulls_meta.csv` is an incomplete illustrative working sheet. It is not a production input and must not dictate this schema. Phase 2 used only the user-selected row with source `ID = 1` as evidence for a manually curated representative record; Phase 6 ingests a reviewed replacement export after stable IDs, public notes, and image filenames are complete.
 
 ## 2. Sources of truth
 
@@ -36,7 +36,7 @@ Compiled JSON, search indexes, and GeoJSON are generated views. They are never e
 - Rows have stable explicit IDs; row position is never identity.
 - Unknown extra columns fail validation so misspelled headers are not silently ignored.
 
-Phase 2 will add committed header templates and executable validation. Until then, do not create ad-hoc production CSVs.
+Phase 2 fixed the committed header order in `src/domain/content/schemas.ts` and added strict executable validation. Schema/header changes now require the change-management process in section 18; do not create ad-hoc production CSV variants.
 
 ## 4. Identity, slugs, and references
 
@@ -71,7 +71,7 @@ GBIF and Catalogue of Life identifiers are nullable verification references. The
 
 ## 5. `taxa.csv` contract
 
-The executable schema may refine names during Phase 2, but it must preserve these semantics.
+The executable Phase 2 schema preserves these semantics. `src/domain/content/schemas.ts` is the machine-readable header and controlled-value contract; this document owns their meaning.
 
 | Field | Type | Required for published | Meaning and constraints |
 |---|---|---:|---|
@@ -168,15 +168,19 @@ All numeric values are non-negative decimal numbers in canonical units. Each sup
 | Field | Unit | Meaning |
 |---|---|---|
 | `skull_length_mm` | mm | Approved total skull-length landmark pair |
+| `condylobasal_length_mm` | mm | Anterior premaxilla to posterior occipital-condyle landmark pair |
 | `skull_width_mm` | mm | Approved maximum skull-width landmark pair |
 | `skull_height_mm` | mm | Approved height landmark pair |
 | `skull_mass_g` | g | Prepared skull/mandible configuration defined in methodology |
 | `cranium_width_mm` | mm | Approved cranium-width landmark pair |
 | `mandible_length_mm` | mm | Approved mandible-length landmark pair |
+| `mandibular_tooth_row_length_mm` | mm | Recorded mandibular tooth-row length |
+| `mandible_ramus_height_mm` | mm | Straight-line ramus height |
+| `mandible_body_height_mm` | mm | Mandibular body height at the final molar |
 | `maxillary_canine_length_mm` | mm | Exposed/defined upper canine measurement |
 | `mandibular_canine_length_mm` | mm | Exposed/defined lower canine measurement |
 
-The final landmark names and diagrams must be tested against real data in Phase 2 before headers become executable. Measurement status semantics are defined in section 8.
+These landmark names were tested against the Phase 2 representative record and diagram before the headers became executable. Every measurement/duration/concentration column has an adjacent `_status` column using section 8 semantics.
 
 ### Rights, credit, and notes
 
@@ -193,7 +197,7 @@ No column named simply `notes` is allowed in the public CSV because it encourage
 
 ## 7. Conceptual domain types
 
-The concrete Phase 2 TypeScript types must express, not weaken, these shapes:
+The concrete TypeScript types in `src/domain/content/types.ts` express, without weakening, these shapes:
 
 ```ts
 type PublicationStatus = "draft" | "review" | "published" | "archived";
@@ -392,7 +396,23 @@ The owner approved exact public coordinates when known. Therefore:
 
 Errors include the source, row/key, field, invalid value, rule, and suggested correction. Warnings never replace a failure when publication integrity is at risk.
 
-## 16. Migration from the current draft
+## 16. Phase 2 representative curation record
+
+The vertical slice intentionally established identities and semantics without turning a legacy row position or filename into general import behavior:
+
+| Evidence | Curated result | Reason |
+|---|---|---|
+| staging species `Nyctereutes procyonoides`, row `ID = 1` | `TAX-0001`, slug `raccoon-dog`, and physical `SPEC-0001` | Stable local identities were explicitly assigned; neither comes from a mutable name or row number |
+| `01/11/2025` plus separate month/year columns | `2025-11`, precision `month` | The legacy sheet frequently uses day `01` as a placeholder; no exact day was asserted |
+| coordinates plus `location_uncertainty_meters = 25000` | source point retained, precision `approximate`, 25,000 m uncertainty | Precision is source evidence, not inferred from the number of decimals |
+| locality phrase `ved vadehavet` in the private narrative | public label `Wadden Sea region, Denmark` | Only the non-identifying locality fact was curated; personal names and anecdotal detail stayed outside Git |
+| `Source = Shot` | `acquisition_source = hunting` | Canonical controlled vocabulary preserves the event meaning |
+| sex/body mass `X`; whitening product diluted with water | explicit `not_recorded` states | Missing values are not zero; the product label is not misreported as the final peroxide concentration |
+| age `4` and `Ødelagt næsetip` | adult legacy-stage detail and damaged anterior nasal region | Visible/specimen-specific condition is distinguished from a taxonomic character |
+
+The user-provided context establishes private ownership and original photography for this selected slice. The initial public credit strings are `Private collection of Rasmus` and `Photography by Rasmus`, with all collection data and media reserved under `RIGHTS.md`; the owner may refine those display strings during the Phase 2 visual/content approval without changing IDs or URLs.
+
+## 17. Migration from the current draft
 
 The draft metadata and staged images are input evidence, not production sources. Migration in Phase 6 will:
 
@@ -409,7 +429,7 @@ The draft metadata and staged images are input evidence, not production sources.
 
 No bulk migration should silently “clean” biologically meaningful values. A migration report records every rejected or transformed field.
 
-## 17. Change management
+## 18. Change management
 
 - Adding an optional field requires schema, type, documentation, tests, and rendering-state review.
 - Renaming/removing a field requires a versioned migration.

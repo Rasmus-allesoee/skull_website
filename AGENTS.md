@@ -2,11 +2,25 @@
 
 This file is the mandatory entrypoint for every coding agent or maintainer working in this repository. Read it before editing. Keep it current whenever important rules, plans, Markdown documents, commands, or context sources are added or changed.
 
+## 0. RASMUS INFORMATION TO AGENT (DON'T DELETE)
+
+### Ask when my preference matters
+
+When a decision is subjective, has meaningful tradeoffs, or depends on my preferences, ask me before choosing. Present the main options with a brief explanation of the tradeoffs, clearly indicate your recommended option, and let me select.
+
+Do not ask about routine implementation details, obvious best practices, or choices that are easily reversible and do not meaningfully affect the result.
+
+When uncertain whether my opinion matters, prefer asking rather than assuming.
+
+### GitHub authentication
+
+GitHub authentication is verified valid in the user’s regular Terminal; if Codex’s sandbox reports an invalid token, treat it as an environment mismatch, and use the available authenticated GitHub integration for remote operations.
+
 ## 1. Mission and current boundary
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **Phase 0/1 complete; awaiting explicit authorization for Phase 2 — validated vertical slice**. Consult `docs/project_status.md` for the exact current state and evidence. Do not begin Phase 2 or implement catalog/search/map/full-ingestion features without that continuation.
+Current phase: **Phase 2 implementation and technical verification complete; awaiting the owner's explicit visual-direction approval**. Consult `docs/project_status.md` for the exact evidence and open gate item. Do not begin Phase 3 or implement the catalog/search/map/full-ingestion features until that approval is recorded.
 
 Use the neutral working title **Skull Collection** from central site configuration until the final name is selected.
 
@@ -62,17 +76,19 @@ Local context paths:
 - `agent_context/prompt_begin_phase_1.md` — Phase 0/1 authorization.
 - `agent_context/website_plan_from_planmode.md` — approved historical master plan.
 
-Archival `.af`, PSD, camera originals, TIFF/PNG masters, raw workbooks, private notes, and EXIF/GPS-bearing media stay outside Git. Future public derivatives use immutable specimen IDs and canonical views after the Phase 2 media pipeline validates and strips metadata.
+Phase 2 uses only staging metadata row `ID = 1` and the six `mårhund_*_1.png` files as migration evidence for `TAX-0001` / `SPEC-0001`. The reviewed canonical values live in `content/`; never make a normal build depend on the ignored staging sources.
+
+Archival `.af`, PSD, camera originals, TIFF/PNG masters, raw workbooks, private notes, and EXIF/GPS-bearing media stay outside Git. Public derivatives use immutable specimen IDs and canonical views only after `pnpm media:process` and `pnpm validate:media` confirm metadata stripping and the rest of the media contract.
 
 Before any content/media edit, read `docs/content_data_model.md`. Do not invent stable IDs, taxonomy, measurements, rights, credits, dates, or public-safe notes. Drafts may be incomplete but must remain build-safe and unpublished.
 
 ## 6. Repository map
 
 ```text
-src/                 application routes, components, domain/query code
-content/             future canonical CSV and MDX sources
-public/media/        future curated web-ready derivatives only
-scripts/             future validation, taxonomy, and media tooling
+src/                 application routes, features, typed domain/compiler and data loading
+content/             canonical CSV, reviewed MDX, media declarations, taxonomy snapshots
+public/media/        curated validated WebP derivatives only
+scripts/             content, taxonomy, fixture and media tooling
 tests/e2e/           Playwright journeys and accessibility smoke tests
 docs/                canonical specifications, status, and ADRs
 .github/              CI, issue forms, PR template, dependency updates
@@ -95,7 +111,7 @@ pnpm exec playwright install chromium
 pnpm test:e2e
 ```
 
-Available focused commands are documented in `README.md`. Content/media validation commands do not exist until Phase 2 implements real schemas/pipelines; never add misleading no-op checks.
+Available focused commands are documented in `README.md`. `validate:content`, `validate:media`, and `test:fixtures` are real blocking checks; `content:build` emits replaceable ignored artifacts. Taxonomy refresh and media staging/processing are explicit maintainer commands, never implicit build steps.
 
 Before a checkpoint:
 
@@ -113,7 +129,7 @@ Before a checkpoint:
 - Never stage unrelated user files silently. Audit the complete scope before commit/push.
 - One coherent verified checkpoint closes each phase; do not mark status complete on code presence alone.
 - GitHub issues/milestones are the active implementation tracker. Do not add a second competing tracker.
-- Production later deploys only from `main`; no production/Vercel configuration belongs to Phase 0/1.
+- Production later deploys only from `main`; no production/Vercel configuration belongs to Phase 2.
 
 ## 9. Documentation ownership
 

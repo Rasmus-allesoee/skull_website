@@ -1,8 +1,8 @@
 # Design system
 
-**Status:** Approved visual and interaction direction; component implementation begins in Phase 2
+**Status:** Phase 2 representative system implemented; owner approval pending
 
-**Last reviewed:** 2026-08-12
+**Last reviewed:** 2026-08-13
 
 ## 1. Design intent
 
@@ -62,7 +62,7 @@ Text and controls must meet WCAG 2.2 AA contrast. Large skull imagery does not e
 - **Newsreader:** display headings, exhibit titles, editorial introductions, scientific-name emphasis.
 - **IBM Plex Sans:** navigation, controls, labels, body copy, tables, measurements, code-like IDs.
 
-Both are self-hosted as reviewed licensed WOFF2 assets; runtime font downloads are not allowed. Until those assets enter the repository, use semantic fallback stacks:
+Both are self-hosted from pinned Fontsource packages as reviewed licensed WOFF2 assets; runtime font downloads are not allowed. Licence notices live in `docs/licenses/`. Use semantic fallback stacks after the named local face:
 
 ```css
 --font-display: Newsreader, Iowan Old Style, Palatino Linotype, Georgia, serif;
@@ -242,6 +242,8 @@ The representative raccoon-dog vertical slice must demonstrate and receive user 
 - performance with real processed assets.
 
 That gate happens before the design scales to the shell/catalog. Material changes update this document and, when cross-cutting, an ADR.
+
+Implementation evidence on 2026-08-13: the real six-view exhibit was inspected at 1440 px, 390 px, and 360 px; all canonical views, zoom/focus return, keyboard and pointer selection, reduced motion, no-JavaScript core content, missing-value language, and responsive image delivery passed the technical checks. The visual gate remains open only for the owner's explicit approval (and any requested refinements) before Phase 3.
 
 ## 16. Design anti-patterns
 

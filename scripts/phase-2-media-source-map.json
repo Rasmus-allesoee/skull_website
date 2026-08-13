@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "source_root": "agent_context/skull_images_clean",
+  "staging_root": ".staging/media",
+  "entries": [
+    {
+      "source_file": "mårhund_lateral_1.png",
+      "target_file": "SPEC-0001__lateral.png"
+    },
+    {
+      "source_file": "mårhund_angle_1.png",
+      "target_file": "SPEC-0001__oblique.png"
+    },
+    {
+      "source_file": "mårhund_frontal_1.png",
+      "target_file": "SPEC-0001__frontal.png"
+    },
+    {
+      "source_file": "mårhund_dorsal_1.png",
+      "target_file": "SPEC-0001__dorsal.png"
+    },
+    {
+      "source_file": "mårhund_ventral_1.png",
+      "target_file": "SPEC-0001__ventral.png"
+    },
+    {
+      "source_file": "mårhund_mandible_1.png",
+      "target_file": "SPEC-0001__mandible-dorsal.png"
+    }
+  ]
+}
