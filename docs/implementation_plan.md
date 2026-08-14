@@ -2,7 +2,7 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Phase 2.1 refinement passes the local technical gate; remote CI and owner re-review pending before Phase 3
+**Current phase:** Phase 2.1 refinement passes the local and remote technical gate; owner re-review pending before Phase 3
 
 **Last reviewed:** 2026-08-14
 
@@ -178,7 +178,7 @@ Turn the approved conversational plan into durable sources of truth and create a
 - [x] Extend unit, fixture, accessibility, responsive, no-JavaScript, desktop-fit, image-delivery, real-touch, swipe, double-tap, pinch, drag, dialog, and guide-route coverage.
 - [x] Record dedicated future methodology imagery/pages and bounded related/random discovery behavior without beginning Phase 3.
 
-**Gate result:** The owner approved the initial direction but requested the bounded refinements above on 2026-08-14. The refined technical gate must pass in the final branch/CI checkpoint, then the owner must approve the rendered result. Phase 3 remains unauthorized until both conditions are recorded in `project_status.md`.
+**Gate result:** The owner approved the initial direction but requested the bounded refinements above on 2026-08-14. The refined implementation passed the complete local and GitHub Actions technical gate at commit `1fcf7c6`. The owner must still approve the rendered result; Phase 3 remains unauthorized until that decision is recorded in `project_status.md`.
 
 ## 6. Phase 3 — museum shell and catalog
 

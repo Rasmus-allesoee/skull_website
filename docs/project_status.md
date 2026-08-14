@@ -2,9 +2,9 @@
 
 **Snapshot date:** 2026-08-14
 
-**Current phase:** Phase 2.1 — owner-feedback refinement implemented; final checkpoint and owner re-review open
+**Current phase:** Phase 2.1 — owner-feedback refinement technically complete; owner re-review open
 
-**Overall state:** The complete sequential local gate and manual responsive review pass; remote CI and explicit owner approval remain before Phase 2 can close
+**Overall state:** The complete local, manual, Git, and GitHub Actions gate passes; explicit owner approval remains before Phase 2 can close
 
 **Next phase:** Phase 3 — not started and not authorized
 
@@ -48,10 +48,10 @@ Finish the verified checkpoint for the owner-requested raccoon-dog refinements, 
 | Invalid representative fixtures fail actionably | Pass locally | Five deliberate relationship/date/rights/media/observation failures report source, key/field, rule, and correction guidance |
 | No EXIF/GPS or archival source reaches public output | Pass locally | Six WebPs total 1.48 MiB and pass EXIF/IPTC/XMP inspection; staging sources remain ignored |
 | Refined desktop/mobile/landscape interactions and presentation pass | Pass locally | Nine Playwright journeys plus manual 1440 × 900, 390 × 844, and 844 × 390 review; CDP two-finger pinch included |
-| Canonical docs, Git scope, branch, and remote CI agree | Local audit pass; remote pending | Staging/generated/browser output remains ignored; only curated public derivatives are tracked; commit/push/Actions evidence follows |
+| Canonical docs, Git scope, branch, and remote CI agree | Pass | Staging/generated/browser output remains ignored; only curated public derivatives are tracked; commit `1fcf7c6`; Actions run `31850640194` passed |
 | Owner approves refined visual direction, density, interactions, and wording | **Pending** | Requires explicit approval after reviewing the Phase 2.1 result |
 
-**Gate conclusion:** The refined local technical acceptance gate passes. Phase 3 remains blocked while the remote CI checkpoint and owner's explicit approval are pending; the full Phase 2 gate is not closed by local test success alone.
+**Gate conclusion:** The refined technical acceptance gate passes locally and remotely. The full Phase 2 gate remains open only for the owner's explicit approval, so Phase 3 remains blocked.
 
 ## 4. Representative record decisions
 
@@ -82,7 +82,7 @@ Finish the verified checkpoint for the owner-requested raccoon-dog refinements, 
 | Production build | `CI=true pnpm build`: 7 static routes including both specimen forms and `/guides/skull-preparation` | Pass |
 | Browser/accessibility | `CI=true pnpm test:e2e`: 9 Chromium journeys in 14.5 s with no retries/flakes; axe violations `[]`; desktop geometry, q90 delivery, original 3200 px inspection, mobile controls/swipe/double-tap/pinch/drag, dialogs, guide route, reduced motion, third-party boundary, and no-JavaScript pass | Pass |
 | Manual visual/responsive | Playwright CLI at 1440 × 900, 390 × 844, and 844 × 390: no horizontal overflow; complete anatomy; desktop controls/all six thumbnails together; portrait stack; landscape side rail; symmetric full-viewport inspector; mobile age-table reflow/scroll | Pass |
-| Remote CI | Draft PR [#4](https://github.com/Rasmus-allesoee/skull_website/pull/4) currently contains the original Phase 2 checkpoint | Pending Phase 2.1 push/run |
+| Remote CI | Commit [`1fcf7c6`](https://github.com/Rasmus-allesoee/skull_website/commit/1fcf7c6777530a8443f32d109b4b9de28107a3bc); [Actions run 31850640194](https://github.com/Rasmus-allesoee/skull_website/actions/runs/31850640194); draft [PR #4](https://github.com/Rasmus-allesoee/skull_website/pull/4) updated for Phase 2.1 | Pass |
 
 Package-manager gates must run sequentially with `CI=true` in non-interactive environments; concurrent pnpm commands can reconcile `node_modules` against different lifecycle states and are not a valid speed optimization.
 
@@ -101,11 +101,10 @@ Package-manager gates must run sequentially with `CI=true` in non-interactive en
 
 ## 7. Exact next action
 
-1. Commit the audited Phase 2.1 checkpoint, push the existing branch/draft PR, and verify GitHub Actions.
-2. The owner reviews `/species/raccoon-dog` at desktop Chrome 100% zoom, mobile portrait, and mobile landscape, including all six views, inspection gestures, measurement/age/condition dialogs, additional data, preparation link, and footer wording.
-3. The owner either requests another bounded Phase 2 correction or explicitly approves the refined visual direction, density, interactions, record vocabulary, and public wording.
-4. Record approval here, close the Phase 2 issue/milestone, and merge/checkpoint only as directed.
-5. Begin Phase 3 only after separate authorization.
+1. The owner reviews `/species/raccoon-dog` at desktop Chrome 100% zoom, mobile portrait, and mobile landscape, including all six views, inspection gestures, measurement/age/condition dialogs, additional data, preparation link, and footer wording.
+2. The owner either requests another bounded Phase 2 correction or explicitly approves the refined visual direction, density, interactions, record vocabulary, and public wording.
+3. Record approval here, close the Phase 2 issue/milestone, and merge/checkpoint only as directed.
+4. Begin Phase 3 only after separate authorization.
 
 No new metadata or images are required merely to review/approve Phase 2.1. The later illustrated methodology requires owner-created/reviewed assets; related/random sections require additional published taxa and belong to Phase 3.
 
@@ -135,6 +134,7 @@ No new metadata or images are required merely to review/approve Phase 2.1. The l
 - The owner approved the overall direction and supplied detailed gallery, mobile, inspection, hierarchy, data-model, guidance, wording, and future-scope feedback.
 - The bounded implementation is complete without beginning Phase 3. Manual review caught intrinsic image boxes overflowing both viewports; absolute constrained image boxes plus new geometry assertions fixed that final crop.
 - `CI=true pnpm check`, `CI=true pnpm build`, and all 9 Playwright journeys pass after the fix. Manual desktop, portrait, landscape, inspection, and long-dialog checks pass with zero horizontal overflow.
-- Commit, remote CI, and owner re-review evidence will complete this entry.
+- Commit `1fcf7c6777530a8443f32d109b4b9de28107a3bc` passed [GitHub Actions run 31850640194](https://github.com/Rasmus-allesoee/skull_website/actions/runs/31850640194). Draft PR #4 and issue #8 were updated with the Phase 2.1 evidence.
+- The only remaining gate item is explicit owner approval; the issue, milestone, and PR intentionally remain open/draft.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.
