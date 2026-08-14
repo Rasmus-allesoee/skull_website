@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { formatMeasurement, humanizeToken } from "@/domain/content/display";
 import type { SpecimenRecord } from "@/domain/content/types";
 
@@ -27,7 +29,7 @@ export function PreparationTimeline({
   return (
     <section className="record-panel" aria-labelledby="preparation-title">
       <p className="section-kicker">Preparation record</p>
-      <h2 id="preparation-title">From specimen to exhibit</h2>
+      <h2 id="preparation-title">Skull preparation</h2>
       <ol className="preparation-timeline">
         {steps.map((step, index) => (
           <li key={step.label}>
@@ -59,6 +61,12 @@ export function PreparationTimeline({
       {specimen.preparation.notes ? (
         <p className="record-note">{specimen.preparation.notes}</p>
       ) : null}
+      <Link
+        className="text-link preparation-guide-link"
+        href="/guides/skull-preparation"
+      >
+        Open the skull preparation guide <span aria-hidden="true">→</span>
+      </Link>
     </section>
   );
 }

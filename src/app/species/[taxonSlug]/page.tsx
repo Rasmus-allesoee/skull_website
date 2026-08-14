@@ -19,9 +19,10 @@ export async function generateMetadata({
   const exhibit = getExhibit(taxonSlug);
   if (!exhibit) return {};
   const title = `${exhibit.taxon.names.english ?? exhibit.taxon.scientificName} skull`;
+  const name = exhibit.taxon.names.english ?? exhibit.taxon.scientificName;
   return {
     title,
-    description: exhibit.profile.summary,
+    description: `Six-view photography, measurements, and collection data for ${name} skull ${exhibit.specimen.specimenId}.`,
     alternates: { canonical: `/species/${taxonSlug}` },
   };
 }

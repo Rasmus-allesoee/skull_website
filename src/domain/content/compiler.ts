@@ -72,9 +72,6 @@ export function compileCollection(input: CompilationInput): CompilationResult {
   const specimensById = new Map(
     specimens.map((specimen) => [specimen.specimenId, specimen]),
   );
-  const profilesByTaxon = new Map(
-    input.profiles.map((profile) => [profile.taxonId, profile]),
-  );
   const mediaSourcesBySpecimen = new Map(
     input.mediaSources.map((source) => [source.specimen_id, source]),
   );
@@ -109,16 +106,6 @@ export function compileCollection(input: CompilationInput): CompilationResult {
           rule: "Published taxon default must be a published specimen linked back to the same taxon",
           suggestion:
             "Correct the taxon link or select a valid published default.",
-        });
-      }
-
-      const profile = profilesByTaxon.get(taxon.taxonId);
-      if (!profile || profile.reviewStatus !== "reviewed") {
-        diagnostics.push({
-          source: `content/profiles/${taxon.taxonId}.mdx`,
-          key: taxon.taxonId,
-          rule: "Phase 2 published taxon requires a reviewed cited profile",
-          suggestion: "Add and review the taxon profile before publication.",
         });
       }
 
@@ -264,7 +251,7 @@ export function compileCollection(input: CompilationInput): CompilationResult {
 
   return {
     collection: {
-      schemaVersion: 1,
+      schemaVersion: 2,
       taxa: taxa.sort((a, b) => a.taxonId.localeCompare(b.taxonId)),
       specimens: specimens.sort((a, b) =>
         a.specimenId.localeCompare(b.specimenId),
@@ -457,6 +444,8 @@ function transformSpecimen(
   for (const field of [
     "distinguishing_features",
     "age_detail",
+    "pathology_description",
+    "trauma_description",
     "location_label",
     "collector_credit",
     "owner_credit",
@@ -468,6 +457,21 @@ function transformSpecimen(
   ] as const) {
     validatePublicText(raw[field], row, field, diagnostics);
   }
+
+  validateObservation(
+    raw.pathology_status,
+    raw.pathology_description,
+    row,
+    "pathology",
+    diagnostics,
+  );
+  validateObservation(
+    raw.trauma_status,
+    raw.trauma_description,
+    row,
+    "trauma",
+    diagnostics,
+  );
 
   const latitude = parseOptionalNumber(
     raw.latitude,
@@ -670,6 +674,16 @@ function transformSpecimen(
     sex: raw.sex,
     ageClass: raw.age_class,
     ageDetail: nullable(raw.age_detail),
+    pathology: {
+      status: raw.pathology_status,
+      description: nullable(raw.pathology_description),
+    },
+    trauma: {
+      status: raw.trauma_status,
+      description: nullable(raw.trauma_description),
+    },
+    teethCompleteness: raw.teeth_completeness,
+    skeletonCompleteness: raw.skeleton_completeness,
     acquisitionSource: raw.acquisition_source,
     acquisitionDate,
     location: {
@@ -1101,6 +1115,36 @@ function parseOptionalNumber<T>(
     return null;
   }
   return number;
+}
+
+function validateObservation<T>(
+  status: "yes" | "no" | "not_recorded",
+  description: string,
+  row: ParsedRow<T>,
+  field: "pathology" | "trauma",
+  diagnostics: Diagnostic[],
+) {
+  if (status === "yes" && description.trim().length === 0) {
+    diagnostics.push({
+      source: row.source,
+      row: row.row,
+      field: `${field}_description`,
+      value: description,
+      rule: `A ${field} observation marked yes requires a short public description`,
+      suggestion: `Describe the observed ${field} or change ${field}_status to not_recorded.`,
+    });
+  }
+
+  if (status !== "yes" && description.trim().length > 0) {
+    diagnostics.push({
+      source: row.source,
+      row: row.row,
+      field: `${field}_description`,
+      value: description,
+      rule: `A ${field} description conflicts with status ${status}`,
+      suggestion: `Clear the description or change ${field}_status to yes.`,
+    });
+  }
 }
 
 function validatePublicText<T>(

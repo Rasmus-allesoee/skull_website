@@ -7,6 +7,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { getExhibit } from "@/data/collection";
 
+import { CollectionRecord } from "./CollectionRecord";
 import { Gallery } from "./Gallery";
 import { MeasurementPanel } from "./MeasurementPanel";
 import { PreparationTimeline } from "./PreparationTimeline";
@@ -16,6 +17,8 @@ vi.mock("next/image", () => ({
   default: (props: Record<string, unknown>) => {
     const imageProps = { ...props };
     delete imageProps.priority;
+    delete imageProps.quality;
+    delete imageProps.unoptimized;
     return React.createElement("img", imageProps);
   },
 }));
@@ -51,14 +54,12 @@ describe("exhibit components", () => {
     await user.keyboard("{ArrowRight}");
     expect(screen.getByText(/3 \/ 6 · Frontal/)).toBeInTheDocument();
 
-    const inspectButton = screen.getByRole("button", {
-      name: "Inspect full view",
-    });
+    const inspectButton = screen.getByRole("button", { name: "Inspect image" });
     await user.click(inspectButton);
     const dialog = screen.getByRole("dialog");
     expect(dialog).toHaveAttribute("open");
     await user.click(within(dialog).getByRole("button", { name: /zoom in/i }));
-    expect(within(dialog).getByText("125%")).toBeInTheDocument();
+    expect(within(dialog).getByText("150%")).toBeInTheDocument();
     await user.click(within(dialog).getByRole("button", { name: /close/i }));
     expect(inspectButton).toHaveFocus();
   });
@@ -84,6 +85,7 @@ describe("exhibit components", () => {
           selectedSpecimenId={exhibit.specimen.specimenId}
         />
         <MeasurementPanel specimen={exhibit.specimen} />
+        <CollectionRecord specimen={exhibit.specimen} />
         <PreparationTimeline specimen={exhibit.specimen} />
       </main>,
     );
@@ -98,9 +100,31 @@ describe("exhibit components", () => {
     ).toHaveTextContent("Not recorded");
     expect(
       screen
-        .getByRole("heading", { name: "From specimen to exhibit" })
+        .getByRole("heading", { name: "Skull preparation" })
         .closest("section"),
     ).toHaveTextContent("DefleshingMacerationDuration · Not recorded");
+    expect(screen.getByText("Owner").nextElementSibling).toHaveTextContent(
+      "Rasmus",
+    );
+    expect(
+      screen.getByText("Condition", { selector: "dt" }).nextElementSibling,
+    ).toHaveTextContent("Good");
+
+    await user.click(
+      screen.getByRole("button", { name: "How age is estimated" }),
+    );
+    const ageDialog = screen.getByRole("dialog", { name: "Age-class guide" });
+    expect(ageDialog).toHaveAttribute("open");
+    expect(within(ageDialog).getByText("Old adult")).toBeInTheDocument();
+    await user.click(within(ageDialog).getByRole("button", { name: /close/i }));
+
+    await user.click(screen.getByText("Show additional recorded data"));
+    expect(screen.getByText("Pathology").nextElementSibling).toHaveTextContent(
+      "Not recorded",
+    );
+    expect(screen.getByText("Skeleton").nextElementSibling).toHaveTextContent(
+      "Not recorded",
+    );
   });
 
   it("has no detectable axe violations in the interactive component group", async () => {
@@ -114,6 +138,7 @@ describe("exhibit components", () => {
           selectedSpecimenId={exhibit.specimen.specimenId}
         />
         <MeasurementPanel specimen={exhibit.specimen} />
+        <CollectionRecord specimen={exhibit.specimen} />
         <PreparationTimeline specimen={exhibit.specimen} />
       </main>,
     );

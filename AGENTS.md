@@ -20,7 +20,7 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **Phase 2 implementation and technical verification complete; awaiting the owner's explicit visual-direction approval**. Consult `docs/project_status.md` for the exact evidence and open gate item. Do not begin Phase 3 or implement the catalog/search/map/full-ingestion features until that approval is recorded.
+Current phase: **Phase 2.1 refinement passes the complete local technical gate; remote CI and owner re-review remain before the Phase 2 gate can close**. Consult `docs/project_status.md` for the exact evidence and open gate items. Do not begin Phase 3 or implement catalog/search/map/full-ingestion features until the refined vertical slice is explicitly approved.
 
 Use the neutral working title **Skull Collection** from central site configuration until the final name is selected.
 
@@ -55,7 +55,7 @@ The historical approved master plan is `agent_context/website_plan_from_planmode
 ## 4. Architecture invariants
 
 - Pinned Node.js 24.18.0, pnpm 11.21.0, Next.js 16.2.12, React 19.2.8, strict TypeScript.
-- Next.js App Router and React Server Components by default; client islands only for search/filters, gallery controls, and MapLibre.
+- Next.js App Router and React Server Components by default; client islands only for search/filters, gallery and guidance-dialog controls, and MapLibre.
 - Known public routes are statically generated and useful before interactive JavaScript finishes.
 - Canonical structured sources are two UTF-8 linked CSVs (`taxa.csv`, `specimens.csv`) plus cited MDX.
 - Normal builds never call a live spreadsheet, GBIF, map API, or runtime database.
@@ -75,8 +75,9 @@ Local context paths:
 - `agent_context/prompt_initial_plan.md` — original user brief.
 - `agent_context/prompt_begin_phase_1.md` — Phase 0/1 authorization.
 - `agent_context/website_plan_from_planmode.md` — approved historical master plan.
+- `agent_context/prompt_phase_2_raccoon_dog_slice_feedback.md` — owner review that defines the Phase 2.1 refinement scope.
 
-Phase 2 uses only staging metadata row `ID = 1` and the six `mårhund_*_1.png` files as migration evidence for `TAX-0001` / `SPEC-0001`. The reviewed canonical values live in `content/`; never make a normal build depend on the ignored staging sources.
+Phase 2 uses only staging metadata row `ID = 1` and the six `mårhund_*_1.png` files as migration evidence for `TAX-0001` / `SPEC-0001`. The reviewed canonical values live in `content/`; never make a normal build depend on the ignored staging sources. Owner feedback supersedes the initial slice's display wording and condition classification, but it does not authorize inventing unrecorded pathology, trauma, teeth-set, skeleton, age-evidence, or reuse facts.
 
 Archival `.af`, PSD, camera originals, TIFF/PNG masters, raw workbooks, private notes, and EXIF/GPS-bearing media stay outside Git. Public derivatives use immutable specimen IDs and canonical views only after `pnpm media:process` and `pnpm validate:media` confirm metadata stripping and the rest of the media contract.
 

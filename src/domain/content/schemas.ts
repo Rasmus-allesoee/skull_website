@@ -44,6 +44,12 @@ export const specimenHeaders = [
   "sex",
   "age_class",
   "age_detail",
+  "pathology_status",
+  "pathology_description",
+  "trauma_status",
+  "trauma_description",
+  "teeth_completeness",
+  "skeleton_completeness",
   "body_mass_g",
   "body_mass_g_status",
   "acquisition_source",
@@ -151,23 +157,36 @@ export const rawSpecimenSchema = z.strictObject({
   publication_status: z.enum(publicationStatuses),
   is_type_or_reference_specimen: z.enum(["true", "false"]),
   condition: z.enum([
-    "complete",
-    "partial",
-    "damaged",
-    "pathological",
-    "unknown",
+    "excellent",
+    "good",
+    "fair",
+    "poor",
+    "fragmentary",
+    "not_recorded",
   ]),
   distinguishing_features: cell,
   sex: z.enum(["female", "male", "intersex", "unknown", "not_recorded"]),
   age_class: z.enum([
     "juvenile",
     "subadult",
+    "young_adult",
     "adult",
-    "senescent",
-    "unknown",
+    "old_adult",
+    "indeterminate",
     "not_recorded",
   ]),
   age_detail: cell,
+  pathology_status: observationStatusSchema(),
+  pathology_description: cell,
+  trauma_status: observationStatusSchema(),
+  trauma_description: cell,
+  teeth_completeness: z.enum([
+    "complete",
+    "partially_complete",
+    "incomplete",
+    "not_recorded",
+  ]),
+  skeleton_completeness: z.enum(["full", "partial", "none", "not_recorded"]),
   body_mass_g: cell,
   body_mass_g_status: measurementStatusSchema(),
   acquisition_source: z.enum([
@@ -278,13 +297,26 @@ export const citationSchema = z.strictObject({
   accessed: z.iso.date(),
 });
 
-export const profileFrontmatterSchema = z.strictObject({
-  taxon_id: z.string(),
-  review_status: z.enum(["draft", "reviewed"]),
-  last_reviewed: z.iso.date(),
-  summary: z.string().min(1),
-  citations: z.array(citationSchema).min(1),
-});
+export const profileFrontmatterSchema = z
+  .strictObject({
+    taxon_id: z.string(),
+    review_status: z.enum(["draft", "reviewed"]),
+    last_reviewed: z.iso.date(),
+    summary: z.string().min(1),
+    citations: z.array(citationSchema),
+  })
+  .superRefine((profile, context) => {
+    if (
+      profile.review_status === "reviewed" &&
+      profile.citations.length === 0
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["citations"],
+        message: "A reviewed profile requires at least one citation",
+      });
+    }
+  });
 
 export const taxonomySnapshotSchema = z.strictObject({
   schema_version: z.literal(1),
@@ -325,6 +357,10 @@ function measurementStatusSchema() {
 
 function datePrecisionSchema() {
   return z.enum(["year", "month", "day", "unknown"]);
+}
+
+function observationStatusSchema() {
+  return z.enum(["yes", "no", "not_recorded"]);
 }
 
 export type RawTaxon = z.infer<typeof rawTaxonSchema>;

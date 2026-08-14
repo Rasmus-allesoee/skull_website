@@ -2,9 +2,9 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**Phase 2: the validated raccoon-dog vertical slice is implemented and technically verified.** The remaining gate item is the owner's explicit approval of its visual direction, information density, and interactions. Phase 3 must not start before that review is recorded.
+**Phase 2.1: the raccoon-dog vertical slice has been refined from the owner's first review and passes the complete local technical/visual gate.** Remote CI and owner re-review remain open. Phase 3 must not start before that approval is recorded.
 
-The current exhibit is available at `/species/raccoon-dog`; the exact physical record is `/species/raccoon-dog/specimens/SPEC-0001`.
+The current specimen display is available at `/species/raccoon-dog`; the exact physical record is `/species/raccoon-dog/specimens/SPEC-0001`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
 
 ## Project principles
 
@@ -122,11 +122,11 @@ The original approved plan remains in `agent_context/website_plan_from_planmode.
 Phase 2 established:
 
 - `content/taxa/taxa.csv` for taxonomic identities, names, hierarchy, and publication state;
-- `content/specimens/specimens.csv` for physical specimens, provenance, measurements, preparation, and rights;
-- cited MDX for editorial profiles and guides; and
+- `content/specimens/specimens.csv` for physical specimens, provenance, measurements, condition, observation fields, preparation, and rights;
+- review-gated MDX for future cited editorial profiles and guides; and
 - `public/media/specimens/` for validated derivatives named `{specimen-id}__{view}.webp`.
 
-The first canonical records (`TAX-0001`, `SPEC-0001`) were curated from only the explicitly selected staging row `ID = 1` and six matching raccoon-dog PNGs. Staging values remain evidence rather than a production source of truth.
+The first canonical records (`TAX-0001`, `SPEC-0001`) were curated from only the explicitly selected staging row `ID = 1` and six matching raccoon-dog PNGs. Staging values remain evidence rather than a production source of truth. The current profile is deliberately `draft` and omitted from the public page until useful, cited prose is curated; the compiler, citation model, and reviewed-profile path remain intact.
 
 See [docs/content_data_model.md](docs/content_data_model.md) before editing any future content source.
 
@@ -138,7 +138,7 @@ Do not commit secrets, raw workbooks, archival Affinity/PSD files, private notes
 
 ## Deployment
 
-Vercel is the planned hosting target, connected to GitHub after the release-hardening phase. Pull requests will later receive preview deployments and `main` will become the only production source. No production project, domain, analytics, or runtime service is configured in Phase 2.
+Vercel is the planned hosting target, connected to GitHub after the release-hardening phase. Pull requests will later receive preview deployments and `main` will become the only production source. No production project, domain, analytics, or runtime service is configured in Phase 2/2.1.
 
 ## Rights and licence
 

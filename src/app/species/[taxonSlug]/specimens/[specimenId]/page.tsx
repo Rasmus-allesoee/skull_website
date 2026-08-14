@@ -32,7 +32,7 @@ export async function generateMetadata({
   const title = `${name} skull · ${specimenId}`;
   return {
     title,
-    description: `${exhibit.profile.summary} Exact physical specimen ${specimenId}.`,
+    description: `Six-view photography, measurements, and collection data for exact ${name} skull specimen ${specimenId}.`,
     alternates: {
       canonical: `/species/${taxonSlug}/specimens/${specimenId}`,
     },

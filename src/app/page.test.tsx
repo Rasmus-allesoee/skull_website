@@ -15,12 +15,12 @@ describe("Home vertical slice", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Phase 2 · Vertical slice")).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "View the raccoon dog exhibit" }),
+      screen.getByRole("link", { name: "View the raccoon dog display" }),
     ).toHaveAttribute("href", "/species/raccoon-dog");
     expect(
       screen.getByRole("heading", {
         level: 2,
-        name: "Built as an exhibit and a reference.",
+        name: "Built for visual study and reference.",
       }),
     ).toBeInTheDocument();
   });

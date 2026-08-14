@@ -61,7 +61,12 @@ export function parseProfile(source: string, file: string): TaxonProfile {
     });
   }
 
-  const sections = parseSections(parsed.content, file, diagnostics);
+  const sections = parseSections(
+    parsed.content,
+    file,
+    diagnostics,
+    frontmatter.success && frontmatter.data.review_status === "draft",
+  );
 
   if (frontmatter.success) {
     const citationKeys = new Set(
@@ -117,6 +122,7 @@ function parseSections(
   body: string,
   source: string,
   diagnostics: Diagnostic[],
+  allowEmpty: boolean,
 ): ProfileSection[] {
   const headings = [...body.matchAll(/^## (.+)$/gm)];
   const actualHeadings = headings.map((match) => match[1]?.trim() ?? "");
@@ -144,7 +150,7 @@ function parseSections(
       ? sectionBody.split(/\n\s*\n/).map((paragraph) => paragraph.trim())
       : [];
 
-    if (heading !== "References" && paragraphs.length === 0) {
+    if (!allowEmpty && heading !== "References" && paragraphs.length === 0) {
       diagnostics.push({
         source,
         field: `section.${heading}`,

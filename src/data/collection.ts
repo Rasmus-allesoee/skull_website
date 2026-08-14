@@ -16,7 +16,7 @@ export interface ExhibitRecord {
   specimen: SpecimenRecord;
   specimens: SpecimenRecord[];
   media: MediaAsset[];
-  profile: TaxonProfile;
+  profile: TaxonProfile | null;
 }
 
 export function getCollection(): CompiledCollection {
@@ -57,9 +57,11 @@ export function getExhibit(
     (candidate) => candidate.specimenId === selectedId,
   );
   const profile = collection.profiles.find(
-    (candidate) => candidate.taxonId === taxon.taxonId,
+    (candidate) =>
+      candidate.taxonId === taxon.taxonId &&
+      candidate.reviewStatus === "reviewed",
   );
-  if (!specimen || !profile) return null;
+  if (!specimen) return null;
 
   return {
     taxon,
@@ -68,6 +70,6 @@ export function getExhibit(
     media: collection.media.filter(
       (asset) => asset.specimenId === specimen.specimenId,
     ),
-    profile,
+    profile: profile ?? null,
   };
 }

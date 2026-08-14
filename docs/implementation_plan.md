@@ -2,9 +2,9 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Phase 2 technical implementation complete; owner visual approval pending before Phase 3
+**Current phase:** Phase 2.1 refinement passes the local technical gate; remote CI and owner re-review pending before Phase 3
 
-**Last reviewed:** 2026-08-13
+**Last reviewed:** 2026-08-14
 
 ## 1. How to use this plan
 
@@ -145,7 +145,7 @@ Turn the approved conversational plan into durable sources of truth and create a
 
 - [x] Add static taxon and nested specimen routes with correct default selection and metadata.
 - [x] Build the responsive six-view gallery with keyboard, swipe, zoom/fullscreen, and reduced-motion support.
-- [x] Build taxonomic breadcrumb, identification/confidence labels, specimen selector, cited profile, measurement panel/diagram, provenance, preparation timeline, rights, and citations.
+- [x] Build taxonomic breadcrumb, identification/confidence labels, specimen selector, measurement/record/preparation panels, review-gated profile/citation infrastructure, and concise rights/credit presentation.
 - [x] Implement missing/unknown/not-applicable and incomplete-media states.
 - [x] Self-host Newsreader and IBM Plex Sans with licence files.
 - [x] Validate real-image performance and responsive treatment.
@@ -164,7 +164,21 @@ Turn the approved conversational plan into durable sources of truth and create a
 - No EXIF/GPS or archival source reaches public output.
 - The user explicitly approves the real vertical slice's visual direction, information density, and interactions before Phase 3 scales it.
 
-**Gate result:** All implementation, data/media, clean-build, automated, and manual technical requirements were completed on 2026-08-13. The gate is not fully closed until the owner explicitly approves the rendered vertical slice; Phase 3 remains blocked on that single review item.
+### Phase 2.1 — owner-feedback refinement
+
+- [x] Correct blurry page delivery with quality-90 responsive variants and a direct original-WebP inspection path.
+- [x] Recompose the desktop gallery around a complete image plus right-hand scrollable view rail, while retaining portrait-mobile thumbnails below and a landscape-mobile side rail.
+- [x] Make all mobile controls, thumbnail selection, horizontal swipe, double-tap inspection, pinch zoom, and touch drag work; retain complete keyboard and reduced-motion behavior.
+- [x] Replace the asymmetric button-heavy inspector with a symmetric full-viewport native dialog supporting wheel/trackpad/pinch zoom, direct dragging, compact controls, view switching, and focus return.
+- [x] Add discoverable desktop and touch navigation hints; use concise `Photo:` and `display` wording.
+- [x] Move measurements immediately below photography, retain additional-measurement disclosure, remove the ambiguous skull diagram, and add a definition dialog plus honest proportional 10 cm reference.
+- [x] Move owner into the collection record; introduce reviewed age/condition vocabularies and dialogs plus pathology, trauma, teeth-set, and skeleton fields with explicit missing semantics.
+- [x] Rename preparation copy, add a real `/guides/skull-preparation` outline route, and keep uncited procedural/safety content unpublished.
+- [x] Remove the premature public cited-profile and large rights panel while preserving profile/citation compilation and structured rights fields; add the global copyright footer.
+- [x] Extend unit, fixture, accessibility, responsive, no-JavaScript, desktop-fit, image-delivery, real-touch, swipe, double-tap, pinch, drag, dialog, and guide-route coverage.
+- [x] Record dedicated future methodology imagery/pages and bounded related/random discovery behavior without beginning Phase 3.
+
+**Gate result:** The owner approved the initial direction but requested the bounded refinements above on 2026-08-14. The refined technical gate must pass in the final branch/CI checkpoint, then the owner must approve the rendered result. Phase 3 remains unauthorized until both conditions are recorded in `project_status.md`.
 
 ## 6. Phase 3 — museum shell and catalog
 
@@ -186,7 +200,8 @@ Turn the approved conversational plan into durable sources of truth and create a
 - [ ] Implement shared rank landing template, breadcrumbs, child index, and scoped gallery.
 - [ ] Implement `/species` default catalog, representative class cards, taxonomy index, sorting foundation, and responsive cards.
 - [ ] Implement species and specimen card modes using canonical queries.
-- [ ] Add related taxa and default-specimen routing/redirect tests.
+- [ ] Add default-specimen routing/redirect tests.
+- [ ] When enough taxa exist, add up to three same-family suggestions and up to three deterministic collection-wide suggestions. Exclude the current taxon, deduplicate the groups, omit empty sections, and test stable output.
 - [ ] Add sitemap/robots coverage for current published routes.
 
 ### Acceptance gate
@@ -249,7 +264,8 @@ Automated and manual scenarios pass for:
 
 ### Editorial/supporting routes
 
-- [ ] Add Guides hub and cited preparation-guide shell/content.
+- [ ] Promote the existing preparation route shell into the Guides hub and complete cited/safety-reviewed preparation content.
+- [ ] Add dedicated illustrated measurement methodology, age-estimation, and specimen-condition content using owner-supplied/reviewed real-skull imagery and appropriate citations/species caveats.
 - [ ] Add Contribution photography/metadata/rights protocol and reviewed contact link.
 - [ ] Add About and Methodology.
 - [ ] Add accurate Rights, Privacy, and Accessibility statements.
@@ -280,7 +296,7 @@ Automated and manual scenarios pass for:
 - [ ] Verify taxonomy and resolve all blocking match flags.
 - [ ] Validate dates, units, measurements, coordinates/precision, preparation, rights, and credits.
 - [ ] Rename/process every accepted media set and review alpha/framing.
-- [ ] Add concise cited profiles for publishable taxa or transparent pending states.
+- [ ] Add concise cited profiles only where useful reviewed overview/identification content exists; otherwise keep the optional profile absent or draft without public placeholder prose.
 - [ ] Keep incomplete records as drafts.
 - [ ] Review repository size against the media-storage threshold.
 

@@ -1,8 +1,8 @@
 # Architecture
 
-**Status:** Accepted baseline; Phase 2 pipeline and vertical slice implemented
+**Status:** Accepted baseline; Phase 2.1 pipeline and refined vertical slice implemented
 
-**Last reviewed:** 2026-08-13
+**Last reviewed:** 2026-08-14
 
 ## 1. Architectural goals
 
@@ -66,7 +66,7 @@ Planned client boundaries are:
 
 - global/catalog search and suggestions;
 - URL-backed faceted filters and result-mode controls;
-- gallery thumbnail, swipe, zoom, and fullscreen controls; and
+- gallery thumbnail, swipe, high-resolution inspection, zoom/pan, and guidance-dialog controls; and
 - the MapLibre map synchronized with a server-renderable result list.
 
 Client modules may receive serialized domain view models. They must not import filesystem/compiler code or become a parallel data-access layer.
@@ -102,7 +102,7 @@ Rules:
 - Draft rows may be incomplete but must parse safely and remain excluded from public output.
 - Generated paths are ignored and regenerated in CI.
 
-Phase 2 implements this pipeline with `content:build`, `validate:content`, `validate:media`, and committed invalid fixtures. `.generated/collection.json` and `.generated/media-manifest.json` are deterministic ignored outputs regenerated before application builds and relevant tests.
+Phase 2 implements this pipeline with `content:build`, `validate:content`, `validate:media`, and committed invalid fixtures. `.generated/collection.json` and `.generated/media-manifest.json` are deterministic ignored outputs regenerated before application builds and relevant tests. Phase 2.1 advances the compiled collection contract to schema version 2 for condition, pathology, trauma, teeth-set, and skeleton fields; generated artifacts remain replaceable and are never migrated in place.
 
 ## 6. Repository boundaries
 
@@ -153,12 +153,14 @@ The Phase 2 compiler uses strict Zod schemas at the input boundary and returns t
 2. normalize headers and controlled tokens without rewriting identity;
 3. preserve raw display strings and missing-value semantics;
 4. validate individual fields;
-5. link specimens, taxa, defaults, profiles, citations, and media;
+5. link specimens, taxa, defaults, optional profiles, citations, and media;
 6. enforce published-record invariants;
 7. generate deterministic, sorted artifacts; and
 8. report errors with source file, row/key, field, invalid value, and recovery guidance.
 
 The content build and application build are separately invocable and composable in CI. Invalid public records fail before Next.js renders routes. `pnpm build` composes them and explicitly uses Next.js's supported webpack production compiler: the pinned Turbopack build did not terminate reliably during Phase 2 verification, while webpack produced deterministic static output. Reverting to the default compiler requires a focused toolchain check, not an unreviewed script edit.
+
+An editorial profile is not a publication prerequisite for a valid taxon/specimen route. Draft profiles may retain the canonical heading structure with empty sections and no citations. The page query returns only `reviewed` profiles; this keeps the parser, citations, and rendering path ready without publishing placeholder prose. Reviewed profiles still require substantive sections and claim-level citation integrity.
 
 ## 9. Taxonomy maintenance
 
@@ -214,7 +216,9 @@ The Phase 2 Sharp workflow:
 - calculates transparent subject bounds for future calibrated comparison; and
 - writes a transparent WebP master up to 3200 px, quality 90, alpha quality 100.
 
-Curated web masters are committed under `public/media/specimens/`. `next/image` creates controlled responsive variants. The original WebP remains the validated source for the deliberate high-resolution zoom path.
+Curated web masters are committed under `public/media/specimens/`. `next/image` creates controlled responsive variants: the active gallery requests quality 90 with viewport-accurate `sizes`, while thumbnails use a smaller quality 70 variant. The inspection viewer deliberately bypasses Next.js optimization and loads the validated original 3200 px WebP, preventing a smaller responsive derivative from being enlarged as a false high-resolution view.
+
+The gallery client island owns selection, direct controls, keyboard navigation, touch swipe, double-click/double-tap entry, and the native `<dialog>` inspection viewer. Wheel/trackpad and pinch zoom are centered on the gesture, pan is constrained to the enlarged image, and focus returns to the opening control. Desktop and mobile-landscape layouts use an independently scrollable right rail; mobile portrait keeps view buttons below the image. Core record content and a no-JavaScript image list remain server-rendered.
 
 Page code consumes `MediaAsset` records rather than constructing filenames. That interface permits a later object-store/CDN migration when public media approaches approximately 500 MB.
 
@@ -222,7 +226,9 @@ Page code consumes `MediaAsset` records rather than constructing filenames. That
 
 Tailwind utilities operate on semantic CSS variables defined in the global token layer. Components use domain-oriented names and small variants rather than a generic theme library. Native HTML is preferred; accessible Radix primitives are permitted only where native elements cannot provide robust dialog/popover behavior.
 
-Server components own static shells and content. Client components are placed at the lowest practical interactive boundary. Accessibility state—names, expanded/selected/current semantics, focus restoration—is part of component APIs, not a post-release patch.
+Server components own static shells and content. Client components are placed at the lowest practical interactive boundary. The reusable native-dialog wrapper is the client boundary for measurement, age, and condition reference tables; the surrounding measurement and record sections stay static. Accessibility state—names, expanded/selected/current semantics, focus restoration—is part of component APIs, not a post-release patch.
+
+The Phase 2.1 `/guides/skull-preparation` route is a statically rendered, explicitly labelled outline shell. It provides a real destination from the specimen record without publishing uncited chemical or biological instructions. Full MDX guide content and safety review remain Phase 5 work.
 
 See [design_system.md](design_system.md).
 
@@ -234,7 +240,7 @@ See [design_system.md](design_system.md).
 - Next.js generates sitemap and robots output from published routes.
 - JSON-LD is built from validated values and serialized safely.
 - Schema.org `Taxon` is used only where its semantics fit; catalog-level `Dataset` metadata is added only after rights/licensing text is internally consistent.
-- Open Graph images use validated public media and credit/rights remain visible on-page.
+- Open Graph images use validated public media. Concise per-image credit remains in the gallery and the global footer states the all-rights-reserved notice; structured source fields and `RIGHTS.md` remain the authoritative publication boundary even though the earlier large rights panel was removed.
 
 ## 15. Security and privacy
 

@@ -14,7 +14,7 @@ test("home points to the validated slice and has no detectable accessibility vio
     }),
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "View the raccoon dog exhibit" }),
+    page.getByRole("link", { name: "View the raccoon dog display" }),
   ).toHaveAttribute("href", "/species/raccoon-dog");
 
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();

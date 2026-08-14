@@ -1,6 +1,3 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-
 import { describe, expect, it } from "vitest";
 
 import { buildContent } from "../../../scripts/lib/content";
@@ -30,6 +27,19 @@ describe("content compiler", () => {
       value: null,
       unit: "g",
     });
+    expect(collection.schemaVersion).toBe(2);
+    expect(specimen.condition).toBe("good");
+    expect(specimen.ageDetail).toBeNull();
+    expect(specimen.pathology).toEqual({
+      status: "not_recorded",
+      description: null,
+    });
+    expect(specimen.trauma).toEqual({
+      status: "not_recorded",
+      description: null,
+    });
+    expect(specimen.ownerCredit).toBe("Rasmus");
+    expect(specimen.rights.mediaCredit).toBe("Rasmus");
     expect(specimen.rights).toEqual(
       expect.objectContaining({
         dataRights: "all_rights_reserved",
@@ -111,16 +121,70 @@ describe("content compiler", () => {
   });
 
   it("rejects unresolved profile citations and raw JSX", async () => {
-    const validProfile = await readFile(
-      path.join(process.cwd(), "content/profiles/TAX-0001.mdx"),
-      "utf8",
-    );
+    const validProfile = `---
+taxon_id: TAX-TEST
+review_status: reviewed
+last_reviewed: "2026-08-14"
+summary: Reviewed test profile.
+citations:
+  - key: valid-source
+    title: Valid source
+    authors: Example author
+    year: 2026
+    url: https://example.com/source
+    accessed: "2026-08-14"
+---
+
+## Overview
+
+Reviewed statement. [cite:valid-source]
+
+## Skull identification
+
+Reviewed identification statement.
+
+## Comparison notes
+
+Reviewed comparison statement.
+
+## References
+`;
     const invalidProfile = validProfile
-      .replace("[cite:kim-et-al-2015]", "[cite:missing-source]")
+      .replace("[cite:valid-source]", "[cite:missing-source]")
       .replace("## References", "<script>bad()</script>\n\n## References");
 
     expect(() =>
       parseProfile(invalidProfile, "invalid-profile.mdx"),
+    ).toThrowError(ValidationError);
+  });
+
+  it("allows an empty draft profile but requires citations before review", () => {
+    const draftProfile = `---
+taxon_id: TAX-TEST
+review_status: draft
+last_reviewed: "2026-08-14"
+summary: Deliberately deferred profile.
+citations: []
+---
+
+## Overview
+
+## Skull identification
+
+## Comparison notes
+
+## References
+`;
+    expect(parseProfile(draftProfile, "draft-profile.mdx")).toEqual(
+      expect.objectContaining({ reviewStatus: "draft", citations: [] }),
+    );
+
+    const reviewedWithoutCitation = draftProfile.replace(
+      "review_status: draft",
+      "review_status: reviewed",
+    );
+    expect(() =>
+      parseProfile(reviewedWithoutCitation, "reviewed-profile.mdx"),
     ).toThrowError(ValidationError);
   });
 

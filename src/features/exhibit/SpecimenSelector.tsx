@@ -32,7 +32,7 @@ export function SpecimenSelector({
                 <span>{specimen.specimenId}</span>
                 <small>
                   {specimen.specimenId === taxon.defaultSpecimenId
-                    ? "Default exhibit"
+                    ? "Default display"
                     : "Specimen"}
                   {isSelected ? " · Selected" : ""}
                 </small>

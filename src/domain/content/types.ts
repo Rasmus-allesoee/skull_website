@@ -49,6 +49,25 @@ export type MeasurementUnit = "mm" | "g" | "days" | "hours" | "percent";
 export type MeasurementStatus =
   "measured" | "approximate" | "not_recorded" | "not_applicable";
 
+export type ObservationStatus = "yes" | "no" | "not_recorded";
+
+export type AgeClass =
+  | "juvenile"
+  | "subadult"
+  | "young_adult"
+  | "adult"
+  | "old_adult"
+  | "indeterminate"
+  | "not_recorded";
+
+export type SpecimenCondition =
+  "excellent" | "good" | "fair" | "poor" | "fragmentary" | "not_recorded";
+
+export type TeethCompleteness =
+  "complete" | "partially_complete" | "incomplete" | "not_recorded";
+
+export type SkeletonCompleteness = "full" | "partial" | "none" | "not_recorded";
+
 export type Measurement =
   | {
       status: "measured" | "approximate";
@@ -138,17 +157,21 @@ export interface SpecimenRecord {
   taxonId: string;
   publicationStatus: PublicationStatus;
   isTypeOrReferenceSpecimen: boolean;
-  condition: "complete" | "partial" | "damaged" | "pathological" | "unknown";
+  condition: SpecimenCondition;
   distinguishingFeatures: string | null;
   sex: "female" | "male" | "intersex" | "unknown" | "not_recorded";
-  ageClass:
-    | "juvenile"
-    | "subadult"
-    | "adult"
-    | "senescent"
-    | "unknown"
-    | "not_recorded";
+  ageClass: AgeClass;
   ageDetail: string | null;
+  pathology: {
+    status: ObservationStatus;
+    description: string | null;
+  };
+  trauma: {
+    status: ObservationStatus;
+    description: string | null;
+  };
+  teethCompleteness: TeethCompleteness;
+  skeletonCompleteness: SkeletonCompleteness;
   acquisitionSource:
     | "roadkill"
     | "beach_washup"
@@ -218,7 +241,7 @@ export interface TaxonProfile {
 }
 
 export interface CompiledCollection {
-  schemaVersion: 1;
+  schemaVersion: 2;
   taxa: TaxonRecord[];
   specimens: SpecimenRecord[];
   media: MediaAsset[];

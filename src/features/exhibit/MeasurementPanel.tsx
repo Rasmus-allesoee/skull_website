@@ -5,7 +5,8 @@ import {
   type SpecimenRecord,
 } from "@/domain/content/types";
 
-import { MeasurementDiagram } from "./MeasurementDiagram";
+import { MeasurementGuide } from "./RecordGuides";
+import { SizeReference } from "./SizeReference";
 
 const primaryMeasurements: MeasurementKey[] = [
   "skullLength",
@@ -38,9 +39,10 @@ export function MeasurementPanel({ specimen }: { specimen: SpecimenRecord }) {
         <p>
           Values describe {specimen.specimenId}; they are not a species range.
         </p>
+        <MeasurementGuide />
       </div>
       <div className="measurement-layout">
-        <MeasurementDiagram />
+        <SizeReference skullLength={specimen.measurements.skullLength} />
         <div className="measurement-data">
           <MeasurementList keys={primaryMeasurements} specimen={specimen} />
           <details>
