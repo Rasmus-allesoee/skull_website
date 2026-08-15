@@ -121,9 +121,29 @@ test("desktop gallery provides high-quality selection and smooth high-resolution
   expect(inspectionSource.naturalWidth).toBe(3200);
 
   const viewport = inspectionViewport;
+  const pageScrollBeforeZoom = await page.evaluate(() => scrollY);
   await viewport.hover();
   await page.mouse.wheel(0, -360);
   await expect(dialog.locator("output")).not.toHaveText("100%");
+  expect(await page.evaluate(() => scrollY)).toBe(pageScrollBeforeZoom);
+
+  const pinchCancellation = await viewport.evaluate((element) => {
+    const event = new WheelEvent("wheel", {
+      bubbles: true,
+      cancelable: true,
+      clientX: innerWidth / 2,
+      clientY: innerHeight / 2,
+      ctrlKey: true,
+      deltaY: -80,
+    });
+    const dispatchResult = element.dispatchEvent(event);
+    return { defaultPrevented: event.defaultPrevented, dispatchResult };
+  });
+  expect(pinchCancellation).toEqual({
+    defaultPrevented: true,
+    dispatchResult: false,
+  });
+  expect(await page.evaluate(() => scrollY)).toBe(pageScrollBeforeZoom);
 
   const transformBeforeDrag = await inspectionImage.getAttribute("style");
   const viewportBox = await viewport.boundingBox();
@@ -143,7 +163,7 @@ test("desktop gallery provides high-quality selection and smooth high-resolution
     transformBeforeDrag ?? "",
   );
 
-  await dialog.getByRole("button", { name: "Next view" }).click();
+  await page.keyboard.press("ArrowRight");
   await expect(dialog).toHaveAccessibleName(/Lateral view/);
   await expect(dialog.locator("output")).toHaveText("100%");
   await page.keyboard.press("Escape");
@@ -151,37 +171,53 @@ test("desktop gallery provides high-quality selection and smooth high-resolution
   await expect(gallery).toBeFocused();
 });
 
-test("desktop 100% layout keeps the main image, controls, and thumbnail rail together", async ({
+test("normal-window desktop layout uses a taller alpha-bounded frame and keeps controls with the rail", async ({
   page,
 }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.setViewportSize({ width: 1440, height: 696 });
   await page.goto(taxonPath);
-  const gallerySection = page.locator(".gallery");
-  await gallerySection.scrollIntoViewIfNeeded();
   await page
-    .locator(".gallery-heading")
-    .evaluate((heading) =>
-      heading.scrollIntoView({ block: "start", behavior: "instant" }),
+    .locator(".gallery-stage")
+    .evaluate((stage) =>
+      stage.scrollIntoView({ block: "start", behavior: "instant" }),
     );
 
   const visibleBottom = await page.evaluate(() => innerHeight);
+  const stageBox = await page.locator(".gallery-stage").boundingBox();
   const controlsBox = await page.locator(".gallery-controls").boundingBox();
-  const lastThumbnailBox = await page
-    .getByRole("button", { name: "Show mandible — dorsal view" })
-    .boundingBox();
+  const thumbnailRail = page.locator(".gallery-thumbnails");
+  const thumbnailRailBox = await thumbnailRail.boundingBox();
+  expect(stageBox).not.toBeNull();
   expect(controlsBox).not.toBeNull();
-  expect(lastThumbnailBox).not.toBeNull();
+  expect(thumbnailRailBox).not.toBeNull();
+  expect(stageBox!.height / visibleBottom).toBeGreaterThanOrEqual(0.72);
+  expect(stageBox!.height / visibleBottom).toBeLessThanOrEqual(0.76);
   expect(controlsBox!.y + controlsBox!.height).toBeLessThanOrEqual(
     visibleBottom,
   );
-  expect(lastThumbnailBox!.y + lastThumbnailBox!.height).toBeLessThanOrEqual(
-    visibleBottom,
-  );
+  expect(
+    Math.abs(
+      thumbnailRailBox!.y +
+        thumbnailRailBox!.height -
+        (controlsBox!.y + controlsBox!.height),
+    ),
+  ).toBeLessThanOrEqual(18);
+  const railGeometry = await thumbnailRail.evaluate((rail) => ({
+    clientHeight: rail.clientHeight,
+    scrollHeight: rail.scrollHeight,
+  }));
+  expect(railGeometry.scrollHeight).toBeGreaterThan(railGeometry.clientHeight);
+  await page
+    .getByRole("button", { name: "Show mandible — dorsal view" })
+    .scrollIntoViewIfNeeded();
+  await expect(
+    page.getByRole("button", { name: "Show mandible — dorsal view" }),
+  ).toBeVisible();
 
   const geometry = await page
     .locator(".gallery-stage")
     .evaluate(async (stage) => {
-      const image = stage.querySelector<HTMLImageElement>(".gallery-image")!;
+      const image = stage.querySelector<SVGSVGElement>(".gallery-image")!;
       await Promise.all(
         image
           .getAnimations()
@@ -206,6 +242,8 @@ test("desktop 100% layout keeps the main image, controls, and thumbnail rail tog
     });
   expect(geometry.image.x).toBeGreaterThanOrEqual(geometry.stage.x);
   expect(geometry.image.y).toBeGreaterThanOrEqual(geometry.stage.y);
+  expect(geometry.image.y - geometry.stage.y).toBeGreaterThanOrEqual(44);
+  expect(geometry.image.y - geometry.stage.y).toBeLessThanOrEqual(54);
   expect(geometry.image.x + geometry.image.width).toBeLessThanOrEqual(
     geometry.stage.x + geometry.stage.width,
   );
@@ -215,17 +253,33 @@ test("desktop 100% layout keeps the main image, controls, and thumbnail rail tog
 
   const imageDelivery = await page
     .locator(".gallery-image")
-    .evaluate((image: HTMLImageElement) => ({
-      clientWidth: image.clientWidth,
-      currentSrc: image.currentSrc,
-      naturalWidth: image.naturalWidth,
-      objectFit: getComputedStyle(image).objectFit,
+    .evaluate((image: SVGSVGElement) => ({
+      href: image.querySelector("image")?.getAttribute("href"),
+      viewBox: image.getAttribute("viewBox"),
+      preserveAspectRatio: image.getAttribute("preserveAspectRatio"),
     }));
-  expect(imageDelivery.currentSrc).toContain("q=90");
-  expect(imageDelivery.naturalWidth).toBeGreaterThanOrEqual(
-    imageDelivery.clientWidth,
+  expect(imageDelivery.href).toBe(
+    "/media/specimens/SPEC-0001/SPEC-0001__lateral.webp",
   );
-  expect(imageDelivery.objectFit).toBe("contain");
+  expect(imageDelivery.viewBox).toBe("363 426 2603 1634");
+  expect(imageDelivery.preserveAspectRatio).toBe("xMidYMid meet");
+
+  await page.getByRole("button", { name: "Show oblique view" }).click();
+  const obliqueInset = await page
+    .locator(".gallery-stage")
+    .evaluate(async (stage) => {
+      const stageBox = stage.getBoundingClientRect();
+      const image = stage.querySelector<SVGSVGElement>(".gallery-image")!;
+      await Promise.all(
+        image
+          .getAnimations()
+          .map((animation) => animation.finished.catch(() => undefined)),
+      );
+      const imageBox = image.getBoundingClientRect();
+      return imageBox.y - stageBox.y;
+    });
+  expect(obliqueInset).toBeGreaterThanOrEqual(8);
+  expect(obliqueInset).toBeLessThanOrEqual(12);
 });
 
 test("measurement, age, condition, and additional-record guides disclose the new data model", async ({
@@ -236,7 +290,44 @@ test("measurement, age, condition, and additional-record guides disclose the new
   await expect(
     page.getByRole("heading", { name: "Measurements" }),
   ).toBeVisible();
-  await expect(page.getByText("A visual sense of scale")).toBeVisible();
+  await expect(page.getByText("A sense of scale")).toBeVisible();
+  await expect(
+    page.getByText("Adult human skull", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("~66 mm shorter")).toBeVisible();
+  await expect(page.getByText("(0.64×)")).toBeVisible();
+  const primaryScale = page.locator(
+    '[data-comparison-id="specimen:SPEC-0001"]',
+  );
+  const humanScale = page.locator(
+    '[data-comparison-id="reference:adult-human-skull"]',
+  );
+  const [primaryScaleBox, humanScaleBox] = await Promise.all([
+    primaryScale.boundingBox(),
+    humanScale.boundingBox(),
+  ]);
+  expect(primaryScaleBox).not.toBeNull();
+  expect(humanScaleBox).not.toBeNull();
+  expect(primaryScaleBox!.width / humanScaleBox!.width).toBeCloseTo(
+    116 / 182,
+    2,
+  );
+
+  await page.getByRole("button", { name: "Compare" }).click();
+  const comparisonDialog = page.getByRole("dialog", {
+    name: "Compare with…",
+  });
+  await expect(comparisonDialog).toBeVisible();
+  await expect(
+    comparisonDialog.getByRole("option", {
+      name: /Adult human skull — default/,
+    }),
+  ).toBeVisible();
+  await expect(
+    comparisonDialog.getByRole("option", { name: /SPEC-0001/ }),
+  ).toHaveCount(0);
+  await comparisonDialog.getByRole("button", { name: /close/i }).click();
+
   await page.getByRole("button", { name: "Open measurement guide" }).click();
   const measurementDialog = page.getByRole("dialog", {
     name: "Measurement guide",
@@ -254,6 +345,11 @@ test("measurement, age, condition, and additional-record guides disclose the new
   await expect(
     ageDialog.getByText(/Age classes are estimates based primarily/),
   ).toBeVisible();
+  expect(
+    await ageDialog
+      .getByText(/Age classes are estimates based primarily/)
+      .evaluate((note) => getComputedStyle(note).textAlign),
+  ).toBe("left");
   await ageDialog.getByRole("button", { name: /close/i }).click();
   await expect(ageButton).toBeFocused();
 
@@ -265,9 +361,26 @@ test("measurement, age, condition, and additional-record guides disclose the new
   await expect(
     conditionDialog.getByText(/Natural abnormalities, age-related tooth loss/),
   ).toBeVisible();
+  const conditionTitle = conditionDialog.getByRole("heading", {
+    name: "Specimen-condition guide",
+  });
+  const conditionTitleBox = await conditionTitle.boundingBox();
+  expect(conditionTitleBox).not.toBeNull();
+  expect(conditionTitleBox!.height).toBeLessThan(50);
+  expect(
+    await conditionTitle.evaluate((title) => getComputedStyle(title).textAlign),
+  ).toBe("left");
+  expect(
+    await conditionDialog
+      .getByText(/Natural abnormalities, age-related tooth loss/)
+      .evaluate((note) => getComputedStyle(note).textAlign),
+  ).toBe("left");
   await conditionDialog.getByRole("button", { name: /close/i }).click();
 
   await page.getByText("Show additional recorded data").click();
+  await expect(
+    page.locator(".record-panel .section-kicker", { hasText: "Metadata" }),
+  ).toBeVisible();
   await expect(
     page
       .getByText("Pathology", { exact: true })
@@ -337,6 +450,46 @@ test.describe("mobile touch behavior", () => {
     await expect(dialog).toHaveAccessibleName(/Ventral view/);
     await dialog.getByRole("button", { name: /close/i }).tap();
 
+    await page.getByRole("button", { name: "Open measurement guide" }).tap();
+    const measurementDialog = page.getByRole("dialog", {
+      name: "Measurement guide",
+    });
+    await expect(measurementDialog).toBeVisible();
+    await measurementDialog.getByRole("button", { name: /close/i }).tap();
+
+    await page.getByRole("button", { name: "Compare" }).tap();
+    const comparisonDialog = page.getByRole("dialog", {
+      name: "Compare with…",
+    });
+    await expect(comparisonDialog).toBeVisible();
+    await comparisonDialog.getByRole("button", { name: /close/i }).tap();
+
+    await page.getByRole("button", { name: "How age is estimated" }).tap();
+    const ageDialog = page.getByRole("dialog", { name: "Age-class guide" });
+    await expect(ageDialog).toBeVisible();
+    await ageDialog.getByRole("button", { name: /close/i }).tap();
+
+    await page.getByRole("button", { name: "View condition scale" }).tap();
+    const conditionDialog = page.getByRole("dialog", {
+      name: "Specimen-condition guide",
+    });
+    await expect(conditionDialog).toBeVisible();
+    await conditionDialog.getByRole("button", { name: /close/i }).tap();
+
+    const portraitScaleRatio = await page.evaluate(() => {
+      const primary = document.querySelector<HTMLElement>(
+        '[data-comparison-id="specimen:SPEC-0001"]',
+      )!;
+      const human = document.querySelector<HTMLElement>(
+        '[data-comparison-id="reference:adult-human-skull"]',
+      )!;
+      return (
+        primary.getBoundingClientRect().width /
+        human.getBoundingClientRect().width
+      );
+    });
+    expect(portraitScaleRatio).toBeCloseTo(116 / 182, 2);
+
     await page.getByRole("button", { name: "Inspect image" }).tap();
     await expect(dialog).toBeVisible();
     const viewport = dialog.locator(".inspection-viewport");
@@ -373,12 +526,15 @@ test.describe("mobile touch behavior", () => {
     ).toBe(true);
 
     const heroImage = page.locator(".gallery-image");
-    const transferSize = await heroImage.evaluate((image: HTMLImageElement) => {
-      const entry = performance.getEntriesByName(image.currentSrc)[0] as
-        PerformanceResourceTiming | undefined;
+    const transferSize = await heroImage.evaluate((image: SVGSVGElement) => {
+      const href = image.querySelector("image")?.getAttribute("href") ?? "";
+      const entry = performance.getEntriesByName(
+        new URL(href, location.href).href,
+      )[0] as PerformanceResourceTiming | undefined;
       return entry?.transferSize ?? 0;
     });
-    expect(transferSize).toBeLessThanOrEqual(250 * 1024);
+    expect(transferSize).toBeGreaterThan(0);
+    expect(transferSize).toBeLessThanOrEqual(400 * 1024);
 
     await page.setViewportSize({ width: 844, height: 390 });
     const stageBox = await gallery.boundingBox();
@@ -388,6 +544,20 @@ test.describe("mobile touch behavior", () => {
     expect(stageBox).not.toBeNull();
     expect(thumbnailRailBox).not.toBeNull();
     expect(thumbnailRailBox!.x).toBeGreaterThan(stageBox!.x + stageBox!.width);
+
+    const landscapeScaleRatio = await page.evaluate(() => {
+      const primary = document.querySelector<HTMLElement>(
+        '[data-comparison-id="specimen:SPEC-0001"]',
+      )!;
+      const human = document.querySelector<HTMLElement>(
+        '[data-comparison-id="reference:adult-human-skull"]',
+      )!;
+      return (
+        primary.getBoundingClientRect().width /
+        human.getBoundingClientRect().width
+      );
+    });
+    expect(landscapeScaleRatio).toBeCloseTo(116 / 182, 2);
   });
 });
 
@@ -422,7 +592,7 @@ test("reduced motion removes gallery animation and core content makes no third-p
     .locator(".gallery-image")
     .evaluate((element) => getComputedStyle(element).animationDuration);
   expect(Number.parseFloat(animationDuration)).toBeLessThanOrEqual(0.00001);
-  expect([...origins]).toEqual(["http://127.0.0.1:3000"]);
+  expect([...origins]).toEqual([new URL(page.url()).origin]);
 });
 
 test.describe("without JavaScript", () => {

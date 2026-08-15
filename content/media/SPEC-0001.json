@@ -1,10 +1,11 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "specimen_id": "SPEC-0001",
   "assets": [
     {
       "view": "lateral",
-      "alt": "Lateral view of raccoon dog skull specimen SPEC-0001 with the cranium and mandibles in occlusion."
+      "alt": "Lateral view of raccoon dog skull specimen SPEC-0001 with the cranium and mandibles in occlusion.",
+      "orientation": "right"
     },
     {
       "view": "oblique",

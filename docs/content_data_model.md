@@ -1,8 +1,8 @@
 # Content and data model
 
-**Status:** Approved contract; executable Phase 2.1 schema version 2 and representative records implemented
+**Status:** Approved contract; executable Phase 2.2 schema version 3 and representative records implemented
 
-**Last reviewed:** 2026-08-14
+**Last reviewed:** 2026-08-15
 
 ## 1. Purpose
 
@@ -18,7 +18,9 @@ The current `agent_context/skulls_meta.csv` is an incomplete illustrative workin
 | `content/specimens/specimens.csv` | One physical skull, biology, condition/observations, provenance, preparation, measurements, rights, publication state | Shared species prose or hierarchy definitions |
 | `content/profiles/{taxon-id}.mdx` | Optional review-gated overview and skull-identification prose | Record fields that need filtering or validation |
 | `content/guides/*.mdx` | Cited editorial guides | Taxon/specimen facts |
-| Media manifest generated from public assets | Dimensions, canonical view, path, subject bounds, technical validation | Rights/provenance source decisions |
+| `content/media/{specimen-id}.json` | Canonical views, lateral orientation, alt text, credit, and rights declarations | Pixel-derived dimensions/bounds |
+| `content/references/{reference-id}.json` | Stable comparison-reference identity, display/search terms, approximate measurements, default state, orientation, credit, and rights | Specimen/taxon identity or universal biological claims |
+| Media manifests generated from public assets | Dimensions, canonical view, path, subject bounds, technical validation | Rights/provenance source decisions |
 | Reviewed taxonomy snapshot | External match evidence and review state | Immutable local identity or curated vernacular names |
 
 Compiled JSON, search indexes, and GeoJSON are generated views. They are never edited as sources.
@@ -36,7 +38,7 @@ Compiled JSON, search indexes, and GeoJSON are generated views. They are never e
 - Rows have stable explicit IDs; row position is never identity.
 - Unknown extra columns fail validation so misspelled headers are not silently ignored.
 
-Phase 2 fixed the committed header order in `src/domain/content/schemas.ts` and added strict executable validation. Phase 2.1 deliberately extended that order and advanced generated `CompiledCollection.schemaVersion` from 1 to 2. Schema/header changes now require the change-management process in section 18; do not create ad-hoc production CSV variants.
+Phase 2 fixed the committed header order in `src/domain/content/schemas.ts` and added strict executable validation. Phase 2.1 deliberately extended that order and advanced generated `CompiledCollection.schemaVersion` from 1 to 2. Phase 2.2 advances the compiled contract to version 3 for lateral orientation and comparison-reference records without changing either CSV header. Schema/header changes now require the change-management process in section 18; do not create ad-hoc production CSV variants.
 
 ## 4. Identity, slugs, and references
 
@@ -254,10 +256,30 @@ interface MediaAsset {
   width: number;
   height: number;
   subjectBounds: { x: number; y: number; width: number; height: number };
+  orientation: "left" | "right" | null;
   alt: string;
   credit: string;
   rights: string;
   publicPath: string;
+}
+
+interface ComparisonReferenceRecord {
+  referenceId: string;
+  label: string;
+  isDefault: boolean;
+  aliases: string[];
+  note: string;
+  measurements: Record<ComparisonMeasurementKey, Measurement>;
+  media: {
+    width: number;
+    height: number;
+    subjectBounds: { x: number; y: number; width: number; height: number };
+    orientation: "left" | "right";
+    alt: string;
+    credit: string;
+    rights: "all_rights_reserved";
+    publicPath: string;
+  };
 }
 ```
 
@@ -364,12 +386,24 @@ Guide MDX uses explicit title, slug, summary, review date, safety-review status,
 
 - Staging input: `{specimen-id}__{view}.png` using ASCII lower-case tokens.
 - Public derivative: `{specimen-id}__{view}.webp` under a specimen-addressable media path.
+- A schema-version-2 specimen media declaration records an explicit `left`/`right` orientation for the lateral asset. Other views have no lateral orientation value. Runtime heuristics must not guess direction.
 - No common names, scientific names, spaces, Danish letters, or mutable slugs in filenames.
 - The processing command converts to sRGB, normalizes orientation, strips metadata, validates transparency and dimensions, calculates subject bounds, and writes a maximum 3200 px transparent WebP at quality 90/alpha 100.
 - Lateral is mandatory. Missing optional views generate authoring warnings; unexpected view tokens are errors.
 - Every asset resolves to a specimen and has alt text, credit, rights, dimensions, and deterministic sort order.
 
 Alt text describes the useful view and visible specimen condition without repeating the nearby name mechanically. Decorative duplicates use empty alt only when the same information is already adjacent and the image adds no independent function.
+
+### Comparison references and calibrated eligibility
+
+- Comparison references have stable ASCII IDs, declaration filenames that match those IDs, and public paths derived from those IDs under `public/media/references/`.
+- Exactly one reference has `is_default = true`. Phase 2.2 uses `adult-human-skull` as that default.
+- The adult-human reference stores fixed approximate values: maximum length 182 mm, maximum width 124 mm, height 133 mm, prepared mass 800 g, cranium width 138 mm, and maximum mandible length 117 mm. Its note explicitly says these are representative approximate dimensions, not a universal human average.
+- Every reference requires all six comparison measurements, explicit lateral orientation, alt text, credit, rights, and a validated transparent WebP with compiled subject bounds.
+- An eligible specimen comparison record is the published default specimen for its taxon and has a validated lateral asset, explicit orientation, and measured maximum skull length. A missing/approximate/unusable scaling value excludes it rather than fabricating scale.
+- Reference records sort before specimen records in the scoped selector; the current specimen is excluded. Search matches the reference label/aliases or the eligible specimen's English/scientific names and specimen ID without creating the Phase 4 global index.
+- Calibrated rendering maps `subjectBounds.width` to the record's maximum skull length and applies one shared pixels-per-millimetre factor to the pair. Canvas margins never contribute to anatomical length; source aspect ratio and all anatomical endpoints remain intact.
+- Approximate reference measurements retain `status = approximate` in the compiled record and display approximation markers. Ratios and differences are derived values, never source measurements.
 
 ## 14. Public location policy
 
@@ -415,6 +449,8 @@ The owner approved exact public coordinates when known. Therefore:
 - A published specimen cannot link to a draft/archived taxon.
 - Previous slugs do not collide with current or previous slugs.
 - Media names contain only linked specimen IDs and canonical views.
+- Every lateral specimen asset has explicit orientation; all non-lateral specimen assets have `orientation = null` in compiled output.
+- Exactly one valid comparison reference is default and every declared reference asset passes the media contract.
 - Generated search URLs and map URLs resolve to generated routes.
 
 Errors include the source, row/key, field, invalid value, rule, and suggested correction. Warnings never replace a failure when publication integrity is at risk.
@@ -436,6 +472,8 @@ The vertical slice intentionally established identities and semantics without tu
 | no reviewed staging values for pathology, trauma, teeth completeness, or retained skeleton | explicit `not_recorded` states | Missing observations are not inferred as negative or complete |
 
 The user-provided context establishes private ownership and original photography for this selected slice. Canonical `owner_credit`, `specimen_credit`, and `media_credit` store `Rasmus`; the page renders `Owner: Rasmus`, `Photo: Rasmus`, and the global `© 2026 Rasmus. All rights reserved.` footer. Collection data and media remain reserved under `RIGHTS.md` even though the earlier large rights panel is no longer displayed.
+
+Phase 2.2 adds only a separate visual comparison reference; it does not identify a second collection specimen. Its ignored PNG source was processed through the reference-media command, and the committed declaration/derivative preserve explicit approximate-measurement, credit, rights, orientation, bounds, and metadata-stripping semantics.
 
 ## 17. Migration from the current draft
 

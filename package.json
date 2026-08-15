@@ -11,7 +11,9 @@
     "pnpm": "11.21.0"
   },
   "scripts": {
-    "dev": "pnpm content:build && next dev",
+    "dev": "pnpm content:build && next dev --webpack",
+    "dev:network": "pnpm content:build && next dev --webpack --hostname 0.0.0.0",
+    "preview:network": "pnpm build && next start --hostname 0.0.0.0",
     "build": "pnpm content:build && next build --webpack",
     "start": "next start",
     "content:build": "node --import tsx scripts/build-content.ts",
@@ -19,6 +21,7 @@
     "validate:media": "node --import tsx scripts/validate-media.ts",
     "media:stage:phase2": "node --import tsx scripts/stage-media.ts scripts/phase-2-media-source-map.json",
     "media:process": "node --import tsx scripts/process-media.ts",
+    "media:process:reference": "node --import tsx scripts/process-reference-media.ts",
     "taxonomy:refresh": "node --import tsx scripts/refresh-taxonomy.ts",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "pnpm content:build && next typegen && tsc --noEmit",

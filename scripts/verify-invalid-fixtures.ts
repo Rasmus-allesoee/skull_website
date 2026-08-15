@@ -77,6 +77,7 @@ try {
       specimens,
       profiles: [profile],
       media: media.assets,
+      comparisonReferences: media.comparisonReferences,
       mediaSources: [mediaSource],
       taxonomySnapshots: [snapshot],
     });

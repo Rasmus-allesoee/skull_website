@@ -7,6 +7,7 @@ import type {
 } from "./schemas";
 import type {
   CompiledCollection,
+  ComparisonReferenceRecord,
   Diagnostic,
   Measurement,
   MeasurementKey,
@@ -26,6 +27,7 @@ export interface CompilationInput {
   profiles: TaxonProfile[];
   media: MediaAsset[];
   mediaSources: MediaSource[];
+  comparisonReferences: ComparisonReferenceRecord[];
   taxonomySnapshots: TaxonomySnapshot[];
 }
 
@@ -51,6 +53,13 @@ export function compileCollection(input: CompilationInput): CompilationResult {
     (taxon) => taxon.taxonId,
     "content/taxa/taxa.csv",
     "taxon_id",
+    diagnostics,
+  );
+  validateUniqueValues(
+    input.comparisonReferences,
+    (reference) => reference.referenceId,
+    ".generated/comparison-reference-manifest.json",
+    "reference_id",
     diagnostics,
   );
   validateUniqueValues(
@@ -251,7 +260,7 @@ export function compileCollection(input: CompilationInput): CompilationResult {
 
   return {
     collection: {
-      schemaVersion: 2,
+      schemaVersion: 3,
       taxa: taxa.sort((a, b) => a.taxonId.localeCompare(b.taxonId)),
       specimens: specimens.sort((a, b) =>
         a.specimenId.localeCompare(b.specimenId),
@@ -260,6 +269,9 @@ export function compileCollection(input: CompilationInput): CompilationResult {
         (a, b) =>
           a.specimenId.localeCompare(b.specimenId) ||
           canonicalViews.indexOf(a.view) - canonicalViews.indexOf(b.view),
+      ),
+      comparisonReferences: [...input.comparisonReferences].sort((a, b) =>
+        a.referenceId.localeCompare(b.referenceId),
       ),
       profiles: [...input.profiles].sort((a, b) =>
         a.taxonId.localeCompare(b.taxonId),

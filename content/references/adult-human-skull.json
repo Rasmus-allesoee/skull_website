@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "reference_id": "adult-human-skull",
+  "label": "Adult human skull",
+  "is_default": true,
+  "aliases": ["human skull", "Homo sapiens", "adult skull"],
+  "note": "Representative adult-human reference; dimensions and mass are approximate and are not a universal human average.",
+  "asset": {
+    "public_path": "/media/references/adult-human-skull.webp",
+    "alt": "Lateral view of an adult human skull reference facing right.",
+    "orientation": "right",
+    "credit": "Reference image supplied by Rasmus",
+    "rights": "all_rights_reserved"
+  },
+  "measurements": {
+    "skull_length_mm": 182,
+    "skull_width_mm": 124,
+    "skull_height_mm": 133,
+    "skull_mass_g": 800,
+    "cranium_width_mm": 138,
+    "mandible_length_mm": 117
+  }
+}

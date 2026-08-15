@@ -20,7 +20,7 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **Phase 2.1 refinement passes the complete local and remote technical gate; owner re-review remains before the Phase 2 gate can close**. Consult `docs/project_status.md` for the exact evidence and open gate item. Do not begin Phase 3 or implement catalog/search/map/full-ingestion features until the refined vertical slice is explicitly approved.
+Current phase: **Phase 2.2 refinement is implemented and is completing its checkpoint gate; owner re-review remains before the Phase 2 gate can close**. Consult `docs/project_status.md` for exact evidence and open gate items. Do not begin Phase 3 or implement catalog/search/map/full-ingestion features until the refined vertical slice is explicitly approved.
 
 Use the neutral working title **Skull Collection** from central site configuration until the final name is selected.
 
@@ -55,14 +55,15 @@ The historical approved master plan is `agent_context/website_plan_from_planmode
 ## 4. Architecture invariants
 
 - Pinned Node.js 24.18.0, pnpm 11.21.0, Next.js 16.2.12, React 19.2.8, strict TypeScript.
-- Next.js App Router and React Server Components by default; client islands only for search/filters, gallery and guidance-dialog controls, and MapLibre.
+- Next.js App Router and React Server Components by default; client islands only for search/filters, gallery, calibrated comparison and guidance-dialog controls, and MapLibre.
 - Known public routes are statically generated and useful before interactive JavaScript finishes.
-- Canonical structured sources are two UTF-8 linked CSVs (`taxa.csv`, `specimens.csv`) plus cited MDX.
+- Canonical structured sources are two UTF-8 linked CSVs (`taxa.csv`, `specimens.csv`), cited MDX, and reviewed media/reference declarations.
 - Normal builds never call a live spreadsheet, GBIF, map API, or runtime database.
 - Taxonomy refresh is explicit, reviewed, snapshotted, and never silently rewrites identifications.
 - Generated JSON/search/GeoJSON is replaceable, ignored build output—not hand-edited source.
 - MapLibre loads only on `/map`; every map record has an equivalent semantic list path.
 - Page code consumes typed records and `MediaAsset` interfaces, not constructed filenames or raw CSV rows.
+- True-to-scale comparison uses a canonical lateral-view maximum length, compiled transparent subject bounds, and explicit lateral orientation. Approximate reference measurements must remain labelled as approximate.
 - Accessibility targets WCAG 2.2 AA and is part of component/API design, not a later overlay.
 
 ## 5. Content and media safety
@@ -76,10 +77,13 @@ Local context paths:
 - `agent_context/prompt_begin_phase_1.md` — Phase 0/1 authorization.
 - `agent_context/website_plan_from_planmode.md` — approved historical master plan.
 - `agent_context/prompt_phase_2_raccoon_dog_slice_feedback.md` — owner review that defines the Phase 2.1 refinement scope.
+- `agent_context/prompt_phase_2.1_raccoon_dog_slice_feedback.md` — owner review that defines the Phase 2.2 refinement scope.
+- `agent_context/implement_interactive_true_to_scale_skull_comparison.md` — owner-approved functional specification for the Phase 2.2 comparison component.
+- `agent_context/website_screenshots/` — owner-supplied visual targets and defect evidence for Phase 2.2; context only, never runtime assets.
 
-Phase 2 uses only staging metadata row `ID = 1` and the six `mårhund_*_1.png` files as migration evidence for `TAX-0001` / `SPEC-0001`. The reviewed canonical values live in `content/`; never make a normal build depend on the ignored staging sources. Owner feedback supersedes the initial slice's display wording and condition classification, but it does not authorize inventing unrecorded pathology, trauma, teeth-set, skeleton, age-evidence, or reuse facts.
+Phase 2 uses only staging metadata row `ID = 1` and the six `mårhund_*_1.png` files as migration evidence for `TAX-0001` / `SPEC-0001`. The reviewed canonical values live in `content/`; never make a normal build depend on the ignored staging sources. Owner feedback supersedes the initial slice's display wording and condition classification, but it does not authorize inventing unrecorded pathology, trauma, teeth-set, skeleton, age-evidence, or reuse facts. The Phase 2.2 adult-human comparison source is also ignored staging input; only its reviewed declaration and processed public WebP derivative belong in Git.
 
-Archival `.af`, PSD, camera originals, TIFF/PNG masters, raw workbooks, private notes, and EXIF/GPS-bearing media stay outside Git. Public derivatives use immutable specimen IDs and canonical views only after `pnpm media:process` and `pnpm validate:media` confirm metadata stripping and the rest of the media contract.
+Archival `.af`, PSD, camera originals, TIFF/PNG masters, raw workbooks, private notes, and EXIF/GPS-bearing media stay outside Git. Public specimen derivatives use immutable specimen IDs and canonical views only after `pnpm media:process` and `pnpm validate:media` confirm metadata stripping and the rest of the media contract. Public comparison references use stable reference IDs and the separate `pnpm media:process:reference` maintenance command.
 
 Before any content/media edit, read `docs/content_data_model.md`. Do not invent stable IDs, taxonomy, measurements, rights, credits, dates, or public-safe notes. Drafts may be incomplete but must remain build-safe and unpublished.
 

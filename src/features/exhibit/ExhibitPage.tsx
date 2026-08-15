@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { SiteFooter } from "@/components/SiteFooter";
+import { getEligibleSkullComparisons } from "@/data/comparison";
 import type { ExhibitRecord } from "@/data/collection";
 import { humanizeToken } from "@/domain/content/display";
 
@@ -20,6 +21,18 @@ export function ExhibitPage({
 }) {
   const { taxon, specimen, specimens, media } = exhibit;
   const commonName = taxon.names.english ?? taxon.scientificName;
+  const comparisonRecords = getEligibleSkullComparisons();
+  const comparisonPrimary =
+    comparisonRecords.find(
+      (record) => record.specimenId === specimen.specimenId,
+    ) ?? null;
+  const comparisonOptions = comparisonRecords.filter(
+    (record) => record.id !== comparisonPrimary?.id,
+  );
+  const defaultComparisonId =
+    comparisonOptions.find((record) => record.isDefault)?.id ??
+    comparisonOptions[0]?.id ??
+    null;
 
   return (
     <div className="site-shell exhibit-shell">
@@ -67,7 +80,12 @@ export function ExhibitPage({
           specimens={specimens}
           selectedSpecimenId={specimen.specimenId}
         />
-        <MeasurementPanel specimen={specimen} />
+        <MeasurementPanel
+          specimen={specimen}
+          comparisonPrimary={comparisonPrimary}
+          comparisonOptions={comparisonOptions}
+          defaultComparisonId={defaultComparisonId}
+        />
 
         <section
           className="record-grid content-section"

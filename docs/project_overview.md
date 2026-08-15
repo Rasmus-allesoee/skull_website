@@ -6,7 +6,7 @@
 
 **Interface language:** English
 
-**Last reviewed:** 2026-08-14
+**Last reviewed:** 2026-08-15
 
 ## 1. Vision
 
@@ -188,14 +188,16 @@ The home page should establish the collection as a museum, not a generic applica
 
 - Lead with common English name, italic scientific identification, Danish name, and rank/confidence labels.
 - Use clickable taxonomy breadcrumbs.
-- Feature a large, uncropped gallery image with previous/next controls and all view choices visible without page scrolling at the 1440 × 900 desktop review target. Use a compact, independently scrollable thumbnail rail on the right at desktop and mobile landscape widths; stack the thumbnails below the image in mobile portrait.
-- Request high-quality responsive variants from the validated WebP master. The inspection viewer loads the original validated 3200 px WebP directly so enlargement reveals real source detail rather than an upscaled small derivative.
+- Feature a large, uncropped gallery image with previous/next/inspection controls visible when the stage reaches the viewport top. Treat a normal wide Chrome viewport around 1440 × 696 as the primary desktop composition target while keeping 1440 × 900, narrower desktop, mobile portrait, and mobile landscape responsive. Use a taller main frame and matching, independently scrollable thumbnail rail on the right at desktop and mobile landscape widths; stack thumbnails below the image in mobile portrait.
+- Render the active view from the validated full-resolution WebP through its compiled transparent subject bounds so the skull fills the frame without cropping anatomy or enlarging a low-resolution responsive derivative. Thumbnails remain lightweight responsive variants; inspection loads the original validated master directly.
 - Support direct thumbnail selection, previous/next controls, focused left/right/Home/End keys, horizontal swipe, desktop double-click, and touch double-tap. Keep a visible `Inspect image` fallback and concise desktop/touch instructions so interaction is discoverable.
-- Use a symmetric full-viewport inspection dialog with wheel/trackpad zoom, native two-finger pinch, pointer/touch drag, double-click zoom/reset, a range control, keyboard `+`/`-`/`0`, view navigation, Escape, focus restoration, and reduced-motion behavior. Do not require Command/Ctrl because those modifiers conflict with browser-page zoom.
+- Use a symmetric full-viewport inspection dialog with wheel/trackpad zoom, desktop pinch gestures, native touch pinch, pointer/touch drag, double-click zoom/reset, a range control, keyboard `+`/`-`/`0`, view navigation at every zoom level, Escape, focus restoration, and reduced-motion behavior. Zoom gestures over the inspector must prevent background page scroll/page zoom; users do not need to hold Command/Ctrl.
 - Place the specimen selector near the gallery and keep the default specimen explicit.
 - Put the measurement section immediately below the gallery/selector, followed by the collection and preparation records. A concise cited profile and skull-identification section return only after useful, reviewed, source-backed prose exists; draft profile infrastructure remains build-valid but is not rendered.
-- Present primary measurements first and retain progressive disclosure for additional recorded measurements. Link a quick measurement-definition dialog and show a proportional skull-length versus 10 cm reference. Do not use an unclear anatomical illustration or imply a physical on-screen scale.
-- Put owner, sex, age class, condition, source, date, location, and coordinate precision in the collection record. Age and five-level condition definitions open in accessible dialogs; pathology, trauma, teeth-set completeness, and skeleton completeness live under `Show additional recorded data`.
+- Present the specimen measurement table directly below the heading/note and retain progressive disclosure for additional recorded measurements. Link a quick measurement-definition dialog. At wide widths, pair the compact table with the reusable `A sense of scale` card; stack them on narrow screens.
+- The scale card compares canonical lateral views using recorded maximum length, compiled alpha subject bounds, explicit orientation, and one responsive pixels-per-millimetre factor shared by both skulls. Default to the reviewed adult-human reference, allow selection only from eligible default specimens/references, align both skulls to the primary orientation without rewriting assets, and label approximate reference values honestly. This is a mathematically true relative-size comparison inside the card, not a claim that CSS pixels equal physical millimetres on the visitor's monitor.
+- Include a searchable keyboard-operable comparison selector and dynamic six-row difference table for maximum length, maximum width, height, prepared mass, cranium width, and maximum mandible length. Difference wording and ratio always describe the current page specimen relative to the selected comparison; wording, not color alone, communicates direction.
+- Put owner, sex, age class, condition, source, date, location, and coordinate precision in the collection record under the `Metadata` kicker. Age and five-level condition definitions open in accessible dialogs; pathology, trauma, teeth-set completeness, and skeleton completeness live under `Show additional recorded data`.
 - Describe preparation as `Skull preparation` and link to the permanent guide route. The guide stays an explicit outline—not procedural or safety advice—until cited content review.
 - Keep photography credit concise as `Photo: {name}`. Reserve collection/media/data reuse through the global `© {year} Rasmus. All rights reserved.` footer rather than a large rights panel; detailed legal scope remains in `RIGHTS.md` and the later Rights page.
 - Hide an entirely empty optional section. Within a populated group, render missing values as “Not recorded” and non-applicable values as “Not applicable.”
@@ -254,7 +256,7 @@ The home page should establish the collection as a museum, not a generic applica
 
 - Canonical views are lateral, oblique, frontal, dorsal, ventral, and mandible-dorsal.
 - Lateral is required for publication; absent optional views produce author warnings.
-- Images retain transparent backgrounds and consistent framing without pretending that specimens share a calibrated scale.
+- Images retain transparent backgrounds and consistent framing. Ordinary galleries do not imply common scale; the dedicated calibrated comparison may share scale only for eligible lateral images with recorded maximum length, compiled subject bounds, and explicit orientation.
 - Rights and credit attach to every asset/record.
 - Public captions use `Photo:` plus the stored credit. The public footer carries the concise all-rights-reserved notice; structured rights fields continue to enforce publication safety even when no dedicated rights panel is rendered.
 
@@ -306,4 +308,4 @@ The first public release is complete only when:
 
 “Skull Collection” is a neutral working title stored in one central configuration. The final title, domain, public email, and brand mark are release-hardening decisions. Product structure must not depend on the temporary name.
 
-Future comparison, 360°, 3D, illustrations, direct contributions, database administration, analytics, localization, and data export are recorded as deferred work. They require their documented prerequisites and a new scope decision; they are not to be smuggled into an earlier phase.
+The Phase 2.2 specimen-page scale card establishes reusable calibrated comparison primitives. A dedicated public two-select comparison route, overlays/split sliders, 360°, 3D, illustrations, direct contributions, database administration, analytics, localization, and data export remain deferred work. They require their documented prerequisites and a new scope decision; they are not to be smuggled into an earlier phase.

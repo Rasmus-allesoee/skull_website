@@ -6,6 +6,8 @@ import userEvent from "@testing-library/user-event";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { getExhibit } from "@/data/collection";
+import { getEligibleSkullComparisons } from "@/data/comparison";
+import { ScaleComparison } from "@/features/comparison/ScaleComparison";
 
 import { CollectionRecord } from "./CollectionRecord";
 import { Gallery } from "./Gallery";
@@ -41,6 +43,16 @@ beforeAll(() => {
 
 describe("exhibit components", () => {
   const exhibit = getExhibit("raccoon-dog")!;
+  const comparisonRecords = getEligibleSkullComparisons();
+  const comparisonPrimary = comparisonRecords.find(
+    (record) => record.specimenId === exhibit.specimen.specimenId,
+  )!;
+  const comparisonOptions = comparisonRecords.filter(
+    (record) => record.id !== comparisonPrimary.id,
+  );
+  const defaultComparisonId = comparisonOptions.find(
+    (record) => record.isDefault,
+  )!.id;
 
   it("changes gallery view by buttons and arrow keys, then restores focus after zoom", async () => {
     const user = userEvent.setup();
@@ -84,7 +96,12 @@ describe("exhibit components", () => {
           specimens={exhibit.specimens}
           selectedSpecimenId={exhibit.specimen.specimenId}
         />
-        <MeasurementPanel specimen={exhibit.specimen} />
+        <MeasurementPanel
+          specimen={exhibit.specimen}
+          comparisonPrimary={comparisonPrimary}
+          comparisonOptions={comparisonOptions}
+          defaultComparisonId={defaultComparisonId}
+        />
         <CollectionRecord specimen={exhibit.specimen} />
         <PreparationTimeline specimen={exhibit.specimen} />
       </main>,
@@ -127,6 +144,66 @@ describe("exhibit components", () => {
     );
   });
 
+  it("renders alpha-bounded physical scale and updates the pair from the searchable selector", async () => {
+    const user = userEvent.setup();
+    const human = comparisonOptions[0]!;
+    const redFox = {
+      ...comparisonPrimary,
+      id: "specimen:SPEC-0014",
+      label: "Red fox",
+      scientificName: "Vulpes vulpes",
+      specimenId: "SPEC-0014",
+      aliases: ["Rød ræv"],
+      measurements: {
+        ...comparisonPrimary.measurements,
+        skullLength: {
+          status: "measured" as const,
+          value: 142,
+          unit: "mm" as const,
+        },
+        skullWidth: {
+          status: "measured" as const,
+          value: 72,
+          unit: "mm" as const,
+        },
+      },
+    };
+    render(
+      <ScaleComparison
+        primary={comparisonPrimary}
+        options={[human, redFox]}
+        defaultComparisonId={human.id}
+      />,
+    );
+
+    const primarySubject = document.querySelector<HTMLElement>(
+      '[data-comparison-id="specimen:SPEC-0001"]',
+    )!;
+    const humanSubject = document.querySelector<HTMLElement>(
+      '[data-comparison-id="reference:adult-human-skull"]',
+    )!;
+    expect(
+      Number.parseFloat(
+        primarySubject.style.getPropertyValue("--relative-length"),
+      ) /
+        Number.parseFloat(
+          humanSubject.style.getPropertyValue("--relative-length"),
+        ),
+    ).toBeCloseTo(116 / 182, 8);
+    expect(screen.getByText("~66 mm shorter")).toBeInTheDocument();
+    expect(screen.getByText("(0.64×)")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Compare" }));
+    const combobox = screen.getByRole("combobox", { name: "Search skulls" });
+    await user.type(combobox, "vulpes");
+    await user.keyboard("{Enter}");
+    expect(
+      document.querySelector('[data-comparison-id="specimen:SPEC-0014"]'),
+    ).toBeInTheDocument();
+    expect(screen.getByText("26 mm shorter")).toBeInTheDocument();
+    expect(screen.getByText("(0.82×)")).toBeInTheDocument();
+  });
+
   it("has no detectable axe violations in the interactive component group", async () => {
     const { container } = render(
       <main>
@@ -137,7 +214,12 @@ describe("exhibit components", () => {
           specimens={exhibit.specimens}
           selectedSpecimenId={exhibit.specimen.specimenId}
         />
-        <MeasurementPanel specimen={exhibit.specimen} />
+        <MeasurementPanel
+          specimen={exhibit.specimen}
+          comparisonPrimary={comparisonPrimary}
+          comparisonOptions={comparisonOptions}
+          defaultComparisonId={defaultComparisonId}
+        />
         <CollectionRecord specimen={exhibit.specimen} />
         <PreparationTimeline specimen={exhibit.specimen} />
       </main>,

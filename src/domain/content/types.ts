@@ -44,6 +44,7 @@ export const measurementDefinitions = {
 
 export type PublicationStatus = (typeof publicationStatuses)[number];
 export type CanonicalView = (typeof canonicalViews)[number];
+export type LateralOrientation = "left" | "right";
 export type MeasurementKey = keyof typeof measurementDefinitions;
 export type MeasurementUnit = "mm" | "g" | "days" | "hours" | "percent";
 export type MeasurementStatus =
@@ -209,10 +210,39 @@ export interface MediaAsset {
   height: number;
   bytes: number;
   subjectBounds: SubjectBounds;
+  orientation: LateralOrientation | null;
   alt: string;
   credit: string;
   rights: "all_rights_reserved";
   publicPath: string;
+}
+
+export type ComparisonMeasurementKey =
+  | "skullLength"
+  | "skullWidth"
+  | "skullHeight"
+  | "skullMass"
+  | "craniumWidth"
+  | "mandibleLength";
+
+export interface ComparisonReferenceRecord {
+  referenceId: string;
+  label: string;
+  isDefault: boolean;
+  aliases: string[];
+  note: string;
+  measurements: Record<ComparisonMeasurementKey, Measurement>;
+  media: {
+    width: number;
+    height: number;
+    bytes: number;
+    subjectBounds: SubjectBounds;
+    orientation: LateralOrientation;
+    alt: string;
+    credit: string;
+    rights: "all_rights_reserved";
+    publicPath: string;
+  };
 }
 
 export interface Citation {
@@ -241,10 +271,11 @@ export interface TaxonProfile {
 }
 
 export interface CompiledCollection {
-  schemaVersion: 2;
+  schemaVersion: 3;
   taxa: TaxonRecord[];
   specimens: SpecimenRecord[];
   media: MediaAsset[];
+  comparisonReferences: ComparisonReferenceRecord[];
   profiles: TaxonProfile[];
 }
 

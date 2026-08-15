@@ -2,9 +2,9 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Phase 2.1 refinement passes the local and remote technical gate; owner re-review pending before Phase 3
+**Current phase:** Phase 2.2 refinement is implemented and completing its checkpoint gate; owner re-review remains required before Phase 3
 
-**Last reviewed:** 2026-08-14
+**Last reviewed:** 2026-08-15
 
 ## 1. How to use this plan
 
@@ -179,6 +179,22 @@ Turn the approved conversational plan into durable sources of truth and create a
 - [x] Record dedicated future methodology imagery/pages and bounded related/random discovery behavior without beginning Phase 3.
 
 **Gate result:** The owner approved the initial direction but requested the bounded refinements above on 2026-08-14. The refined implementation passed the complete local and GitHub Actions technical gate at commit `1fcf7c6`. The owner must still approve the rendered result; Phase 3 remains unauthorized until that decision is recorded in `project_status.md`.
+
+### Phase 2.2 — second owner-feedback refinement
+
+- [x] Retune the desktop gallery for a common wide browser viewport around 1440 × 696 while retaining the 1440 × 900 and mobile layouts: taller main frame, matching thumbnail proportions, larger perceived skull, aligned scrollable rail, visible controls, and no anatomy crop.
+- [x] Render the active gallery from the validated full-resolution WebP through compiled transparent subject bounds; retain lightweight optimized thumbnails and the original master in inspection.
+- [x] Stop inspector wheel/trackpad/pinch gestures from scrolling or zooming the page, keep image navigation available at every inspection zoom level, and preserve drag, focus return, Escape, and reduced-motion behavior.
+- [x] Diagnose the local-network mobile reload loop and add explicit loopback/private-LAN Next.js development origins plus documented `dev:network` and production-like `preview:network` workflows.
+- [x] Replace the 10 cm visual with a reusable true-to-scale lateral-skull comparison driven by maximum skull length, compiled subject bounds, and explicit orientation.
+- [x] Add a reviewed adult-human-skull reference with a deterministic processing path, fixed approximate measurements, source/rights metadata, and the same alpha/metadata validation contract as specimen media.
+- [x] Add an accessible searchable comparison selector, exclude the current specimen, put references first, announce changes, and render a dynamic six-row measurement-difference table with magnitude, direction, and ratio.
+- [x] Recompose Measurements as the compact specimen table on the left and comparison card on the right at wide widths, with coherent tablet/portrait stacking and calibrated ratios in desktop, portrait, and landscape tests.
+- [x] Rename the collection kicker from `Provenance` to `Metadata`; left-align guide-dialog titles and notes and keep the condition title on one desktop line.
+- [x] Advance the generated collection contract to schema version 3, validate exactly one default comparison reference, and extend domain, component, fixture, media, browser, responsive, touch, geometry, and accessibility coverage.
+- [x] Update all canonical documentation, context-source guidance, network-device instructions, and deferred comparison scope without beginning Phase 3.
+
+**Gate status:** The Phase 2.2 implementation and local acceptance evidence are complete. The checkpoint/remote evidence is recorded in `project_status.md`; explicit owner approval of the rendered result remains the only product gate before Phase 3 may be authorized.
 
 ## 6. Phase 3 — museum shell and catalog
 
@@ -392,7 +408,7 @@ After Phase 0/1:
 
 ### Skull comparison
 
-Requires calibrated scale, consistent lateral orientation, generated subject bounds, and honest handling of non-calibrated records. Then consider overlay, split-slider, and opacity modes with keyboard equivalents.
+Phase 2.2 completed the reusable calibrated foundation on the specimen page: explicit lateral orientation, generated transparent subject bounds, one shared maximum-length scale, a reference/specimen selector, approximate-value labels, and semantic measurement differences. A dedicated public comparison route with two independent selectors, overlays, split-slider, opacity controls, shareable state, and non-calibrated-record handling remains deferred until enough reviewed specimens exist and keyboard-equivalent behavior is designed.
 
 ### 360° rotation
 

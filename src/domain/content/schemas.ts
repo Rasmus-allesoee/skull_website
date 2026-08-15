@@ -257,15 +257,26 @@ export const rawSpecimenSchema = z.strictObject({
   source_references: cell,
 });
 
+const lateralMediaSourceAssetSchema = z.strictObject({
+  view: z.literal("lateral"),
+  alt: z.string().min(1),
+  orientation: z.enum(["left", "right"]),
+});
+
+const nonLateralMediaSourceAssetSchema = z.strictObject({
+  view: z.enum(canonicalViews.filter((view) => view !== "lateral")),
+  alt: z.string().min(1),
+});
+
 export const mediaSourceSchema = z.strictObject({
-  schema_version: z.literal(1),
+  schema_version: z.literal(2),
   specimen_id: z.string(),
   assets: z
     .array(
-      z.strictObject({
-        view: z.enum(canonicalViews),
-        alt: z.string().min(1),
-      }),
+      z.discriminatedUnion("view", [
+        lateralMediaSourceAssetSchema,
+        nonLateralMediaSourceAssetSchema,
+      ]),
     )
     .min(1),
 });
@@ -282,10 +293,37 @@ export const mediaAssetSchema = z.strictObject({
     width: z.number().int().positive(),
     height: z.number().int().positive(),
   }),
+  orientation: z.enum(["left", "right"]).nullable(),
   alt: z.string().min(1),
   credit: z.string().min(1),
   rights: z.literal("all_rights_reserved"),
   publicPath: z.string().startsWith("/media/specimens/"),
+});
+
+const positiveMeasurement = z.number().positive();
+
+export const comparisonReferenceSourceSchema = z.strictObject({
+  schema_version: z.literal(1),
+  reference_id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  label: z.string().min(1),
+  is_default: z.boolean(),
+  aliases: z.array(z.string().min(1)),
+  note: z.string().min(1),
+  asset: z.strictObject({
+    public_path: z.string().startsWith("/media/references/"),
+    alt: z.string().min(1),
+    orientation: z.enum(["left", "right"]),
+    credit: z.string().min(1),
+    rights: z.literal("all_rights_reserved"),
+  }),
+  measurements: z.strictObject({
+    skull_length_mm: positiveMeasurement,
+    skull_width_mm: positiveMeasurement,
+    skull_height_mm: positiveMeasurement,
+    skull_mass_g: positiveMeasurement,
+    cranium_width_mm: positiveMeasurement,
+    mandible_length_mm: positiveMeasurement,
+  }),
 });
 
 export const citationSchema = z.strictObject({
@@ -366,4 +404,7 @@ function observationStatusSchema() {
 export type RawTaxon = z.infer<typeof rawTaxonSchema>;
 export type RawSpecimen = z.infer<typeof rawSpecimenSchema>;
 export type MediaSource = z.infer<typeof mediaSourceSchema>;
+export type ComparisonReferenceSource = z.infer<
+  typeof comparisonReferenceSourceSchema
+>;
 export type TaxonomySnapshot = z.infer<typeof taxonomySnapshotSchema>;

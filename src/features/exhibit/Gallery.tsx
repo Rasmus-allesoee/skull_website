@@ -4,7 +4,7 @@ import Image from "next/image";
 import {
   type KeyboardEvent,
   type PointerEvent,
-  type WheelEvent,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -63,20 +63,11 @@ export function Gallery({
   } | null>(null);
   const zoomRef = useRef(minimumZoom);
   const panRef = useRef<Point>({ x: 0, y: 0 });
+  const wheelHandlerRef = useRef<(event: globalThis.WheelEvent) => void>(
+    () => undefined,
+  );
   const activeIndex = assets.length === 0 ? 0 : requestedIndex % assets.length;
   const activeAsset = assets[activeIndex];
-
-  if (!activeAsset) {
-    return (
-      <section
-        className="gallery gallery-empty"
-        aria-labelledby="gallery-title"
-      >
-        <h2 id="gallery-title">Specimen photography</h2>
-        <p>No reviewed media is available for this specimen.</p>
-      </section>
-    );
-  }
 
   function resetInspection() {
     zoomRef.current = minimumZoom;
@@ -168,6 +159,7 @@ export function Gallery({
     resetInspection();
     returnFocusRef.current = trigger;
     dialogRef.current?.showModal();
+    document.documentElement.classList.add("inspection-open");
   }
 
   function closeInspection() {
@@ -231,13 +223,40 @@ export function Gallery({
     commitInspection(constrainedZoom, nextPan);
   }
 
-  function handleInspectionWheel(event: WheelEvent<HTMLDivElement>) {
+  function handleInspectionWheel(event: globalThis.WheelEvent) {
     event.preventDefault();
+    event.stopPropagation();
     const delta = event.deltaMode === 1 ? event.deltaY * 16 : event.deltaY;
     zoomAt(zoomRef.current * Math.exp(-delta * 0.002), {
       x: event.clientX,
       y: event.clientY,
     });
+  }
+
+  wheelHandlerRef.current = handleInspectionWheel;
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const handleWheel = (event: globalThis.WheelEvent) =>
+      wheelHandlerRef.current(event);
+    viewport.addEventListener("wheel", handleWheel, { passive: false });
+    return () => {
+      viewport.removeEventListener("wheel", handleWheel);
+      document.documentElement.classList.remove("inspection-open");
+    };
+  }, []);
+
+  if (!activeAsset) {
+    return (
+      <section
+        className="gallery gallery-empty"
+        aria-labelledby="gallery-title"
+      >
+        <h2 id="gallery-title">Specimen photography</h2>
+        <p>No reviewed media is available for this specimen.</p>
+      </section>
+    );
   }
 
   function handleInspectionPointerDown(event: PointerEvent<HTMLDivElement>) {
@@ -344,6 +363,7 @@ export function Gallery({
   }
 
   function handleInspectionKeyDown(event: KeyboardEvent<HTMLDialogElement>) {
+    if (event.target instanceof HTMLInputElement) return;
     if (event.key === "+" || event.key === "=") {
       event.preventDefault();
       zoomAt(zoomRef.current + 0.5);
@@ -359,11 +379,11 @@ export function Gallery({
       resetInspection();
       return;
     }
-    if (zoomRef.current === minimumZoom && event.key === "ArrowRight") {
+    if (event.key === "ArrowRight") {
       event.preventDefault();
       selectIndex(activeIndex + 1);
     }
-    if (zoomRef.current === minimumZoom && event.key === "ArrowLeft") {
+    if (event.key === "ArrowLeft") {
       event.preventDefault();
       selectIndex(activeIndex - 1);
     }
@@ -395,16 +415,9 @@ export function Gallery({
             onPointerUp={handleGalleryPointerUp}
           >
             <div className="gallery-light" aria-hidden="true" />
-            <Image
+            <GallerySubjectImage
               key={activeAsset.publicPath}
-              className="gallery-image"
-              src={activeAsset.publicPath}
-              alt={activeAsset.alt}
-              width={activeAsset.width}
-              height={activeAsset.height}
-              sizes="(max-width: 48rem) calc(100vw - 2rem), (max-width: 64rem) calc(100vw - 6rem), (max-width: 100rem) calc(100vw - 23rem), 1250px"
-              quality={90}
-              priority={activeIndex === 0}
+              asset={activeAsset}
             />
             <figcaption>
               <span>{canonicalViewLabels[activeAsset.view]} view</span>
@@ -495,6 +508,7 @@ export function Gallery({
         aria-labelledby="inspection-title"
         aria-describedby="inspection-help"
         onClose={() => {
+          document.documentElement.classList.remove("inspection-open");
           resetInspection();
           returnFocusRef.current?.focus();
         }}
@@ -544,7 +558,6 @@ export function Gallery({
           onPointerDown={handleInspectionPointerDown}
           onPointerMove={handleInspectionPointerMove}
           onPointerUp={handleInspectionPointerEnd}
-          onWheel={handleInspectionWheel}
         >
           <Image
             ref={inspectionImageRef}
@@ -604,6 +617,25 @@ export function Gallery({
         </div>
       </dialog>
     </section>
+  );
+}
+
+function GallerySubjectImage({ asset }: { asset: MediaAsset }) {
+  const { x, y, width, height } = asset.subjectBounds;
+  return (
+    <svg
+      className={`gallery-image gallery-image-${asset.view}`}
+      viewBox={`${x} ${y} ${width} ${height}`}
+      preserveAspectRatio="xMidYMid meet"
+      role="img"
+      aria-label={asset.alt}
+    >
+      <image
+        href={asset.publicPath}
+        width={asset.width}
+        height={asset.height}
+      />
+    </svg>
   );
 }
 

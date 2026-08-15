@@ -80,7 +80,7 @@ try {
 
   const result = await validatePublicMedia({ writeManifest: true });
   console.log(
-    `Validated ${result.assets.length} public WebP assets (${(result.totalBytes / 1024 / 1024).toFixed(2)} MiB); sRGB, alpha, dimensions, subject bounds, and stripped metadata confirmed.`,
+    `Validated ${result.assets.length} specimen WebP assets plus ${result.comparisonReferences.length} comparison reference (${(result.totalBytes / 1024 / 1024).toFixed(2)} MiB); sRGB, alpha, dimensions, subject bounds, and stripped metadata confirmed.`,
   );
 } catch (error) {
   console.error(error instanceof Error ? error.message : error);

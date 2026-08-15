@@ -58,13 +58,16 @@ export async function buildContent(options?: {
     "content/taxonomy/snapshots",
     taxonomySnapshotSchema,
   );
-  const { assets } = await validatePublicMedia({ writeManifest: true });
+  const { assets, comparisonReferences } = await validatePublicMedia({
+    writeManifest: true,
+  });
   const result = compileCollection({
     taxa,
     specimens,
     profiles,
     media: assets,
     mediaSources,
+    comparisonReferences,
     taxonomySnapshots,
   });
 

@@ -5,13 +5,16 @@ import sharp from "sharp";
 
 import { parseStrictCsv } from "../../src/domain/content/csv";
 import {
+  comparisonReferenceSourceSchema,
   mediaAssetSchema,
   mediaSourceSchema,
   rawSpecimenSchema,
   specimenHeaders,
 } from "../../src/domain/content/schemas";
 import type {
+  ComparisonReferenceRecord,
   Diagnostic,
+  LateralOrientation,
   MediaAsset,
   SubjectBounds,
 } from "../../src/domain/content/types";
@@ -30,6 +33,7 @@ const mediaReviewBytes = 500 * 1024 * 1024;
 
 export interface MediaValidationResult {
   assets: MediaAsset[];
+  comparisonReferences: ComparisonReferenceRecord[];
   totalBytes: number;
 }
 
@@ -144,12 +148,16 @@ export async function validatePublicMedia(options?: {
         specimenId: mediaSource.specimen_id,
         view: sourceAsset.view,
         alt: sourceAsset.alt,
+        orientation:
+          sourceAsset.view === "lateral" ? sourceAsset.orientation : null,
         credit: rights.credit,
         diagnostics,
       });
       if (asset) assets.push(asset);
     }
   }
+
+  const comparisonReferences = await validateComparisonReferences(diagnostics);
 
   const actualFiles = await listWebpFiles(
     fromRepositoryRoot("public", "media", "specimens"),
@@ -166,10 +174,15 @@ export async function validatePublicMedia(options?: {
     }
   }
 
-  const totalBytes = assets.reduce((sum, asset) => sum + asset.bytes, 0);
+  const totalBytes =
+    assets.reduce((sum, asset) => sum + asset.bytes, 0) +
+    comparisonReferences.reduce(
+      (sum, reference) => sum + reference.media.bytes,
+      0,
+    );
   if (totalBytes >= mediaReviewBytes) {
     diagnostics.push({
-      source: "public/media/specimens",
+      source: "public/media",
       value: totalBytes,
       rule: "Committed public media reached the 500 MB architecture review trigger",
       suggestion: "Review CDN/object-store migration before adding more media.",
@@ -195,9 +208,14 @@ export async function validatePublicMedia(options?: {
       `${JSON.stringify(sortedAssets, null, 2)}\n`,
       "utf8",
     );
+    await writeFile(
+      path.join(generatedDirectory, "comparison-reference-manifest.json"),
+      `${JSON.stringify(comparisonReferences, null, 2)}\n`,
+      "utf8",
+    );
   }
 
-  return { assets: sortedAssets, totalBytes };
+  return { assets: sortedAssets, comparisonReferences, totalBytes };
 }
 
 async function inspectPublicAsset(options: {
@@ -206,6 +224,7 @@ async function inspectPublicAsset(options: {
   specimenId: string;
   view: MediaAsset["view"];
   alt: string;
+  orientation: LateralOrientation | null;
   credit: string;
   diagnostics: Diagnostic[];
 }): Promise<MediaAsset | null> {
@@ -215,19 +234,218 @@ async function inspectPublicAsset(options: {
     specimenId,
     view,
     alt,
+    orientation,
     credit,
     diagnostics,
   } = options;
+  const inspected = await inspectTransparentWebp({
+    absolutePath,
+    relativePath,
+    key: specimenId,
+    diagnostics,
+    missingSuggestion:
+      "Run pnpm media:process from canonical staged PNG inputs.",
+  });
+  if (!inspected) return null;
+
+  return {
+    specimenId,
+    view,
+    ...inspected,
+    orientation,
+    alt,
+    credit,
+    rights: "all_rights_reserved",
+  };
+}
+
+async function validateComparisonReferences(
+  diagnostics: Diagnostic[],
+): Promise<ComparisonReferenceRecord[]> {
+  const sourceDirectory = fromRepositoryRoot("content", "references");
+  let sourceFiles: string[] = [];
+  try {
+    sourceFiles = (await readdir(sourceDirectory))
+      .filter((file) => file.endsWith(".json"))
+      .sort();
+  } catch {
+    diagnostics.push({
+      source: "content/references",
+      rule: "Comparison-reference source directory is missing",
+      suggestion: "Restore the canonical reference configuration directory.",
+    });
+    return [];
+  }
+
+  const records: ComparisonReferenceRecord[] = [];
+  const expectedPublicFiles = new Set<string>();
+  const seenIds = new Set<string>();
+
+  for (const sourceFile of sourceFiles) {
+    const sourceLabel = `content/references/${sourceFile}`;
+    let sourceJson: unknown;
+    try {
+      sourceJson = JSON.parse(
+        await readFile(path.join(sourceDirectory, sourceFile), "utf8"),
+      );
+    } catch (error) {
+      diagnostics.push({
+        source: sourceLabel,
+        rule: error instanceof Error ? error.message : "Invalid JSON",
+        suggestion: "Correct the JSON syntax and retry.",
+      });
+      continue;
+    }
+
+    const result = comparisonReferenceSourceSchema.safeParse(sourceJson);
+    if (!result.success) {
+      for (const issue of result.error.issues) {
+        diagnostics.push({
+          source: sourceLabel,
+          field: issue.path.join("."),
+          rule: issue.message,
+          suggestion: "Use the canonical comparison-reference schema.",
+        });
+      }
+      continue;
+    }
+
+    const source = result.data;
+    if (sourceFile !== `${source.reference_id}.json`) {
+      diagnostics.push({
+        source: sourceLabel,
+        field: "reference_id",
+        value: source.reference_id,
+        rule: "Reference source filename must equal the stable reference ID",
+        suggestion: `Rename this source to ${source.reference_id}.json.`,
+      });
+    }
+    if (seenIds.has(source.reference_id)) {
+      diagnostics.push({
+        source: sourceLabel,
+        field: "reference_id",
+        value: source.reference_id,
+        rule: "Comparison-reference IDs must be unique",
+        suggestion: "Use one stable ID for each curated reference.",
+      });
+      continue;
+    }
+    seenIds.add(source.reference_id);
+
+    const expectedPath = `/media/references/${source.reference_id}.webp`;
+    if (source.asset.public_path !== expectedPath) {
+      diagnostics.push({
+        source: sourceLabel,
+        field: "asset.public_path",
+        value: source.asset.public_path,
+        rule: "Reference public path must derive from its stable reference ID",
+        suggestion: `Use ${expectedPath}.`,
+      });
+      continue;
+    }
+
+    const relativePath = path.join(
+      "public",
+      ...source.asset.public_path.slice(1).split("/"),
+    );
+    expectedPublicFiles.add(relativePath);
+    const inspected = await inspectTransparentWebp({
+      absolutePath: fromRepositoryRoot(relativePath),
+      relativePath,
+      key: source.reference_id,
+      diagnostics,
+      missingSuggestion:
+        "Run pnpm media:process:reference from the approved staged PNG.",
+    });
+    if (!inspected) continue;
+
+    const approximate = (value: number, unit: "mm" | "g") => ({
+      status: "approximate" as const,
+      value,
+      unit,
+    });
+    records.push({
+      referenceId: source.reference_id,
+      label: source.label,
+      isDefault: source.is_default,
+      aliases: source.aliases,
+      note: source.note,
+      measurements: {
+        skullLength: approximate(source.measurements.skull_length_mm, "mm"),
+        skullWidth: approximate(source.measurements.skull_width_mm, "mm"),
+        skullHeight: approximate(source.measurements.skull_height_mm, "mm"),
+        skullMass: approximate(source.measurements.skull_mass_g, "g"),
+        craniumWidth: approximate(source.measurements.cranium_width_mm, "mm"),
+        mandibleLength: approximate(
+          source.measurements.mandible_length_mm,
+          "mm",
+        ),
+      },
+      media: {
+        ...inspected,
+        orientation: source.asset.orientation,
+        alt: source.asset.alt,
+        credit: source.asset.credit,
+        rights: source.asset.rights,
+      },
+    });
+  }
+
+  const actualFiles = await listWebpFiles(
+    fromRepositoryRoot("public", "media", "references"),
+  );
+  for (const absolutePath of actualFiles) {
+    const relativePath = path.relative(fromRepositoryRoot(), absolutePath);
+    if (!expectedPublicFiles.has(relativePath)) {
+      diagnostics.push({
+        source: relativePath,
+        rule: "Public reference media is not declared by a curated source",
+        suggestion: "Add reviewed reference metadata or remove the orphan.",
+      });
+    }
+  }
+
+  const defaultReferences = records.filter((reference) => reference.isDefault);
+  if (defaultReferences.length !== 1) {
+    diagnostics.push({
+      source: "content/references",
+      field: "is_default",
+      value: defaultReferences.map((reference) => reference.referenceId),
+      rule: "Exactly one comparison reference must be the default",
+      suggestion: "Mark only the reviewed default reference as is_default.",
+    });
+  }
+
+  return records.sort((a, b) => a.referenceId.localeCompare(b.referenceId));
+}
+
+interface InspectedTransparentWebp {
+  width: number;
+  height: number;
+  bytes: number;
+  subjectBounds: SubjectBounds;
+  publicPath: string;
+}
+
+async function inspectTransparentWebp(options: {
+  absolutePath: string;
+  relativePath: string;
+  key: string;
+  diagnostics: Diagnostic[];
+  missingSuggestion: string;
+}): Promise<InspectedTransparentWebp | null> {
+  const { absolutePath, relativePath, key, diagnostics, missingSuggestion } =
+    options;
   let fileStats;
   try {
     fileStats = await stat(absolutePath);
   } catch {
     diagnostics.push({
       source: relativePath,
-      key: specimenId,
+      key,
       field: "media",
       rule: "Declared public derivative is missing",
-      suggestion: "Run pnpm media:process from canonical staged PNG inputs.",
+      suggestion: missingSuggestion,
     });
     return null;
   }
@@ -332,15 +550,10 @@ async function inspectPublicAsset(options: {
     }
 
     return {
-      specimenId,
-      view,
       width: metadata.width,
       height: metadata.height,
       bytes: fileStats.size,
       subjectBounds,
-      alt,
-      credit,
-      rights: "all_rights_reserved",
       publicPath: `/${relativePath
         .replace(/^public\//, "")
         .split(path.sep)

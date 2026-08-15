@@ -15,7 +15,7 @@ export function CollectionRecord({ specimen }: { specimen: SpecimenRecord }) {
 
   return (
     <section className="record-panel" aria-labelledby="collection-record-title">
-      <p className="section-kicker">Provenance</p>
+      <p className="section-kicker">Metadata</p>
       <h2 id="collection-record-title">Collection record</h2>
       <dl className="data-list">
         <div>

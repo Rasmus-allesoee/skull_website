@@ -2,7 +2,7 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**Phase 2.1: the raccoon-dog vertical slice has been refined from the owner's first review and passes the complete local and remote technical/visual gate.** Owner re-review remains open. Phase 3 must not start before that approval is recorded.
+**Phase 2.2: the raccoon-dog vertical slice now includes the second owner-feedback refinement and is completing its technical checkpoint.** Owner re-review remains open. Phase 3 must not start before that approval is recorded.
 
 The current specimen display is available at `/species/raccoon-dog`; the exact physical record is `/species/raccoon-dog/specimens/SPEC-0001`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
 
@@ -11,7 +11,7 @@ The current specimen display is available at `/species/raccoon-dog`; the exact p
 - Photography leads; specialist information is progressively disclosed.
 - Species are the primary browsing unit, while every physical specimen receives a stable nested URL.
 - Scientific, English, and Danish names are searchable even though the interface is English.
-- Structured content stays human-editable in two linked CSV files and is compiled into validated typed build artifacts.
+- Primary collection content stays human-editable in two linked CSV files; reviewed MDX and media/reference declarations compile with it into validated typed build artifacts.
 - Known content is statically prerendered and remains useful before interactive JavaScript loads.
 - Missing, uncertain, and genus-level data is represented honestly.
 - Archival image masters and private working data never enter the public repository.
@@ -62,11 +62,23 @@ pnpm dev
 
 Open <http://localhost:3000>.
 
+### Test on another device
+
+For a phone or tablet on the same network, expose the development server:
+
+```bash
+pnpm dev:network
+```
+
+On macOS, find the computer's active LAN IPv4 address (commonly with `ipconfig getifaddr en0`) and open `http://<mac-lan-ip>:3000` on the device. `0.0.0.0` is the server bind address, not a client URL. The development configuration permits only loopback plus the host's currently detected private IPv4 addresses so Next.js hot reload does not enter a cross-origin reload loop. For the most production-like device check, use `pnpm preview:network` instead.
+
 ### Quality commands
 
 | Command | Purpose |
 |---|---|
 | `pnpm dev` | Start the local development server |
+| `pnpm dev:network` | Start development on the local network for phone/tablet testing |
+| `pnpm preview:network` | Build and serve the production app on the local network |
 | `pnpm build` | Compile content and create the production Next.js build |
 | `pnpm start` | Serve the production build |
 | `pnpm content:build` | Validate and compile canonical sources into ignored `.generated/` artifacts |
@@ -75,6 +87,7 @@ Open <http://localhost:3000>.
 | `pnpm test:fixtures` | Confirm intentionally invalid representative records fail actionably |
 | `pnpm media:stage:phase2` | Copy only the approved six local Phase 2 PNGs into ignored canonical staging names |
 | `pnpm media:process` | Build and validate public sRGB WebP derivatives from canonical staged PNGs |
+| `pnpm media:process:reference` | Rebuild a declared public comparison-reference WebP from its ignored local source |
 | `pnpm taxonomy:refresh -- --taxon-id TAX-0001 --dry-run` | Query GBIF explicitly without changing curated taxonomy or writing a snapshot |
 | `pnpm lint` | Run ESLint with the Next.js and repository rules |
 | `pnpm typecheck` | Run TypeScript without emitting files |
@@ -90,8 +103,8 @@ Open <http://localhost:3000>.
 
 ```text
 src/                 Next.js routes, exhibit UI, domain/compiler, and data loading
-content/             canonical CSV, cited MDX, media declarations, taxonomy snapshots
-public/media/        curated validated WebP specimen derivatives
+content/             canonical CSV, cited MDX, media/reference declarations, taxonomy snapshots
+public/media/        curated validated WebP specimen and reference derivatives
 scripts/             content, taxonomy, fixture, staging, and image tooling
 tests/e2e/           browser and accessibility journeys
 docs/                canonical product, design, architecture, and status docs
@@ -123,10 +136,11 @@ Phase 2 established:
 
 - `content/taxa/taxa.csv` for taxonomic identities, names, hierarchy, and publication state;
 - `content/specimens/specimens.csv` for physical specimens, provenance, measurements, condition, observation fields, preparation, and rights;
+- `content/references/*.json` for reviewed comparison-reference identity, measurements, orientation, asset metadata, and approximate-value semantics;
 - review-gated MDX for future cited editorial profiles and guides; and
-- `public/media/specimens/` for validated derivatives named `{specimen-id}__{view}.webp`.
+- `public/media/specimens/` for validated derivatives named `{specimen-id}__{view}.webp`, plus `public/media/references/` for validated comparison assets.
 
-The first canonical records (`TAX-0001`, `SPEC-0001`) were curated from only the explicitly selected staging row `ID = 1` and six matching raccoon-dog PNGs. Staging values remain evidence rather than a production source of truth. The current profile is deliberately `draft` and omitted from the public page until useful, cited prose is curated; the compiler, citation model, and reviewed-profile path remain intact.
+The first canonical records (`TAX-0001`, `SPEC-0001`) were curated from only the explicitly selected staging row `ID = 1` and six matching raccoon-dog PNGs. Staging values remain evidence rather than a production source of truth. Phase 2.2 adds a processed adult-human-skull reference and fixed approximate dimensions for the calibrated specimen-page comparison; its ignored source image is likewise not a runtime input. The current profile is deliberately `draft` and omitted from the public page until useful, cited prose is curated; the compiler, citation model, and reviewed-profile path remain intact.
 
 See [docs/content_data_model.md](docs/content_data_model.md) before editing any future content source.
 
@@ -138,7 +152,7 @@ Do not commit secrets, raw workbooks, archival Affinity/PSD files, private notes
 
 ## Deployment
 
-Vercel is the planned hosting target, connected to GitHub after the release-hardening phase. Pull requests will later receive preview deployments and `main` will become the only production source. No production project, domain, analytics, or runtime service is configured in Phase 2/2.1.
+Vercel is the planned hosting target, connected to GitHub after the release-hardening phase. Pull requests will later receive preview deployments and `main` will become the only production source. No production project, domain, analytics, or runtime service is configured in Phase 2/2.1/2.2.
 
 ## Rights and licence
 

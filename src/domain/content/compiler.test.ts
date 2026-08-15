@@ -27,7 +27,7 @@ describe("content compiler", () => {
       value: null,
       unit: "g",
     });
-    expect(collection.schemaVersion).toBe(2);
+    expect(collection.schemaVersion).toBe(3);
     expect(specimen.condition).toBe("good");
     expect(specimen.ageDetail).toBeNull();
     expect(specimen.pathology).toEqual({
@@ -47,6 +47,24 @@ describe("content compiler", () => {
       }),
     );
     expect(collection.media).toHaveLength(6);
+    expect(collection.media[0]?.orientation).toBe("right");
+    expect(
+      collection.media.slice(1).every((asset) => asset.orientation === null),
+    ).toBe(true);
+    expect(collection.comparisonReferences).toEqual([
+      expect.objectContaining({
+        referenceId: "adult-human-skull",
+        isDefault: true,
+        measurements: expect.objectContaining({
+          skullLength: { status: "approximate", value: 182, unit: "mm" },
+        }),
+        media: expect.objectContaining({
+          publicPath: "/media/references/adult-human-skull.webp",
+          orientation: "right",
+          subjectBounds: { x: 283, y: 122, width: 847, height: 777 },
+        }),
+      }),
+    ]);
     expect(
       collection.media.every((asset) =>
         asset.publicPath.endsWith(`${asset.specimenId}__${asset.view}.webp`),

@@ -1,8 +1,8 @@
 # Architecture
 
-**Status:** Accepted baseline; Phase 2.1 pipeline and refined vertical slice implemented
+**Status:** Accepted baseline; Phase 2.2 pipeline and refined vertical slice implemented
 
-**Last reviewed:** 2026-08-14
+**Last reviewed:** 2026-08-15
 
 ## 1. Architectural goals
 
@@ -67,6 +67,7 @@ Planned client boundaries are:
 - global/catalog search and suggestions;
 - URL-backed faceted filters and result-mode controls;
 - gallery thumbnail, swipe, high-resolution inspection, zoom/pan, and guidance-dialog controls; and
+- calibrated skull comparison, responsive scaling, difference display, and its scoped searchable selector; and
 - the MapLibre map synchronized with a server-renderable result list.
 
 Client modules may receive serialized domain view models. They must not import filesystem/compiler code or become a parallel data-access layer.
@@ -82,7 +83,10 @@ content/taxa/taxa.csv
 content/specimens/specimens.csv
 content/profiles/*.mdx
 content/guides/*.mdx
+content/media/*.json
+content/references/*.json
 staged, normalized specimen images
+staged, reviewed comparison-reference images
                   │
                   ▼
 scripts: parse → validate → link → enrich from reviewed snapshots → process media
@@ -102,7 +106,7 @@ Rules:
 - Draft rows may be incomplete but must parse safely and remain excluded from public output.
 - Generated paths are ignored and regenerated in CI.
 
-Phase 2 implements this pipeline with `content:build`, `validate:content`, `validate:media`, and committed invalid fixtures. `.generated/collection.json` and `.generated/media-manifest.json` are deterministic ignored outputs regenerated before application builds and relevant tests. Phase 2.1 advances the compiled collection contract to schema version 2 for condition, pathology, trauma, teeth-set, and skeleton fields; generated artifacts remain replaceable and are never migrated in place.
+Phase 2 implements this pipeline with `content:build`, `validate:content`, `validate:media`, and committed invalid fixtures. `.generated/collection.json`, `.generated/media-manifest.json`, and `.generated/comparison-reference-manifest.json` are deterministic ignored outputs regenerated before application builds and relevant tests. Phase 2.1 advanced the compiled collection contract to schema version 2 for condition, pathology, trauma, teeth-set, and skeleton fields. Phase 2.2 advances it to schema version 3 for explicit lateral orientation and typed comparison-reference records. Generated artifacts remain replaceable and are never migrated in place.
 
 ## 6. Repository boundaries
 
@@ -118,6 +122,8 @@ content/taxa/          canonical taxon CSV
 content/specimens/     canonical specimen CSV
 content/profiles/      cited taxon-profile MDX
 content/guides/        editorial guide MDX
+content/media/         specimen-media declarations
+content/references/    calibrated comparison-reference declarations
 public/media/          curated public web derivatives only
 scripts/               build-time content, taxonomy, and image tooling
 tests/e2e/             cross-route browser and accessibility journeys
@@ -153,7 +159,7 @@ The Phase 2 compiler uses strict Zod schemas at the input boundary and returns t
 2. normalize headers and controlled tokens without rewriting identity;
 3. preserve raw display strings and missing-value semantics;
 4. validate individual fields;
-5. link specimens, taxa, defaults, optional profiles, citations, and media;
+5. link specimens, taxa, defaults, optional profiles, citations, specimen media, and comparison references;
 6. enforce published-record invariants;
 7. generate deterministic, sorted artifacts; and
 8. report errors with source file, row/key, field, invalid value, and recovery guidance.
@@ -207,26 +213,42 @@ Security headers must explicitly support the chosen MapLibre worker and provider
 
 Archival `.af`, PSD, TIFF/PNG masters, and camera originals live in backed-up private storage outside Git. `agent_context/skull_images_clean/` is local staging, not a public source directory.
 
-The Phase 2 Sharp workflow:
+The Phase 2/2.2 Sharp workflow:
 
 - validates `{specimen-id}__{canonical-view}` naming;
 - reads orientation and converts pixels to sRGB;
 - strips EXIF, GPS, and unnecessary metadata;
 - verifies dimensions, alpha channel/edges, linked IDs, expected views, and file size;
-- calculates transparent subject bounds for future calibrated comparison; and
+- calculates transparent subject bounds used by the gallery and calibrated comparison; and
 - writes a transparent WebP master up to 3200 px, quality 90, alpha quality 100.
 
-Curated web masters are committed under `public/media/specimens/`. `next/image` creates controlled responsive variants: the active gallery requests quality 90 with viewport-accurate `sizes`, while thumbnails use a smaller quality 70 variant. The inspection viewer deliberately bypasses Next.js optimization and loads the validated original 3200 px WebP, preventing a smaller responsive derivative from being enlarged as a false high-resolution view.
+Curated web masters are committed under `public/media/specimens/`. The active gallery loads the validated full-resolution WebP through an SVG `viewBox` derived from the compiled alpha subject bounds, so transparent margins do not make the skull appear small and anatomy is not cropped. `next/image` still creates controlled lightweight thumbnail variants. The inspection viewer deliberately loads the validated original 3200 px WebP, preventing a smaller responsive derivative from being enlarged as a false high-resolution view.
 
-The gallery client island owns selection, direct controls, keyboard navigation, touch swipe, double-click/double-tap entry, and the native `<dialog>` inspection viewer. Wheel/trackpad and pinch zoom are centered on the gesture, pan is constrained to the enlarged image, and focus returns to the opening control. Desktop and mobile-landscape layouts use an independently scrollable right rail; mobile portrait keeps view buttons below the image. Core record content and a no-JavaScript image list remain server-rendered.
+The gallery client island owns selection, direct controls, keyboard navigation, touch swipe, double-click/double-tap entry, and the native `<dialog>` inspection viewer. A non-passive wheel handler captures ordinary wheel/trackpad input and browser-reported pinch-wheel input only over the inspector, centers zoom on the gesture, prevents background scroll/page zoom, and leaves Arrow/Home/End view navigation active at any zoom. Pan is constrained to the enlarged image, the document is scroll-locked while the modal is open, and focus returns to the opening control. Desktop and mobile-landscape layouts use an independently scrollable right rail; mobile portrait keeps view buttons below the image. Core record content and a no-JavaScript image list remain server-rendered.
+
+Comparison-reference sources use stable IDs under `content/references/`, are processed from ignored local staging through `pnpm media:process:reference`, and are committed only as reviewed WebP derivatives under `public/media/references/`. They pass the same sRGB, alpha, dimensions, subject-bounds, and metadata-stripping checks as specimen assets. Exactly one reference is the default.
 
 Page code consumes `MediaAsset` records rather than constructing filenames. That interface permits a later object-store/CDN migration when public media approaches approximately 500 MB.
+
+## 12.1 Calibrated comparison architecture
+
+The specimen-page comparison is a route-independent feature under `src/features/comparison/`, backed by pure calculations in `src/domain/comparison/` and eligible-record queries in `src/data/comparison.ts`.
+
+- An eligible specimen is its taxon's published default specimen and has a valid lateral asset plus measured maximum skull length.
+- The current specimen stays primary. The default adult-human reference is first in the selector; the current specimen is excluded.
+- Each lateral declaration records `left` or `right`; the comparison image flips in presentation when necessary and source pixels remain unchanged.
+- The shared scale is derived once from the available visual width and the larger recorded skull length. For each image, transparent-canvas offsets are calculated from `subjectBounds`, so the visible subject—not the file canvas—occupies `length_mm × shared_pixels_per_mm`.
+- The same scale factor applies at every responsive size; morphology, aspect ratio, and anatomical endpoints are preserved.
+- Six measurement differences are calculated from typed records, never display literals. Absolute wording and the primary/comparison ratio remain readable without semantic color.
+- Human-reference values are explicitly approximate. The comparison is physically proportional between subjects, not a monitor calibration or universal human average.
+
+The future public comparison route may compose the same records, scaling engine, image primitive, selector, and difference renderer with both sides independently selectable. It must not duplicate these calculations.
 
 ## 13. Styling and component architecture
 
 Tailwind utilities operate on semantic CSS variables defined in the global token layer. Components use domain-oriented names and small variants rather than a generic theme library. Native HTML is preferred; accessible Radix primitives are permitted only where native elements cannot provide robust dialog/popover behavior.
 
-Server components own static shells and content. Client components are placed at the lowest practical interactive boundary. The reusable native-dialog wrapper is the client boundary for measurement, age, and condition reference tables; the surrounding measurement and record sections stay static. Accessibility state—names, expanded/selected/current semantics, focus restoration—is part of component APIs, not a post-release patch.
+Server components own static shells and content. Client components are placed at the lowest practical interactive boundary. The reusable native-dialog wrapper is the client boundary for measurement, age, and condition reference tables; the comparison card is a separate client island receiving serialized eligible records; the surrounding measurement and record sections stay static. Accessibility state—names, expanded/selected/current semantics, live comparison changes, focus restoration—is part of component APIs, not a post-release patch.
 
 The Phase 2.1 `/guides/skull-preparation` route is a statically rendered, explicitly labelled outline shell. It provides a real destination from the specimen record without publishing uncited chemical or biological instructions. Full MDX guide content and safety review remain Phase 5 work.
 
@@ -268,6 +290,8 @@ Security headers are introduced alongside the feature hosts they must permit, th
 
 No Vercel project is created in Phase 0/1. Phase 7 selects the final name/domain and contact address, configures production, verifies headers and metadata, tests rollback, and tags `v1.0.0`.
 
+For same-network phone/tablet development, `dev:network` binds to `0.0.0.0`, while `next.config.ts` supplies exact loopback and currently detected non-internal IPv4 values to `allowedDevOrigins`. Visitors use the computer's LAN IP, never the bind address. This prevents the Next.js development HMR WebSocket from being rejected and repeatedly reloading the page. `preview:network` is the production-like fallback and has no development HMR channel.
+
 ## 17. Verification architecture
 
 ### Pull requests
@@ -306,4 +330,4 @@ Testing details and phase ownership live in [implementation_plan.md](implementat
 - [ADR 0004: Build-generated client search and route-lazy map](decisions/0004-client-search-and-route-lazy-map.md)
 - [ADR 0005: Species-first pages with stable specimen URLs](decisions/0005-species-and-specimen-url-model.md)
 
-New ADRs are reserved for decisions that materially change data identity, public URLs, deployment, security, ownership, or cross-cutting technology. Small implementation choices belong near code or in the relevant canonical document.
+New ADRs are reserved for decisions that materially change data identity, public URLs, deployment, security, ownership, or cross-cutting technology. Phase 2.2 extends the already accepted local-source/compiler/media/client-island boundaries without changing those material decisions, so it requires no new ADR. Small implementation choices belong near code or in the relevant canonical document.
