@@ -2,7 +2,7 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Phase 2.2 refinement is implemented and completing its checkpoint gate; owner re-review remains required before Phase 3
+**Current phase:** Phase 2.2 refinement passes the local and remote technical gate; owner re-review remains required before Phase 3
 
 **Last reviewed:** 2026-08-15
 
@@ -194,7 +194,7 @@ Turn the approved conversational plan into durable sources of truth and create a
 - [x] Advance the generated collection contract to schema version 3, validate exactly one default comparison reference, and extend domain, component, fixture, media, browser, responsive, touch, geometry, and accessibility coverage.
 - [x] Update all canonical documentation, context-source guidance, network-device instructions, and deferred comparison scope without beginning Phase 3.
 
-**Gate status:** The Phase 2.2 implementation and local acceptance evidence are complete. The checkpoint/remote evidence is recorded in `project_status.md`; explicit owner approval of the rendered result remains the only product gate before Phase 3 may be authorized.
+**Gate status:** The Phase 2.2 implementation passes the complete local and GitHub Actions technical gate at implementation commit `b1de049` and Actions run `31916200967`. Explicit owner approval of the rendered result remains the only product gate before Phase 3 may be authorized.
 
 ## 6. Phase 3 — museum shell and catalog
 

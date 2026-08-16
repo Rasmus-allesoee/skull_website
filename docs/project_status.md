@@ -2,15 +2,15 @@
 
 **Snapshot date:** 2026-08-16
 
-**Current phase:** Phase 2.2 — second owner-feedback refinement implemented; checkpoint verification and owner re-review open
+**Current phase:** Phase 2.2 — second owner-feedback refinement technically complete; owner re-review open
 
-**Overall state:** Phase 2.2 code, content, media, automated coverage, and manual browser evidence are locally complete; the branch checkpoint/remote CI and explicit owner approval remain before Phase 2 can close
+**Overall state:** The complete local, manual, Git, and GitHub Actions gate passes; explicit owner approval remains before Phase 2 can close
 
 **Next phase:** Phase 3 — not started and not authorized
 
 ## 1. Current objective
 
-Finish the verified checkpoint for the owner's second raccoon-dog refinement, then hold the branch stable for visual/content re-review. Do not scale the catalog or begin Phase 3 search, map, shell, taxonomy-index, or full-ingestion work until the owner approves the Phase 2.2 slice.
+Hold the verified Phase 2.2 branch stable for visual/content re-review. Do not scale the catalog or begin Phase 3 search, map, shell, taxonomy-index, or full-ingestion work until the owner approves the Phase 2.2 slice.
 
 ## 2. Phase 2.2 implementation
 
@@ -74,10 +74,10 @@ Finish the verified checkpoint for the owner's second raccoon-dog refinement, th
 | Invalid representative fixtures fail actionably | Pass locally | Five deliberate relationship/date/rights/media/observation failures report source, key/field, rule, and correction guidance |
 | No EXIF/GPS or archival source reaches public output | Pass locally | All six specimen WebPs plus the human reference pass EXIF/IPTC/XMP inspection; both source PNG sets remain ignored |
 | Refined desktop/mobile/landscape interactions and presentation pass | Pass locally | Nine Playwright journeys plus manual 1440 × 696, 1440 × 900, 390 × 844, and 844 × 390 review; desktop and touch pinch paths included |
-| Canonical docs, Git scope, branch, and remote CI agree | **Checkpoint pending** | Canonical docs are reconciled and staging/generated/browser output remains ignored; only curated public derivatives are in checkpoint scope; remote CI awaits the Phase 2.2 push |
+| Canonical docs, Git scope, branch, and remote CI agree | Pass | Canonical docs are reconciled; staging/generated/browser output remains ignored; only curated public derivatives were committed; implementation commit `b1de049` passed Actions run `31916200967` |
 | Owner approves refined visual direction, density, interactions, and wording | **Pending** | Requires explicit approval after reviewing the Phase 2.2 result |
 
-**Gate conclusion:** The refined Phase 2.2 technical/product requirements pass locally. The checkpoint/remote-CI item and explicit owner approval remain open, so the full Phase 2 gate is not yet closed and Phase 3 remains blocked.
+**Gate conclusion:** The refined Phase 2.2 technical acceptance gate passes locally and remotely. The full Phase 2 gate remains open only for explicit owner approval, so Phase 3 remains blocked.
 
 ## 5. Representative record decisions
 
@@ -110,7 +110,7 @@ Finish the verified checkpoint for the owner's second raccoon-dog refinement, th
 | Browser/accessibility | `CI=true PLAYWRIGHT_PORT=3102 pnpm test:e2e`: 9 Chromium journeys in 17.4 s; axe violations `[]`; desktop geometry/optical inset, unchanged alternate views, master delivery, inspector gesture isolation/navigation, all mobile controls/gestures/dialogs, true-scale ratios, selector, guide route, reduced motion, third-party boundary, and no-JavaScript covered | Pass |
 | Manual visual/responsive | Playwright CLI at 1440 × 696, 1440 × 900, 390 × 844, and 844 × 390: no horizontal overflow; complete larger anatomy; lateral visible-subject gaps approximately 50 px top/53 px bottom at the primary viewport; visible controls; aligned scrollable rail; coherent comparison/difference layouts; exact 116/182 visual ratio; corrected dialogs; portrait/short-landscape framing unchanged | Pass |
 | Local-network regression | Fresh `dev:network` sessions at loopback and the Mac LAN IPv4: zero console errors and `Next` remained on `2 / 6 · Oblique` instead of resetting through HMR reload | Pass |
-| Remote CI | Phase 2.2 checkpoint not pushed yet; prior Phase 2.1 commit [`1fcf7c6`](https://github.com/Rasmus-allesoee/skull_website/commit/1fcf7c6777530a8443f32d109b4b9de28107a3bc) and run [31850640194](https://github.com/Rasmus-allesoee/skull_website/actions/runs/31850640194) remain the latest remote evidence on draft [PR #4](https://github.com/Rasmus-allesoee/skull_website/pull/4) | Pending |
+| Remote CI | Implementation commit [`b1de049`](https://github.com/Rasmus-allesoee/skull_website/commit/b1de049) passed [Actions run 31916200967](https://github.com/Rasmus-allesoee/skull_website/actions/runs/31916200967); draft [PR #4](https://github.com/Rasmus-allesoee/skull_website/pull/4) remains open for owner review | Pass |
 
 Package-manager gates must run sequentially with `CI=true` in non-interactive environments; concurrent pnpm commands can reconcile `node_modules` against different lifecycle states and are not a valid speed optimization.
 
@@ -131,11 +131,10 @@ Package-manager gates must run sequentially with `CI=true` in non-interactive en
 
 ## 8. Exact next action
 
-1. Complete/publish the Phase 2.2 checkpoint and verify its GitHub Actions run.
-2. The owner reviews `/species/raccoon-dog` at desktop Chrome 100% zoom, mobile portrait, and mobile landscape, including the taller gallery, all six views, inspection gestures, comparison selector/table, measurement/age/condition dialogs, additional data, preparation link, and footer wording. For real-device development, run `pnpm dev:network` and open the Mac's LAN-IP URL—not `0.0.0.0`; `pnpm preview:network` is the production-like alternative.
-3. The owner either requests another bounded Phase 2 correction or explicitly approves the refined visual direction, density, interactions, record vocabulary, and public wording.
-4. Record approval here, close the Phase 2 issue/milestone, and merge/checkpoint only as directed.
-5. Begin Phase 3 only after separate authorization.
+1. The owner reviews `/species/raccoon-dog` at desktop Chrome 100% zoom, mobile portrait, and mobile landscape, including the taller/balanced gallery, all six views, inspection gestures, comparison selector/table, measurement/age/condition dialogs, additional data, preparation link, and footer wording. For real-device development, run `pnpm dev:network` and open the Mac's LAN-IP URL—not `0.0.0.0`; `pnpm preview:network` is the production-like alternative.
+2. The owner either requests another bounded Phase 2 correction or explicitly approves the refined visual direction, density, interactions, record vocabulary, and public wording.
+3. Record approval here, close the Phase 2 issue/milestone, and merge/checkpoint only as directed.
+4. Begin Phase 3 only after separate authorization.
 
 No new metadata, source measurements, or images are required merely to review/approve Phase 2.2. The later illustrated methodology requires owner-created/reviewed assets; real collection choices in the comparison selector and related/random sections require additional reviewed taxa/specimens and belong to later authorized work.
 
@@ -172,7 +171,7 @@ No new metadata, source measurements, or images are required merely to review/ap
 
 - The owner supplied exact gallery/inspector/mobile/dialog corrections plus a detailed reusable true-to-scale comparison specification, adult-human staging reference, and visual mockups.
 - The gallery, inspector, LAN-device workflow, measurement layout, comparison pipeline/UI, schema version 3, dialog alignment, automated coverage, and canonical documents were updated without starting Phase 3.
-- Local automated and manual evidence passes. The Phase 2.2 Git checkpoint, GitHub Actions result, and owner visual approval are deliberately left as the remaining gate items until their evidence exists.
+- Local automated and manual evidence passes. Implementation commit `b1de049` passed GitHub Actions run `31916200967`; owner visual approval is the only remaining Phase 2 gate item.
 
 ### 2026-08-16 — lateral hero optical alignment correction
 
