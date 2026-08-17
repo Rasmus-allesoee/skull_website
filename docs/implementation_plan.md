@@ -2,7 +2,7 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Phase 2.3 final refinement is implemented and completing its checkpoint gate; owner approval remains required before Phase 3
+**Current phase:** Phase 2.3 final refinement passes the complete local and remote technical gate; owner approval remains required before Phase 3
 
 **Last reviewed:** 2026-08-17
 
@@ -205,7 +205,7 @@ Turn the approved conversational plan into durable sources of truth and create a
 - [x] Defer the specimen-page location-map action to Phase 5 beside the Collection record, using `/map?specimen={id}` and the route-only MapLibre architecture rather than loading a second map implementation early.
 - [x] Extend component/browser coverage and reconcile canonical documentation without beginning Phase 3.
 
-**Gate status:** The complete Phase 2.3 local gate passes, including real-touch pinch translation and two-dimensional post-zoom pan. The GitHub Actions checkpoint is pending; explicit owner approval remains required before Phase 2 closes.
+**Gate status:** The complete Phase 2.3 local gate passes, including real-touch pinch translation and two-dimensional post-zoom pan. Implementation commit `83d577b` passed GitHub Actions run `32063339841`. Explicit owner approval remains the only Phase 2 gate item.
 
 ## 6. Phase 3 — museum shell and catalog
 

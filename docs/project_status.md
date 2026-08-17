@@ -2,15 +2,15 @@
 
 **Snapshot date:** 2026-08-17
 
-**Current phase:** Phase 2.3 — final owner-feedback refinement passes the complete local gate; remote checkpoint pending
+**Current phase:** Phase 2.3 — final owner-feedback refinement technically complete; owner yes/no review open
 
-**Overall state:** Complete local automated and visual verification passes; the GitHub Actions checkpoint and explicit owner approval remain before Phase 2 can close
+**Overall state:** Complete local, manual, Git, and GitHub Actions verification passes; explicit owner approval remains before Phase 2 can close
 
 **Next phase:** Phase 3 — not started and not authorized
 
 ## 1. Current objective
 
-Complete and publish the bounded Phase 2.3 checkpoint, then stop for a yes/no owner review. Do not scale the catalog or begin Phase 3 search, map, shell, taxonomy-index, or full-ingestion work until the owner approves the Phase 2.3 slice.
+Hold the verified Phase 2.3 branch stable for a yes/no owner review. Do not scale the catalog or begin Phase 3 search, map, shell, taxonomy-index, or full-ingestion work until the owner approves the Phase 2.3 slice.
 
 ## 2. Phase 2.3 implementation
 
@@ -93,10 +93,10 @@ Complete and publish the bounded Phase 2.3 checkpoint, then stop for a yes/no ow
 | Invalid representative fixtures fail actionably | Pass locally | Five deliberate relationship/date/rights/media/observation failures report source, key/field, rule, and correction guidance |
 | No EXIF/GPS or archival source reaches public output | Pass locally | All six specimen WebPs plus the human reference pass EXIF/IPTC/XMP inspection; both source PNG sets remain ignored |
 | Refined desktop/mobile/landscape interactions and presentation pass | Pass locally | Ten Playwright journeys plus final desktop/mobile visual review; real-touch coverage includes 100%-scale gallery swipe, pinch scaling with two-finger translation, post-zoom horizontal/vertical/diagonal pan, and inspection swipe |
-| Canonical docs, Git scope, branch, and remote CI agree | Remote pending | Canonical Phase 2.3 docs and local scope are reconciled; the new commit and GitHub Actions result are pending |
+| Canonical docs, Git scope, branch, and remote CI agree | Pass | Canonical Phase 2.3 docs and scope are reconciled; implementation commit `83d577b` passed GitHub Actions run `32063339841`; draft PR #4 remains open |
 | Owner approves refined visual direction, density, interactions, and wording | **Pending** | Requires a yes/no decision after reviewing the Phase 2.3 result |
 
-**Gate conclusion:** The complete Phase 2.3 local technical and visual gate passes. Its remote checkpoint and explicit owner approval remain open, so Phase 3 remains blocked.
+**Gate conclusion:** The complete Phase 2.3 local and remote technical gate passes. Explicit owner approval remains the only open Phase 2 gate item, so Phase 3 remains blocked.
 
 ## 6. Representative record decisions
 
@@ -129,7 +129,7 @@ Complete and publish the bounded Phase 2.3 checkpoint, then stop for a yes/no ow
 | Browser/accessibility | `CI=true PLAYWRIGHT_PORT=3102 pnpm test:e2e`: 10 Chromium journeys in 17.5 s; axe violations `[]`; desktop geometry/optical inset, master delivery, inspector isolation/navigation, full native gallery manipulation, 100%-scale real-touch swipe, two-finger pinch translation, post-zoom two-dimensional pan, inspection swipe/pinch/drag, dialogs, comparison ratios, reduced motion, third-party boundary, and no-JavaScript covered | Pass |
 | Manual visual/responsive | Retained Phase 2.2 review at 1440 × 696, 1440 × 900, 390 × 844, and 844 × 390. Final Phase 2.3 Playwright CLI review at 390 × 844 and 1440 × 900 confirmed the shorter scale-card heading, selection-driven human note, no horizontal overflow, and zero console errors/warnings | Pass |
 | Local-network regression | Fresh `dev:network` sessions at loopback and the Mac LAN IPv4: zero console errors and `Next` remained on `2 / 6 · Oblique` instead of resetting through HMR reload | Pass |
-| Remote CI | Implementation commit [`b1de049`](https://github.com/Rasmus-allesoee/skull_website/commit/b1de049) passed [Actions run 31916200967](https://github.com/Rasmus-allesoee/skull_website/actions/runs/31916200967); draft [PR #4](https://github.com/Rasmus-allesoee/skull_website/pull/4) remains open for owner review | Pass |
+| Remote CI | Phase 2.3 implementation commit [`83d577b`](https://github.com/Rasmus-allesoee/skull_website/commit/83d577b) passed [Actions run 32063339841](https://github.com/Rasmus-allesoee/skull_website/actions/runs/32063339841); draft [PR #4](https://github.com/Rasmus-allesoee/skull_website/pull/4) remains open for owner review | Pass |
 | Phase 2.3 final local gate | `CI=true pnpm check`: pass (4 files / 16 tests; 5 expected invalid fixtures); `CI=true pnpm build`: 7 routes; focused mobile: 2/2; desktop isolation stress: 5/5 without retries; complete Playwright: 10/10 without retries | Pass |
 
 Package-manager gates must run sequentially with `CI=true` in non-interactive environments; concurrent pnpm commands can reconcile `node_modules` against different lifecycle states and are not a valid speed optimization.
@@ -152,10 +152,9 @@ Package-manager gates must run sequentially with `CI=true` in non-interactive en
 
 ## 9. Exact next action
 
-1. Finish the complete local and remote Phase 2.3 checkpoint on draft PR #4.
-2. The owner checks the shorter scale card, ordinary-gallery page pinch, and inspection-window swipe on mobile, then answers yes or no to Phase 2.3 approval.
-3. On yes: record approval, verify the exact PR head/checks, merge PR #4, close the Phase 2 issue/milestone as appropriate, verify final `main` Actions, and audit the repository.
-4. Begin Phase 3 only in the next separately authorized prompt.
+1. The owner checks the shorter scale card, full native gallery pinch/two-dimensional pan, and inspection-window swipe on mobile, then answers yes or no to Phase 2.3 approval.
+2. On yes: record approval, verify the exact PR head/checks, merge PR #4, close the Phase 2 issue/milestone as appropriate, verify final `main` Actions, and audit the repository.
+3. Begin Phase 3 only in the next separately authorized prompt.
 
 No new metadata, source measurements, or images are required merely to review/approve Phase 2.3. The later illustrated methodology requires owner-created/reviewed assets; real collection choices in the comparison selector and related/random sections require additional reviewed taxa/specimens and belong to later authorized work.
 
@@ -203,6 +202,6 @@ No new metadata, source measurements, or images are required merely to review/ap
 
 - The owner approved the Phase 2.2 direction subject to three small corrections: remove redundant scale copy and verify conditional uncertainty wording; restore native page pinch over the main mobile image; and add mobile swipe navigation inside inspection.
 - The owner also deferred a specimen-location map action to Phase 5. Canonical plans now connect Collection record locations to `/map?specimen={id}` without introducing MapLibre on specimen routes.
-- The complete local gate passes: quality checks, 7-route production build, real-touch mobile coverage, five-run desktop isolation stress check, 10/10 final browser journeys, responsive visual review, and zero console errors. The remote checkpoint remains pending; Phase 3 has not started.
+- The complete local gate passes: quality checks, 7-route production build, real-touch mobile coverage, five-run desktop isolation stress check, 10/10 final browser journeys, responsive visual review, and zero console errors. Implementation commit `83d577b` passed GitHub Actions run `32063339841`; owner approval remains pending and Phase 3 has not started.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.
