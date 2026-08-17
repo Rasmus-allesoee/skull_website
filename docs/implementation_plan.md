@@ -2,9 +2,9 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Phase 0/1 complete; Phase 2 awaiting explicit authorization
+**Current phase:** Phase 2 complete and explicitly owner-approved; Phase 3 not started
 
-**Last reviewed:** 2026-08-12
+**Last reviewed:** 2026-08-17
 
 ## 1. How to use this plan
 
@@ -118,44 +118,44 @@ Turn the approved conversational plan into durable sources of truth and create a
 
 ### Data and compiler
 
-- [ ] Add header-only/representative `taxa.csv` and `specimens.csv` sources matching the approved model.
-- [ ] Implement pure domain types and executable input schemas.
-- [ ] Implement CSV parsing with row/field diagnostics and missing-value semantics.
-- [ ] Implement relationship, publication, partial-date, coordinate, default-specimen, and measurement validation.
-- [ ] Define deterministic generated-artifact locations and build command.
-- [ ] Add real `validate:content` and tests for both valid and invalid fixtures.
-- [ ] Define MDX profile frontmatter, allowed components, and citation validation.
+- [x] Add header-only/representative `taxa.csv` and `specimens.csv` sources matching the approved model.
+- [x] Implement pure domain types and executable input schemas.
+- [x] Implement CSV parsing with row/field diagnostics and missing-value semantics.
+- [x] Implement relationship, publication, partial-date, coordinate, default-specimen, and measurement validation.
+- [x] Define deterministic generated-artifact locations and build command.
+- [x] Add real `validate:content` and tests for both valid and invalid fixtures.
+- [x] Define MDX profile frontmatter, allowed components, and citation validation.
 
 ### Taxonomy
 
-- [ ] Implement explicit GBIF/Catalogue of Life refresh command with cached dated snapshot.
-- [ ] Prevent normal builds from making network requests.
-- [ ] Require review for fuzzy, synonym, conflicting, or higher-rank matches.
-- [ ] Validate the representative taxon's scientific/common/Danish names and hierarchy.
+- [x] Implement explicit GBIF/Catalogue of Life refresh command with cached dated snapshot.
+- [x] Prevent normal builds from making network requests.
+- [x] Require review for fuzzy, synonym, conflicting, or higher-rank matches.
+- [x] Validate the representative taxon's scientific/common/Danish names and hierarchy.
 
 ### Media
 
-- [ ] Finalize canonical view names against the real six-view set.
-- [ ] Implement Sharp processing: sRGB, orientation, metadata stripping, alpha/dimension/file checks, subject bounds, WebP output.
-- [ ] Add `validate:media` with actionable diagnostics.
-- [ ] Rename representative inputs by immutable specimen ID and generate curated public derivatives.
-- [ ] Confirm repository/media size and visual alpha quality.
+- [x] Finalize canonical view names against the real six-view set.
+- [x] Implement Sharp processing: sRGB, orientation, metadata stripping, alpha/dimension/file checks, subject bounds, WebP output.
+- [x] Add `validate:media` with actionable diagnostics.
+- [x] Rename representative inputs by immutable specimen ID and generate curated public derivatives.
+- [x] Confirm repository/media size and visual alpha quality.
 
 ### Representative exhibit
 
-- [ ] Add static taxon and nested specimen routes with correct default selection and metadata.
-- [ ] Build the responsive six-view gallery with keyboard, swipe, zoom/fullscreen, and reduced-motion support.
-- [ ] Build taxonomic breadcrumb, identification/confidence labels, specimen selector, cited profile, measurement panel/diagram, provenance, preparation timeline, rights, and citations.
-- [ ] Implement missing/unknown/not-applicable and incomplete-media states.
-- [ ] Self-host Newsreader and IBM Plex Sans with licence files.
-- [ ] Validate real-image performance and responsive treatment.
+- [x] Add static taxon and nested specimen routes with correct default selection and metadata.
+- [x] Build the responsive six-view gallery with keyboard, swipe, zoom/fullscreen, and reduced-motion support.
+- [x] Build taxonomic breadcrumb, identification/confidence labels, specimen selector, measurement/record/preparation panels, review-gated profile/citation infrastructure, and concise rights/credit presentation.
+- [x] Implement missing/unknown/not-applicable and incomplete-media states.
+- [x] Self-host Newsreader and IBM Plex Sans with licence files.
+- [x] Validate real-image performance and responsive treatment.
 
 ### Automated and manual verification
 
-- [ ] Unit-test parser, identifiers, links, dates, missing values, taxonomy outcomes, rights, and media naming.
-- [ ] Component-test gallery, selector, data groups, timeline, focus, and axe output.
-- [ ] Browser-test taxon/default and exact-specimen deep links at desktop and 360–390 px.
-- [ ] Manually inspect all six views, focus paths, zoom, reduced motion, and no-JavaScript core content.
+- [x] Unit-test parser, identifiers, links, dates, missing values, taxonomy outcomes, rights, and media naming.
+- [x] Component-test gallery, selector, data groups, timeline, focus, and axe output.
+- [x] Browser-test taxon/default and exact-specimen deep links at desktop and 360–390 px.
+- [x] Manually inspect all six views, focus paths, zoom, reduced motion, and no-JavaScript core content.
 
 ### Acceptance gate
 
@@ -163,6 +163,49 @@ Turn the approved conversational plan into durable sources of truth and create a
 - Invalid representative fixtures fail with actionable messages.
 - No EXIF/GPS or archival source reaches public output.
 - The user explicitly approves the real vertical slice's visual direction, information density, and interactions before Phase 3 scales it.
+
+### Phase 2.1 — owner-feedback refinement
+
+- [x] Correct blurry page delivery with quality-90 responsive variants and a direct original-WebP inspection path.
+- [x] Recompose the desktop gallery around a complete image plus right-hand scrollable view rail, while retaining portrait-mobile thumbnails below and a landscape-mobile side rail.
+- [x] Make all mobile controls, thumbnail selection, horizontal swipe, double-tap inspection, pinch zoom, and touch drag work; retain complete keyboard and reduced-motion behavior.
+- [x] Replace the asymmetric button-heavy inspector with a symmetric full-viewport native dialog supporting wheel/trackpad/pinch zoom, direct dragging, compact controls, view switching, and focus return.
+- [x] Add discoverable desktop and touch navigation hints; use concise `Photo:` and `display` wording.
+- [x] Move measurements immediately below photography, retain additional-measurement disclosure, remove the ambiguous skull diagram, and add a definition dialog plus honest proportional 10 cm reference.
+- [x] Move owner into the collection record; introduce reviewed age/condition vocabularies and dialogs plus pathology, trauma, teeth-set, and skeleton fields with explicit missing semantics.
+- [x] Rename preparation copy, add a real `/guides/skull-preparation` outline route, and keep uncited procedural/safety content unpublished.
+- [x] Remove the premature public cited-profile and large rights panel while preserving profile/citation compilation and structured rights fields; add the global copyright footer.
+- [x] Extend unit, fixture, accessibility, responsive, no-JavaScript, desktop-fit, image-delivery, real-touch, swipe, double-tap, pinch, drag, dialog, and guide-route coverage.
+- [x] Record dedicated future methodology imagery/pages and bounded related/random discovery behavior without beginning Phase 3.
+
+**Gate result:** The owner approved the initial direction but requested the bounded refinements above on 2026-08-14. The refined implementation passed the complete local and GitHub Actions technical gate at commit `1fcf7c6`. The owner must still approve the rendered result; Phase 3 remains unauthorized until that decision is recorded in `project_status.md`.
+
+### Phase 2.2 — second owner-feedback refinement
+
+- [x] Retune the desktop gallery for a common wide browser viewport around 1440 × 696 while retaining the 1440 × 900 and mobile layouts: taller main frame, matching thumbnail proportions, larger perceived skull, aligned scrollable rail, visible controls, and no anatomy crop.
+- [x] Render the active gallery from the validated full-resolution WebP through compiled transparent subject bounds; retain lightweight optimized thumbnails and the original master in inspection.
+- [x] Stop inspector wheel/trackpad/pinch gestures from scrolling or zooming the page, keep image navigation available at every inspection zoom level, and preserve drag, focus return, Escape, and reduced-motion behavior.
+- [x] Diagnose the local-network mobile reload loop and add explicit loopback/private-LAN Next.js development origins plus documented `dev:network` and production-like `preview:network` workflows.
+- [x] Replace the 10 cm visual with a reusable true-to-scale lateral-skull comparison driven by maximum skull length, compiled subject bounds, and explicit orientation.
+- [x] Add a reviewed adult-human-skull reference with a deterministic processing path, fixed approximate measurements, source/rights metadata, and the same alpha/metadata validation contract as specimen media.
+- [x] Add an accessible searchable comparison selector, exclude the current specimen, put references first, announce changes, and render a dynamic six-row measurement-difference table with magnitude, direction, and ratio.
+- [x] Recompose Measurements as the compact specimen table on the left and comparison card on the right at wide widths, with coherent tablet/portrait stacking and calibrated ratios in desktop, portrait, and landscape tests.
+- [x] Rename the collection kicker from `Provenance` to `Metadata`; left-align guide-dialog titles and notes and keep the condition title on one desktop line.
+- [x] Advance the generated collection contract to schema version 3, validate exactly one default comparison reference, and extend domain, component, fixture, media, browser, responsive, touch, geometry, and accessibility coverage.
+- [x] Update all canonical documentation, context-source guidance, network-device instructions, and deferred comparison scope without beginning Phase 3.
+
+**Gate status:** The Phase 2.2 implementation passes the complete local and GitHub Actions technical gate at implementation commit `b1de049` and Actions run `31916200967`. Explicit owner approval of the rendered result remains the only product gate before Phase 3 may be authorized.
+
+### Phase 2.3 — final owner-feedback refinement
+
+- [x] Remove the low-value scale-mechanics sentence from `A sense of scale` while retaining the concise heading and comparison controls.
+- [x] Keep the selected comparison record's descriptive note data-driven and render approximation guidance only when a displayed difference actually uses an approximate source value.
+- [x] Restore full native browser manipulation over the ordinary mobile gallery: two-finger pinch may translate freely, and a zoomed page may pan horizontally, vertically, or diagonally inside the frame. Preserve one-finger view swipe/double-tap only at 100% page scale and keep multi-touch cancellation safe.
+- [x] Add horizontal touch swipe between inspection views at 100% zoom while retaining one-finger pan when enlarged and two-finger image pinch zoom.
+- [x] Defer the specimen-page location-map action to Phase 5 beside the Collection record, using `/map?specimen={id}` and the route-only MapLibre architecture rather than loading a second map implementation early.
+- [x] Extend component/browser coverage and reconcile canonical documentation without beginning Phase 3.
+
+**Gate status:** Passed. The complete Phase 2.3 local gate passes, including real-touch pinch translation and two-dimensional post-zoom pan. Implementation commit `83d577b` passed GitHub Actions run `32063339841`; documentation checkpoint `a89b723` passed run `32064897700`. The owner explicitly approved the rendered Phase 2.3 result on 2026-08-17, closing the Phase 2 product gate.
 
 ## 6. Phase 3 — museum shell and catalog
 
@@ -184,7 +227,8 @@ Turn the approved conversational plan into durable sources of truth and create a
 - [ ] Implement shared rank landing template, breadcrumbs, child index, and scoped gallery.
 - [ ] Implement `/species` default catalog, representative class cards, taxonomy index, sorting foundation, and responsive cards.
 - [ ] Implement species and specimen card modes using canonical queries.
-- [ ] Add related taxa and default-specimen routing/redirect tests.
+- [ ] Add default-specimen routing/redirect tests.
+- [ ] When enough taxa exist, add up to three same-family suggestions and up to three deterministic collection-wide suggestions. Exclude the current taxon, deduplicate the groups, omit empty sections, and test stable output.
 - [ ] Add sitemap/robots coverage for current published routes.
 
 ### Acceptance gate
@@ -243,11 +287,13 @@ Automated and manual scenarios pass for:
 - [ ] Add clustered exact/approximate markers, selected state, popups, controls, attribution, and fit/reset behavior.
 - [ ] Synchronize map and complete searchable/filterable result list.
 - [ ] Implement `/map?specimen={id}` focus and recovery for unavailable IDs.
+- [ ] Add a nearby `View on map` action to specimen Collection records when coordinates are available; focus that specimen through `/map?specimen={id}` and retain the textual location/precision record as the non-map equivalent.
 - [ ] Test no-WebGL, keyboard, mobile, reduced-motion, provider failure, and unknown-coordinate behavior.
 
 ### Editorial/supporting routes
 
-- [ ] Add Guides hub and cited preparation-guide shell/content.
+- [ ] Promote the existing preparation route shell into the Guides hub and complete cited/safety-reviewed preparation content.
+- [ ] Add dedicated illustrated measurement methodology, age-estimation, and specimen-condition content using owner-supplied/reviewed real-skull imagery and appropriate citations/species caveats.
 - [ ] Add Contribution photography/metadata/rights protocol and reviewed contact link.
 - [ ] Add About and Methodology.
 - [ ] Add accurate Rights, Privacy, and Accessibility statements.
@@ -278,7 +324,7 @@ Automated and manual scenarios pass for:
 - [ ] Verify taxonomy and resolve all blocking match flags.
 - [ ] Validate dates, units, measurements, coordinates/precision, preparation, rights, and credits.
 - [ ] Rename/process every accepted media set and review alpha/framing.
-- [ ] Add concise cited profiles for publishable taxa or transparent pending states.
+- [ ] Add concise cited profiles only where useful reviewed overview/identification content exists; otherwise keep the optional profile absent or draft without public placeholder prose.
 - [ ] Keep incomplete records as drafts.
 - [ ] Review repository size against the media-storage threshold.
 
@@ -374,7 +420,11 @@ After Phase 0/1:
 
 ### Skull comparison
 
-Requires calibrated scale, consistent lateral orientation, generated subject bounds, and honest handling of non-calibrated records. Then consider overlay, split-slider, and opacity modes with keyboard equivalents.
+Phase 2.2 completed the reusable calibrated foundation on the specimen page: explicit lateral orientation, generated transparent subject bounds, one shared maximum-length scale, a reference/specimen selector, approximate-value labels, and semantic measurement differences. A dedicated public comparison route with two independent selectors, overlays, split-slider, opacity controls, shareable state, and non-calibrated-record handling remains deferred until enough reviewed specimens exist and keyboard-equivalent behavior is designed.
+
+### Specimen-location map action
+
+Phase 5 should place a concise `View on map` action beside the Collection record's location/coordinates when a public point exists. It should open the accessible `/map?specimen={id}` route with the corresponding marker and list row selected. An embedded specimen-page modal remains optional later, but it must not duplicate map state or violate the route-only MapLibre bundle boundary without a deliberate architecture revision.
 
 ### 360° rotation
 

@@ -2,11 +2,25 @@
 
 This file is the mandatory entrypoint for every coding agent or maintainer working in this repository. Read it before editing. Keep it current whenever important rules, plans, Markdown documents, commands, or context sources are added or changed.
 
+## 0. RASMUS INFORMATION TO AGENT (DON'T DELETE)
+
+### Ask when my preference matters
+
+When a decision is subjective, has meaningful tradeoffs, or depends on my preferences, ask me before choosing. Present the main options with a brief explanation of the tradeoffs, clearly indicate your recommended option, and let me select.
+
+Do not ask about routine implementation details, obvious best practices, or choices that are easily reversible and do not meaningfully affect the result.
+
+When uncertain whether my opinion matters, prefer asking rather than assuming.
+
+### GitHub authentication
+
+GitHub authentication is verified valid in the user’s regular Terminal; if Codex’s sandbox reports an invalid token, treat it as an environment mismatch, and use the available authenticated GitHub integration for remote operations.
+
 ## 1. Mission and current boundary
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **Phase 0/1 complete; awaiting explicit authorization for Phase 2 — validated vertical slice**. Consult `docs/project_status.md` for the exact current state and evidence. Do not begin Phase 2 or implement catalog/search/map/full-ingestion features without that continuation.
+Current phase: **Phase 2 is technically complete and explicitly owner-approved; Phase 3 has not started**. Consult `docs/project_status.md` for exact evidence and the next action. Do not implement Phase 3 catalog/search/map/full-ingestion features until a dedicated Phase 3 task is provided.
 
 Use the neutral working title **Skull Collection** from central site configuration until the final name is selected.
 
@@ -41,14 +55,15 @@ The historical approved master plan is `agent_context/website_plan_from_planmode
 ## 4. Architecture invariants
 
 - Pinned Node.js 24.18.0, pnpm 11.21.0, Next.js 16.2.12, React 19.2.8, strict TypeScript.
-- Next.js App Router and React Server Components by default; client islands only for search/filters, gallery controls, and MapLibre.
+- Next.js App Router and React Server Components by default; client islands only for search/filters, gallery, calibrated comparison and guidance-dialog controls, and MapLibre.
 - Known public routes are statically generated and useful before interactive JavaScript finishes.
-- Canonical structured sources are two UTF-8 linked CSVs (`taxa.csv`, `specimens.csv`) plus cited MDX.
+- Canonical structured sources are two UTF-8 linked CSVs (`taxa.csv`, `specimens.csv`), cited MDX, and reviewed media/reference declarations.
 - Normal builds never call a live spreadsheet, GBIF, map API, or runtime database.
 - Taxonomy refresh is explicit, reviewed, snapshotted, and never silently rewrites identifications.
 - Generated JSON/search/GeoJSON is replaceable, ignored build output—not hand-edited source.
 - MapLibre loads only on `/map`; every map record has an equivalent semantic list path.
 - Page code consumes typed records and `MediaAsset` interfaces, not constructed filenames or raw CSV rows.
+- True-to-scale comparison uses a canonical lateral-view maximum length, compiled transparent subject bounds, and explicit lateral orientation. Approximate reference measurements must remain labelled as approximate.
 - Accessibility targets WCAG 2.2 AA and is part of component/API design, not a later overlay.
 
 ## 5. Content and media safety
@@ -61,18 +76,24 @@ Local context paths:
 - `agent_context/prompt_initial_plan.md` — original user brief.
 - `agent_context/prompt_begin_phase_1.md` — Phase 0/1 authorization.
 - `agent_context/website_plan_from_planmode.md` — approved historical master plan.
+- `agent_context/prompt_phase_2_raccoon_dog_slice_feedback.md` — owner review that defines the Phase 2.1 refinement scope.
+- `agent_context/prompt_phase_2.1_raccoon_dog_slice_feedback.md` — owner review that defines the Phase 2.2 refinement scope.
+- `agent_context/implement_interactive_true_to_scale_skull_comparison.md` — owner-approved functional specification for the Phase 2.2 comparison component.
+- `agent_context/website_screenshots/` — owner-supplied visual targets and defect evidence for Phase 2.2; context only, never runtime assets.
 
-Archival `.af`, PSD, camera originals, TIFF/PNG masters, raw workbooks, private notes, and EXIF/GPS-bearing media stay outside Git. Future public derivatives use immutable specimen IDs and canonical views after the Phase 2 media pipeline validates and strips metadata.
+Phase 2 uses only staging metadata row `ID = 1` and the six `mårhund_*_1.png` files as migration evidence for `TAX-0001` / `SPEC-0001`. The reviewed canonical values live in `content/`; never make a normal build depend on the ignored staging sources. Owner feedback supersedes the initial slice's display wording and condition classification, but it does not authorize inventing unrecorded pathology, trauma, teeth-set, skeleton, age-evidence, or reuse facts. The Phase 2.2 adult-human comparison source is also ignored staging input; only its reviewed declaration and processed public WebP derivative belong in Git.
+
+Archival `.af`, PSD, camera originals, TIFF/PNG masters, raw workbooks, private notes, and EXIF/GPS-bearing media stay outside Git. Public specimen derivatives use immutable specimen IDs and canonical views only after `pnpm media:process` and `pnpm validate:media` confirm metadata stripping and the rest of the media contract. Public comparison references use stable reference IDs and the separate `pnpm media:process:reference` maintenance command.
 
 Before any content/media edit, read `docs/content_data_model.md`. Do not invent stable IDs, taxonomy, measurements, rights, credits, dates, or public-safe notes. Drafts may be incomplete but must remain build-safe and unpublished.
 
 ## 6. Repository map
 
 ```text
-src/                 application routes, components, domain/query code
-content/             future canonical CSV and MDX sources
-public/media/        future curated web-ready derivatives only
-scripts/             future validation, taxonomy, and media tooling
+src/                 application routes, features, typed domain/compiler and data loading
+content/             canonical CSV, reviewed MDX, media declarations, taxonomy snapshots
+public/media/        curated validated WebP derivatives only
+scripts/             content, taxonomy, fixture and media tooling
 tests/e2e/           Playwright journeys and accessibility smoke tests
 docs/                canonical specifications, status, and ADRs
 .github/              CI, issue forms, PR template, dependency updates
@@ -95,7 +116,7 @@ pnpm exec playwright install chromium
 pnpm test:e2e
 ```
 
-Available focused commands are documented in `README.md`. Content/media validation commands do not exist until Phase 2 implements real schemas/pipelines; never add misleading no-op checks.
+Available focused commands are documented in `README.md`. `validate:content`, `validate:media`, and `test:fixtures` are real blocking checks; `content:build` emits replaceable ignored artifacts. Taxonomy refresh and media staging/processing are explicit maintainer commands, never implicit build steps.
 
 Before a checkpoint:
 
@@ -113,7 +134,7 @@ Before a checkpoint:
 - Never stage unrelated user files silently. Audit the complete scope before commit/push.
 - One coherent verified checkpoint closes each phase; do not mark status complete on code presence alone.
 - GitHub issues/milestones are the active implementation tracker. Do not add a second competing tracker.
-- Production later deploys only from `main`; no production/Vercel configuration belongs to Phase 0/1.
+- Production later deploys only from `main`; no production/Vercel configuration belongs to Phase 2.
 
 ## 9. Documentation ownership
 

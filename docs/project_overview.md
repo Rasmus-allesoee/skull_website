@@ -6,7 +6,7 @@
 
 **Interface language:** English
 
-**Last reviewed:** 2026-08-12
+**Last reviewed:** 2026-08-17
 
 ## 1. Vision
 
@@ -16,7 +16,7 @@ The site begins with the collector's own Danish specimens but is designed for a 
 
 ## 2. Product principles
 
-1. **The specimen is the exhibit.** Large, consistent photography is the primary interface, not decoration around a database.
+1. **The specimen is the focus.** Large, consistent photography is the primary interface, not decoration around a database.
 2. **Structure without clutter.** Taxonomy, filters, metadata, and citations should be systematic while using progressive disclosure.
 3. **Species-first, specimen-precise.** Visitors browse taxa; individual physical skulls remain independently addressable and comparable.
 4. **Truthful uncertainty.** Missing values, partial dates, approximate locations, and uncertain identifications are explicitly labelled.
@@ -89,11 +89,11 @@ Exclusion from v1 does not mean rejection. Each feature remains in the deferred 
 | `/` | Museum entrance | Featured skull, collection summary, class entry points, search entry, map preview, guide and contribution prompts |
 | `/species` | Main catalog | Search, filters, class tiles, compact taxonomy index, sorting, species/specimen view switch |
 | `/taxonomy/{rank}/{slug}` | Rank landing page | Breadcrumb, rank summary, child index, filtered image gallery |
-| `/species/{taxon-slug}` | Canonical taxon exhibit | Default specimen gallery, identification, profile, specimen selector, taxonomy, measurements, citations |
-| `/species/{taxon-slug}/specimens/{specimen-id}` | Exact specimen exhibit | Same exhibit composition focused on one physical specimen, with unique metadata and canonical relationship |
+| `/species/{taxon-slug}` | Canonical taxon display | Default specimen gallery, specimen selector, taxonomy, measurements, collection record, preparation, and reviewed editorial content when available |
+| `/species/{taxon-slug}/specimens/{specimen-id}` | Exact specimen display | Same composition focused on one physical specimen, with unique metadata and canonical relationship |
 | `/map` | Geographic exploration | Clustered map, filters, selected-specimen popup, synchronized accessible result list |
 | `/guides` | Editorial guide hub | Guide cards and introductions |
-| `/guides/preparing-skulls` | Preparation guide | Defleshing, maceration/alternatives, degreasing, whitening, safety, and documentation |
+| `/guides/skull-preparation` | Preparation guide | A Phase 2.1 route/outline shell; later reviewed defleshing, maceration/alternatives, degreasing, whitening, safety, and documentation |
 | `/contribute` | Contribution protocol | Required views, capture setup, files, metadata, rights, review process, contact CTA |
 | `/about` | Collector and project story | Purpose, collection, photography, preparation workflow, site method |
 | `/methodology` | Data transparency | Measurement definitions, identification confidence, taxonomy, missing data, coordinates, updates |
@@ -112,7 +112,7 @@ Exclusion from v1 does not mean rejection. Each feature remains in the deferred 
 3. Select an exact taxon result.
 4. Arrive at the taxon page with its default specimen.
 
-Target: no more than three meaningful interactions from entry to exhibit.
+Target: no more than three meaningful interactions from entry to a specimen display.
 
 ### Systematic browsing
 
@@ -159,7 +159,7 @@ The home page should establish the collection as a museum, not a generic applica
 - Working title, one-sentence purpose, and primary “Explore the collection” action.
 - Search entry with visible scientific/common-name examples.
 - Representative cards for available classes with live taxon/specimen counts.
-- Selected specimen or recently added exhibit.
+- Selected specimen or recently added display.
 - Compact geographic preview that links to the Map but does not load MapLibre.
 - Teasers for the preparation guide, contribution protocol, and About page.
 - No invented statistics; empty counts are hidden or explicitly marked as pending.
@@ -184,16 +184,26 @@ The home page should establish the collection as a museum, not a generic applica
 - Explain uncertain or incomplete hierarchy rather than manufacturing missing ranks.
 - Generate stable, indexable metadata for useful rank pages.
 
-### Taxon and specimen exhibits
+### Taxon and specimen displays
 
 - Lead with common English name, italic scientific identification, Danish name, and rank/confidence labels.
 - Use clickable taxonomy breadcrumbs.
-- Feature a large gallery with thumbnails, swipe, arrow keys, fullscreen/zoom, captions, and reduced-motion behavior.
+- Feature a large, uncropped gallery image with previous/next/inspection controls visible when the stage reaches the viewport top. Treat a normal wide Chrome viewport around 1440 × 696 as the primary desktop composition target while keeping 1440 × 900, narrower desktop, mobile portrait, and mobile landscape responsive. Use a taller main frame and matching, independently scrollable thumbnail rail on the right at desktop and mobile landscape widths; stack thumbnails below the image in mobile portrait.
+- Render the active view from the validated full-resolution WebP through its compiled transparent subject bounds so the skull fills the frame without cropping anatomy or enlarging a low-resolution responsive derivative. Thumbnails remain lightweight responsive variants; inspection loads the original validated master directly.
+- Support direct thumbnail selection, previous/next controls, focused left/right/Home/End keys, horizontal one-finger swipe, desktop double-click, and touch double-tap. The ordinary gallery uses full native browser manipulation: two-finger pinch can translate while scaling, and a zoomed page can pan horizontally, vertically, or diagonally inside the frame. Recognize gallery swipe/double-tap only at 100% page scale, while keeping a visible `Inspect image` fallback and concise desktop/touch instructions.
+- Use a symmetric full-viewport inspection dialog with wheel/trackpad zoom, desktop pinch gestures, native touch pinch, pointer/touch drag, double-click zoom/reset, a range control, keyboard `+`/`-`/`0`, view navigation at every zoom level, Escape, focus restoration, and reduced-motion behavior. At 100% zoom, horizontal touch swipe changes view; once enlarged, the same one-finger gesture pans instead. Zoom gestures over the inspector must prevent background page scroll/page zoom; users do not need to hold Command/Ctrl.
 - Place the specimen selector near the gallery and keep the default specimen explicit.
-- Organize information into cited profile, identification characteristics, measurements, specimen biology, provenance, preparation, rights/credit, citations, and related taxa.
-- Use a consistent accessible anatomical SVG to explain measurement landmarks.
+- Put the measurement section immediately below the gallery/selector, followed by the collection and preparation records. A concise cited profile and skull-identification section return only after useful, reviewed, source-backed prose exists; draft profile infrastructure remains build-valid but is not rendered.
+- Present the specimen measurement table directly below the heading/note and retain progressive disclosure for additional recorded measurements. Link a quick measurement-definition dialog. At wide widths, pair the compact table with the reusable `A sense of scale` card; stack them on narrow screens.
+- The scale card compares canonical lateral views using recorded maximum length, compiled alpha subject bounds, explicit orientation, and one responsive pixels-per-millimetre factor shared by both skulls. Default to the reviewed adult-human reference, allow selection only from eligible default specimens/references, align both skulls to the primary orientation without rewriting assets, and label approximate reference values honestly. Descriptive notes belong to the selected comparison record and disappear when that record has no note. This is a mathematically true relative-size comparison inside the card, not a claim that CSS pixels equal physical millimetres on the visitor's monitor.
+- Include a searchable keyboard-operable comparison selector and dynamic six-row difference table for maximum length, maximum width, height, prepared mass, cranium width, and maximum mandible length. Difference wording and ratio always describe the current page specimen relative to the selected comparison; wording, not color alone, communicates direction. Show the approximation explanation only when at least one displayed difference is actually derived from an approximate source value.
+- Put owner, sex, age class, condition, source, date, location, and coordinate precision in the collection record under the `Metadata` kicker. Age and five-level condition definitions open in accessible dialogs; pathology, trauma, teeth-set completeness, and skeleton completeness live under `Show additional recorded data`.
+- In Phase 5, place a `View on map` action near the Collection record for specimens with public coordinates. It focuses the specimen through `/map?specimen={id}`; do not embed MapLibre in the specimen page during Phase 2.
+- Describe preparation as `Skull preparation` and link to the permanent guide route. The guide stays an explicit outline—not procedural or safety advice—until cited content review.
+- Keep photography credit concise as `Photo: {name}`. Reserve collection/media/data reuse through the global `© {year} Rasmus. All rights reserved.` footer rather than a large rights panel; detailed legal scope remains in `RIGHTS.md` and the later Rights page.
 - Hide an entirely empty optional section. Within a populated group, render missing values as “Not recorded” and non-applicable values as “Not applicable.”
 - Give exact specimen URLs unique titles/descriptions and an appropriate relationship to the taxon canonical page.
+- Once Phase 3 has enough eligible taxa, add at most three same-family suggestions and at most three deterministic collection-wide suggestions. Exclude the current taxon, deduplicate the two sets, and omit empty sections rather than displaying placeholders.
 
 ### Map
 
@@ -208,7 +218,9 @@ The home page should establish the collection as a museum, not a generic applica
 ### Guides and preparation guide
 
 - Guides use editorial long-form layouts with stable headings and a table of contents.
+- The Phase 2.1 preparation link resolves to a static route shell so navigation is real even before guide content is publishable.
 - The preparation guide will cover intake and legal/safety caveats, defleshing methods, maceration, beetles or careful heat alternatives, degreasing with suitable agents, hydrogen-peroxide whitening, drying, assembly, photography, troubleshooting, and record keeping.
+- Methodology will later include dedicated illustrated measurement, age-estimation, and specimen-condition sections. The owner must supply/review real-skull landmark and reference imagery; age claims require species-aware citations and caveats.
 - Specific chemical or biological safety claims require source review before publication.
 - Images, diagrams, warnings, and comparisons should carry information that prose cannot convey as clearly.
 
@@ -232,7 +244,7 @@ The home page should establish the collection as a museum, not a generic applica
 - Index taxon, taxonomic-rank, and specimen documents separately.
 - Rank exact scientific/common/specimen-ID matches above prefix, curated alias or synonym, fuzzy match, and profile text.
 - Normalize case, punctuation, whitespace, and diacritics for matching while preserving original display text.
-- Selecting a rank opens its taxonomy landing page; selecting a taxon or specimen opens its exact exhibit.
+- Selecting a rank opens its taxonomy landing page; selecting a taxon or specimen opens its exact display.
 
 ### Taxonomy and uncertainty
 
@@ -245,8 +257,9 @@ The home page should establish the collection as a museum, not a generic applica
 
 - Canonical views are lateral, oblique, frontal, dorsal, ventral, and mandible-dorsal.
 - Lateral is required for publication; absent optional views produce author warnings.
-- Images retain transparent backgrounds and consistent framing without pretending that specimens share a calibrated scale.
+- Images retain transparent backgrounds and consistent framing. Ordinary galleries do not imply common scale; the dedicated calibrated comparison may share scale only for eligible lateral images with recorded maximum length, compiled subject bounds, and explicit orientation.
 - Rights and credit attach to every asset/record.
+- Public captions use `Photo:` plus the stored credit. The public footer carries the concise all-rights-reserved notice; structured rights fields continue to enforce publication safety even when no dedicated rights panel is rendered.
 
 ### Accessibility
 
@@ -296,4 +309,4 @@ The first public release is complete only when:
 
 “Skull Collection” is a neutral working title stored in one central configuration. The final title, domain, public email, and brand mark are release-hardening decisions. Product structure must not depend on the temporary name.
 
-Future comparison, 360°, 3D, illustrations, direct contributions, database administration, analytics, localization, and data export are recorded as deferred work. They require their documented prerequisites and a new scope decision; they are not to be smuggled into an earlier phase.
+The Phase 2.2 specimen-page scale card establishes reusable calibrated comparison primitives. A dedicated public two-select comparison route, overlays/split sliders, 360°, 3D, illustrations, direct contributions, database administration, analytics, localization, and data export remain deferred work. They require their documented prerequisites and a new scope decision; they are not to be smuggled into an earlier phase.

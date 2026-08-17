@@ -38,7 +38,7 @@ pnpm exec playwright install chromium
 pnpm test:e2e
 ```
 
-Phase 2 will add real `validate:content` and `validate:media` commands. Until then, do not claim that structured content or media has been validated.
+`pnpm check` includes the real content/media validators and invalid-fixture gate. For source or image changes, run `pnpm validate:content`, `pnpm validate:media`, and the appropriate explicit media/taxonomy maintenance command as documented in `README.md`; never bypass a failing publication invariant.
 
 ## Pull requests
 

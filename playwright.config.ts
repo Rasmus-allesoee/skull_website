@@ -1,10 +1,13 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const port = 3000;
+const port = Number(process.env.PLAYWRIGHT_PORT ?? 3000);
 
 export default defineConfig({
   testDir: "./tests/e2e",
-  fullyParallel: true,
+  // Next's on-demand image optimizer is intentionally exercised here. Running the
+  // six-view image journeys serially keeps that acceptance signal deterministic on
+  // low-resource CI runners instead of turning CPU contention into false failures.
+  fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? "github" : "list",

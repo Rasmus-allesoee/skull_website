@@ -1,157 +1,207 @@
 # Project status
 
-**Snapshot date:** 2026-08-12
+**Snapshot date:** 2026-08-17
 
-**Current phase:** Phase 0/1 — complete
+**Current phase:** Phase 2 — complete and explicitly owner-approved
 
-**Overall state:** Complete; awaiting explicit authorization for Phase 2
+**Overall state:** Complete local, manual, Git, GitHub Actions, and owner product gates pass
 
-**Next phase:** Phase 2 — validated vertical slice (not started; requires Phase 0/1 gate and user continuation)
+**Next phase:** Phase 3 — not started; awaits a dedicated implementation prompt
 
 ## 1. Current objective
 
-Phase 0/1 achieved its objective: the approved master plan is encoded as canonical repository documentation, the reproducible Next.js/TypeScript baseline is verified, and the public GitHub repository is live with green CI. No catalog, data compiler, specimen page, search, or map feature was implemented.
+Preserve the approved Phase 2 baseline and its verification evidence. Begin Phase 3 only from a dedicated next task; no Phase 3 implementation belongs in the Phase 2 closure work.
 
-## 2. Completed in this checkpoint
+## 2. Phase 2.3 implementation
 
-- Approved master plan read from `agent_context/website_plan_from_planmode.md`.
-- Current source context inspected: incomplete draft metadata, species notes, and local cleaned-image staging.
-- Complete documentation suite created under `docs/` plus root README, contribution, licence, and rights guidance.
-- Material baseline decisions recorded as ADRs.
-- `AGENTS.md` converted into the mandatory project index.
-- Repository policies, safe ignore boundaries, contribution workflow, issue forms, pull-request template, Dependabot, and CI skeleton created.
-- Node.js 24.18.0 and pnpm 11.21.0 pinned; dependency graph locked with explicit pnpm 11 build-script allowlisting and no peer issues.
-- Minimal accessible App Router foundation page, semantic design tokens, central site configuration, static icon, unit test, and browser/axe test implemented.
-- Git initialized on `main`; ignored staging/private/generated paths checked explicitly.
-- Local quality, build, browser, accessibility, desktop, and 390 px visual checks pass.
-- Clean local clone verified: 832 KB source checkout, private draft/staging absent, 450 packages restored from the frozen lockfile, full quality suite and static build passed, and the clone stayed clean.
-- GitHub CLI re-authenticated as `Rasmus-allesoee`; public `Rasmus-allesoee/skull_website` created with `main` as its default branch.
-- Foundation commit `07eea359cd4a4daf302639af52a0762ab53690f0` pushed and GitHub Actions CI run `31644826604` passed.
-- Phase-closing commit `e8d322dd12dab2bbbd4873c153cab867afe2c1b7` updated the three official CI actions to their current reviewed majors; combined GitHub Actions run `31645819494` passed.
+### Comparison copy and uncertainty
 
-## 3. Awaiting authorization
+- Removed the low-value sentence explaining shared physical scale and transparent margins from the `A sense of scale` heading.
+- Confirmed and regression-tested that the adult-human description comes from the selected reference record. Selecting a measured specimen with no note removes that text.
+- Confirmed and regression-tested that the difference-level approximation explanation appears only when at least one available displayed difference uses an approximate source value; measured specimen pairs do not inherit it.
 
-- Phase 2 — validated vertical slice.
-- Selection/confirmation of the representative taxon and physical specimen, immutable IDs, and public rights/credits needed by that slice.
-- GitHub milestone/issues for Phase 2, created only when that phase becomes active.
+### Mobile gestures
 
-## 4. Not started
+- Changed the ordinary gallery stage from restrictive `pan-y` to full browser `manipulation` (`pan-x pan-y pinch-zoom`). Pinch can now translate while scaling, and a zoomed visual viewport can pan horizontally, vertically, or diagonally inside the large image frame.
+- Moved gallery swipe/double-tap recognition to single-touch completion at approximately 100% page scale. Zoomed-page pans and multi-touch gestures remain browser-owned and cannot become stray view switches or inspection opens.
+- Added horizontal touch swipe between inspection views at 100% zoom. Once the image is enlarged, one finger continues to pan; two fingers continue to zoom the image.
+- Updated the inspection hint and added production-browser coverage for native page pinch, two-dimensional page pan after zoom, 100%-scale gallery swipe, and inspection swipe.
 
-- Phase 2 executable CSV schemas and compiler.
-- Taxonomy refresh/snapshot tooling.
-- Sharp media pipeline and representative processed assets.
-- Real taxon/specimen routes and gallery.
-- Catalog, taxonomy landing routes, search, map, full ingestion, and deployment.
+### Deferred specimen map
 
-These are deliberately not partially implemented in Phase 0/1.
+- Kept MapLibre out of Phase 2. Phase 5 now explicitly adds a `View on map` action near Collection record location data, targeting `/map?specimen={id}` so the central map route owns marker/list selection and the textual record remains the accessible equivalent.
 
-## 5. Locked decisions
+## 3. Phase 2.2 implementation
 
-| Decision | Current answer | Source |
+### Photography, inspection, and real-device behavior
+
+- Retuned the desktop gallery around the owner's common normal-Chrome shape (approximately 1440 × 696): the main stage is 10–20% taller, the skull is materially larger, the rail matches the stage/control depth, thumbnail frames share the new proportion, and the stage remains complete and uncropped at both 1440 × 696 and 1440 × 900.
+- Corrected the lateral hero's optical vertical alignment at desktop-height layouts by shifting that view downward: top and bottom negative space are now visually balanced without changing the source asset, alpha bounds, comparison scale, thumbnails, inspection, other angles, or short mobile-landscape layout.
+- Replaced the active responsive derivative with a direct validated master rendered through an SVG view box calculated from compiled alpha `subjectBounds`. Transparent canvas margins no longer create side dead space or blur; thumbnails remain lightweight derivatives and inspection still uses the original master.
+- Added a non-passive, inspector-scoped wheel handler for wheel/trackpad and browser-reported desktop pinch gestures. It prevents background page scroll/page zoom, retains centered zoom, and leaves Arrow/Home/End view changes available even above 100% zoom.
+- Reproduced the reported local-network mobile failure as a Next.js HMR cross-origin rejection/reload loop rather than broken touch handlers. `allowedDevOrigins` now includes loopback and currently detected private LAN IPv4 values; `dev:network` and production-like `preview:network` are documented. Fresh loopback and LAN sessions retained state after taps with zero console errors.
+- Kept mobile portrait thumbnails below, mobile landscape rail beside the image, real tap/swipe/double-tap/pinch/drag interactions, dialog focus restoration, and reduced-motion behavior.
+
+### Measurements and reusable calibrated comparison
+
+- Removed the 10 cm reference entirely. Measurements now place the compact specimen table/extra-value disclosure below the heading and the larger `A sense of scale` card beside it on desktop, stacking cleanly on narrow screens.
+- Added route-independent comparison records, eligibility queries, scaling calculations, alpha-bounded image primitives, selector, pair layout, and differences renderer. No comparison behavior is hard-coded to `SPEC-0001`.
+- Added `content/references/adult-human-skull.json` plus a deterministic reference-media processor. The reviewed transparent WebP is sRGB, alpha-bounded, metadata-free, explicitly right-facing, and stores six fixed approximate dimensions with a non-universal-reference note.
+- The primary and comparison images use one responsive pixels-per-millimetre factor derived from the larger maximum length. `subjectBounds.width`, not canvas width, maps to physical length; aspect ratio/anatomy remain intact and a comparison may be horizontally flipped only from explicit orientation metadata.
+- The accessible scoped selector puts the adult-human default first, searches eligible reference/specimen names and IDs, excludes the current specimen, and announces selection changes. With only one collection specimen, the human reference is currently the only honest option; synthetic component fixtures verify dynamic specimen replacement.
+- The six-row difference table calculates maximum length/width/height, prepared mass, cranium width, and maximum mandible length from the current selection. It keeps the page specimen as numerator, uses measurement-specific wording, sensible ratios, approximation markers, and text in addition to restrained directional color.
+- Advanced `CompiledCollection` to schema version 3, added explicit lateral orientation and typed comparison references, validates exactly one default reference, and emits a separate replaceable comparison-reference manifest.
+
+### Record language and dialogs
+
+- Changed the collection kicker from `Provenance` to `Metadata`.
+- Left-aligned age/condition guide notes and headings. The desktop `Specimen-condition guide` title remains on one line; narrow layouts may wrap naturally.
+
+## 4. Phase 2.1 implementation (retained foundation)
+
+### Photography and navigation
+
+- Phase 2.1 retained the six validated 3200 px WebP masters and raised responsive quality; Phase 2.2 supersedes the active-image delivery path with the alpha-bounded master while keeping lightweight thumbnails.
+- Rebuilt the desktop gallery as a complete main image plus compact, independently scrollable right-hand view rail. Mobile portrait keeps thumbnails below; mobile landscape uses the side rail.
+- Kept previous/next and direct-thumbnail controls, and added visible desktop/touch instructions, focused Arrow/Home/End keys, horizontal swipe, desktop double-click, and touch double-tap.
+- Rebuilt high-resolution inspection as a symmetric full-viewport native dialog that loads the original WebP directly. It supports wheel/trackpad and pinch zoom, constrained mouse/touch drag, double-click zoom/reset, slider/buttons, `+`/`-`/`0`, view switching, Escape, reduced motion, and focus return.
+- Fixed the previously inert mobile controls and verified real touch input rather than relying only on mouse-like synthetic events.
+
+### Information hierarchy and specimen records
+
+- Removed the public cited-profile block for now. `TAX-0001.mdx` remains a valid draft and the parser, schema, citation validation, reviewed-profile query, and rendering component remain available for later curated prose.
+- Moved measurements immediately below photography/selection. Retained the additional-measurement disclosure, removed the unclear generic diagram, and added an accessible definition dialog. The interim 116 mm versus 100 mm reference was subsequently removed and replaced by the Phase 2.2 calibrated skull comparison.
+- Advanced compiled content to schema version 2 and added controlled fields for five-level condition, expanded age classes, pathology, trauma, teeth-set completeness, and retained-skeleton completeness.
+- Added owner to the Collection record; changed `SPEC-0001` from the overly broad `damaged` state to `good` with the reviewed note `Small chip at the anterior nasal tip.`; retained `adult` without exposing unsupported `legacy stage 4` wording.
+- Added complete age-class and condition-scale guidance dialogs. Pathology, trauma, teeth set, and skeleton appear in `Show additional recorded data`; all four remain `Not recorded` for `SPEC-0001` because the staging evidence does not support inferred `No`, `Complete`, or `None` values.
+- Renamed the preparation presentation to `Skull preparation` and linked it to a real static `/guides/skull-preparation` outline. The route is explicitly not procedural/safety guidance until its claims and citations are reviewed.
+- Removed the large rights/credit panel. Gallery captions now use `Photo: Rasmus`, owner appears in the record, and every current page ends with the central `© 2026 Rasmus. All rights reserved.` notice. Structured rights remain blocking publication data and `RIGHTS.md` remains authoritative.
+- Replaced public `exhibit` wording with `display` where it appeared in the rendered UI; removed `Six-view study` and `From specimen to exhibit` copy.
+
+### Documentation and future scope
+
+- Recorded future dedicated measurement, age-estimation, and condition methodology content. It requires owner-supplied/reviewed real-skull illustrations/reference images and appropriate citations/species caveats.
+- Kept GBIF taxonomy evidence and the explicit reviewed refresh workflow unchanged; normal builds remain offline and never query GBIF.
+- Specified Phase 3 discovery sections as at most three same-family cards plus three deterministic collection-wide cards, excluding the current taxon and duplicates and omitting empty groups. They are not rendered with only one taxon.
+- Kept all section kickers for now, including the explicitly preferred `Mammalia · Carnivora` and `Physical specimen`; canonical design guidance marks the remaining kickers for reconsideration after the stable release.
+
+## 5. Phase 2 acceptance gate
+
+| Requirement | State | Evidence |
 |---|---|---|
-| Product | Visual-first online natural-history museum | `project_overview.md` |
-| Working title | Skull Collection, centrally configured | `project_overview.md` |
-| Interface/search | English UI; scientific, English, Danish aliases | `project_overview.md` |
-| Page identity | Species-first taxon page plus nested exact specimen pages | ADR 0005 |
-| Content source | Two linked CSVs plus cited MDX | ADR 0002 |
-| Rendering | Static-first Next.js App Router/RSC | ADR 0001 |
-| Media | Private masters; curated validated public WebP derivatives in Git | ADR 0003 |
-| Search/map | Generated Orama index; route-lazy MapLibre with list fallback | ADR 0004 |
-| Hosting | Vercel later, production from `main` | `architecture.md` |
-| Rights | MIT code; content/media/data reserved separately | `RIGHTS.md` |
-| Coordinates | Exact when known; explicit approximate/unknown semantics | `content_data_model.md` |
-| Contributions v1 | Requirements guide plus contact; no direct upload | `project_overview.md` |
+| Complete source → validation → generated data/media → static route journey | Pass locally | One published taxon, one specimen, six specimen assets, one comparison reference, zero reviewed profiles; taxon, exact-specimen, and preparation-guide routes prerender |
+| Invalid representative fixtures fail actionably | Pass locally | Five deliberate relationship/date/rights/media/observation failures report source, key/field, rule, and correction guidance |
+| No EXIF/GPS or archival source reaches public output | Pass locally | All six specimen WebPs plus the human reference pass EXIF/IPTC/XMP inspection; both source PNG sets remain ignored |
+| Refined desktop/mobile/landscape interactions and presentation pass | Pass locally | Ten Playwright journeys plus final desktop/mobile visual review; real-touch coverage includes 100%-scale gallery swipe, pinch scaling with two-finger translation, post-zoom horizontal/vertical/diagonal pan, and inspection swipe |
+| Canonical docs, Git scope, branch, and remote CI agree | Pass | Canonical Phase 2.3 docs and scope are reconciled; implementation commit `83d577b` passed GitHub Actions run `32063339841`; draft PR #4 remains open |
+| Owner approves refined visual direction, density, interactions, and wording | Pass | Owner answered `YES I APPROVE!` on 2026-08-17 after reviewing Phase 2.3 |
 
-## 6. Environment and external state
+**Gate conclusion:** The complete Phase 2 technical, visual, and owner-approval gate passes. Phase 2 is closed; Phase 3 remains unstarted until the next dedicated task.
 
-| Check | Observed | Impact/action |
+## 6. Representative record decisions
+
+| Decision | Current answer | Reason/evidence |
 |---|---|---|
-| Local repository | `main`, tracking `origin/main`; verified phase-closing checkpoint `e8d322dd12dab2bbbd4873c153cab867afe2c1b7` | Final status-only commit records this evidence |
-| Local default Node | `v22.20.0` | Does not satisfy pin; all recorded checks used verified isolated Node `v24.18.0` |
-| Local default pnpm | Not installed | Checks used Corepack-managed pnpm `11.21.0`; repository declares exact version |
-| GitHub CLI | `gh 2.81.0` installed | Suitable for repository creation |
-| GitHub account | `Rasmus-allesoee`, HTTPS Git protocol, `repo` and `workflow` scopes | Re-authenticated successfully through official device flow |
-| Public remote | `https://github.com/Rasmus-allesoee/skull_website` | Public; default branch `main` |
+| Stable identity | `TAX-0001`; `SPEC-0001`; slug `raccoon-dog` | Explicit local IDs, never derived from source row or mutable scientific name |
+| Taxonomy | *Nyctereutes procyonoides*; Mammalia → Carnivora → Canidae → *Nyctereutes* | Reviewed exact accepted GBIF match, key `2434552`, confidence `99`; snapshot remains canonical build evidence |
+| Canonical views | `lateral`, `oblique`, `frontal`, `dorsal`, `ventral`, `mandible-dorsal` | Direct mapping of the six owner-selected staging images |
+| Legacy date | `2025-11`, precision `month` | Repeated day `01` behaves as a placeholder; an exact day was not fabricated |
+| Location | entered point retained as approximate with 25,000 m uncertainty; `Wadden Sea region, Denmark` | Direct reviewed source evidence; private anecdotal detail omitted |
+| Biology/source | hunting; adult; sex/body mass not recorded | Curated from `Shot`, age `4`, and explicit missing markers; unexplained legacy-age detail hidden |
+| Condition/observations | good; small anterior nasal-tip chip; pathology/trauma/teeth/skeleton not recorded | Owner clarified that the minor chip is not general damage; no other observation is inferred |
+| Preparation | maceration; dish soap + ammonia for 7 days; hydrogen peroxide whitening for 168 hours; final concentration not recorded | A diluted commercial 12% hair product does not establish final peroxide concentration |
+| Rights/credit | `Rasmus`; all rights reserved | Owner context supports ownership/original photography; concise display wording is separated from structured rights enforcement |
+| Profile | draft, not public; zero reviewed profiles | Owner deferred species overview/identification until it can be useful, curated, and cited |
+| Comparison reference | `adult-human-skull`; right-facing; six approximate values; default | Owner supplied the staged image and functional specification; the declaration makes measurement uncertainty, orientation, credit, and rights explicit |
+| Rendering | static App Router/RSC plus gallery, comparison, selector, and guide-dialog client islands | Preserves useful static/no-JavaScript content while isolating genuine interaction |
+| Production compiler | `next build --webpack` | Pinned Turbopack production build did not terminate reliably in Phase 2; webpack remains deterministic and verified |
 
-The preflight invalid-token condition was resolved through `gh auth login`; no token value is stored in the repository or this document.
+## 7. Verification evidence in this refinement
 
-## 7. Context/data readiness
-
-- `agent_context/skulls_meta.csv` is incomplete and illustrative. It is ignored by Git and must not feed production.
-- `agent_context/skull_images_clean/` contains high-resolution transparent staging images with inconsistent current names. It is ignored by Git and must not be published unprocessed.
-- `agent_context/species_list.md` is a rough inventory, not verified taxonomy.
-- Production ingestion waits for replacement metadata, stable IDs, rights/credits, public-note review, and image renaming.
-- Phase 2 may use one explicitly selected representative specimen after its ID and publication rights are confirmed.
-
-## 8. Verification evidence
-
-| Gate | Command/evidence | Status |
+| Gate | Most recent evidence | Status |
 |---|---|---|
-| Exact toolchain | verified Node `v24.18.0`; pnpm `11.21.0`; `.nvmrc`, `.node-version`, `packageManager` agree | Pass |
-| Frozen install | `CI=true pnpm install --frozen-lockfile --offline` against generated lockfile | Pass |
-| Dependency peers | `pnpm peers check` | Pass; no issues |
-| Formatting | `pnpm format:check` via `pnpm check` | Pass |
-| Lint | `pnpm lint` via `pnpm check` | Pass; zero warnings |
-| Strict typecheck | `next typegen && tsc --noEmit` via `pnpm check` | Pass |
-| Unit/component tests | Vitest: 1 file, 1 test | Pass |
-| Production build | Next.js 16.2.12: `/`, `/_not-found`, and `/icon.svg` statically prerendered | Pass |
-| Browser/accessibility smoke | Playwright Chromium: 1 test; axe violations equal `[]` | Pass |
-| Visual/browser console | Playwright CLI desktop and 390 px inspection; favicon 404 fixed and rechecked | Pass |
-| Ignore boundary | `git check-ignore -v` for draft CSV, 194 MB staged images, build/test/browser output, and OS files | Pass |
-| Clean Git scope | 61 staged paths inspected; no draft CSV, staged images, dependencies, build, OS, test, or browser-QA output | Pass |
-| Clean clone | 832 KB tracked checkout; frozen install restored 450 packages; `pnpm check` and `pnpm build`; no dirty diff | Pass |
-| Public remote | `Rasmus-allesoee/skull_website`; `PUBLIC`; default branch `main`; pushed commit matches local | Pass |
-| CI | [GitHub Actions run 31645819494](https://github.com/Rasmus-allesoee/skull_website/actions/runs/31645819494), push of `e8d322dd…` with current action majors | Pass |
+| Exact toolchain/install | Node `v24.18.0`; pnpm `11.21.0`; `CI=true pnpm install --frozen-lockfile` restored all 470 pinned packages from the verified lockfile/store | Pass |
+| Content build | `pnpm content:build`: 1 taxon, 1 specimen, 6 specimen media assets, 1 comparison reference, 0 reviewed profiles (1 profile source) | Pass |
+| Media | `pnpm validate:media`: 6 specimen assets plus 1 reference, sRGB/alpha/bounds valid, no EXIF/IPTC/XMP | Pass |
+| Invalid fixtures | `pnpm test:fixtures`: 5 expected failures detected | Pass |
+| Types/lint/tests | `pnpm typecheck`; `pnpm lint`; `CI=true pnpm test`: 4 files / 16 tests, including scaling invariants, bounds offsets, orientation, ratio wording, dynamic selection, and profile-citation state | Pass |
+| Production build | `CI=true pnpm build`: 7 static routes including both specimen forms and `/guides/skull-preparation` | Pass |
+| Browser/accessibility | `CI=true PLAYWRIGHT_PORT=3102 pnpm test:e2e`: 10 Chromium journeys in 17.5 s; axe violations `[]`; desktop geometry/optical inset, master delivery, inspector isolation/navigation, full native gallery manipulation, 100%-scale real-touch swipe, two-finger pinch translation, post-zoom two-dimensional pan, inspection swipe/pinch/drag, dialogs, comparison ratios, reduced motion, third-party boundary, and no-JavaScript covered | Pass |
+| Manual visual/responsive | Retained Phase 2.2 review at 1440 × 696, 1440 × 900, 390 × 844, and 844 × 390. Final Phase 2.3 Playwright CLI review at 390 × 844 and 1440 × 900 confirmed the shorter scale-card heading, selection-driven human note, no horizontal overflow, and zero console errors/warnings | Pass |
+| Local-network regression | Fresh `dev:network` sessions at loopback and the Mac LAN IPv4: zero console errors and `Next` remained on `2 / 6 · Oblique` instead of resetting through HMR reload | Pass |
+| Remote CI | Phase 2.3 implementation commit [`83d577b`](https://github.com/Rasmus-allesoee/skull_website/commit/83d577b) passed [Actions run 32063339841](https://github.com/Rasmus-allesoee/skull_website/actions/runs/32063339841); documentation checkpoint [`a89b723`](https://github.com/Rasmus-allesoee/skull_website/commit/a89b723) passed [run 32064897700](https://github.com/Rasmus-allesoee/skull_website/actions/runs/32064897700) | Pass |
+| Phase 2.3 final local gate | `CI=true pnpm check`: pass (4 files / 16 tests; 5 expected invalid fixtures); `CI=true pnpm build`: 7 routes; focused mobile: 2/2; desktop isolation stress: 5/5 without retries; complete Playwright: 10/10 without retries | Pass |
 
-Evidence is filled with exact results before Phase 0/1 is marked complete. A local pass does not substitute for remote/CI verification where the gate explicitly requires it.
+Package-manager gates must run sequentially with `CI=true` in non-interactive environments; concurrent pnpm commands can reconcile `node_modules` against different lifecycle states and are not a valid speed optimization.
 
-## 9. Known risks and controls
+## 8. Known limitations and controls
 
-| Risk | Control |
-|---|---|
-| Raw/private draft accidentally published | Explicit `.gitignore`, staged-file audit, public-source schema |
-| Schema grows from legacy spreadsheet accidents | Approved normalized contract; representative vertical slice first |
-| Taxonomy corrections break URLs | Immutable local IDs, curated slugs, redirects, reviewed snapshot |
-| Large imagery harms speed/repository | Private masters, Sharp derivatives, budgets, 500 MB review trigger |
-| Museum aesthetics obscure usability | WCAG rules, semantic controls, keyboard/mobile gate, visual approval |
-| Search/map duplicate data logic | Both compile from canonical records and use stable URLs |
-| New-feature enthusiasm expands phase | Phase gates and explicit deferred prerequisites |
-| GitHub credentials expire later | Verify `gh auth status` at external checkpoints; never store tokens in repository files |
+- Only one taxon/specimen exists. Home remains a phase entrance, not the Phase 3 museum shell/catalog; related-family and random discovery sections therefore have no honest content yet.
+- No class/order/family/genus landings, catalog, search, map, full ingestion, deployment, analytics, 360°, 3D, upload, or AI overlay has started.
+- The specimen-page `View on map` action is intentionally deferred with the Phase 5 map route; Phase 2 keeps the reviewed textual locality, coordinates, and precision in the Collection record.
+- The calibrated card is a true relative comparison between visible skull subjects; it does not calibrate the visitor's monitor so displayed CSS pixels are not literal real-world millimetres.
+- Only one collection specimen is published, so the live selector currently offers only the adult-human default. Its reusable dynamic-specimen path is covered with synthetic test records and will gain real options as reviewed default specimens are ingested.
+- The adult-human dimensions are explicitly approximate representative values and not a universal adult average. A future source-methodology review may refine the reference without changing the comparison architecture.
+- Measurement definitions are a quick field guide, not a reproducible anatomical protocol. Dedicated illustrated methodology remains future content.
+- The age and condition dialogs are general collection criteria. Future methodology must cite them, explain species variation, and add reviewed real-skull examples.
+- The preparation route is a labelled shell, not actionable chemical, biological, legal, or safety guidance.
+- The current editorial profile is intentionally absent from the public page; GBIF taxonomy evidence remains available in structured data but is not expanded into low-value prose.
+- Footer copyright starts at 2026 because no repository evidence supports a 2023 publication start; the start year can change only with owner-supplied evidence/preference.
+- Chrome/Chromium is the Phase 2 browser target. Firefox/WebKit and formal 200%/forced-colors/screen-reader release checks remain Phase 7 gates.
+- The connected GitHub app previously returned `403 Resource not accessible by integration` for issue/PR writes; the authenticated local `gh` session remains the established remote-write path.
 
-## 10. Exact next actions
+## 9. Exact next action
 
-1. Stop Phase 0/1 work; preserve this verified checkpoint.
-2. Await explicit user authorization to begin Phase 2.
-3. When authorized, create the Phase 2 GitHub milestone/issues and a focused `agent/<short-description>` branch.
-4. Confirm the representative taxon/specimen, immutable IDs, and rights/credits before moving any local image into the public pipeline.
-5. Implement only the Phase 2 source → validation/media → taxon/specimen vertical slice and stop at its user-approval gate.
+1. Land the exact approved Phase 2 head through PR #4's normal protected path, close the Phase 2 issue/milestone, verify final `main` Actions, and audit local/remote state.
+2. Begin Phase 3 only in the next dedicated implementation prompt.
 
-## 11. Decision/blocker protocol
+No new metadata, source measurements, or images are required merely to review/approve Phase 2.3. The later illustrated methodology requires owner-created/reviewed assets; real collection choices in the comparison selector and related/random sections require additional reviewed taxa/specimens and belong to later authorized work.
+
+## 10. Decision/blocker protocol
 
 - A failing test or lint rule is implementation work, not automatically a blocker.
-- A decision that changes public identity, rights, data publication, scope, or external account state is surfaced to the user.
-- Blockers record what was tried, exact evidence, safe work completed, and the smallest required user action.
+- A decision that changes public identity, rights, data publication, scope, or external account state is surfaced to the owner.
+- Blockers record what was tried, exact evidence, safe work completed, and the smallest required owner action.
 - When resolved, retain a short resolution in the checkpoint log rather than deleting history.
 
-## 12. Checkpoint log
-
-### 2026-08-12 — Phase 0/1 started
-
-- User explicitly approved the master plan and authorized Phase 0/1 only.
-- Source/context and GitHub/toolchain preflight completed.
-- Canonical documentation created before application feature work.
-- GitHub token was found invalid despite a configured active account; remote work remains pending re-authentication.
-- Current framework releases were pinned, then compatibility-tested: TypeScript 7 and ESLint 10 were replaced by supported TypeScript 6.0.3 and ESLint 9.39.5 after the Next.js lint graph rejected the newer majors.
-- Pinned local install, peer check, formatting, lint, strict typecheck, unit test, static build, Chromium/axe smoke test, and visual desktop/mobile inspection passed.
+## 11. Checkpoint log
 
 ### 2026-08-12 — Phase 0/1 completed
 
-- Audited and committed 61 intended foundation files as `07eea359cd4a4daf302639af52a0762ab53690f0`; private/staging/generated paths remained ignored.
-- Verified the commit from a clean local clone using the exact pinned Node/pnpm toolchain; install, checks, and static build passed with no working-tree changes.
-- Re-authenticated GitHub CLI, created the public repository, pushed `main`, and verified the repository visibility/default branch.
-- GitHub Actions push run `31644826604` passed the full CI job.
-- Dependabot immediately opened three GitHub Actions update pull requests; their isolated CI runs were green, and the same reviewed version-only changes were folded into the phase-closing checkpoint for one combined CI verification.
-- Phase-closing commit `e8d322dd12dab2bbbd4873c153cab867afe2c1b7` passed combined CI run `31645819494`; this final status update uses `[skip ci]` to avoid creating a recursive evidence-only run.
-- Phase 2 remains intentionally unstarted.
+- Foundation and canonical documentation were published in public `Rasmus-allesoee/skull_website`.
+- Foundation commit `07eea359cd4a4daf302639af52a0762ab53690f0` and phase-closing commit `e8d322dd12dab2bbbd4873c153cab867afe2c1b7` passed GitHub Actions.
+- Phase 2 remained unstarted until explicit user authorization.
 
-Future entries should be concise and evidence-based. Git history owns file-level chronology; this log owns phase outcomes, decisions, blockers, and next action.
+### 2026-08-13 — initial Phase 2 slice checkpointed
+
+- The user selected *Nyctereutes procyonoides*, staging metadata `ID = 1`, and the six matching `mårhund_*_1.png` files, and authorized Phase 2 only.
+- The pipeline, six derivatives, static routes, first display, tests, and canonical documentation were implemented on `agent/phase-2-raccoon-dog-slice`.
+- Commit `2b17568a1216a3858d8f1f3caf3193ecc7e098fb` passed the complete clean-clone gate. Documentation checkpoint `ed1852c` passed GitHub Actions run `31743399720`; draft PR #4 and Phase 2 issues/milestone remained open for owner review.
+
+### 2026-08-14 — Phase 2.1 owner-feedback refinement in progress
+
+- The owner approved the overall direction and supplied detailed gallery, mobile, inspection, hierarchy, data-model, guidance, wording, and future-scope feedback.
+- The bounded implementation is complete without beginning Phase 3. Manual review caught intrinsic image boxes overflowing both viewports; absolute constrained image boxes plus new geometry assertions fixed that final crop.
+- `CI=true pnpm check`, `CI=true pnpm build`, and all 9 Playwright journeys pass after the fix. Manual desktop, portrait, landscape, inspection, and long-dialog checks pass with zero horizontal overflow.
+- Commit `1fcf7c6777530a8443f32d109b4b9de28107a3bc` passed [GitHub Actions run 31850640194](https://github.com/Rasmus-allesoee/skull_website/actions/runs/31850640194). Draft PR #4 and issue #8 were updated with the Phase 2.1 evidence.
+- The only remaining gate item is explicit owner approval; the issue, milestone, and PR intentionally remain open/draft.
+
+### 2026-08-15 — Phase 2.2 second owner-feedback refinement in progress
+
+- The owner supplied exact gallery/inspector/mobile/dialog corrections plus a detailed reusable true-to-scale comparison specification, adult-human staging reference, and visual mockups.
+- The gallery, inspector, LAN-device workflow, measurement layout, comparison pipeline/UI, schema version 3, dialog alignment, automated coverage, and canonical documents were updated without starting Phase 3.
+- Local automated and manual evidence passes. Implementation commit `b1de049` passed GitHub Actions run `31916200967`; owner visual approval is the only remaining Phase 2 gate item.
+
+### 2026-08-16 — lateral hero optical alignment correction
+
+- Owner review found that the lateral skull's visible mass sat too close to the top frame edge. A desktop-height, lateral-only optical offset now balances top/bottom negative space without affecting the underlying asset, calibrated comparison, inspection, thumbnails, other views, or short mobile landscape.
+- The normal-window browser gate now asserts the deliberate inset so this framing correction cannot silently regress.
+
+### 2026-08-17 — Phase 2.3 completed and owner-approved
+
+- The owner approved the Phase 2.2 direction subject to three small corrections: remove redundant scale copy and verify conditional uncertainty wording; restore native page pinch over the main mobile image; and add mobile swipe navigation inside inspection.
+- The owner also deferred a specimen-location map action to Phase 5. Canonical plans now connect Collection record locations to `/map?specimen={id}` without introducing MapLibre on specimen routes.
+- The complete local gate passes: quality checks, 7-route production build, real-touch mobile coverage, five-run desktop isolation stress check, 10/10 final browser journeys, responsive visual review, and zero console errors. Implementation commit `83d577b` passed GitHub Actions run `32063339841`; documentation checkpoint `a89b723` passed run `32064897700`.
+- The owner explicitly answered `YES I APPROVE!` on 2026-08-17. This closes the Phase 2 product gate; Phase 3 remains unstarted pending its dedicated task.
+
+Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.

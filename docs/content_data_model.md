@@ -1,24 +1,26 @@
 # Content and data model
 
-**Status:** Approved contract; executable schemas begin in Phase 2
+**Status:** Approved contract; executable schema version 3 and Phase 2.3 representative display rules implemented
 
-**Last reviewed:** 2026-08-12
+**Last reviewed:** 2026-08-17
 
 ## 1. Purpose
 
 This document defines how taxonomic identities, physical specimens, measurements, provenance, preparation, editorial profiles, citations, and media relate. It is the contract between human-maintained content and the application.
 
-The current `agent_context/skulls_meta.csv` is an incomplete illustrative working sheet. It must not be copied into production, published, or allowed to dictate this schema. Phase 6 ingests a reviewed replacement export after stable IDs, public notes, and image filenames are complete.
+The current `agent_context/skulls_meta.csv` is an incomplete illustrative working sheet. It is not a production input and must not dictate this schema. Phase 2 used only the user-selected row with source `ID = 1` as evidence for a manually curated representative record; Phase 6 ingests a reviewed replacement export after stable IDs, public notes, and image filenames are complete.
 
 ## 2. Sources of truth
 
 | Source | Owns | Does not own |
 |---|---|---|
 | `content/taxa/taxa.csv` | Identity, names, rank, hierarchy, taxonomy references, slug, default specimen, publication state | Physical measurements, acquisition, preparation |
-| `content/specimens/specimens.csv` | One physical skull, biology, provenance, preparation, measurements, rights, publication state | Shared species prose or hierarchy definitions |
-| `content/profiles/{taxon-id}.mdx` | Cited overview and skull-identification prose | Record fields that need filtering or validation |
+| `content/specimens/specimens.csv` | One physical skull, biology, condition/observations, provenance, preparation, measurements, rights, publication state | Shared species prose or hierarchy definitions |
+| `content/profiles/{taxon-id}.mdx` | Optional review-gated overview and skull-identification prose | Record fields that need filtering or validation |
 | `content/guides/*.mdx` | Cited editorial guides | Taxon/specimen facts |
-| Media manifest generated from public assets | Dimensions, canonical view, path, subject bounds, technical validation | Rights/provenance source decisions |
+| `content/media/{specimen-id}.json` | Canonical views, lateral orientation, alt text, credit, and rights declarations | Pixel-derived dimensions/bounds |
+| `content/references/{reference-id}.json` | Stable comparison-reference identity, display/search terms, approximate measurements, default state, orientation, credit, and rights | Specimen/taxon identity or universal biological claims |
+| Media manifests generated from public assets | Dimensions, canonical view, path, subject bounds, technical validation | Rights/provenance source decisions |
 | Reviewed taxonomy snapshot | External match evidence and review state | Immutable local identity or curated vernacular names |
 
 Compiled JSON, search indexes, and GeoJSON are generated views. They are never edited as sources.
@@ -36,7 +38,7 @@ Compiled JSON, search indexes, and GeoJSON are generated views. They are never e
 - Rows have stable explicit IDs; row position is never identity.
 - Unknown extra columns fail validation so misspelled headers are not silently ignored.
 
-Phase 2 will add committed header templates and executable validation. Until then, do not create ad-hoc production CSVs.
+Phase 2 fixed the committed header order in `src/domain/content/schemas.ts` and added strict executable validation. Phase 2.1 deliberately extended that order and advanced generated `CompiledCollection.schemaVersion` from 1 to 2. Phase 2.2 advances the compiled contract to version 3 for lateral orientation and comparison-reference records without changing either CSV header. Schema/header changes now require the change-management process in section 18; do not create ad-hoc production CSV variants.
 
 ## 4. Identity, slugs, and references
 
@@ -71,7 +73,7 @@ GBIF and Catalogue of Life identifiers are nullable verification references. The
 
 ## 5. `taxa.csv` contract
 
-The executable schema may refine names during Phase 2, but it must preserve these semantics.
+The executable Phase 2 schema preserves these semantics. `src/domain/content/schemas.ts` is the machine-readable header and controlled-value contract; this document owns their meaning.
 
 | Field | Type | Required for published | Meaning and constraints |
 |---|---|---:|---|
@@ -115,17 +117,25 @@ Hierarchy fields are denormalized deliberately for readable CSV review and fast 
 | `taxon_id` | taxon ID | Yes | Must resolve to one taxon |
 | `publication_status` | enum | Yes | `draft`, `review`, `published`, or `archived` |
 | `is_type_or_reference_specimen` | boolean | No | Descriptive collection flag only; must not imply formal taxonomic type status |
-| `condition` | enum | Yes | `complete`, `partial`, `damaged`, `pathological`, or `unknown` |
-| `distinguishing_features` | public string | No | Factual visible features; no private notes |
+| `condition` | enum | Yes | `excellent`, `good`, `fair`, `poor`, `fragmentary`, or `not_recorded`; the UI presents the first five as levels 1–5 |
+| `distinguishing_features` | public string | No | Factual visible condition detail; no private notes |
 
 ### Biological context
 
 | Field | Type | Required | Meaning |
 |---|---|---:|---|
 | `sex` | enum | No | `female`, `male`, `intersex`, `unknown`, or `not_recorded` |
-| `age_class` | enum | No | `juvenile`, `subadult`, `adult`, `senescent`, `unknown`, or `not_recorded` |
+| `age_class` | enum | No | `juvenile`, `subadult`, `young_adult`, `adult`, `old_adult`, `indeterminate`, or `not_recorded` |
 | `age_detail` | public string | No | Evidence or more precise age statement |
+| `pathology_status` | enum | No | `yes`, `no`, or `not_recorded`; independent of physical condition |
+| `pathology_description` | public string | Conditional | Required when pathology is `yes`; otherwise empty |
+| `trauma_status` | enum | No | `yes`, `no`, or `not_recorded`; bite marks, projectile damage, or other observed trauma |
+| `trauma_description` | public string | Conditional | Required when trauma is `yes`; otherwise empty |
+| `teeth_completeness` | enum | No | `complete`, `partially_complete`, `incomplete`, or `not_recorded` |
+| `skeleton_completeness` | enum | No | `full`, `partial`, `none`, or `not_recorded` |
 | `body_mass_g` | measurement | No | Animal body mass, separate from skull mass |
+
+Condition records preservation/completeness, while pathology and trauma record separate observations. Natural abnormalities, age-related tooth loss, and developmental features do not lower condition by themselves. `not_recorded` is required unless the specimen was actually assessed; absence of a note must never be compiled as `no`, `complete`, or `none`.
 
 ### Acquisition and provenance
 
@@ -168,23 +178,27 @@ All numeric values are non-negative decimal numbers in canonical units. Each sup
 | Field | Unit | Meaning |
 |---|---|---|
 | `skull_length_mm` | mm | Approved total skull-length landmark pair |
+| `condylobasal_length_mm` | mm | Anterior premaxilla to posterior occipital-condyle landmark pair |
 | `skull_width_mm` | mm | Approved maximum skull-width landmark pair |
 | `skull_height_mm` | mm | Approved height landmark pair |
 | `skull_mass_g` | g | Prepared skull/mandible configuration defined in methodology |
 | `cranium_width_mm` | mm | Approved cranium-width landmark pair |
 | `mandible_length_mm` | mm | Approved mandible-length landmark pair |
+| `mandibular_tooth_row_length_mm` | mm | Recorded mandibular tooth-row length |
+| `mandible_ramus_height_mm` | mm | Straight-line ramus height |
+| `mandible_body_height_mm` | mm | Mandibular body height at the final molar |
 | `maxillary_canine_length_mm` | mm | Exposed/defined upper canine measurement |
 | `mandibular_canine_length_mm` | mm | Exposed/defined lower canine measurement |
 
-The final landmark names and diagrams must be tested against real data in Phase 2 before headers become executable. Measurement status semantics are defined in section 8.
+These landmark names were tested against the Phase 2 representative record before the headers became executable. Every measurement/duration/concentration column has an adjacent `_status` column using section 8 semantics. The former generic diagram is not part of the measurement contract: exact landmark illustrations and reproducible measurement instructions require owner-supplied real-skull imagery plus cited methodology review.
 
 ### Rights, credit, and notes
 
 | Field | Type | Required for published | Meaning |
 |---|---|---:|---|
-| `specimen_credit` | public string | Yes | Display credit for the record/specimen |
+| `specimen_credit` | public string | Yes | Structured record/specimen credit; owner is displayed from `owner_credit` |
 | `data_rights` | enum | Yes | Initially `all_rights_reserved`; later licenses require explicit review |
-| `media_credit` | public string | Yes | Default photography credit, overridable per asset later |
+| `media_credit` | public string | Yes | Default photographer name, overridable per asset later; UI prefixes it with `Photo:` |
 | `media_rights` | enum | Yes | Initially `all_rights_reserved` |
 | `public_notes` | public string | No | Reviewed facts suitable for publication |
 | `source_references` | citation-key list | No | Structured references for record-specific claims |
@@ -193,7 +207,7 @@ No column named simply `notes` is allowed in the public CSV because it encourage
 
 ## 7. Conceptual domain types
 
-The concrete Phase 2 TypeScript types must express, not weaken, these shapes:
+The concrete TypeScript types in `src/domain/content/types.ts` express, without weakening, these shapes:
 
 ```ts
 type PublicationStatus = "draft" | "review" | "published" | "archived";
@@ -224,6 +238,11 @@ interface TaxonRecord {
 interface Specimen {
   specimenId: string;
   taxonId: string;
+  condition: "excellent" | "good" | "fair" | "poor" | "fragmentary" | "not_recorded";
+  pathology: { status: "yes" | "no" | "not_recorded"; description: string | null };
+  trauma: { status: "yes" | "no" | "not_recorded"; description: string | null };
+  teethCompleteness: "complete" | "partially_complete" | "incomplete" | "not_recorded";
+  skeletonCompleteness: "full" | "partial" | "none" | "not_recorded";
   measurements: Record<MeasurementKey, Measurement>;
   location: SpecimenLocation;
   preparation: PreparationRecord;
@@ -237,10 +256,30 @@ interface MediaAsset {
   width: number;
   height: number;
   subjectBounds: { x: number; y: number; width: number; height: number };
+  orientation: "left" | "right" | null;
   alt: string;
   credit: string;
   rights: string;
   publicPath: string;
+}
+
+interface ComparisonReferenceRecord {
+  referenceId: string;
+  label: string;
+  isDefault: boolean;
+  aliases: string[];
+  note: string;
+  measurements: Record<ComparisonMeasurementKey, Measurement>;
+  media: {
+    width: number;
+    height: number;
+    subjectBounds: { x: number; y: number; width: number; height: number };
+    orientation: "left" | "right";
+    alt: string;
+    credit: string;
+    rights: "all_rights_reserved";
+    publicPath: string;
+  };
 }
 ```
 
@@ -292,7 +331,13 @@ Expected frontmatter:
 taxon_id: TAX-0001
 review_status: draft
 last_reviewed: 2026-08-12
-summary: Concise page description.
+summary: Concise internal profile state or reviewed page description.
+citations: []
+```
+
+A reviewed profile replaces the empty citation list with entries such as:
+
+```yaml
 citations:
   - key: example-reference
     title: Example title
@@ -311,15 +356,18 @@ Expected sections:
 
 Rules:
 
+- Profiles are optional. A published taxon and specimen do not require an editorial profile.
+- A `draft` profile retains the four canonical headings but may have empty sections and an empty citation list; it is compiled for authoring checks and omitted from the public page.
+- Only `reviewed` profiles may render publicly. They require at least one citation; their Overview, Skull identification, and Comparison notes sections must be non-empty, useful, and supported where claims require it.
 - Species-level external facts require citations near the claim.
 - Specimen observations are labelled as observations and remain in structured/public specimen fields where filterable.
 - MDX components are allowlisted; arbitrary scripts and raw HTML are forbidden.
 - References use stable primary/authoritative sources where possible and include access dates for web sources.
-- Missing profile prose must not block a valid specimen exhibit; the page can state that an editorial profile is pending.
+- Missing profile prose must not block or add placeholder copy to a valid specimen display.
 
 ## 12. Guide content
 
-Guide MDX uses explicit title, slug, summary, review date, safety-review status, and citations. Preparation guidance must distinguish documented practice from established safety guidance. Chemical concentrations, animal handling, disease, legal collection rules, and disposal claims require current authoritative review before publication.
+Guide MDX uses explicit title, slug, summary, review date, safety-review status, and citations. Preparation guidance must distinguish documented practice from established safety guidance. Chemical concentrations, animal handling, disease, legal collection rules, and disposal claims require current authoritative review before publication. The Phase 2.1 static `/guides/skull-preparation` outline is intentionally not guide MDX and cannot be mistaken for reviewed procedural content.
 
 ## 13. Media contract
 
@@ -338,12 +386,25 @@ Guide MDX uses explicit title, slug, summary, review date, safety-review status,
 
 - Staging input: `{specimen-id}__{view}.png` using ASCII lower-case tokens.
 - Public derivative: `{specimen-id}__{view}.webp` under a specimen-addressable media path.
+- A schema-version-2 specimen media declaration records an explicit `left`/`right` orientation for the lateral asset. Other views have no lateral orientation value. Runtime heuristics must not guess direction.
 - No common names, scientific names, spaces, Danish letters, or mutable slugs in filenames.
 - The processing command converts to sRGB, normalizes orientation, strips metadata, validates transparency and dimensions, calculates subject bounds, and writes a maximum 3200 px transparent WebP at quality 90/alpha 100.
 - Lateral is mandatory. Missing optional views generate authoring warnings; unexpected view tokens are errors.
 - Every asset resolves to a specimen and has alt text, credit, rights, dimensions, and deterministic sort order.
 
 Alt text describes the useful view and visible specimen condition without repeating the nearby name mechanically. Decorative duplicates use empty alt only when the same information is already adjacent and the image adds no independent function.
+
+### Comparison references and calibrated eligibility
+
+- Comparison references have stable ASCII IDs, declaration filenames that match those IDs, and public paths derived from those IDs under `public/media/references/`.
+- Exactly one reference has `is_default = true`. Phase 2.2 uses `adult-human-skull` as that default.
+- The adult-human reference stores fixed approximate values: maximum length 182 mm, maximum width 124 mm, height 133 mm, prepared mass 800 g, cranium width 138 mm, and maximum mandible length 117 mm. Its note explicitly says these are representative approximate dimensions, not a universal human average.
+- Every reference requires all six comparison measurements, explicit lateral orientation, alt text, credit, rights, and a validated transparent WebP with compiled subject bounds.
+- An eligible specimen comparison record is the published default specimen for its taxon and has a validated lateral asset, explicit orientation, and measured maximum skull length. A missing/approximate/unusable scaling value excludes it rather than fabricating scale.
+- Reference records sort before specimen records in the scoped selector; the current specimen is excluded. Search matches the reference label/aliases or the eligible specimen's English/scientific names and specimen ID without creating the Phase 4 global index.
+- Calibrated rendering maps `subjectBounds.width` to the record's maximum skull length and applies one shared pixels-per-millimetre factor to the pair. Canvas margins never contribute to anatomical length; source aspect ratio and all anatomical endpoints remain intact.
+- Approximate reference measurements retain `status = approximate` in the compiled record and display approximation markers. Ratios and differences are derived values, never source measurements.
+- `note` belongs to each comparison record and renders only while that record is selected; specimen records do not inherit the adult-human wording. The difference-level approximation explanation renders only when at least one available displayed difference has an approximate source status.
 
 ## 14. Public location policy
 
@@ -380,6 +441,7 @@ The owner approved exact public coordinates when known. Therefore:
 - Rights and credits are explicit.
 - Coordinates and precision agree; numbers are in range.
 - Measurements are finite, non-negative, and use canonical semantics.
+- `pathology_status = yes` and `trauma_status = yes` each require a public description; `no` or `not_recorded` forbid a description so status and prose cannot contradict.
 - Notes and provenance fields are marked public-safe.
 
 ### Cross-record
@@ -388,11 +450,33 @@ The owner approved exact public coordinates when known. Therefore:
 - A published specimen cannot link to a draft/archived taxon.
 - Previous slugs do not collide with current or previous slugs.
 - Media names contain only linked specimen IDs and canonical views.
+- Every lateral specimen asset has explicit orientation; all non-lateral specimen assets have `orientation = null` in compiled output.
+- Exactly one valid comparison reference is default and every declared reference asset passes the media contract.
 - Generated search URLs and map URLs resolve to generated routes.
 
 Errors include the source, row/key, field, invalid value, rule, and suggested correction. Warnings never replace a failure when publication integrity is at risk.
 
-## 16. Migration from the current draft
+## 16. Phase 2 representative curation record
+
+The vertical slice intentionally established identities and semantics without turning a legacy row position or filename into general import behavior:
+
+| Evidence | Curated result | Reason |
+|---|---|---|
+| staging species `Nyctereutes procyonoides`, row `ID = 1` | `TAX-0001`, slug `raccoon-dog`, and physical `SPEC-0001` | Stable local identities were explicitly assigned; neither comes from a mutable name or row number |
+| `01/11/2025` plus separate month/year columns | `2025-11`, precision `month` | The legacy sheet frequently uses day `01` as a placeholder; no exact day was asserted |
+| coordinates plus `location_uncertainty_meters = 25000` | source point retained, precision `approximate`, 25,000 m uncertainty | Precision is source evidence, not inferred from the number of decimals |
+| locality phrase `ved vadehavet` in the private narrative | public label `Wadden Sea region, Denmark` | Only the non-identifying locality fact was curated; personal names and anecdotal detail stayed outside Git |
+| `Source = Shot` | `acquisition_source = hunting` | Canonical controlled vocabulary preserves the event meaning |
+| sex/body mass `X`; whitening product diluted with water | explicit `not_recorded` states | Missing values are not zero; the product label is not misreported as the final peroxide concentration |
+| age `4` | `age_class = adult`; legacy stage number not displayed as evidence | The source supports the broad class, while the owner's review requires a separately documented age-estimation method rather than an unexplained internal stage |
+| `Ødelagt næsetip` plus owner review of its extent | `condition = good`; public detail `Small chip at the anterior nasal tip.` | The five-level preservation scale distinguishes a minor chip from substantial damage |
+| no reviewed staging values for pathology, trauma, teeth completeness, or retained skeleton | explicit `not_recorded` states | Missing observations are not inferred as negative or complete |
+
+The user-provided context establishes private ownership and original photography for this selected slice. Canonical `owner_credit`, `specimen_credit`, and `media_credit` store `Rasmus`; the page renders `Owner: Rasmus`, `Photo: Rasmus`, and the global `© 2026 Rasmus. All rights reserved.` footer. Collection data and media remain reserved under `RIGHTS.md` even though the earlier large rights panel is no longer displayed.
+
+Phase 2.2 adds only a separate visual comparison reference; it does not identify a second collection specimen. Its ignored PNG source was processed through the reference-media command, and the committed declaration/derivative preserve explicit approximate-measurement, credit, rights, orientation, bounds, and metadata-stripping semantics.
+
+## 17. Migration from the current draft
 
 The draft metadata and staged images are input evidence, not production sources. Migration in Phase 6 will:
 
@@ -409,7 +493,7 @@ The draft metadata and staged images are input evidence, not production sources.
 
 No bulk migration should silently “clean” biologically meaningful values. A migration report records every rejected or transformed field.
 
-## 17. Change management
+## 18. Change management
 
 - Adding an optional field requires schema, type, documentation, tests, and rendering-state review.
 - Renaming/removing a field requires a versioned migration.

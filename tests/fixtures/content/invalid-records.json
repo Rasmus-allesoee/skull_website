@@ -1,0 +1,20 @@
+{
+  "name": "representative invalid record diagnostics",
+  "taxon_mutations": {
+    "default_specimen_id": "SPEC-9999"
+  },
+  "specimen_mutations": {
+    "acquisition_date": "2025-02-31",
+    "acquisition_date_precision": "day",
+    "latitude": "91",
+    "skull_length_mm": "-1",
+    "pathology_status": "yes"
+  },
+  "expected_rules": [
+    "Published taxon default specimen does not exist",
+    "Date does not match real day precision",
+    "Latitude is outside -90 to 90",
+    "measured measurement requires a finite non-negative number",
+    "pathology observation marked yes requires a short public description"
+  ]
+}

@@ -4,5 +4,7 @@ strictPeerDependencies: true
 
 allowBuilds:
   "@tailwindcss/oxide@4.3.3": true
+  "esbuild@0.28.2": true
   "sharp@0.34.5": true
+  "sharp@0.35.3": true
   "unrs-resolver@1.12.2": true

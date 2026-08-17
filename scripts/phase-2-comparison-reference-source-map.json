@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "source_root": "agent_context/skull_images_clean",
+  "entries": [
+    {
+      "reference_id": "adult-human-skull",
+      "source_file": "realistic_human_skull_scale.png",
+      "public_file": "public/media/references/adult-human-skull.webp"
+    }
+  ]
+}

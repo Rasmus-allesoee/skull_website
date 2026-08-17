@@ -44,11 +44,19 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Validate curated content and public media
+        run: |
+          pnpm validate:media
+          pnpm validate:content
+
       - name: Typecheck
         run: pnpm typecheck
 
       - name: Run unit and component tests
         run: pnpm test
+
+      - name: Verify invalid content fixtures fail actionably
+        run: pnpm test:fixtures
 
       - name: Build production application
         run: pnpm build
@@ -58,6 +66,3 @@ jobs:
 
       - name: Run browser smoke and accessibility test
         run: pnpm test:e2e
-
-      # Phase 2 adds real content/media validation steps here after executable
-      # schemas and the representative media pipeline exist.
