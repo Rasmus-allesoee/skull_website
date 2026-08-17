@@ -1,18 +1,37 @@
 # Project status
 
-**Snapshot date:** 2026-08-16
+**Snapshot date:** 2026-08-17
 
-**Current phase:** Phase 2.2 — second owner-feedback refinement technically complete; owner re-review open
+**Current phase:** Phase 2.3 — final owner-feedback refinement passes the complete local gate; remote checkpoint pending
 
-**Overall state:** The complete local, manual, Git, and GitHub Actions gate passes; explicit owner approval remains before Phase 2 can close
+**Overall state:** Complete local automated and visual verification passes; the GitHub Actions checkpoint and explicit owner approval remain before Phase 2 can close
 
 **Next phase:** Phase 3 — not started and not authorized
 
 ## 1. Current objective
 
-Hold the verified Phase 2.2 branch stable for visual/content re-review. Do not scale the catalog or begin Phase 3 search, map, shell, taxonomy-index, or full-ingestion work until the owner approves the Phase 2.2 slice.
+Complete and publish the bounded Phase 2.3 checkpoint, then stop for a yes/no owner review. Do not scale the catalog or begin Phase 3 search, map, shell, taxonomy-index, or full-ingestion work until the owner approves the Phase 2.3 slice.
 
-## 2. Phase 2.2 implementation
+## 2. Phase 2.3 implementation
+
+### Comparison copy and uncertainty
+
+- Removed the low-value sentence explaining shared physical scale and transparent margins from the `A sense of scale` heading.
+- Confirmed and regression-tested that the adult-human description comes from the selected reference record. Selecting a measured specimen with no note removes that text.
+- Confirmed and regression-tested that the difference-level approximation explanation appears only when at least one available displayed difference uses an approximate source value; measured specimen pairs do not inherit it.
+
+### Mobile gestures
+
+- Changed the ordinary gallery stage from restrictive `pan-y` to full browser `manipulation` (`pan-x pan-y pinch-zoom`). Pinch can now translate while scaling, and a zoomed visual viewport can pan horizontally, vertically, or diagonally inside the large image frame.
+- Moved gallery swipe/double-tap recognition to single-touch completion at approximately 100% page scale. Zoomed-page pans and multi-touch gestures remain browser-owned and cannot become stray view switches or inspection opens.
+- Added horizontal touch swipe between inspection views at 100% zoom. Once the image is enlarged, one finger continues to pan; two fingers continue to zoom the image.
+- Updated the inspection hint and added production-browser coverage for native page pinch, two-dimensional page pan after zoom, 100%-scale gallery swipe, and inspection swipe.
+
+### Deferred specimen map
+
+- Kept MapLibre out of Phase 2. Phase 5 now explicitly adds a `View on map` action near Collection record location data, targeting `/map?specimen={id}` so the central map route owns marker/list selection and the textual record remains the accessible equivalent.
+
+## 3. Phase 2.2 implementation
 
 ### Photography, inspection, and real-device behavior
 
@@ -38,7 +57,7 @@ Hold the verified Phase 2.2 branch stable for visual/content re-review. Do not s
 - Changed the collection kicker from `Provenance` to `Metadata`.
 - Left-aligned age/condition guide notes and headings. The desktop `Specimen-condition guide` title remains on one line; narrow layouts may wrap naturally.
 
-## 3. Phase 2.1 implementation (retained foundation)
+## 4. Phase 2.1 implementation (retained foundation)
 
 ### Photography and navigation
 
@@ -66,20 +85,20 @@ Hold the verified Phase 2.2 branch stable for visual/content re-review. Do not s
 - Specified Phase 3 discovery sections as at most three same-family cards plus three deterministic collection-wide cards, excluding the current taxon and duplicates and omitting empty groups. They are not rendered with only one taxon.
 - Kept all section kickers for now, including the explicitly preferred `Mammalia · Carnivora` and `Physical specimen`; canonical design guidance marks the remaining kickers for reconsideration after the stable release.
 
-## 4. Phase 2 acceptance gate
+## 5. Phase 2 acceptance gate
 
 | Requirement | State | Evidence |
 |---|---|---|
 | Complete source → validation → generated data/media → static route journey | Pass locally | One published taxon, one specimen, six specimen assets, one comparison reference, zero reviewed profiles; taxon, exact-specimen, and preparation-guide routes prerender |
 | Invalid representative fixtures fail actionably | Pass locally | Five deliberate relationship/date/rights/media/observation failures report source, key/field, rule, and correction guidance |
 | No EXIF/GPS or archival source reaches public output | Pass locally | All six specimen WebPs plus the human reference pass EXIF/IPTC/XMP inspection; both source PNG sets remain ignored |
-| Refined desktop/mobile/landscape interactions and presentation pass | Pass locally | Nine Playwright journeys plus manual 1440 × 696, 1440 × 900, 390 × 844, and 844 × 390 review; desktop and touch pinch paths included |
-| Canonical docs, Git scope, branch, and remote CI agree | Pass | Canonical docs are reconciled; staging/generated/browser output remains ignored; only curated public derivatives were committed; implementation commit `b1de049` passed Actions run `31916200967` |
-| Owner approves refined visual direction, density, interactions, and wording | **Pending** | Requires explicit approval after reviewing the Phase 2.2 result |
+| Refined desktop/mobile/landscape interactions and presentation pass | Pass locally | Ten Playwright journeys plus final desktop/mobile visual review; real-touch coverage includes 100%-scale gallery swipe, pinch scaling with two-finger translation, post-zoom horizontal/vertical/diagonal pan, and inspection swipe |
+| Canonical docs, Git scope, branch, and remote CI agree | Remote pending | Canonical Phase 2.3 docs and local scope are reconciled; the new commit and GitHub Actions result are pending |
+| Owner approves refined visual direction, density, interactions, and wording | **Pending** | Requires a yes/no decision after reviewing the Phase 2.3 result |
 
-**Gate conclusion:** The refined Phase 2.2 technical acceptance gate passes locally and remotely. The full Phase 2 gate remains open only for explicit owner approval, so Phase 3 remains blocked.
+**Gate conclusion:** The complete Phase 2.3 local technical and visual gate passes. Its remote checkpoint and explicit owner approval remain open, so Phase 3 remains blocked.
 
-## 5. Representative record decisions
+## 6. Representative record decisions
 
 | Decision | Current answer | Reason/evidence |
 |---|---|---|
@@ -97,7 +116,7 @@ Hold the verified Phase 2.2 branch stable for visual/content re-review. Do not s
 | Rendering | static App Router/RSC plus gallery, comparison, selector, and guide-dialog client islands | Preserves useful static/no-JavaScript content while isolating genuine interaction |
 | Production compiler | `next build --webpack` | Pinned Turbopack production build did not terminate reliably in Phase 2; webpack remains deterministic and verified |
 
-## 6. Verification evidence in this refinement
+## 7. Verification evidence in this refinement
 
 | Gate | Most recent evidence | Status |
 |---|---|---|
@@ -107,17 +126,19 @@ Hold the verified Phase 2.2 branch stable for visual/content re-review. Do not s
 | Invalid fixtures | `pnpm test:fixtures`: 5 expected failures detected | Pass |
 | Types/lint/tests | `pnpm typecheck`; `pnpm lint`; `CI=true pnpm test`: 4 files / 16 tests, including scaling invariants, bounds offsets, orientation, ratio wording, dynamic selection, and profile-citation state | Pass |
 | Production build | `CI=true pnpm build`: 7 static routes including both specimen forms and `/guides/skull-preparation` | Pass |
-| Browser/accessibility | `CI=true PLAYWRIGHT_PORT=3102 pnpm test:e2e`: 9 Chromium journeys in 17.4 s; axe violations `[]`; desktop geometry/optical inset, unchanged alternate views, master delivery, inspector gesture isolation/navigation, all mobile controls/gestures/dialogs, true-scale ratios, selector, guide route, reduced motion, third-party boundary, and no-JavaScript covered | Pass |
-| Manual visual/responsive | Playwright CLI at 1440 × 696, 1440 × 900, 390 × 844, and 844 × 390: no horizontal overflow; complete larger anatomy; lateral visible-subject gaps approximately 50 px top/53 px bottom at the primary viewport; visible controls; aligned scrollable rail; coherent comparison/difference layouts; exact 116/182 visual ratio; corrected dialogs; portrait/short-landscape framing unchanged | Pass |
+| Browser/accessibility | `CI=true PLAYWRIGHT_PORT=3102 pnpm test:e2e`: 10 Chromium journeys in 17.5 s; axe violations `[]`; desktop geometry/optical inset, master delivery, inspector isolation/navigation, full native gallery manipulation, 100%-scale real-touch swipe, two-finger pinch translation, post-zoom two-dimensional pan, inspection swipe/pinch/drag, dialogs, comparison ratios, reduced motion, third-party boundary, and no-JavaScript covered | Pass |
+| Manual visual/responsive | Retained Phase 2.2 review at 1440 × 696, 1440 × 900, 390 × 844, and 844 × 390. Final Phase 2.3 Playwright CLI review at 390 × 844 and 1440 × 900 confirmed the shorter scale-card heading, selection-driven human note, no horizontal overflow, and zero console errors/warnings | Pass |
 | Local-network regression | Fresh `dev:network` sessions at loopback and the Mac LAN IPv4: zero console errors and `Next` remained on `2 / 6 · Oblique` instead of resetting through HMR reload | Pass |
 | Remote CI | Implementation commit [`b1de049`](https://github.com/Rasmus-allesoee/skull_website/commit/b1de049) passed [Actions run 31916200967](https://github.com/Rasmus-allesoee/skull_website/actions/runs/31916200967); draft [PR #4](https://github.com/Rasmus-allesoee/skull_website/pull/4) remains open for owner review | Pass |
+| Phase 2.3 final local gate | `CI=true pnpm check`: pass (4 files / 16 tests; 5 expected invalid fixtures); `CI=true pnpm build`: 7 routes; focused mobile: 2/2; desktop isolation stress: 5/5 without retries; complete Playwright: 10/10 without retries | Pass |
 
 Package-manager gates must run sequentially with `CI=true` in non-interactive environments; concurrent pnpm commands can reconcile `node_modules` against different lifecycle states and are not a valid speed optimization.
 
-## 7. Known limitations and controls
+## 8. Known limitations and controls
 
 - Only one taxon/specimen exists. Home remains a phase entrance, not the Phase 3 museum shell/catalog; related-family and random discovery sections therefore have no honest content yet.
 - No class/order/family/genus landings, catalog, search, map, full ingestion, deployment, analytics, 360°, 3D, upload, or AI overlay has started.
+- The specimen-page `View on map` action is intentionally deferred with the Phase 5 map route; Phase 2 keeps the reviewed textual locality, coordinates, and precision in the Collection record.
 - The calibrated card is a true relative comparison between visible skull subjects; it does not calibrate the visitor's monitor so displayed CSS pixels are not literal real-world millimetres.
 - Only one collection specimen is published, so the live selector currently offers only the adult-human default. Its reusable dynamic-specimen path is covered with synthetic test records and will gain real options as reviewed default specimens are ingested.
 - The adult-human dimensions are explicitly approximate representative values and not a universal adult average. A future source-methodology review may refine the reference without changing the comparison architecture.
@@ -129,23 +150,23 @@ Package-manager gates must run sequentially with `CI=true` in non-interactive en
 - Chrome/Chromium is the Phase 2 browser target. Firefox/WebKit and formal 200%/forced-colors/screen-reader release checks remain Phase 7 gates.
 - The connected GitHub app previously returned `403 Resource not accessible by integration` for issue/PR writes; the authenticated local `gh` session remains the established remote-write path.
 
-## 8. Exact next action
+## 9. Exact next action
 
-1. The owner reviews `/species/raccoon-dog` at desktop Chrome 100% zoom, mobile portrait, and mobile landscape, including the taller/balanced gallery, all six views, inspection gestures, comparison selector/table, measurement/age/condition dialogs, additional data, preparation link, and footer wording. For real-device development, run `pnpm dev:network` and open the Mac's LAN-IP URL—not `0.0.0.0`; `pnpm preview:network` is the production-like alternative.
-2. The owner either requests another bounded Phase 2 correction or explicitly approves the refined visual direction, density, interactions, record vocabulary, and public wording.
-3. Record approval here, close the Phase 2 issue/milestone, and merge/checkpoint only as directed.
-4. Begin Phase 3 only after separate authorization.
+1. Finish the complete local and remote Phase 2.3 checkpoint on draft PR #4.
+2. The owner checks the shorter scale card, ordinary-gallery page pinch, and inspection-window swipe on mobile, then answers yes or no to Phase 2.3 approval.
+3. On yes: record approval, verify the exact PR head/checks, merge PR #4, close the Phase 2 issue/milestone as appropriate, verify final `main` Actions, and audit the repository.
+4. Begin Phase 3 only in the next separately authorized prompt.
 
-No new metadata, source measurements, or images are required merely to review/approve Phase 2.2. The later illustrated methodology requires owner-created/reviewed assets; real collection choices in the comparison selector and related/random sections require additional reviewed taxa/specimens and belong to later authorized work.
+No new metadata, source measurements, or images are required merely to review/approve Phase 2.3. The later illustrated methodology requires owner-created/reviewed assets; real collection choices in the comparison selector and related/random sections require additional reviewed taxa/specimens and belong to later authorized work.
 
-## 9. Decision/blocker protocol
+## 10. Decision/blocker protocol
 
 - A failing test or lint rule is implementation work, not automatically a blocker.
 - A decision that changes public identity, rights, data publication, scope, or external account state is surfaced to the owner.
 - Blockers record what was tried, exact evidence, safe work completed, and the smallest required owner action.
 - When resolved, retain a short resolution in the checkpoint log rather than deleting history.
 
-## 10. Checkpoint log
+## 11. Checkpoint log
 
 ### 2026-08-12 — Phase 0/1 completed
 
@@ -177,5 +198,11 @@ No new metadata, source measurements, or images are required merely to review/ap
 
 - Owner review found that the lateral skull's visible mass sat too close to the top frame edge. A desktop-height, lateral-only optical offset now balances top/bottom negative space without affecting the underlying asset, calibrated comparison, inspection, thumbnails, other views, or short mobile landscape.
 - The normal-window browser gate now asserts the deliberate inset so this framing correction cannot silently regress.
+
+### 2026-08-17 — Phase 2.3 final owner-feedback refinement in progress
+
+- The owner approved the Phase 2.2 direction subject to three small corrections: remove redundant scale copy and verify conditional uncertainty wording; restore native page pinch over the main mobile image; and add mobile swipe navigation inside inspection.
+- The owner also deferred a specimen-location map action to Phase 5. Canonical plans now connect Collection record locations to `/map?specimen={id}` without introducing MapLibre on specimen routes.
+- The complete local gate passes: quality checks, 7-route production build, real-touch mobile coverage, five-run desktop isolation stress check, 10/10 final browser journeys, responsive visual review, and zero console errors. The remote checkpoint remains pending; Phase 3 has not started.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.

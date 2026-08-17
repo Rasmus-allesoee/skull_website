@@ -2,7 +2,7 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**Phase 2.2: the raccoon-dog vertical slice now includes the second owner-feedback refinement and passes the complete local and remote technical/visual gate.** Owner re-review remains open. Phase 3 must not start before that approval is recorded.
+**Phase 2.3: the raccoon-dog vertical slice now includes the final bounded owner-feedback refinement and is completing its checkpoint gate.** Owner approval remains open. Phase 3 must not start before that approval is recorded.
 
 The current specimen display is available at `/species/raccoon-dog`; the exact physical record is `/species/raccoon-dog/specimens/SPEC-0001`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
 

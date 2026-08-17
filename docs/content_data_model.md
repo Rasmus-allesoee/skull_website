@@ -1,8 +1,8 @@
 # Content and data model
 
-**Status:** Approved contract; executable Phase 2.2 schema version 3 and representative records implemented
+**Status:** Approved contract; executable schema version 3 and Phase 2.3 representative display rules implemented
 
-**Last reviewed:** 2026-08-15
+**Last reviewed:** 2026-08-17
 
 ## 1. Purpose
 
@@ -404,6 +404,7 @@ Alt text describes the useful view and visible specimen condition without repeat
 - Reference records sort before specimen records in the scoped selector; the current specimen is excluded. Search matches the reference label/aliases or the eligible specimen's English/scientific names and specimen ID without creating the Phase 4 global index.
 - Calibrated rendering maps `subjectBounds.width` to the record's maximum skull length and applies one shared pixels-per-millimetre factor to the pair. Canvas margins never contribute to anatomical length; source aspect ratio and all anatomical endpoints remain intact.
 - Approximate reference measurements retain `status = approximate` in the compiled record and display approximation markers. Ratios and differences are derived values, never source measurements.
+- `note` belongs to each comparison record and renders only while that record is selected; specimen records do not inherit the adult-human wording. The difference-level approximation explanation renders only when at least one available displayed difference has an approximate source status.
 
 ## 14. Public location policy
 

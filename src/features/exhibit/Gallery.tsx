@@ -4,6 +4,7 @@ import Image from "next/image";
 import {
   type KeyboardEvent,
   type PointerEvent,
+  type TouchEvent as ReactTouchEvent,
   useEffect,
   useRef,
   useState,
@@ -46,6 +47,15 @@ export function Gallery({
     startX: number;
     startY: number;
   } | null>(null);
+  const galleryTouchGesture = useRef<{
+    identifier: number;
+    startX: number;
+    startY: number;
+    lastX: number;
+    lastY: number;
+    startScale: number;
+    hadMultiplePointers: boolean;
+  } | null>(null);
   const lastTouchTap = useRef<{ at: number; x: number; y: number } | null>(
     null,
   );
@@ -61,6 +71,11 @@ export function Gallery({
     pan: Point;
     center: Point;
   } | null>(null);
+  const inspectionSwipe = useRef<{
+    pointerId: number;
+    start: Point;
+  } | null>(null);
+  const inspectionGestureHadMultiplePointers = useRef(false);
   const zoomRef = useRef(minimumZoom);
   const panRef = useRef<Point>({ x: 0, y: 0 });
   const wheelHandlerRef = useRef<(event: globalThis.WheelEvent) => void>(
@@ -78,6 +93,8 @@ export function Gallery({
     viewerPointers.current.clear();
     dragGesture.current = null;
     pinchGesture.current = null;
+    inspectionSwipe.current = null;
+    inspectionGestureHadMultiplePointers.current = false;
   }
 
   function selectIndex(index: number) {
@@ -109,8 +126,8 @@ export function Gallery({
   }
 
   function handleGalleryPointerDown(event: PointerEvent<HTMLElement>) {
+    if (event.pointerType !== "pen") return;
     event.currentTarget.focus({ preventScroll: true });
-    if (event.pointerType !== "touch" && event.pointerType !== "pen") return;
     swipePointer.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
@@ -123,8 +140,113 @@ export function Gallery({
     const gesture = swipePointer.current;
     if (!gesture || gesture.pointerId !== event.pointerId) return;
     swipePointer.current = null;
-    const distanceX = event.clientX - gesture.startX;
-    const distanceY = event.clientY - gesture.startY;
+    completeGalleryGesture(
+      gesture.startX,
+      gesture.startY,
+      event.clientX,
+      event.clientY,
+      event.currentTarget,
+    );
+  }
+
+  function handleGalleryPointerCancel(event: PointerEvent<HTMLElement>) {
+    if (swipePointer.current?.pointerId === event.pointerId) {
+      swipePointer.current = null;
+    }
+    lastTouchTap.current = null;
+  }
+
+  function handleGalleryTouchStart(event: ReactTouchEvent<HTMLElement>) {
+    event.currentTarget.focus({ preventScroll: true });
+    if (event.touches.length !== 1) {
+      if (galleryTouchGesture.current) {
+        galleryTouchGesture.current.hadMultiplePointers = true;
+      }
+      lastTouchTap.current = null;
+      return;
+    }
+    const touch = event.touches[0]!;
+    galleryTouchGesture.current = {
+      identifier: touch.identifier,
+      startX: touch.clientX,
+      startY: touch.clientY,
+      lastX: touch.clientX,
+      lastY: touch.clientY,
+      startScale: getPageScale(),
+      hadMultiplePointers: false,
+    };
+  }
+
+  function handleGalleryTouchMove(event: ReactTouchEvent<HTMLElement>) {
+    if (event.touches.length > 1 && galleryTouchGesture.current) {
+      galleryTouchGesture.current.hadMultiplePointers = true;
+      lastTouchTap.current = null;
+      return;
+    }
+    const gesture = galleryTouchGesture.current;
+    if (event.touches.length === 1 && gesture) {
+      const touch = Array.from(event.touches).find(
+        (candidate) => candidate.identifier === gesture.identifier,
+      );
+      if (touch) {
+        gesture.lastX = touch.clientX;
+        gesture.lastY = touch.clientY;
+      }
+    }
+  }
+
+  function handleGalleryTouchEnd(event: ReactTouchEvent<HTMLElement>) {
+    const gesture = galleryTouchGesture.current;
+    if (!gesture || event.touches.length > 0) return;
+    galleryTouchGesture.current = null;
+    if (gesture.hadMultiplePointers) return;
+    const touch = Array.from(event.changedTouches).find(
+      (candidate) => candidate.identifier === gesture.identifier,
+    );
+    if (!touch || gesture.startScale > 1.01 || getPageScale() > 1.01) {
+      return;
+    }
+    completeGalleryGesture(
+      gesture.startX,
+      gesture.startY,
+      touch?.clientX ?? gesture.lastX,
+      touch?.clientY ?? gesture.lastY,
+      event.currentTarget,
+    );
+  }
+
+  function handleGalleryTouchCancel(event: ReactTouchEvent<HTMLElement>) {
+    const gesture = galleryTouchGesture.current;
+    galleryTouchGesture.current = null;
+    lastTouchTap.current = null;
+    if (
+      !gesture ||
+      gesture.hadMultiplePointers ||
+      gesture.startScale > 1.01 ||
+      getPageScale() > 1.01
+    ) {
+      return;
+    }
+    completeGalleryGesture(
+      gesture.startX,
+      gesture.startY,
+      gesture.lastX,
+      gesture.lastY,
+      event.currentTarget,
+      false,
+    );
+  }
+
+  function completeGalleryGesture(
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+    trigger: HTMLElement,
+    allowTap = true,
+  ) {
+    const distanceX = endX - startX;
+    const distanceY = endY - startY;
 
     if (
       Math.abs(distanceX) >= swipeThreshold &&
@@ -134,23 +256,19 @@ export function Gallery({
       return;
     }
 
+    if (!allowTap) return;
     if (Math.hypot(distanceX, distanceY) > 12) return;
     const previousTap = lastTouchTap.current;
     const now = performance.now();
     if (
       previousTap &&
       now - previousTap.at < 325 &&
-      Math.hypot(event.clientX - previousTap.x, event.clientY - previousTap.y) <
-        28
+      Math.hypot(endX - previousTap.x, endY - previousTap.y) < 28
     ) {
       lastTouchTap.current = null;
-      openInspection(event.currentTarget);
+      openInspection(trigger);
     } else {
-      lastTouchTap.current = {
-        at: now,
-        x: event.clientX,
-        y: event.clientY,
-      };
+      lastTouchTap.current = { at: now, x: endX, y: endY };
     }
   }
 
@@ -268,13 +386,21 @@ export function Gallery({
     const points = [...viewerPointers.current.values()];
 
     if (points.length === 1) {
+      inspectionGestureHadMultiplePointers.current = false;
       dragGesture.current = {
         pointerId: event.pointerId,
         start: points[0]!,
         pan: panRef.current,
       };
+      inspectionSwipe.current =
+        (event.pointerType === "touch" || event.pointerType === "pen") &&
+        zoomRef.current <= minimumZoom
+          ? { pointerId: event.pointerId, start: points[0]! }
+          : null;
       setIsDragging(zoomRef.current > minimumZoom);
     } else if (points.length === 2) {
+      inspectionGestureHadMultiplePointers.current = true;
+      inspectionSwipe.current = null;
       const [first, second] = points as [Point, Point];
       pinchGesture.current = {
         distance: pointDistance(first, second),
@@ -343,10 +469,34 @@ export function Gallery({
     }
   }
 
-  function handleInspectionPointerEnd(event: PointerEvent<HTMLDivElement>) {
+  function handleInspectionPointerEnd(
+    event: PointerEvent<HTMLDivElement>,
+    allowSwipe: boolean,
+  ) {
+    const swipe = inspectionSwipe.current;
+    const hadMultiplePointers = inspectionGestureHadMultiplePointers.current;
     viewerPointers.current.delete(event.pointerId);
     const remaining = [...viewerPointers.current.entries()];
     pinchGesture.current = null;
+
+    if (
+      allowSwipe &&
+      !hadMultiplePointers &&
+      swipe?.pointerId === event.pointerId &&
+      zoomRef.current <= minimumZoom
+    ) {
+      const distanceX = event.clientX - swipe.start.x;
+      const distanceY = event.clientY - swipe.start.y;
+      if (
+        Math.abs(distanceX) >= swipeThreshold &&
+        Math.abs(distanceX) > Math.abs(distanceY) * 1.2
+      ) {
+        selectIndex(activeIndex + (distanceX < 0 ? 1 : -1));
+        return;
+      }
+    }
+
+    inspectionSwipe.current = null;
 
     if (remaining.length === 1) {
       const [pointerId, point] = remaining[0]!;
@@ -359,6 +509,7 @@ export function Gallery({
     } else {
       dragGesture.current = null;
       setIsDragging(false);
+      inspectionGestureHadMultiplePointers.current = false;
     }
   }
 
@@ -411,8 +562,13 @@ export function Gallery({
               openInspection(event.currentTarget);
             }}
             onKeyDown={handleGalleryKeyDown}
+            onPointerCancel={handleGalleryPointerCancel}
             onPointerDown={handleGalleryPointerDown}
             onPointerUp={handleGalleryPointerUp}
+            onTouchCancel={handleGalleryTouchCancel}
+            onTouchEnd={handleGalleryTouchEnd}
+            onTouchMove={handleGalleryTouchMove}
+            onTouchStart={handleGalleryTouchStart}
           >
             <div className="gallery-light" aria-hidden="true" />
             <GallerySubjectImage
@@ -554,10 +710,10 @@ export function Gallery({
               y: event.clientY,
             })
           }
-          onPointerCancel={handleInspectionPointerEnd}
+          onPointerCancel={(event) => handleInspectionPointerEnd(event, false)}
           onPointerDown={handleInspectionPointerDown}
           onPointerMove={handleInspectionPointerMove}
-          onPointerUp={handleInspectionPointerEnd}
+          onPointerUp={(event) => handleInspectionPointerEnd(event, true)}
         >
           <Image
             ref={inspectionImageRef}
@@ -611,8 +767,9 @@ export function Gallery({
             </button>
           </div>
           <p id="inspection-help">
-            Scroll or pinch to zoom; drag to move. Double-click to zoom or
-            reset. Photo: {activeAsset.credit} · All rights reserved.
+            Scroll or pinch to zoom; drag when zoomed. Swipe at 100% or use ←/→
+            to change view. Double-click to zoom or reset. Photo:{" "}
+            {activeAsset.credit} · All rights reserved.
           </p>
         </div>
       </dialog>
@@ -656,4 +813,8 @@ function trySetPointerCapture(element: HTMLElement, pointerId: number) {
   } catch {
     // Synthetic test pointers are not registered as active browser pointers.
   }
+}
+
+function getPageScale() {
+  return window.visualViewport?.scale ?? 1;
 }

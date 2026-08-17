@@ -73,13 +73,13 @@ test("desktop gallery provides high-quality selection and smooth high-resolution
     clientX: 300,
     clientY: 200,
     pointerId: 1,
-    pointerType: "touch",
+    pointerType: "pen",
   });
   await gallery.dispatchEvent("pointerup", {
     clientX: 100,
     clientY: 205,
     pointerId: 1,
-    pointerType: "touch",
+    pointerType: "pen",
   });
   await expect(page.getByText("6 / 6 · Mandible — dorsal")).toBeVisible();
 
@@ -121,8 +121,8 @@ test("desktop gallery provides high-quality selection and smooth high-resolution
   expect(inspectionSource.naturalWidth).toBe(3200);
 
   const viewport = inspectionViewport;
-  const pageScrollBeforeZoom = await page.evaluate(() => scrollY);
   await viewport.hover();
+  const pageScrollBeforeZoom = await page.evaluate(() => scrollY);
   await page.mouse.wheel(0, -360);
   await expect(dialog.locator("output")).not.toHaveText("100%");
   expect(await page.evaluate(() => scrollY)).toBe(pageScrollBeforeZoom);
@@ -421,6 +421,7 @@ test.describe("mobile touch behavior", () => {
   }) => {
     await page.goto(taxonPath);
     const gallery = page.getByLabel(/Raccoon dog gallery/);
+    const browserSession = await page.context().newCDPSession(page);
 
     await page.getByRole("button", { name: "Show dorsal view" }).tap();
     await expect(page.getByText("4 / 6 · Dorsal")).toBeVisible();
@@ -429,17 +430,32 @@ test.describe("mobile touch behavior", () => {
     await page.getByRole("button", { name: /Previous$/ }).tap();
     await expect(page.getByText("4 / 6 · Dorsal")).toBeVisible();
 
-    await gallery.dispatchEvent("pointerdown", {
-      clientX: 320,
-      clientY: 220,
-      pointerId: 7,
-      pointerType: "touch",
+    await gallery.scrollIntoViewIfNeeded();
+    const galleryBox = await gallery.boundingBox();
+    expect(galleryBox).not.toBeNull();
+    await browserSession.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [
+        {
+          x: galleryBox!.x + galleryBox!.width * 0.8,
+          y: galleryBox!.y + galleryBox!.height / 2,
+          id: 7,
+        },
+      ],
     });
-    await gallery.dispatchEvent("pointerup", {
-      clientX: 100,
-      clientY: 225,
-      pointerId: 7,
-      pointerType: "touch",
+    await browserSession.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: [
+        {
+          x: galleryBox!.x + galleryBox!.width * 0.2,
+          y: galleryBox!.y + galleryBox!.height / 2,
+          id: 7,
+        },
+      ],
+    });
+    await browserSession.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
     });
     await expect(page.getByText("5 / 6 · Ventral")).toBeVisible();
 
@@ -495,9 +511,24 @@ test.describe("mobile touch behavior", () => {
     const viewport = dialog.locator(".inspection-viewport");
     const box = await viewport.boundingBox();
     expect(box).not.toBeNull();
+
+    await viewport.dispatchEvent("pointerdown", {
+      clientX: box!.x + box!.width * 0.8,
+      clientY: box!.y + box!.height / 2,
+      pointerId: 21,
+      pointerType: "touch",
+    });
+    await viewport.dispatchEvent("pointerup", {
+      clientX: box!.x + box!.width * 0.2,
+      clientY: box!.y + box!.height / 2,
+      pointerId: 21,
+      pointerType: "touch",
+    });
+    await expect(dialog).toHaveAccessibleName(/Mandible — dorsal view/);
+    await expect(dialog.locator("output")).toHaveText("100%");
+
     const centerX = box!.x + box!.width / 2;
     const centerY = box!.y + box!.height / 2;
-    const browserSession = await page.context().newCDPSession(page);
     await browserSession.send("Input.dispatchTouchEvent", {
       type: "touchStart",
       touchPoints: [
@@ -558,6 +589,116 @@ test.describe("mobile touch behavior", () => {
       );
     });
     expect(landscapeScaleRatio).toBeCloseTo(116 / 182, 2);
+  });
+
+  test("the main gallery preserves native page pinch zoom and two-dimensional pan", async ({
+    page,
+  }) => {
+    await page.goto(taxonPath);
+    const gallery = page.getByLabel(/Raccoon dog gallery/);
+    await expect(page.getByText("1 / 6 · Lateral")).toBeVisible();
+    await expect
+      .poll(() =>
+        gallery.evaluate((element) => getComputedStyle(element).touchAction),
+      )
+      .toBe("manipulation");
+
+    const box = await gallery.boundingBox();
+    expect(box).not.toBeNull();
+    const browserSession = await page.context().newCDPSession(page);
+    const centerX = box!.x + box!.width / 2;
+    const centerY = box!.y + box!.height / 2;
+    await browserSession.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [
+        { x: centerX - 30, y: centerY, id: 31 },
+        { x: centerX + 30, y: centerY, id: 32 },
+      ],
+    });
+    await browserSession.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: [
+        { x: centerX - 80, y: centerY, id: 31 },
+        { x: centerX + 80, y: centerY, id: 32 },
+      ],
+    });
+
+    await expect
+      .poll(() => page.evaluate(() => window.visualViewport?.scale ?? 1))
+      .toBeGreaterThan(1.1);
+
+    const viewportBeforePinchTranslation = await page.evaluate(() => ({
+      left: window.visualViewport?.pageLeft ?? 0,
+      top: window.visualViewport?.pageTop ?? 0,
+    }));
+    await browserSession.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: [
+        { x: centerX - 130, y: centerY - 50, id: 31 },
+        { x: centerX + 30, y: centerY - 50, id: 32 },
+      ],
+    });
+    await expect
+      .poll(() =>
+        page.evaluate(
+          ({ minimumLeft, minimumTop }) =>
+            (window.visualViewport?.pageLeft ?? 0) > minimumLeft &&
+            (window.visualViewport?.pageTop ?? 0) > minimumTop,
+          {
+            minimumLeft: viewportBeforePinchTranslation.left + 5,
+            minimumTop: viewportBeforePinchTranslation.top + 5,
+          },
+        ),
+      )
+      .toBe(true);
+    await browserSession.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
+    });
+
+    const viewportBeforeOneFingerPan = await page.evaluate(() => ({
+      left: window.visualViewport?.pageLeft ?? 0,
+      top: window.visualViewport?.pageTop ?? 0,
+    }));
+    await browserSession.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [
+        {
+          x: centerX,
+          y: centerY,
+          id: 41,
+        },
+      ],
+    });
+    await browserSession.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: [
+        {
+          x: centerX - 40,
+          y: centerY - 40,
+          id: 41,
+        },
+      ],
+    });
+    await browserSession.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
+    });
+
+    await expect
+      .poll(() =>
+        page.evaluate(
+          ({ minimumLeft, minimumTop }) =>
+            (window.visualViewport?.pageLeft ?? 0) > minimumLeft &&
+            (window.visualViewport?.pageTop ?? 0) > minimumTop,
+          {
+            minimumLeft: viewportBeforeOneFingerPan.left + 5,
+            minimumTop: viewportBeforeOneFingerPan.top + 5,
+          },
+        ),
+      )
+      .toBe(true);
+    await expect(page.getByText("1 / 6 · Lateral")).toBeVisible();
   });
 });
 

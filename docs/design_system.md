@@ -1,8 +1,8 @@
 # Design system
 
-**Status:** Phase 2.2 representative system implemented; owner re-review pending
+**Status:** Phase 2.3 representative system implemented; owner approval pending
 
-**Last reviewed:** 2026-08-16
+**Last reviewed:** 2026-08-17
 
 ## 1. Design intent
 
@@ -155,18 +155,18 @@ Responsive checkpoints are content-derived, with explicit QA at:
 
 ### Specimen display
 
-- **Gallery:** complete main figure, labelled thumbnails, previous/next, direct selection, focused arrow/Home/End keys, swipe, desktop double-click, touch double-tap, concise interaction hints, view label, and completeness state. At the primary 1440 × approximately 696 normal-browser viewport, a taller frame and enlarged alpha-bounded subject retain complete anatomy while the stage-top position still leaves all three controls visible; 1440 × 900 remains equally usable.
+- **Gallery:** complete main figure, labelled thumbnails, previous/next, direct selection, focused arrow/Home/End keys, one-finger horizontal swipe, desktop double-click, touch double-tap, concise interaction hints, view label, and completeness state. The ordinary mobile image frame retains full native browser manipulation: two-finger pinch may translate while scaling, and the zoomed page may pan in every direction. Gallery swipe/double-tap activates only at 100% page scale so it cannot hijack zoomed exploration. At the primary 1440 × approximately 696 normal-browser viewport, a taller frame and enlarged alpha-bounded subject retain complete anatomy while the stage-top position still leaves all three controls visible; 1440 × 900 remains equally usable.
 - **Gallery optical alignment:** Alpha bounds provide deterministic framing, but a canonical view may receive a small, view-specific presentation offset when the specimen's visible mass is optically asymmetric inside those bounds. The Phase 2 lateral hero shifts downward only at desktop-height layouts; this must not alter source pixels, comparison calibration, inspection, thumbnails, or other views.
 - **Responsive view rail:** same vertical extent and image-frame proportion as the main stage, right of the image on desktop and mobile landscape, independently scrollable when the set exceeds its height; below the image in mobile portrait.
-- **Inspection dialog:** symmetric full-viewport native modal; original high-resolution asset; initial/return focus; Escape; wheel/trackpad/desktop-pinch and native touch-pinch zoom without background scroll/page zoom; constrained mouse/touch drag; slider, buttons, keyboard shortcuts, view navigation at all zoom levels, and reduced-motion behavior. Command/Ctrl is not required.
+- **Inspection dialog:** symmetric full-viewport native modal; original high-resolution asset; initial/return focus; Escape; wheel/trackpad/desktop-pinch and native touch-pinch zoom without background scroll/page zoom; horizontal touch swipe between views at 100%; constrained mouse/touch drag after enlargement; slider, buttons, keyboard shortcuts, view navigation at all zoom levels, and reduced-motion behavior. Command/Ctrl is not required.
 - **Specimen selector:** current specimen and concise alternative list; preserves taxon context.
 - **Taxonomy breadcrumb:** ordered hierarchy with current-page semantics.
 - **Status badge:** text-first qualifier/confidence/precision—not a color dot.
 - **Measurement panel:** compact primary table directly below its heading/note, progressively disclosed additional values, canonical units, and measurement-guide dialog. At wide widths it occupies the left third and the scale comparison occupies the remaining space; sections stack without horizontal overflow at narrow widths.
-- **Scale comparison:** vertically stacked lateral skulls share one mathematically calibrated maximum-length scale. The current specimen stays primary; an adult-human reference is the default comparison. Preserve full morphology, use compiled subject bounds rather than transparent canvas width, flip only in presentation when orientation differs, and label approximate reference values.
+- **Scale comparison:** vertically stacked lateral skulls share one mathematically calibrated maximum-length scale. The current specimen stays primary; an adult-human reference is the default comparison. Preserve full morphology, use compiled subject bounds rather than transparent canvas width, flip only in presentation when orientation differs, and label approximate reference values. A concise selected-record note may appear below the selector; generic scale mechanics are not repeated in public copy.
 - **Comparison selector:** restrained `Compare` action opening a labelled searchable combobox/listbox; references first, current specimen excluded, keyboard navigation, clear empty state, easy return to the adult-human default, focus restoration, and live announcement of selection.
-- **Measurement differences:** compact six-row table to the right of the skull pair at wide widths and below it when constrained. The current specimen is always the comparison numerator. Absolute wording states longer/shorter, wider/narrower, higher/lower, or heavier/lighter; a restrained semantic color is supplementary; ratio uses sensible precision.
-- **Collection record:** `Metadata` kicker; owner, source, date, location/precision, sex, age, and condition; reference dialogs for age and the five-level condition scale; pathology, trauma, teeth set, and retained skeleton in one additional-data disclosure.
+- **Measurement differences:** compact six-row table to the right of the skull pair at wide widths and below it when constrained. The current specimen is always the comparison numerator. Absolute wording states longer/shorter, wider/narrower, higher/lower, or heavier/lighter; a restrained semantic color is supplementary; ratio uses sensible precision. Approximation guidance appears only when a displayed result uses an approximate source measurement.
+- **Collection record:** `Metadata` kicker; owner, source, date, location/precision, sex, age, and condition; reference dialogs for age and the five-level condition scale; pathology, trauma, teeth set, and retained skeleton in one additional-data disclosure. Phase 5 adds a nearby `View on map` link for public coordinates, targeting the accessible focused map route rather than embedding MapLibre early.
 - **Preparation timeline:** semantic ordered list; unknown dates/durations do not break order.
 - **Guide dialog:** native modal semantics, labelled close control, left-aligned title/note, single-line desktop title where space permits, scrollable table, mobile row cards, Escape, and focus restoration.
 - **Citation list:** stable keys/backlinks, readable metadata, external-link indication.
@@ -253,7 +253,7 @@ The representative raccoon-dog vertical slice must demonstrate and receive user 
 
 That gate happens before the design scales to the shell/catalog. Material changes update this document and, when cross-cutting, an ADR.
 
-Initial implementation evidence on 2026-08-13 led to the owner's detailed Phase 2.1 review. The 2026-08-14 refinement added the responsive rail, true-resolution inspector, working touch gestures, measurement-first hierarchy, and record guidance. Phase 2.2 on 2026-08-15 retunes the gallery for a common shorter normal-Chrome viewport, uses alpha-bounded full-resolution display, closes inspector/background gesture conflicts and the network-mobile reload defect, introduces the reusable true-to-scale comparison/difference system, and corrects metadata/dialog alignment. Automated and manual evidence is recorded in `project_status.md`; the gate remains open for owner approval before Phase 3.
+Initial implementation evidence on 2026-08-13 led to the owner's detailed Phase 2.1 review. The 2026-08-14 refinement added the responsive rail, true-resolution inspector, working touch gestures, measurement-first hierarchy, and record guidance. Phase 2.2 on 2026-08-15 retuned the normal-Chrome gallery, used alpha-bounded full-resolution display, closed inspector/background gesture conflicts and the network-mobile reload defect, introduced the reusable true-to-scale comparison/difference system, and corrected metadata/dialog alignment. Phase 2.3 on 2026-08-17 removes redundant scale copy, makes uncertainty copy demonstrably selection/status-driven, restores native page pinch over the ordinary mobile gallery, and adds inspection swipe navigation. Automated and manual evidence is recorded in `project_status.md`; the gate remains open for owner approval before Phase 3.
 
 ## 16. Design anti-patterns
 

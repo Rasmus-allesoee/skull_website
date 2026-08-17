@@ -1,8 +1,8 @@
 # Architecture
 
-**Status:** Accepted baseline; Phase 2.2 pipeline and refined vertical slice implemented
+**Status:** Accepted baseline; Phase 2.3 final vertical-slice refinement implemented
 
-**Last reviewed:** 2026-08-15
+**Last reviewed:** 2026-08-17
 
 ## 1. Architectural goals
 
@@ -206,6 +206,7 @@ Phase 5 generates GeoJSON from published specimens with valid coordinates. Locat
 - Unknown points are absent rather than geocoded or fabricated.
 - Clusters expose counts; selecting a point synchronizes a semantic result item.
 - The complete result list remains navigable without canvas/WebGL.
+- A specimen with public coordinates gains a Collection-record `View on map` link in Phase 5. The link targets `/map?specimen={id}` so the route owns marker/list selection; Phase 2 does not add an embedded MapLibre modal or a second map state model.
 
 Security headers must explicitly support the chosen MapLibre worker and provider hosts without broad wildcards.
 
@@ -224,7 +225,7 @@ The Phase 2/2.2 Sharp workflow:
 
 Curated web masters are committed under `public/media/specimens/`. The active gallery loads the validated full-resolution WebP through an SVG `viewBox` derived from the compiled alpha subject bounds, so transparent margins do not make the skull appear small and anatomy is not cropped. `next/image` still creates controlled lightweight thumbnail variants. The inspection viewer deliberately loads the validated original 3200 px WebP, preventing a smaller responsive derivative from being enlarged as a false high-resolution view.
 
-The gallery client island owns selection, direct controls, keyboard navigation, touch swipe, double-click/double-tap entry, and the native `<dialog>` inspection viewer. A non-passive wheel handler captures ordinary wheel/trackpad input and browser-reported pinch-wheel input only over the inspector, centers zoom on the gesture, prevents background scroll/page zoom, and leaves Arrow/Home/End view navigation active at any zoom. Pan is constrained to the enlarged image, the document is scroll-locked while the modal is open, and focus returns to the opening control. Desktop and mobile-landscape layouts use an independently scrollable right rail; mobile portrait keeps view buttons below the image. Core record content and a no-JavaScript image list remain server-rendered.
+The gallery client island owns selection, direct controls, keyboard navigation, touch swipe, double-click/double-tap entry, and the native `<dialog>` inspection viewer. The ordinary stage declares browser `manipulation` (`pan-x pan-y pinch-zoom`) so a two-finger pinch may translate while scaling and the zoomed visual viewport may pan in any direction inside the frame. Default-preserving touch observation changes gallery view or opens inspection only when a single-touch gesture began and ended at approximately 100% page scale; zoomed-page pans and any multi-touch gesture remain entirely browser-owned. Inside inspection, a horizontal touch swipe changes view only at 100%; after enlargement, one finger pans and two fingers control image zoom. A non-passive wheel handler captures ordinary wheel/trackpad input and browser-reported pinch-wheel input only over the inspector, centers zoom on the gesture, prevents background scroll/page zoom, and leaves Arrow/Home/End view navigation active at any zoom. Pan is constrained to the enlarged image, the document is scroll-locked while the modal is open, and focus returns to the opening control. Desktop and mobile-landscape layouts use an independently scrollable right rail; mobile portrait keeps view buttons below the image. Core record content and a no-JavaScript image list remain server-rendered.
 
 Comparison-reference sources use stable IDs under `content/references/`, are processed from ignored local staging through `pnpm media:process:reference`, and are committed only as reviewed WebP derivatives under `public/media/references/`. They pass the same sRGB, alpha, dimensions, subject-bounds, and metadata-stripping checks as specimen assets. Exactly one reference is the default.
 
@@ -240,7 +241,7 @@ The specimen-page comparison is a route-independent feature under `src/features/
 - The shared scale is derived once from the available visual width and the larger recorded skull length. For each image, transparent-canvas offsets are calculated from `subjectBounds`, so the visible subject—not the file canvas—occupies `length_mm × shared_pixels_per_mm`.
 - The same scale factor applies at every responsive size; morphology, aspect ratio, and anatomical endpoints are preserved.
 - Six measurement differences are calculated from typed records, never display literals. Absolute wording and the primary/comparison ratio remain readable without semantic color.
-- Human-reference values are explicitly approximate. The comparison is physically proportional between subjects, not a monitor calibration or universal human average.
+- Human-reference values are explicitly approximate. A selected record's descriptive note is rendered from that record, not a component literal, and the difference-level approximation explanation appears only when at least one available result uses an approximate source. Fully measured specimen pairs do not inherit human-reference wording. The comparison is physically proportional between subjects, not a monitor calibration or universal human average.
 
 The future public comparison route may compose the same records, scaling engine, image primitive, selector, and difference renderer with both sides independently selectable. It must not duplicate these calculations.
 
@@ -330,4 +331,4 @@ Testing details and phase ownership live in [implementation_plan.md](implementat
 - [ADR 0004: Build-generated client search and route-lazy map](decisions/0004-client-search-and-route-lazy-map.md)
 - [ADR 0005: Species-first pages with stable specimen URLs](decisions/0005-species-and-specimen-url-model.md)
 
-New ADRs are reserved for decisions that materially change data identity, public URLs, deployment, security, ownership, or cross-cutting technology. Phase 2.2 extends the already accepted local-source/compiler/media/client-island boundaries without changing those material decisions, so it requires no new ADR. Small implementation choices belong near code or in the relevant canonical document.
+New ADRs are reserved for decisions that materially change data identity, public URLs, deployment, security, ownership, or cross-cutting technology. Phase 2.2/2.3 extend the already accepted local-source/compiler/media/client-island boundaries without changing those material decisions, so they require no new ADR. Small implementation choices belong near code or in the relevant canonical document.

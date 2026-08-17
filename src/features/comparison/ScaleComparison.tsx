@@ -59,10 +59,6 @@ export function ScaleComparison({
       <header className="scale-comparison-heading">
         <p className="data-label">Relative length</p>
         <h3 id={titleId}>A sense of scale</h3>
-        <p>
-          Visible lateral skulls share one physical scale; transparent margins
-          do not affect their size.
-        </p>
       </header>
       <div className="scale-comparison-body">
         <div className="scale-visual-comparison">

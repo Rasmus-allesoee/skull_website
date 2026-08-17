@@ -2,9 +2,9 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Phase 2.2 refinement passes the local and remote technical gate; owner re-review remains required before Phase 3
+**Current phase:** Phase 2.3 final refinement is implemented and completing its checkpoint gate; owner approval remains required before Phase 3
 
-**Last reviewed:** 2026-08-15
+**Last reviewed:** 2026-08-17
 
 ## 1. How to use this plan
 
@@ -196,6 +196,17 @@ Turn the approved conversational plan into durable sources of truth and create a
 
 **Gate status:** The Phase 2.2 implementation passes the complete local and GitHub Actions technical gate at implementation commit `b1de049` and Actions run `31916200967`. Explicit owner approval of the rendered result remains the only product gate before Phase 3 may be authorized.
 
+### Phase 2.3 — final owner-feedback refinement
+
+- [x] Remove the low-value scale-mechanics sentence from `A sense of scale` while retaining the concise heading and comparison controls.
+- [x] Keep the selected comparison record's descriptive note data-driven and render approximation guidance only when a displayed difference actually uses an approximate source value.
+- [x] Restore full native browser manipulation over the ordinary mobile gallery: two-finger pinch may translate freely, and a zoomed page may pan horizontally, vertically, or diagonally inside the frame. Preserve one-finger view swipe/double-tap only at 100% page scale and keep multi-touch cancellation safe.
+- [x] Add horizontal touch swipe between inspection views at 100% zoom while retaining one-finger pan when enlarged and two-finger image pinch zoom.
+- [x] Defer the specimen-page location-map action to Phase 5 beside the Collection record, using `/map?specimen={id}` and the route-only MapLibre architecture rather than loading a second map implementation early.
+- [x] Extend component/browser coverage and reconcile canonical documentation without beginning Phase 3.
+
+**Gate status:** The complete Phase 2.3 local gate passes, including real-touch pinch translation and two-dimensional post-zoom pan. The GitHub Actions checkpoint is pending; explicit owner approval remains required before Phase 2 closes.
+
 ## 6. Phase 3 — museum shell and catalog
 
 ### Dependencies
@@ -276,6 +287,7 @@ Automated and manual scenarios pass for:
 - [ ] Add clustered exact/approximate markers, selected state, popups, controls, attribution, and fit/reset behavior.
 - [ ] Synchronize map and complete searchable/filterable result list.
 - [ ] Implement `/map?specimen={id}` focus and recovery for unavailable IDs.
+- [ ] Add a nearby `View on map` action to specimen Collection records when coordinates are available; focus that specimen through `/map?specimen={id}` and retain the textual location/precision record as the non-map equivalent.
 - [ ] Test no-WebGL, keyboard, mobile, reduced-motion, provider failure, and unknown-coordinate behavior.
 
 ### Editorial/supporting routes
@@ -409,6 +421,10 @@ After Phase 0/1:
 ### Skull comparison
 
 Phase 2.2 completed the reusable calibrated foundation on the specimen page: explicit lateral orientation, generated transparent subject bounds, one shared maximum-length scale, a reference/specimen selector, approximate-value labels, and semantic measurement differences. A dedicated public comparison route with two independent selectors, overlays, split-slider, opacity controls, shareable state, and non-calibrated-record handling remains deferred until enough reviewed specimens exist and keyboard-equivalent behavior is designed.
+
+### Specimen-location map action
+
+Phase 5 should place a concise `View on map` action beside the Collection record's location/coordinates when a public point exists. It should open the accessible `/map?specimen={id}` route with the corresponding marker and list row selected. An embedded specimen-page modal remains optional later, but it must not duplicate map state or violate the route-only MapLibre bundle boundary without a deliberate architecture revision.
 
 ### 360° rotation
 

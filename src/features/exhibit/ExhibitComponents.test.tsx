@@ -176,6 +176,22 @@ describe("exhibit components", () => {
       />,
     );
 
+    expect(
+      screen.queryByText(
+        "Visible lateral skulls share one physical scale; transparent margins do not affect their size.",
+      ),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Representative adult-human reference; dimensions and mass are approximate and are not a universal human average.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Approximate source values make the resulting difference approximate.",
+      ),
+    ).toBeInTheDocument();
+
     const primarySubject = document.querySelector<HTMLElement>(
       '[data-comparison-id="specimen:SPEC-0001"]',
     )!;
@@ -202,6 +218,16 @@ describe("exhibit components", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("26 mm shorter")).toBeInTheDocument();
     expect(screen.getByText("(0.82×)")).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Representative adult-human reference; dimensions and mass are approximate and are not a universal human average.",
+      ),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Approximate source values make the resulting difference approximate.",
+      ),
+    ).not.toBeInTheDocument();
   });
 
   it("has no detectable axe violations in the interactive component group", async () => {

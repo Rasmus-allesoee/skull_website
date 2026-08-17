@@ -546,7 +546,7 @@ h3 {
   border-radius: 0.25rem;
   background: #080a09;
   cursor: zoom-in;
-  touch-action: pan-y;
+  touch-action: manipulation;
 }
 
 .gallery-light {
