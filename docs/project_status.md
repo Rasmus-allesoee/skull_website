@@ -1,23 +1,50 @@
 # Project status
 
-**Snapshot date:** 2026-08-20
+**Snapshot date:** 2026-08-21
 
-**Current phase:** Phase 3 — implementation and complete local technical/visual gate pass; owner review pending
+**Current phase:** Phase 3.1 — implementation and complete local technical/visual gate pass; owner review pending
 
-**Overall state:** Local implementation and acceptance evidence pass on `agent/phase-3-museum-shell-catalog`; no Phase 3 commit, push, PR, remote CI, or owner product approval yet
+**Overall state:** Phase 3.0 is preserved in local commit `9a1d996`; the separate verified Phase 3.1 review expansion/refinement is committed locally on `agent/phase-3-museum-shell-catalog` with no push/PR authorized
 
-**Next phase:** Phase 4 — not started and not authorized; first resolve Phase 3 owner review
+**Next phase:** Not selected. First obtain owner review of Phase 3.1; the owner then chooses between dedicated Phase 3.2 comprehensive systematic browsing and Phase 4 search/facets
 
 ## 1. Current objective
 
-Present the complete Phase 3 museum shell, catalog, taxonomy routes, and class-aware measurement system for owner inspection. Apply bounded Phase 3 feedback or record explicit approval before committing/publishing the checkpoint or beginning Phase 4 search/faceted discovery.
+Present the verified bounded Phase 3.1 review-quality collection expansion, family gallery/tree/specimen-chooser refinements, and documentation for owner inspection. Keep both local commits unpushed and do not begin Phase 3.2 or Phase 4.
 
-## 2. Phase 3 implementation
+## 2. Phase 3.1 refinement
+
+### Review-quality collection expansion
+
+- Inventoried 22 legacy taxon rows, 51 specimen rows, and 104 cleaned PNGs. The images resolve to 18 physical specimens representing 15 taxon identities: 13 species-level records and two deliberate genus-level identifications (`Gavia sp.` and `Larus sp.`).
+- Published 15 canonical taxa and 18 canonical specimens that meet the current contract. The three multi-specimen taxa are European badger (2), harbour seal (3), and the remaining taxa with one specimen each. All 15/18 are public; there are zero canonical draft taxon/specimen rows and one retained draft editorial profile.
+- Left 33 legacy specimen rows as blocked migration candidates rather than manufacturing canonical drafts. Seven raw taxon rows remain outside the slice: unsupported family-level `Cervidae`, plus *Cervus elaphus*, *Martes martes*, *Oryctolagus cuniculus*, *Ovis aries*, *Phocoena phocoena*, and *Sorex araneus* without accepted matching essential-media sets.
+- Assigned stable `TAX-0002`–`TAX-0015` and `SPEC-0002`–`SPEC-0018` identities independent of raw row numbers. These IDs now own public URL semantics and must be preserved in Phase 6.
+- Refreshed and manually accepted dated GBIF snapshots for the 14 new taxa. Species matches are exact/accepted; the two genus records retain explicit `sp.`/unassessed labels instead of pretending to species precision.
+- Added 17 media declarations and a reproducible 104-entry local staging map. The existing processor generated 104 validated WebPs (24.80 MiB total specimen media); every lateral asset is explicitly right-facing and alpha-bounded. `SPEC-0002`, `SPEC-0005`, `SPEC-0011`, and `SPEC-0017` honestly warn that the optional frontal view is absent.
+- Normalized dates/coordinates/controlled tokens conservatively and copied only compatible measurements. Ambiguous body mass, raw numeric tooth counts, private-style notes, and unreviewed preparation durations were not converted into public claims. Details are durable in `phase_3_1_migration_audit.md`.
+
+### Home, catalog, and taxonomy refinement
+
+- Home now reports six live published-collection statistics (13 species, 18 specimens, 2 classes, 6 orders, 11 families, 15 genera), retains hero/search/geographic/editorial pathways, and removes the redundant standalone Featured specimen section.
+- Class cards now give every alpha-bounded skull deliberate top/bottom breathing room. The rule also applies to taxonomy-tree and compact specimen thumbnails.
+- Home and `/species` now share a server-rendered class → order → family tree foundation built from the same canonical rank nodes/routes as the ordinary taxonomy-list alternative. No group traits, clades, or divergence estimates were invented.
+- `/species` has a prominent honest discovery pathway above class browsing. It links to the current published displays and clearly reserves real name search/facets for Phase 4.
+- Published galleries use a three/two/one-column responsive grid. All-species and class/order scopes are separated by family headings and family-route links; family/genus landings retain one unsegmented grid.
+- Multi-specimen taxon cards keep the card's main link pointed at the reviewed default display and add a compact native chooser. It exposes thumbnail, immutable ID/default state, age, sex, maximum length, and exact nested links without repeating species names.
+- Scientific labels render genus records as italicized genus plus roman `sp.`. Static metadata no longer falsely promises six views for the four five-view records.
+
+### Future comprehensive tree boundary
+
+- Added `interactive_taxonomic_tree.md` and a dedicated deferred Phase 3.2. It owns genus/taxon expansion, keyboard traversal, pan/zoom/reset, optional group previews, tree/list parity, and any sourced characteristics/divergence content.
+- Phase 3.2 requires owner scheduling/content decisions and does not silently block Phase 4. Phase 3.1 is only the compact, fully linked static foundation.
+
+## 3. Phase 3.0 implementation
 
 ### Repository and phase boundary
 
 - Verified GitHub draft PR #4 was merged and local `main` already matched merge commit `8c2413467f9d68ab29009fe9513c134e7226f2e7` before implementation.
-- Created `agent/phase-3-museum-shell-catalog` from that exact base. Phase 3 changes remain local and unstaged because this task did not explicitly authorize commit, push, PR creation, or remote writes.
+- Created `agent/phase-3-museum-shell-catalog` from that exact base. After the owner authorized a separate pre-refinement checkpoint, Phase 3.0 was committed locally as `9a1d996` before any Phase 3.1 edit. It has not been pushed and has no remote PR/CI.
 - Phase 4 search/facets, Phase 5 MapLibre/editorial work, Phase 6 row/media ingestion, and Phase 7 production remain unstarted.
 
 ### Museum shell and Home
@@ -50,11 +77,11 @@ Present the complete Phase 3 museum shell, catalog, taxonomy routes, and class-a
 | Correct static names, links, metadata, defaults, redirects, and draft exclusion | Pass locally | Pure query/component tests plus a 14-output static build; sitemap/robots and not-found are browser-tested; canonical URLs are absolute and route-correct |
 | Mammal, bird, long-name, uncertain, missing-media, and multiple-specimen states | Pass locally | Live mammal route plus typed unit/component fixtures verify bird profile/matrix, resilient wrapping, explicit uncertainty, missing lateral placeholder, draft exclusion, and exact multi-specimen links |
 | Responsive/accessibility/no-JavaScript behavior | Pass locally | 13/13 Playwright journeys, axe violations `[]`, static no-JavaScript catalog/taxonomy/specimen content, and manual 1440 × 900/390 × 844 review with no horizontal overflow |
-| Owner approves scaled museum/catalog direction | Pending | This handoff is the first owner inspection of Phase 3 |
+| Owner approves scaled museum/catalog direction | Passed into refinement | Owner approved most of Phase 3.0 and supplied the bounded Phase 3.1 corrections/features on 2026-08-21 |
 
-**Gate conclusion:** The Phase 3 implementation and complete local technical/visual acceptance gate pass. The product gate remains open for owner review. Phase 4 must not begin yet.
+**Gate conclusion:** Phase 3.0's complete local technical/visual gate passed and the owner review opened Phase 3.1. Phase 3.0 is preserved separately; Phase 4 did not begin.
 
-## 3. Phase 2.3 implementation
+## 4. Phase 2.3 implementation
 
 ### Comparison copy and uncertainty
 
@@ -73,7 +100,7 @@ Present the complete Phase 3 museum shell, catalog, taxonomy routes, and class-a
 
 - Kept MapLibre out of Phase 2. Phase 5 now explicitly adds a `View on map` action near Collection record location data, targeting `/map?specimen={id}` so the central map route owns marker/list selection and the textual record remains the accessible equivalent.
 
-## 4. Phase 2.2 implementation
+## 5. Phase 2.2 implementation
 
 ### Photography, inspection, and real-device behavior
 
@@ -99,7 +126,7 @@ Present the complete Phase 3 museum shell, catalog, taxonomy routes, and class-a
 - Changed the collection kicker from `Provenance` to `Metadata`.
 - Left-aligned age/condition guide notes and headings. The desktop `Specimen-condition guide` title remains on one line; narrow layouts may wrap naturally.
 
-## 5. Phase 2.1 implementation (retained foundation)
+## 6. Phase 2.1 implementation (retained foundation)
 
 ### Photography and navigation
 
@@ -127,7 +154,7 @@ Present the complete Phase 3 museum shell, catalog, taxonomy routes, and class-a
 - Specified Phase 3 discovery sections as at most three same-family cards plus three deterministic collection-wide cards, excluding the current taxon and duplicates and omitting empty groups. They are not rendered with only one taxon.
 - Kept all section kickers for now, including the explicitly preferred `Mammalia · Carnivora` and `Physical specimen`; canonical design guidance marks the remaining kickers for reconsideration after the stable release.
 
-## 6. Phase 2 acceptance gate
+## 7. Phase 2 acceptance gate
 
 | Requirement | State | Evidence |
 |---|---|---|
@@ -140,7 +167,7 @@ Present the complete Phase 3 museum shell, catalog, taxonomy routes, and class-a
 
 **Gate conclusion:** The complete Phase 2 technical, visual, and owner-approval gate passed. Phase 2 closed before the separately authorized Phase 3 work recorded above.
 
-## 7. Representative record decisions
+## 8. Representative record decisions
 
 | Decision | Current answer | Reason/evidence |
 |---|---|---|
@@ -159,32 +186,32 @@ Present the complete Phase 3 museum shell, catalog, taxonomy routes, and class-a
 | Rendering | static App Router/RSC plus gallery, comparison, selector, and guide-dialog client islands | Preserves useful static/no-JavaScript content while isolating genuine interaction |
 | Production compiler | `next build --webpack` | Pinned Turbopack production build did not terminate reliably in Phase 2; webpack remains deterministic and verified |
 
-## 8. Phase 3 verification evidence
+## 9. Phase 3.1 verification evidence
 
 | Gate | Most recent evidence | Status |
 |---|---|---|
-| Exact toolchain/install | Node `v24.18.0`; pnpm `11.21.0`; `CI=true pnpm install --frozen-lockfile` restored all 470 pinned packages from the verified lockfile/store | Pass |
-| Content build | `pnpm content:build`: 1 taxon, 1 specimen, 6 specimen media assets, 1 comparison reference, 0 reviewed profiles (1 profile source) | Pass |
-| Media | `pnpm validate:media`: 6 specimen assets plus 1 reference, sRGB/alpha/bounds valid, no EXIF/IPTC/XMP | Pass |
+| Exact toolchain/install | Node `v24.18.0`; pnpm `11.21.0`; `CI=true pnpm install --frozen-lockfile` restored all 470 pinned packages from the unchanged lockfile/store | Pass |
+| Content build | `pnpm content:build`: 15 taxa, 18 specimens, 104 specimen media assets, 1 comparison reference, 0 reviewed profiles (1 profile source); only four expected optional-frontal warnings | Pass |
+| Media | `pnpm validate:media`: 104 specimen assets plus 1 reference, 24.80 MiB, sRGB/alpha/bounds valid, no EXIF/IPTC/XMP | Pass |
 | Invalid fixtures | `pnpm test:fixtures`: 6 expected failures detected, including class-profile mismatch | Pass |
-| Types/lint/tests | `pnpm typecheck`; `pnpm lint`; `CI=true pnpm test`: 6 files / 25 tests covering compiler schema 4, hierarchy/catalog queries, drafts, stable suggestions, card variants, bird measurement presentation, comparison matrices, long/uncertain/missing/multiple states, and retained Phase 2 behavior | Pass |
-| Production build | `CI=true pnpm build`: 14 static outputs; Home, not-found, guide, robots, sitemap, catalog, taxon, exact specimen, and four taxonomy ranks all prerender | Pass |
-| Browser/accessibility | `CI=true PLAYWRIGHT_PORT=3102 pnpm test:e2e`: 13/13 Chromium journeys in 20.8 s; axe violations `[]`; Home/catalog, mobile keyboard taxonomy journey, no-JavaScript routes, SEO outputs/404, deep links, gallery/inspection/gesture/geometry, comparison, reduced motion, and third-party boundary covered | Pass |
-| Manual visual/responsive | Playwright CLI at 1440 × 900 and 390 × 844 reviewed Home, catalog, family landing, mobile menu, exact specimen, and lazy-loaded comparison. No horizontal overflow or console errors; one normal Next image-preload timing warning only | Pass |
-| Git/base audit | GitHub PR #4 verified merged; local Phase 3 branch created from matching merge commit `8c2413467f9d68ab29009fe9513c134e7226f2e7`; generated/raw/private paths remain ignored | Pass |
-| Remote Phase 3 CI | No Phase 3 commit, push, or PR was authorized in this task | Not run; not a local implementation blocker |
+| Types/lint/tests | Final `CI=true pnpm check`: formatting, ESLint, content/media/type checks, 6 files / 25 tests, and 6 invalid fixtures all pass; live taxonomy counts, draft exclusion, multi-specimen records, tree model, card states, class-aware measurements/comparisons, and retained Phase 2 behavior are covered | Pass |
+| Production build | Final `CI=true pnpm build`: 75 static outputs; Home, not-found, guide, robots, sitemap, catalog, 15 taxon paths, 18 exact specimen paths, and 34 rank paths prerender | Pass |
+| Browser/accessibility | Final `CI=true PLAYWRIGHT_PORT=3102 pnpm test:e2e`: 15/15 Chromium journeys in 30.6 s; axe violations `[]`; adds desktop three-card family geometry, centered compact chooser, exact specimen selection, mobile single-column/chooser bounds, and retains no-JavaScript/keyboard/gallery/comparison/SEO coverage | Pass |
+| Manual visual/responsive | Playwright CLI at 1440 × 900 and 390 × 844 reviewed Home, `/species`, Mustelidae three-card row, two-/three-specimen choosers, and live *Gavia* sp. bird measurements. Home preview was bounded to 4/18 records and dialog centering fixed during review. Final page overflow is `0`, dialog stays within 19–371 px on the 390 px viewport, console has 0 messages, and all recorded requests are local/200 | Pass |
+| Git/base/scope audit | Phase 3.0 is local commit `9a1d996`; the separate Phase 3.1 checkpoint contains only related canonical/context/code/media/test/docs paths. Raw metadata/PNG masters, local visual references, generated artifacts, dependency state, and browser output remain ignored | Pass |
+| Remote Phase 3 CI | No push, PR, or remote CI was authorized for either local checkpoint | Not run; not a local implementation blocker |
 | Complete local gate | `CI=true pnpm check`, `CI=true pnpm build`, and complete Playwright pass after final documentation/code reconciliation | Pass after the final commands recorded in this section |
 
 Package-manager gates must run sequentially with `CI=true` in non-interactive environments; concurrent pnpm commands can reconcile `node_modules` against different lifecycle states and are not a valid speed optimization.
 
-## 9. Known limitations and controls
+## 10. Known limitations and controls
 
-- Only one reviewed taxon/specimen exists. The museum shell/catalog and all four rank routes are real, but related suggestions intentionally remain absent and visual variety is fixture-tested rather than publicly inspectable.
-- Search/facets/result-mode controls (Phase 4), interactive map/editorial routes (Phase 5), full ingestion (Phase 6), deployment/release checks (Phase 7), analytics, 360°, 3D, uploads, and AI overlays have not started.
+- The 15/18 Phase 3.1 review slice is public and inspectable, but 33 raw specimen rows remain blocked migration candidates. Phase 6 still owns the complete audited migration, not a blind append of the remaining rows.
+- Comprehensive interactive tree behavior/content (Phase 3.2), search/facets/result modes (Phase 4), interactive map/editorial routes (Phase 5), complete migration (Phase 6), deployment/release checks (Phase 7), analytics, 360°, 3D, uploads, and AI overlays have not started.
 - Home's search-looking entry is a clearly labelled catalog link, not a fake text input. Home's geographic preview is explicitly non-interactive and non-cartographic; the specimen `View on map` action remains deferred until the accessible `/map?specimen={id}` route exists.
-- The partial `metadata_csv` exports are ignored and unreviewed. Their bird values validate the schema design but are not public records, and no raw row-number identity is accepted.
+- The partial `metadata_csv` exports and PNG masters remain ignored migration evidence and are not runtime/public files. Only the transformations explicitly recorded in the Phase 3.1 migration audit became canonical records; no raw row-number identity was accepted.
 - The calibrated card is a true relative comparison between visible skull subjects; it does not calibrate the visitor's monitor so displayed CSS pixels are not literal real-world millimetres.
-- Only one collection specimen is published, so the live selector currently offers only the adult-human default. Its reusable dynamic-specimen path is covered with synthetic test records and will gain real options as reviewed default specimens are ingested.
+- The calibrated comparison selector now has real mammal and bird defaults but still excludes published specimens without a usable default lateral/maximum-length combination. `SPEC-0016` has no recorded maximum length and is correctly ineligible.
 - The adult-human dimensions are explicitly approximate representative values and not a universal adult average. A future source-methodology review may refine the reference without changing the comparison architecture.
 - Measurement definitions are a quick field guide, not a reproducible anatomical protocol. Dedicated illustrated methodology remains future content.
 - The age and condition dialogs are general collection criteria. Future methodology must cite them, explain species variation, and add reviewed real-skull examples.
@@ -193,24 +220,24 @@ Package-manager gates must run sequentially with `CI=true` in non-interactive en
 - Footer copyright starts at 2026 because no repository evidence supports a 2023 publication start; the start year can change only with owner-supplied evidence/preference.
 - Chrome/Chromium is the current phase browser target. Firefox/WebKit and formal 200%/forced-colors/screen-reader release checks remain Phase 7 gates.
 - `NEXT_PUBLIC_SITE_URL` still defaults to `http://localhost:3000`; the final domain is a Phase 7 decision. Canonical/Open Graph/sitemap URLs are structurally complete but intentionally use that default locally.
-- The Phase 3 branch has no local commit or remote PR yet. That is intentional authorization scope, not a code/test blocker.
+- Phase 3.0 and the separately gated Phase 3.1 checkpoint are committed locally. Neither checkpoint has been pushed and no remote PR/CI is authorized.
 
-## 10. Exact next action
+## 11. Exact next action
 
-1. The owner runs the local site and inspects Home, `/species`, at least one taxonomy landing, the taxon page, and the exact specimen page at desktop and mobile widths.
-2. The owner either supplies one bounded Phase 3 feedback task or explicitly approves Phase 3.
-3. After approval and explicit Git authorization, create the coherent commit, push the Phase 3 branch, open/update the draft PR, and verify remote CI. Only then close the Phase 3 gate and plan Phase 4.
+1. The owner inspects Home, `/species`, a broad family-grouped landing, bird/mammal/genus-level displays, and both a two- and three-specimen chooser at desktop/mobile widths.
+2. The owner either supplies one bounded Phase 3.1 feedback task or explicitly approves the review checkpoint.
+3. After approval, the owner decides whether the next implementation is Phase 3.2 comprehensive systematic browsing or Phase 4 search/facets. Remote publishing remains a separate explicit authorization.
 
-No new metadata, measurements, or images are required to review/approve Phase 3. To make a later public bird route or real multi-record search/suggestion review possible, Phase 6 will need completed/reviewed canonical identity, taxonomy, media, rights, dates, and publication decisions—not merely the current partial exports. Illustrated methodology still requires owner-created/reviewed landmark imagery and cited content.
+No new content is required to review Phase 3.1. Before Phase 3.2, the owner must decide its schedule and whether the first comprehensive version omits or receives sourced group characteristics/divergence estimates; details are listed in `interactive_taxonomic_tree.md`. Phase 6 will need completed/corrected metadata and missing accepted image sets for the blocked rows, plus final rights/public-note/publication decisions. Illustrated methodology still requires owner-created/reviewed landmark imagery and cited content.
 
-## 11. Decision/blocker protocol
+## 12. Decision/blocker protocol
 
 - A failing test or lint rule is implementation work, not automatically a blocker.
 - A decision that changes public identity, rights, data publication, scope, or external account state is surfaced to the owner.
 - Blockers record what was tried, exact evidence, safe work completed, and the smallest required owner action.
 - When resolved, retain a short resolution in the checkpoint log rather than deleting history.
 
-## 12. Checkpoint log
+## 13. Checkpoint log
 
 ### 2026-08-12 — Phase 0/1 completed
 
@@ -255,5 +282,16 @@ No new metadata, measurements, or images are required to review/approve Phase 3.
 - The owner explicitly authorized all of Phase 3 and supplied a class-aware mammal/bird measurement design plus partial spreadsheet exports for future migration.
 - `agent/phase-3-museum-shell-catalog` now contains the static museum shell/Home/catalog/rank routes, shared query/card architecture, SEO routes, schema-version-4 measurement profiles, and class-aware comparison matrices. Phase 4 and bulk ingestion were not started.
 - The complete local quality/build/browser gate and manual desktop/mobile review pass. The change remains uncommitted/unpublished pending owner inspection and explicit Git authorization; owner product approval is the only current Phase 3 gate item.
+
+### 2026-08-21 — Phase 3.0 checkpoint preserved
+
+- Before any feedback edit, the complete Phase 3.0 worktree was rechecked with `CI=true pnpm check` and committed locally as `9a1d996 feat: complete phase 3 museum shell and catalog`.
+- The checkpoint contains the approved class-aware architecture proposal but excludes all new Phase 3.1 context/raw/generated/test/unrelated files. It has not been pushed and no PR was opened.
+
+### 2026-08-21 — Phase 3.1 review expansion/refinement checkpointed locally
+
+- The owner authorized a bounded multi-record review expansion, Home/catalog refinements, family-group galleries, a compact multi-specimen chooser, and a static foundation plus future dedicated plan for comprehensive systematic browsing.
+- The canonical collection now contains 15 published taxon identities and 18 specimens backed by 104 validated media assets and 14 new reviewed GBIF snapshots. Thirty-three legacy specimen rows remain blocked migration candidates.
+- UI, tests, migration audit, tree guide, and canonical documentation are implemented. The final sequential quality/build/browser gate, desktop/mobile visual review, and scope audit pass; the work is preserved in a separate local Phase 3.1 commit and awaits owner visual review.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.

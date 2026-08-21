@@ -12,6 +12,7 @@ import {
   type TaxonomyRank,
 } from "@/domain/catalog/queries";
 import { TaxonCardGrid } from "@/features/catalog/CatalogCards";
+import { FamilyGroupedTaxonGallery } from "@/features/catalog/FamilyGroupedTaxonGallery";
 import { TaxonomyIndex } from "@/features/catalog/TaxonomyIndex";
 
 interface TaxonomyPageProps {
@@ -127,7 +128,11 @@ export default async function TaxonomyPage({ params }: TaxonomyPageProps) {
             {landing.taxa.length === 1 ? "result" : "results"}
           </p>
         </div>
-        <TaxonCardGrid cards={landing.taxa} />
+        {landing.node.rank === "class" || landing.node.rank === "order" ? (
+          <FamilyGroupedTaxonGallery cards={landing.taxa} />
+        ) : (
+          <TaxonCardGrid cards={landing.taxa} />
+        )}
       </section>
     </MuseumShell>
   );

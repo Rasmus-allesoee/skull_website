@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "specimen_id": "SPEC-0012",
+  "assets": [
+    {
+      "view": "lateral",
+      "alt": "Lateral view of least weasel skull specimen SPEC-0012.",
+      "orientation": "right"
+    },
+    {
+      "view": "oblique",
+      "alt": "Oblique view of least weasel skull specimen SPEC-0012."
+    },
+    {
+      "view": "frontal",
+      "alt": "Frontal view of least weasel skull specimen SPEC-0012."
+    },
+    {
+      "view": "dorsal",
+      "alt": "Dorsal view of least weasel skull specimen SPEC-0012."
+    },
+    {
+      "view": "ventral",
+      "alt": "Ventral view of least weasel skull specimen SPEC-0012."
+    },
+    {
+      "view": "mandible-dorsal",
+      "alt": "Dorsal view of the separated mandibles from least weasel skull specimen SPEC-0012."
+    }
+  ]
+}

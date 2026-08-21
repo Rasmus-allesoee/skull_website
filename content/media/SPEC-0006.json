@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "specimen_id": "SPEC-0006",
+  "assets": [
+    {
+      "view": "lateral",
+      "alt": "Lateral view of gull skull specimen SPEC-0006.",
+      "orientation": "right"
+    },
+    {
+      "view": "oblique",
+      "alt": "Oblique view of gull skull specimen SPEC-0006."
+    },
+    {
+      "view": "frontal",
+      "alt": "Frontal view of gull skull specimen SPEC-0006."
+    },
+    {
+      "view": "dorsal",
+      "alt": "Dorsal view of gull skull specimen SPEC-0006."
+    },
+    {
+      "view": "ventral",
+      "alt": "Ventral view of gull skull specimen SPEC-0006."
+    },
+    {
+      "view": "mandible-dorsal",
+      "alt": "Dorsal view of the separated mandibles from gull skull specimen SPEC-0006."
+    }
+  ]
+}

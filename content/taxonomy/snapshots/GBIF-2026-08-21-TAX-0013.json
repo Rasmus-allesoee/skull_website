@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "GBIF-2026-08-21-TAX-0013",
+  "provider": "GBIF Species Match API",
+  "endpoint": "https://api.gbif.org/v1/species/match",
+  "queried_on": "2026-08-21",
+  "query": {
+    "taxon_id": "TAX-0013",
+    "scientific_name": "Talpa europaea"
+  },
+  "match": {
+    "usage_key": 7872906,
+    "scientific_name": "Talpa europaea Linnaeus, 1758",
+    "canonical_name": "Talpa europaea",
+    "rank": "SPECIES",
+    "status": "ACCEPTED",
+    "confidence": 99,
+    "match_type": "EXACT",
+    "kingdom": "Animalia",
+    "phylum": "Chordata",
+    "class": "Mammalia",
+    "order": "Soricomorpha",
+    "family": "Talpidae",
+    "genus": "Talpa",
+    "species": "Talpa europaea"
+  },
+  "review": {
+    "state": "accepted",
+    "reviewed_on": "2026-08-21",
+    "notes": "Exact accepted species match; scientific name and class/order/family/genus hierarchy agree with the curated review record."
+  }
+}

@@ -46,10 +46,14 @@ describe("content compiler", () => {
         mediaRights: "all_rights_reserved",
       }),
     );
-    expect(collection.media).toHaveLength(6);
+    expect(collection.media).toHaveLength(104);
     expect(collection.media[0]?.orientation).toBe("right");
     expect(
-      collection.media.slice(1).every((asset) => asset.orientation === null),
+      collection.media.every((asset) =>
+        asset.view === "lateral"
+          ? asset.orientation === "right"
+          : asset.orientation === null,
+      ),
     ).toBe(true);
     expect(collection.comparisonReferences).toEqual([
       expect.objectContaining({
@@ -71,8 +75,15 @@ describe("content compiler", () => {
         asset.publicPath.endsWith(`${asset.specimenId}__${asset.view}.webp`),
       ),
     ).toBe(true);
-    expect(warnings).toEqual([]);
-  });
+    expect(warnings).toHaveLength(4);
+    expect(
+      warnings.every(
+        (warning) =>
+          warning.field === "media" &&
+          warning.rule === "Optional canonical views are missing",
+      ),
+    ).toBe(true);
+  }, 20_000);
 
   it("classifies only exact accepted species matches as automatic candidates", () => {
     expect(

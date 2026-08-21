@@ -20,6 +20,7 @@
     "validate:content": "node --import tsx scripts/validate-content.ts",
     "validate:media": "node --import tsx scripts/validate-media.ts",
     "media:stage:phase2": "node --import tsx scripts/stage-media.ts scripts/phase-2-media-source-map.json",
+    "media:stage:phase3.1": "node --import tsx scripts/stage-media.ts scripts/phase-3-1-review-media-source-map.json",
     "media:process": "node --import tsx scripts/process-media.ts",
     "media:process:reference": "node --import tsx scripts/process-reference-media.ts",
     "taxonomy:refresh": "node --import tsx scripts/refresh-taxonomy.ts",

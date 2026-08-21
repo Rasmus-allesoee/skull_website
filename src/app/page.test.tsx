@@ -16,13 +16,20 @@ describe("museum home", () => {
     expect(
       screen.getByRole("link", { name: "Explore the collection" }),
     ).toHaveAttribute("href", "/species");
-    expect(screen.getByRole("link", { name: /Mammalia/i })).toHaveAttribute(
-      "href",
-      "/taxonomy/class/mammals",
-    );
-    expect(screen.getAllByText("1", { selector: "strong" })).toHaveLength(3);
     expect(
-      screen.getByRole("heading", { name: "Raccoon dog", level: 2 }),
+      screen
+        .getAllByRole("link", { name: /Mammalia/i })
+        .some(
+          (link) => link.getAttribute("href") === "/taxonomy/class/mammals",
+        ),
+    ).toBe(true);
+    expect(screen.getByText("13", { selector: "strong" })).toBeInTheDocument();
+    expect(screen.getByText("18", { selector: "strong" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        name: "Follow class, order, and family.",
+      }),
     ).toBeInTheDocument();
+    expect(screen.queryByText("Featured specimen")).not.toBeInTheDocument();
   });
 });

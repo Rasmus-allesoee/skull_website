@@ -2,9 +2,9 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**Phase 3 is implemented locally and ready for owner review:** the museum shell, Home, catalog, taxonomy routes, class-aware measurement system, and complete local acceptance gate pass. Phase 4 search/faceted discovery has not started.
+**Phase 3.1 is implemented locally and ready for owner review:** the museum shell, Home, catalog, taxonomy routes, class-aware measurements, 15 published taxon identities, 18 specimens, family galleries, compact taxonomy-tree foundation, and multi-specimen chooser pass the complete local acceptance gate. Separate Phase 3.0/3.1 commits remain local; Phase 3.2 and Phase 4 have not started.
 
-Start at `/`, browse the catalog at `/species`, or follow the static taxonomy from `/taxonomy/class/mammals`. The current specimen display is `/species/raccoon-dog`; the exact physical record is `/species/raccoon-dog/specimens/SPEC-0001`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
+Start at `/`, browse the catalog at `/species`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
 
 ## Project principles
 
@@ -87,6 +87,7 @@ On macOS, find the computer's active LAN IPv4 address (commonly with `ipconfig g
 | `pnpm validate:media` | Validate declared public WebP files, metadata, alpha, dimensions, naming, and bounds |
 | `pnpm test:fixtures` | Confirm intentionally invalid representative records fail actionably |
 | `pnpm media:stage:phase2` | Copy only the approved six local Phase 2 PNGs into ignored canonical staging names |
+| `pnpm media:stage:phase3.1` | Copy the explicit 104-image Phase 3.1 review map from ignored local sources into ignored canonical staging names |
 | `pnpm media:process` | Build and validate public sRGB WebP derivatives from canonical staged PNGs |
 | `pnpm media:process:reference` | Rebuild a declared public comparison-reference WebP from its ignored local source |
 | `pnpm taxonomy:refresh -- --taxon-id TAX-0001 --dry-run` | Query GBIF explicitly without changing curated taxonomy or writing a snapshot |
@@ -125,7 +126,9 @@ Generated `.generated/`, local `.staging/`, browser artifacts, dependencies, and
 6. [docs/design_system.md](docs/design_system.md) — visual and interaction rules
 7. [docs/implementation_plan.md](docs/implementation_plan.md) — phased delivery plan and gates
 8. [docs/competitive_audit.md](docs/competitive_audit.md) — reference-site evidence
-9. [docs/decisions/](docs/decisions/) — accepted architecture decisions
+9. [docs/phase_3_1_migration_audit.md](docs/phase_3_1_migration_audit.md) — accepted/blocked review-slice records and transformations
+10. [docs/interactive_taxonomic_tree.md](docs/interactive_taxonomic_tree.md) — Phase 3.1 tree foundation and dedicated Phase 3.2 plan
+11. [docs/decisions/](docs/decisions/) — accepted architecture decisions
 
 The original approved plan remains in `agent_context/website_plan_from_planmode.md` as historical source context. Canonical implementation guidance belongs in `docs/`; contradictory guidance must be resolved and recorded rather than guessed.
 
@@ -141,7 +144,7 @@ Phase 2 established:
 - review-gated MDX for future cited editorial profiles and guides; and
 - `public/media/specimens/` for validated derivatives named `{specimen-id}__{view}.webp`, plus `public/media/references/` for validated comparison assets.
 
-The first canonical records (`TAX-0001`, `SPEC-0001`) were curated from only the explicitly selected staging row `ID = 1` and six matching raccoon-dog PNGs. Staging values remain evidence rather than a production source of truth. Phase 2.2 adds a processed adult-human-skull reference and fixed approximate dimensions for the calibrated specimen-page comparison; its ignored source image is likewise not a runtime input. Phase 3 advances the compiled contract to schema version 4 and expands the single specimen CSV with explicit mammal/bird measurement applicability; it does not bulk-ingest the partial raw exports. The current profile is deliberately `draft` and omitted from the public page until useful, cited prose is curated; the compiler, citation model, and reviewed-profile path remain intact.
+The first canonical records (`TAX-0001`, `SPEC-0001`) were curated from only the explicitly selected staging row `ID = 1` and six matching raccoon-dog PNGs. Phase 2.2 added a processed adult-human-skull reference and fixed approximate dimensions for the calibrated specimen-page comparison. Phase 3.0 advanced the compiled contract to schema version 4 and expanded the single specimen CSV with explicit mammal/bird measurement applicability. Phase 3.1 then normalized only the 15-taxon/18-specimen subset that could be matched to 104 cleaned images and satisfy the current publication contract; the raw exports/PNG masters remain ignored and the complete Phase 6 audit remains mandatory. See the [migration audit](docs/phase_3_1_migration_audit.md). The current raccoon-dog profile remains deliberately `draft` and omitted from the public page until useful, cited prose is curated.
 
 See [docs/content_data_model.md](docs/content_data_model.md) before editing any future content source.
 

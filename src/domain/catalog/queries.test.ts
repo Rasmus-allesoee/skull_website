@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { buildContent } from "../../../scripts/lib/content";
+import { getCollection } from "@/data/collection";
 import type {
   CompiledCollection,
   MediaAsset,
@@ -18,48 +18,61 @@ import {
 
 let baseline: CompiledCollection;
 
-beforeAll(async () => {
-  baseline = (await buildContent()).collection;
+beforeAll(() => {
+  baseline = getCollection();
 });
 
 describe("catalog queries", () => {
   it("builds deterministic taxonomy landings and real counts", () => {
     const catalog = getCatalogModel(baseline);
-    expect(catalog.taxonCount).toBe(1);
-    expect(catalog.specimenCount).toBe(1);
-    expect(
-      catalog.taxonomyNodes.map((node) => `${node.rank}:${node.slug}`),
-    ).toEqual([
-      "class:mammals",
-      "order:carnivora",
-      "family:canidae",
-      "genus:nyctereutes",
-    ]);
+    expect(catalog.taxonCount).toBe(15);
+    expect(catalog.specimenCount).toBe(18);
+    expect(catalog.rankCounts).toEqual({
+      species: 13,
+      genusLevelRecords: 2,
+      classes: 2,
+      orders: 6,
+      families: 11,
+      genera: 15,
+    });
+    expect(catalog.taxonomyTree).toHaveLength(2);
 
     const classLanding = getTaxonomyLanding(baseline, "class", "mammals")!;
     expect(classLanding.children.map((node) => node.slug)).toEqual([
       "carnivora",
+      "lagomorpha",
+      "soricomorpha",
     ]);
-    expect(classLanding.descendantGroups.family?.[0]?.slug).toBe("canidae");
-    expect(classLanding.taxa[0]?.defaultSpecimen.specimenId).toBe("SPEC-0001");
+    expect(
+      classLanding.descendantGroups.family?.some(
+        (node) => node.slug === "canidae",
+      ),
+    ).toBe(true);
+    expect(
+      classLanding.taxa.find((card) => card.taxon.taxonId === "TAX-0001")
+        ?.defaultSpecimen.specimenId,
+    ).toBe("SPEC-0001");
   });
 
   it("keeps drafts out and counts multiple published specimens", () => {
     const collection = cloneCollection();
     collection.specimens.push(
-      specimenFromBaseline("SPEC-0002", "TAX-0001", "published"),
-      specimenFromBaseline("SPEC-0003", "TAX-0001", "draft"),
+      specimenFromBaseline("SPEC-9998", "TAX-0001", "published"),
+      specimenFromBaseline("SPEC-9999", "TAX-0001", "draft"),
     );
-    collection.media.push(mediaFromBaseline("SPEC-0002"));
+    collection.media.push(mediaFromBaseline("SPEC-9998"));
 
     const catalog = getCatalogModel(collection);
-    expect(catalog.specimenCount).toBe(2);
-    expect(catalog.taxa[0]?.specimenCount).toBe(2);
+    expect(catalog.specimenCount).toBe(19);
     expect(
-      getSpecimenCardRecords(collection).map(
-        (card) => card.specimen.specimenId,
-      ),
-    ).toEqual(["SPEC-0001", "SPEC-0002"]);
+      catalog.taxa.find((card) => card.taxon.taxonId === "TAX-0001")
+        ?.specimenCount,
+    ).toBe(2);
+    const specimenIds = getSpecimenCardRecords(collection).map(
+      (card) => card.specimen.specimenId,
+    );
+    expect(specimenIds).toContain("SPEC-9998");
+    expect(specimenIds).not.toContain("SPEC-9999");
   });
 
   it("resolves previous slugs without changing stable identity", () => {
@@ -83,11 +96,12 @@ describe("catalog queries", () => {
   it("keeps related groups stable, bounded, deduplicated, and current-free", () => {
     const collection = cloneCollection();
     for (let index = 2; index <= 9; index += 1) {
-      const taxonId = `TAX-${String(index).padStart(4, "0")}`;
-      const specimenId = `SPEC-${String(index).padStart(4, "0")}`;
+      const stableIndex = 1000 + index;
+      const taxonId = `TAX-${String(stableIndex).padStart(4, "0")}`;
+      const specimenId = `SPEC-${String(stableIndex).padStart(4, "0")}`;
       collection.taxa.push(
         taxonFromBaseline(taxonId, specimenId, {
-          slug: `test-taxon-${index}`,
+          slug: `test-taxon-${stableIndex}`,
           familyName: index <= 5 ? "Canidae" : "Felidae",
           familySlug: index <= 5 ? "canidae" : "felidae",
         }),

@@ -192,7 +192,7 @@ All numeric values are non-negative decimal numbers in canonical units. Every fi
 | `maxillary_canine_length_mm` | mm | Mammal | Exposed/defined upper-canine measurement |
 | `mandibular_canine_length_mm` | mm | Mammal | Exposed/defined lower-canine measurement |
 | `cranium_height_mm` | mm | Bird | Approved vertical cranium-height record |
-| `interorbital_width_mm` | mm | All | Recorded minimum width between the orbits |
+| `interorbital_width_mm` | mm | Bird | Recorded minimum width between the orbits |
 | `orbital_width_mm` | mm | Bird | Recorded transverse orbit width |
 | `bill_length_mm` | mm | Bird | Approved bill-length landmark pair |
 | `bill_width_mm` | mm | Bird | Approved transverse bill-width record |
@@ -511,14 +511,28 @@ Phase 2.2 adds only a separate visual comparison reference; it does not identify
 
 ### Phase 3 class-aware schema decision
 
-The supplied `specimens_birds_measurements_raw.csv` demonstrated that mammal-only columns do not describe bird skulls adequately. Phase 3 therefore incorporated its nine requested bird fields into the one canonical specimen schema and added the missing mammal rostrum/maxillary-tooth-row fields seen in the broader export. It did not copy any raw row value into public records. The current published raccoon-dog row explicitly marks bird-only fields `not_applicable` and retains unrecorded applicable mammal fields as `not_recorded`.
+The supplied `specimens_birds_measurements_raw.csv` demonstrated that mammal-only columns do not describe bird skulls adequately. Phase 3 therefore incorporated its nine requested bird fields into the one canonical specimen schema and added the missing mammal rostrum/maxillary-tooth-row fields seen in the broader export. Phase 3.0 did not copy any raw row value into public records. The raccoon-dog row explicitly marks bird-only fields `not_applicable` and retains unrecorded applicable mammal fields as `not_recorded`.
+
+### Phase 3.1 review-slice migration
+
+Phase 3.1 deliberately normalized a bounded subset of the same ignored exports after matching them to the owner's cleaned image sets. The result is 15 published taxon identities (13 species-level and two explicit genus-level `sp.` records) linked to 18 published specimens and 104 validated media assets. This is an auditable review expansion, not a declaration that all source rows are complete.
+
+- The accepted `TAX-0002`–`TAX-0015` and `SPEC-0002`–`SPEC-0018` IDs now participate in public URLs and must not be reassigned from row order during Phase 6.
+- `Gavia` and `Larus` are canonical genus names; the separate qualifier renders them as *Gavia* sp. and *Larus* sp. without changing the external taxonomy match.
+- Applicable values copied from a source measurement remain `measured`. Blank applicable fields remain `not_recorded`; out-of-profile fields are `not_applicable`.
+- Ambiguous body-mass units, incompatible raw tooth counts, private-style distinguishing text, and unreviewed preparation durations were not normalized into public facts.
+- Explicit coordinates were retained with their supplied uncertainty semantics; no locality or EXIF geocoding occurred.
+- All accepted rows use the repository's reserved rights value and the supplied owner/photographer credit. Phase 6 must still re-audit final rights and public-note decisions.
+- Four published records legitimately lack an optional frontal view. The compiler reports them as warnings while lateral media remains blocking.
+
+The complete accepted/blocked record matrix and transformation rationale are in [phase_3_1_migration_audit.md](phase_3_1_migration_audit.md).
 
 ## 17. Migration from the current draft
 
-The draft metadata, partial `metadata_csv` exports, and staged images are input evidence, not production sources. Migration in Phase 6 will:
+The draft metadata, partial `metadata_csv` exports, and staged images are input evidence, not production sources. Phase 3.1 converted only the audited review slice above. Complete migration in Phase 6 will:
 
 1. preserve a private backup of the original working sheet and image masters;
-2. assign immutable taxon and specimen IDs outside image/common-name guesses;
+2. reconcile every row against the Phase 3.1 accepted/blocked ledger, preserve its public IDs/URLs, and assign immutable IDs only to genuinely unmapped physical records;
 3. map spreadsheet helper columns and the separate bird-measurement export into the unified reviewed schema without duplicating specimen tables;
 4. convert `X`, blanks, and `N/A` without losing semantics;
 5. separate private notes from curated public notes;

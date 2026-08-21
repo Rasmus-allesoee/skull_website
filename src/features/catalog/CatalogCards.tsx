@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { ScientificIdentification } from "@/components/ScientificIdentification";
 import { SubjectImage } from "@/components/SubjectImage";
 import type {
   ClassEntry,
@@ -11,6 +12,8 @@ import {
   formatPartialDate,
   humanizeToken,
 } from "@/domain/content/display";
+
+import { SpecimenQuickView } from "./SpecimenQuickView";
 
 export function TaxonCardGrid({ cards }: { cards: TaxonCardRecord[] }) {
   return (
@@ -50,7 +53,7 @@ export function TaxonCard({ card }: { card: TaxonCardRecord }) {
           </p>
           <h3>{commonName}</h3>
           <p className="card-scientific-name">
-            <i>{taxon.scientificName}</i>
+            <ScientificIdentification taxon={taxon} />
           </p>
           {taxon.names.danish ? (
             <p className="card-secondary-name">Danish · {taxon.names.danish}</p>
@@ -71,6 +74,12 @@ export function TaxonCard({ card }: { card: TaxonCardRecord }) {
           </div>
         </div>
       </Link>
+      {card.specimenCount > 1 ? (
+        <SpecimenQuickView
+          specimens={card.specimens}
+          defaultSpecimenId={card.defaultSpecimen.specimenId}
+        />
+      ) : null}
     </article>
   );
 }
@@ -96,7 +105,7 @@ export function SpecimenCard({ card }: { card: SpecimenCardRecord }) {
           <p className="card-overline">{card.specimen.specimenId}</p>
           <h3>{commonName}</h3>
           <p className="card-scientific-name">
-            <i>{card.taxon.scientificName}</i>
+            <ScientificIdentification taxon={card.taxon} />
           </p>
           <dl className="card-measurements">
             <div>

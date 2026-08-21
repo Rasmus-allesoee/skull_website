@@ -25,7 +25,7 @@ const responseSchema = z.object({
   order: z.string(),
   family: z.string(),
   genus: z.string(),
-  species: z.string(),
+  species: z.string().optional().default(""),
 });
 
 const taxonId = readArgument("--taxon-id");

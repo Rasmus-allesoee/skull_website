@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "GBIF-2026-08-21-TAX-0003",
+  "provider": "GBIF Species Match API",
+  "endpoint": "https://api.gbif.org/v1/species/match",
+  "queried_on": "2026-08-21",
+  "query": {
+    "taxon_id": "TAX-0003",
+    "scientific_name": "Felis catus"
+  },
+  "match": {
+    "usage_key": 2435035,
+    "scientific_name": "Felis catus Linnaeus, 1758",
+    "canonical_name": "Felis catus",
+    "rank": "SPECIES",
+    "status": "ACCEPTED",
+    "confidence": 99,
+    "match_type": "EXACT",
+    "kingdom": "Animalia",
+    "phylum": "Chordata",
+    "class": "Mammalia",
+    "order": "Carnivora",
+    "family": "Felidae",
+    "genus": "Felis",
+    "species": "Felis catus"
+  },
+  "review": {
+    "state": "accepted",
+    "reviewed_on": "2026-08-21",
+    "notes": "Exact accepted species match; scientific name and class/order/family/genus hierarchy agree with the curated review record."
+  }
+}

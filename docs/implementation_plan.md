@@ -2,9 +2,9 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Phase 3 technically complete locally; owner product review pending
+**Current phase:** Phase 3.1 complete locally; owner product review pending
 
-**Last reviewed:** 2026-08-20
+**Last reviewed:** 2026-08-21
 
 ## 1. How to use this plan
 
@@ -40,11 +40,13 @@ Phase 2 validated real-data vertical slice and visual approval
         ↓
 Phase 3 shared museum shell and taxonomy catalog
         ↓
+Phase 3.1 review-quality catalog expansion and refinement
+        ↓
 Phase 4 search and faceted discovery
         ↓
 Phase 5 map and required editorial/supporting pages
         ↓
-Phase 6 full reviewed collection ingestion
+Phase 6 complete audited collection migration
         ↓
 Phase 7 release hardening, production, and v1.0.0
 ```
@@ -246,7 +248,39 @@ Turn the approved conversational plan into durable sources of truth and create a
 - Static output contains correct names, links, metadata, default specimens, and no drafts.
 - Visual states are consistent across mammals, birds, long names, uncertain taxa, missing optional angles, and multiple specimens.
 
-**Gate status:** The complete local technical gate passes on 2026-08-20: schema/content/media/fixture validation, formatting, lint, typecheck, 25 unit/component tests, a 14-output static production build, 13 Chromium journeys with axe/no-JavaScript/mobile-keyboard coverage, and manual 1440 × 900 plus 390 × 844 review. Bird, long-name, uncertainty, missing-media, and multiple-specimen states are verified with typed fixtures because only one reviewed mammal specimen is currently publishable. Owner inspection/approval remains the Phase 3 product gate; Phase 4 has not started.
+**Phase 3.0 checkpoint:** The complete local technical gate passed on 2026-08-20: schema/content/media/fixture validation, formatting, lint, typecheck, 25 unit/component tests, a 14-output static production build, 13 Chromium journeys with axe/no-JavaScript/mobile-keyboard coverage, and manual 1440 × 900 plus 390 × 844 review. The owner then approved most of the direction and authorized the bounded Phase 3.1 refinement below. Phase 3.0 is preserved in local commit `9a1d996`; no remote write was authorized.
+
+### Phase 3.1 — review-quality catalog expansion and owner-feedback refinement
+
+- [x] Inventory 22 legacy taxon rows, 51 legacy specimen rows, and 104 cleaned PNGs; reconcile 18 physical image sets representing 15 taxon identities.
+- [x] Normalize and publish the 15 identities/18 specimens that meet the current contract, including 13 species-level and two explicit genus-level `sp.` identifications; retain a durable migration audit and keep raw exports/masters ignored.
+- [x] Refresh, review, and snapshot taxonomy for the 14 new canonical taxon records; preserve stable new taxon/specimen IDs and exact nested routes.
+- [x] Process and validate 104 specimen WebPs; keep four missing optional frontal views explicit rather than fabricating completeness.
+- [x] Expand Home to six concise live statistics, preserve hero/search/map/editorial pathways, remove the duplicate Featured specimen section, and improve class-card image breathing room.
+- [x] Add a prominent honest `/species` discovery entry without beginning Phase 4 search behavior.
+- [x] Add a shared server-rendered class → order → family tree foundation on Home and `/species`, while retaining the ordinary taxonomy list as its accessible data-equivalent alternative.
+- [x] Group the all-species and class/order scoped galleries by family; retain a plain responsive grid on family/genus landings.
+- [x] Use a three/two/one-column card grid where content/viewport supports it and verify mammals, birds, genus-level uncertainty, long names, optional-view gaps, and multiple specimens with live records.
+- [x] Add a compact native specimen chooser to multi-specimen species cards, showing only specimen ID/default state, thumbnail, age, sex, and maximum length, with exact stable links, Escape, and focus restoration.
+- [x] Document the complete source/migration boundary and create a dedicated Phase 3.2 implementation guide for the comprehensive interactive tree.
+- [x] Pass the complete sequential local quality/build/browser/manual visual gate and create the separate verified Phase 3.1 commit.
+- [ ] Receive owner approval of the rendered Phase 3.1 result.
+
+Phase 3.1 is a review slice, not the final Phase 6 audit. It establishes public URL identity for the accepted 15/18 records, but Phase 6 still reconciles every legacy row, unresolved media/identity/rights/public-note decision, and field transformation. See [phase_3_1_migration_audit.md](phase_3_1_migration_audit.md).
+
+### Phase 3.2 — comprehensive interactive systematic browsing (dedicated future feature)
+
+**Scheduling:** Deferred pending Phase 3.1 owner approval and an owner decision on whether this precedes or follows Phase 4. It does not silently block Phase 4.
+
+- [ ] Reuse one canonical published hierarchy for the visual tree and ordinary nested-list alternative; never create a second classification source.
+- [ ] Extend the current static class/order/family foundation through genus and terminal taxon nodes with explicit expand/collapse and complete stable links.
+- [ ] Design keyboard traversal, touch, pan/zoom/reset, focus management, reduced motion, no-JavaScript fallback, and shareable state before selecting a tree library.
+- [ ] Add compact group previews only with deterministic published imagery and list/route equivalents.
+- [ ] Add group-identification characteristics only after claim-level sources and review.
+- [ ] Add evolutionary divergence estimates only after sources, definitions, uncertainty wording, and owner approval; otherwise omit them.
+- [ ] Verify tree/list node parity, draft exclusion, performance/bundle isolation, 200% zoom, forced colors, screen reader, axe, and responsive behavior.
+
+Detailed implementation constraints and prerequisites live in [interactive_taxonomic_tree.md](interactive_taxonomic_tree.md). Phase 4 remains the owner of multilingual search, facets, result modes, and URL-backed query state.
 
 ## 7. Phase 4 — search and faceted exploration
 
@@ -318,19 +352,22 @@ Automated and manual scenarios pass for:
 - Editorial pages have reviewed structure, links, citations/safety states, and mobile/keyboard behavior.
 - No upload backend, cookie, or tracking behavior has been introduced.
 
-## 9. Phase 6 — full collection ingestion
+## 9. Phase 6 — complete audited collection migration
 
 ### Dependencies
 
-- User supplies replacement completed metadata exports and cleaned images with specimen IDs.
+- User supplies completed/corrected metadata for unresolved rows and any missing accepted image sets.
 - Rights/credits and public-note decisions are available.
 - Phase 2 compiler/media contract is stable.
+- The Phase 3.1 ID/URL map and [migration audit](phase_3_1_migration_audit.md) are treated as the starting checkpoint, not discarded.
 
 ### Ingestion
 
 - [ ] Back up private originals outside Git.
-- [ ] Map replacement data into `taxa.csv`/`specimens.csv` without treating legacy rows as identity.
-- [ ] Assign and review immutable IDs, slugs, hierarchy, default specimens, and publication states.
+- [ ] Reconcile all 22 legacy taxon rows and 51 specimen rows against the Phase 3.1 accepted/blocked ledger.
+- [ ] Map replacement data into `taxa.csv`/`specimens.csv` without treating legacy row numbers as identity.
+- [ ] Preserve and review Phase 3.1 immutable IDs/URLs; assign new IDs only to genuinely unmapped physical records.
+- [ ] Review slugs, hierarchy, default specimens, and publication states.
 - [ ] Separate private working notes from public prose.
 - [ ] Verify taxonomy and resolve all blocking match flags.
 - [ ] Validate dates, units, measurements, coordinates/precision, preparation, rights, and credits.

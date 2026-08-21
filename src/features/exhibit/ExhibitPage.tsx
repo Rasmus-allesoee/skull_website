@@ -1,4 +1,5 @@
 import { MuseumShell } from "@/components/MuseumShell";
+import { ScientificIdentification } from "@/components/ScientificIdentification";
 import { getRelatedTaxa } from "@/data/catalog";
 import { getEligibleSkullComparisons } from "@/data/comparison";
 import type { ExhibitRecord } from "@/data/collection";
@@ -52,7 +53,7 @@ export function ExhibitPage({
           </p>
           <h1 id="exhibit-title">{commonName}</h1>
           <p className="scientific-name">
-            <i>{taxon.scientificName}</i>
+            <ScientificIdentification taxon={taxon} />
           </p>
           {taxon.names.danish ? (
             <p className="danish-name">Danish · {taxon.names.danish}</p>

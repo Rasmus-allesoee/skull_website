@@ -1,0 +1,27 @@
+{
+  "schema_version": 2,
+  "specimen_id": "SPEC-0002",
+  "assets": [
+    {
+      "view": "lateral",
+      "alt": "Lateral view of razorbill skull specimen SPEC-0002.",
+      "orientation": "right"
+    },
+    {
+      "view": "oblique",
+      "alt": "Oblique view of razorbill skull specimen SPEC-0002."
+    },
+    {
+      "view": "dorsal",
+      "alt": "Dorsal view of razorbill skull specimen SPEC-0002."
+    },
+    {
+      "view": "ventral",
+      "alt": "Ventral view of razorbill skull specimen SPEC-0002."
+    },
+    {
+      "view": "mandible-dorsal",
+      "alt": "Dorsal view of the separated mandibles from razorbill skull specimen SPEC-0002."
+    }
+  ]
+}

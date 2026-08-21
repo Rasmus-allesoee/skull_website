@@ -24,6 +24,7 @@ test("taxon/default and exact specimen deep links are static, distinct, and acce
   );
   await expect(
     page
+      .getByLabel("Collection record")
       .getByText("Sex", { exact: true })
       .locator("..")
       .getByText("Not recorded"),
@@ -109,6 +110,11 @@ test("desktop gallery provides high-quality selection and smooth high-resolution
   ).toBeLessThanOrEqual(
     inspectionViewportBox!.y + inspectionViewportBox!.height,
   );
+  await expect
+    .poll(() =>
+      inspectionImage.evaluate((image: HTMLImageElement) => image.naturalWidth),
+    )
+    .toBe(3200);
   const inspectionSource = await inspectionImage.evaluate(
     (image: HTMLImageElement) => ({
       currentSrc: image.currentSrc,

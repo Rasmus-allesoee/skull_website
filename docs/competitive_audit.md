@@ -1,10 +1,10 @@
 # Competitive audit
 
-**Status:** Approved planning evidence; Phase 3 catalog application checked
+**Status:** Approved planning evidence; Phase 3.1 multi-record catalog application checked
 
 **Reviewed:** 2026-08-12
 
-**Implementation check:** 2026-08-20
+**Implementation check:** 2026-08-21
 
 **Scope:** Public browsing, catalog structure, specimen presentation, search, map, and forward-looking media patterns
 
@@ -36,6 +36,7 @@ Reference: <https://www.skull-index.com/species>
 ### Strong patterns
 
 - High-quality skull photography on a black background creates a coherent, museum-like atmosphere.
+- Family headings divide a long species gallery into recognizable systematic groups while cards retain a consistent multi-column rhythm.
 - Image consistency makes visual comparison possible before a visitor reads the metadata.
 - Multiple individuals help communicate that a species is not represented by one idealized specimen.
 - The dark visual direction suits pale bone without becoming a conventional white database interface.
@@ -53,6 +54,7 @@ Reference: <https://www.skull-index.com/species>
 - Large, consistently framed skull imagery on a deep neutral background.
 - Representative images at every useful browsing level.
 - Multiple specimens exposed through a compact selector and exact links.
+- Family-labelled card groups at broad catalog scopes, without subdividing already small family scopes into sparse genus sections.
 
 ### Improve or reject
 
@@ -68,6 +70,7 @@ References: <https://www.skullbase.info/> and <https://www.skullbase.info/map.ph
 
 - Pages are lightweight, predictable, and quick to navigate.
 - A systematic recurring layout reduces the learning cost between specimens.
+- Family-separated multi-column galleries make broad catalog pages easier to scan than one undifferentiated grid.
 - Datasheet-like presentation makes record fields easy to find.
 - Related records and direct links support practical reference use.
 - The map connects physical specimens to geography in a way a text catalog alone cannot.
@@ -161,18 +164,19 @@ The combined response is deliberately not a visual average of the three sites:
 - Decorative 3D/AI effects presented as documentary evidence.
 - Direct uploads before storage, consent, security, moderation, and retention are designed.
 
-## 9. Phase 3 implementation application
+## 9. Phase 3.1 implementation application
 
-Phase 3 applies the audited patterns without re-copying any reference site's content or branding:
+Phase 3.1 applies the audited patterns without re-copying any reference site's content or branding:
 
 - the shared dark museum shell and large lateral imagery retain the photographic emphasis;
-- `/species` keeps class entries, a compact rank index, and the image gallery structurally separate;
+- `/species` keeps class entries, a compact linked hierarchy, its ordinary rank-list alternative, and the image gallery structurally separate;
 - one class/order/family/genus template creates predictable, breadcrumbed rank pages rather than long mixed hierarchy pages;
-- taxon and specimen cards use the accepted species-first/exact-specimen URL model;
+- all-species and class/order galleries use family headings plus responsive three/two/one-column grids, while family/genus pages avoid unnecessary sub-grouping;
+- taxon cards retain the accepted species-first URL model and add a compact physical-specimen chooser with exact nested links when more than one skull exists;
 - all routes remain static and useful without JavaScript; and
 - the Home geographic preview is a semantic record summary, not a premature or decorative map implementation.
 
-Phase 4 still owns multilingual indexed search, facets, result modes, and URL state. The one-record catalog is not large enough to revisit pagination or virtualization.
+Phase 4 still owns multilingual indexed search, facets, result modes, and URL state. The 15-taxon review catalog is still too small to justify pagination or virtualization. The comprehensive interactive systematic tree is separately planned as Phase 3.2; the current class → order → family foundation makes no unsupported identification-characteristic or evolutionary-timescale claims.
 
 ## 10. Revalidation triggers
 

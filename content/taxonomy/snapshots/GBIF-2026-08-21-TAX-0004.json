@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "GBIF-2026-08-21-TAX-0004",
+  "provider": "GBIF Species Match API",
+  "endpoint": "https://api.gbif.org/v1/species/match",
+  "queried_on": "2026-08-21",
+  "query": {
+    "taxon_id": "TAX-0004",
+    "scientific_name": "Gavia"
+  },
+  "match": {
+    "usage_key": 2481954,
+    "scientific_name": "Gavia J.R.Forster, 1788",
+    "canonical_name": "Gavia",
+    "rank": "GENUS",
+    "status": "ACCEPTED",
+    "confidence": 92,
+    "match_type": "EXACT",
+    "kingdom": "Animalia",
+    "phylum": "Chordata",
+    "class": "Aves",
+    "order": "Gaviiformes",
+    "family": "Gaviidae",
+    "genus": "Gavia",
+    "species": ""
+  },
+  "review": {
+    "state": "accepted",
+    "reviewed_on": "2026-08-21",
+    "notes": "Exact accepted genus match; the record remains explicitly genus-level with qualifier sp and unassessed identification confidence. GBIF hierarchy agrees with the curated review record."
+  }
+}

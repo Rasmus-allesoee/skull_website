@@ -1,5 +1,6 @@
 import { getCollection } from "@/data/collection";
 import type { SkullComparisonRecord } from "@/domain/comparison/types";
+import { formatScientificIdentification } from "@/domain/content/display";
 import {
   comparisonMeasurementKeys,
   resolveMeasurementProfile,
@@ -58,7 +59,7 @@ export function getEligibleSkullComparisons(
       kind: "specimen",
       label: taxon.names.english ?? taxon.scientificName,
       isDefault: false,
-      scientificName: taxon.scientificName,
+      scientificName: formatScientificIdentification(taxon),
       specimenId: specimen.specimenId,
       aliases: [
         taxon.names.danish,

@@ -32,7 +32,7 @@ export async function generateMetadata({
   const image = exhibit.media.find((asset) => asset.view === "lateral");
   return createPageMetadata({
     title,
-    description: `Six-view photography, measurements, and collection data for ${name} skull ${exhibit.specimen.specimenId}.`,
+    description: `Multi-view photography, measurements, and collection data for ${name} skull ${exhibit.specimen.specimenId}.`,
     path: `/species/${exhibit.taxon.slug}`,
     image: image?.publicPath,
   });

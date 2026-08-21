@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "GBIF-2026-08-21-TAX-0006",
+  "provider": "GBIF Species Match API",
+  "endpoint": "https://api.gbif.org/v1/species/match",
+  "queried_on": "2026-08-21",
+  "query": {
+    "taxon_id": "TAX-0006",
+    "scientific_name": "Larus"
+  },
+  "match": {
+    "usage_key": 2481126,
+    "scientific_name": "Larus Linnaeus, 1758",
+    "canonical_name": "Larus",
+    "rank": "GENUS",
+    "status": "ACCEPTED",
+    "confidence": 92,
+    "match_type": "HIGHERRANK",
+    "kingdom": "Animalia",
+    "phylum": "Chordata",
+    "class": "Aves",
+    "order": "Charadriiformes",
+    "family": "Laridae",
+    "genus": "Larus",
+    "species": ""
+  },
+  "review": {
+    "state": "accepted",
+    "reviewed_on": "2026-08-21",
+    "notes": "Accepted genus-level higher-rank match for the deliberate Larus sp. record; qualifier sp and unassessed identification confidence remain explicit, and the GBIF hierarchy agrees with the curated review record."
+  }
+}

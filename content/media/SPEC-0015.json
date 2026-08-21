@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "specimen_id": "SPEC-0015",
+  "assets": [
+    {
+      "view": "lateral",
+      "alt": "Lateral view of harbour seal skull specimen SPEC-0015.",
+      "orientation": "right"
+    },
+    {
+      "view": "oblique",
+      "alt": "Oblique view of harbour seal skull specimen SPEC-0015."
+    },
+    {
+      "view": "frontal",
+      "alt": "Frontal view of harbour seal skull specimen SPEC-0015."
+    },
+    {
+      "view": "dorsal",
+      "alt": "Dorsal view of harbour seal skull specimen SPEC-0015."
+    },
+    {
+      "view": "ventral",
+      "alt": "Ventral view of harbour seal skull specimen SPEC-0015."
+    },
+    {
+      "view": "mandible-dorsal",
+      "alt": "Dorsal view of the separated mandibles from harbour seal skull specimen SPEC-0015."
+    }
+  ]
+}

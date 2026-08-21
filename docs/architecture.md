@@ -66,8 +66,9 @@ Planned client boundaries are:
 
 - global/catalog search and suggestions;
 - URL-backed faceted filters and result-mode controls;
-- gallery thumbnail, swipe, high-resolution inspection, zoom/pan, and guidance-dialog controls; and
-- calibrated skull comparison, responsive scaling, difference display, and its scoped searchable selector; and
+- gallery thumbnail, swipe, high-resolution inspection, zoom/pan, and guidance-dialog controls;
+- calibrated skull comparison, responsive scaling, difference display, and its scoped searchable selector;
+- compact multi-specimen chooser dialogs; and
 - the MapLibre map synchronized with a server-renderable result list.
 
 Client modules may receive serialized domain view models. They must not import filesystem/compiler code or become a parallel data-access layer.
@@ -172,9 +173,11 @@ An editorial profile is not a publication prerequisite for a valid taxon/specime
 
 ### Phase 3 catalog and taxonomy query boundary
 
-`src/domain/catalog/queries.ts` converts a compiled collection into deterministic, framework-free view models for published counts, class entries, rank nodes/lineages, taxon cards, specimen cards, slug resolution, and bounded related suggestions. `src/data/catalog.ts` is the server-side adapter used by pages, sitemap, and metadata. Pages never traverse raw CSV rows or reconstruct hierarchy URLs independently.
+`src/domain/catalog/queries.ts` converts a compiled collection into deterministic, framework-free view models for published counts/rank statistics, class entries, rank nodes/lineages, the class → order → family tree foundation, family gallery groups, taxon cards with exact specimen options, specimen cards, slug resolution, and bounded related suggestions. `src/data/catalog.ts` is the server-side adapter used by pages, sitemap, and metadata. Pages never traverse raw CSV rows or reconstruct hierarchy URLs independently.
 
 Known class/order/family/genus nodes become `generateStaticParams` entries for one shared rank template. Taxon pages resolve current and previous slugs, keep default-specimen selection canonical, and exact specimen cards/URLs remain nested. Draft taxa/specimens are excluded before counts, cards, routes, sitemap, and suggestions are produced. Phase 4 may compose these queries with its generated search index, but it must not create a second record or taxonomy model.
+
+Phase 3.1 renders the tree foundation and its ordinary list alternative entirely from that server-side model. The compact multi-specimen dialog is a presentation-only client island that receives serialized published specimen-card records; it performs no data loading and every option remains an exact link. The comprehensive Phase 3.2 visualization must preserve tree/list node parity and remain an enhancement over stable rank/taxon links; see [interactive_taxonomic_tree.md](interactive_taxonomic_tree.md).
 
 ## 9. Taxonomy maintenance
 
@@ -222,7 +225,7 @@ Security headers must explicitly support the chosen MapLibre worker and provider
 
 Archival `.af`, PSD, TIFF/PNG masters, and camera originals live in backed-up private storage outside Git. `agent_context/skull_images_clean/` is local staging, not a public source directory.
 
-The Phase 2/2.2 Sharp workflow:
+The Phase 2/2.2 Sharp workflow, reused for the Phase 3.1 104-image review slice:
 
 - validates `{specimen-id}__{canonical-view}` naming;
 - reads orientation and converts pixels to sRGB;
@@ -232,6 +235,8 @@ The Phase 2/2.2 Sharp workflow:
 - writes a transparent WebP master up to 3200 px, quality 90, alpha quality 100.
 
 Curated web masters are committed under `public/media/specimens/`. The active gallery loads the validated full-resolution WebP through an SVG `viewBox` derived from the compiled alpha subject bounds, so transparent margins do not make the skull appear small and anatomy is not cropped. `next/image` still creates controlled lightweight thumbnail variants. The inspection viewer deliberately loads the validated original 3200 px WebP, preventing a smaller responsive derivative from being enlarged as a false high-resolution view.
+
+The committed `scripts/phase-3-1-review-media-source-map.json` is the reproducible filename-to-ID/view map for this bounded migration. It points only into the ignored staging root and cannot make a normal build depend on raw PNGs. `pnpm media:stage:phase3.1` copies those explicitly mapped sources into ignored staging; the ordinary processor then writes/validates the curated derivatives. Four accepted specimens intentionally omit the optional frontal view and compile with warnings, not fabricated files.
 
 The gallery client island owns selection, direct controls, keyboard navigation, touch swipe, double-click/double-tap entry, and the native `<dialog>` inspection viewer. The ordinary stage declares browser `manipulation` (`pan-x pan-y pinch-zoom`) so a two-finger pinch may translate while scaling and the zoomed visual viewport may pan in any direction inside the frame. Default-preserving touch observation changes gallery view or opens inspection only when a single-touch gesture began and ended at approximately 100% page scale; zoomed-page pans and any multi-touch gesture remain entirely browser-owned. Inside inspection, a horizontal touch swipe changes view only at 100%; after enlargement, one finger pans and two fingers control image zoom. A non-passive wheel handler captures ordinary wheel/trackpad input and browser-reported pinch-wheel input only over the inspector, centers zoom on the gesture, prevents background scroll/page zoom, and leaves Arrow/Home/End view navigation active at any zoom. Pan is constrained to the enlarged image, the document is scroll-locked while the modal is open, and focus returns to the opening control. Desktop and mobile-landscape layouts use an independently scrollable right rail; mobile portrait keeps view buttons below the image. Core record content and a no-JavaScript image list remain server-rendered.
 
@@ -257,7 +262,7 @@ The future public comparison route may compose the same records, scaling engine,
 
 Tailwind utilities operate on semantic CSS variables defined in the global token layer. Components use domain-oriented names and small variants rather than a generic theme library. Native HTML is preferred; accessible Radix primitives are permitted only where native elements cannot provide robust dialog/popover behavior.
 
-Server components own the museum shell, Home, catalog, taxonomy landings, cards, static record content, and route metadata. Client components are placed at the lowest practical interactive boundary. The reusable native-dialog wrapper is the client boundary for measurement, age, and condition reference tables; the comparison card is a separate client island receiving serialized eligible records; the surrounding measurement and record sections stay static. Accessibility state—names, expanded/selected/current semantics, live comparison changes, focus restoration—is part of component APIs, not a post-release patch.
+Server components own the museum shell, Home, catalog, taxonomy landings/tree foundation, cards, static record content, and route metadata. Client components are placed at the lowest practical interactive boundary. Native dialog controls own measurement, age, condition, and compact multi-specimen selection; the comparison card is a separate client island receiving serialized eligible records; the surrounding catalog, hierarchy, measurement, and record sections stay static. Accessibility state—names, expanded/selected/current semantics, live comparison changes, Escape, and focus restoration—is part of component APIs, not a post-release patch.
 
 The Phase 2.1 `/guides/skull-preparation` route is a statically rendered, explicitly labelled outline shell. It provides a real destination from the specimen record without publishing uncited chemical or biological instructions. Full MDX guide content and safety review remain Phase 5 work.
 

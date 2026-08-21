@@ -1,8 +1,12 @@
+import Link from "next/link";
+
 import { MuseumShell } from "@/components/MuseumShell";
 import { createPageMetadata } from "@/config/metadata";
 import { getCatalog } from "@/data/catalog";
-import { ClassEntryCard, TaxonCardGrid } from "@/features/catalog/CatalogCards";
+import { ClassEntryCard } from "@/features/catalog/CatalogCards";
+import { FamilyGroupedTaxonGallery } from "@/features/catalog/FamilyGroupedTaxonGallery";
 import { TaxonomyIndex } from "@/features/catalog/TaxonomyIndex";
+import { TaxonomyTree } from "@/features/catalog/TaxonomyTree";
 
 export const metadata = createPageMetadata({
   title: "Species catalog",
@@ -33,6 +37,27 @@ export default function SpeciesCatalogPage() {
       </header>
 
       <section
+        className="catalog-discovery"
+        aria-labelledby="catalog-discovery-title"
+      >
+        <div className="section-heading">
+          <p className="section-kicker">Find a skull</p>
+          <h2 id="catalog-discovery-title">
+            Begin with a name or the taxonomy.
+          </h2>
+          <p>
+            Scientific, English, and Danish names are indexed in the collection.
+            Name search and faceted controls arrive in Phase 4; every published
+            record can be browsed below now.
+          </p>
+        </div>
+        <Link className="catalog-entry" href="#published-displays">
+          <span>Scientific, English, or Danish name</span>
+          <strong>Browse all displays ↓</strong>
+        </Link>
+      </section>
+
+      <section
         className="catalog-class-section"
         aria-labelledby="catalog-classes-title"
       >
@@ -47,9 +72,39 @@ export default function SpeciesCatalogPage() {
         </div>
       </section>
 
-      <TaxonomyIndex nodes={catalog.taxonomyNodes} />
+      <section
+        className="catalog-tree-section content-section"
+        aria-labelledby="catalog-tree-title"
+      >
+        <div className="section-heading compact-section-heading">
+          <p className="section-kicker">Systematic browsing</p>
+          <h2 id="catalog-tree-title">Explore the collection hierarchy.</h2>
+          <p>
+            Follow the published collection from class to order and family.
+            Every branch uses the same canonical taxonomy and stable routes as
+            the list and galleries.
+          </p>
+        </div>
+        <TaxonomyTree branches={catalog.taxonomyTree} />
+      </section>
+
+      <details className="taxonomy-list-alternative">
+        <summary>
+          <span>
+            <strong>Ordinary taxonomy list</strong>
+            <small>
+              Open the complete class, order, family, and genus alternative
+            </small>
+          </span>
+        </summary>
+        <TaxonomyIndex
+          nodes={catalog.taxonomyNodes}
+          heading="Complete taxonomy list"
+        />
+      </details>
 
       <section
+        id="published-displays"
         className="catalog-results content-section"
         aria-labelledby="catalog-results-title"
       >
@@ -64,7 +119,7 @@ export default function SpeciesCatalogPage() {
             {" · Sorted by common name"}
           </p>
         </div>
-        <TaxonCardGrid cards={catalog.taxa} />
+        <FamilyGroupedTaxonGallery cards={catalog.taxa} />
       </section>
     </MuseumShell>
   );

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "GBIF-2026-08-21-TAX-0015",
+  "provider": "GBIF Species Match API",
+  "endpoint": "https://api.gbif.org/v1/species/match",
+  "queried_on": "2026-08-21",
+  "query": {
+    "taxon_id": "TAX-0015",
+    "scientific_name": "Vulpes vulpes"
+  },
+  "match": {
+    "usage_key": 5219243,
+    "scientific_name": "Vulpes vulpes (Linnaeus, 1758)",
+    "canonical_name": "Vulpes vulpes",
+    "rank": "SPECIES",
+    "status": "ACCEPTED",
+    "confidence": 99,
+    "match_type": "EXACT",
+    "kingdom": "Animalia",
+    "phylum": "Chordata",
+    "class": "Mammalia",
+    "order": "Carnivora",
+    "family": "Canidae",
+    "genus": "Vulpes",
+    "species": "Vulpes vulpes"
+  },
+  "review": {
+    "state": "accepted",
+    "reviewed_on": "2026-08-21",
+    "notes": "Exact accepted species match; scientific name and class/order/family/genus hierarchy agree with the curated review record."
+  }
+}

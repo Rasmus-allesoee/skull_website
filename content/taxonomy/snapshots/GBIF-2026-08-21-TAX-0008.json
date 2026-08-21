@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "GBIF-2026-08-21-TAX-0008",
+  "provider": "GBIF Species Match API",
+  "endpoint": "https://api.gbif.org/v1/species/match",
+  "queried_on": "2026-08-21",
+  "query": {
+    "taxon_id": "TAX-0008",
+    "scientific_name": "Martes foina"
+  },
+  "match": {
+    "usage_key": 5218887,
+    "scientific_name": "Martes foina (Erxleben, 1777)",
+    "canonical_name": "Martes foina",
+    "rank": "SPECIES",
+    "status": "ACCEPTED",
+    "confidence": 99,
+    "match_type": "EXACT",
+    "kingdom": "Animalia",
+    "phylum": "Chordata",
+    "class": "Mammalia",
+    "order": "Carnivora",
+    "family": "Mustelidae",
+    "genus": "Martes",
+    "species": "Martes foina"
+  },
+  "review": {
+    "state": "accepted",
+    "reviewed_on": "2026-08-21",
+    "notes": "Exact accepted species match; scientific name and class/order/family/genus hierarchy agree with the curated review record."
+  }
+}

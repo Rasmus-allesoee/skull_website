@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { ScientificIdentification } from "@/components/ScientificIdentification";
 import { getTaxonLineage, taxonomyHref } from "@/domain/catalog/queries";
 import type { TaxonRecord } from "@/domain/content/types";
 
@@ -26,10 +27,10 @@ export function TaxonomyBreadcrumb({
         <li aria-current={specimenId ? undefined : "page"}>
           {specimenId ? (
             <Link href={`/species/${taxon.slug}`}>
-              <i>{taxon.scientificName}</i>
+              <ScientificIdentification taxon={taxon} />
             </Link>
           ) : (
-            <i>{taxon.scientificName}</i>
+            <ScientificIdentification taxon={taxon} />
           )}
         </li>
         {specimenId ? <li aria-current="page">{specimenId}</li> : null}

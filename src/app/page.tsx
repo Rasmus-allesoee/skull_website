@@ -6,6 +6,7 @@ import { createPageMetadata } from "@/config/metadata";
 import { siteConfig } from "@/config/site";
 import { getCatalog, getGeographicSpecimens } from "@/data/catalog";
 import { ClassEntryCard } from "@/features/catalog/CatalogCards";
+import { TaxonomyTree } from "@/features/catalog/TaxonomyTree";
 
 export const metadata = createPageMetadata({
   description: siteConfig.description,
@@ -19,6 +20,7 @@ export default function Home() {
       ({ taxon }) => taxon.taxonId === siteConfig.featuredTaxonId,
     ) ?? catalog.taxa[0];
   const geographicSpecimens = getGeographicSpecimens();
+  const geographicPreview = geographicSpecimens.slice(0, 4);
 
   return (
     <MuseumShell
@@ -67,8 +69,8 @@ export default function Home() {
 
       <section className="collection-summary" aria-label="Collection summary">
         <div>
-          <strong>{catalog.taxonCount}</strong>
-          <span>Published {catalog.taxonCount === 1 ? "taxon" : "taxa"}</span>
+          <strong>{catalog.rankCounts.species}</strong>
+          <span>Published species</span>
         </div>
         <div>
           <strong>{catalog.specimenCount}</strong>
@@ -77,11 +79,20 @@ export default function Home() {
           </span>
         </div>
         <div>
-          <strong>{catalog.classEntries.length}</strong>
-          <span>
-            Represented{" "}
-            {catalog.classEntries.length === 1 ? "class" : "classes"}
-          </span>
+          <strong>{catalog.rankCounts.classes}</strong>
+          <span>Represented classes</span>
+        </div>
+        <div>
+          <strong>{catalog.rankCounts.orders}</strong>
+          <span>Represented orders</span>
+        </div>
+        <div>
+          <strong>{catalog.rankCounts.families}</strong>
+          <span>Represented families</span>
+        </div>
+        <div>
+          <strong>{catalog.rankCounts.genera}</strong>
+          <span>Represented genera</span>
         </div>
       </section>
 
@@ -119,33 +130,20 @@ export default function Home() {
         </div>
       </section>
 
-      {featured ? (
-        <section
-          className="featured-exhibit content-section"
-          aria-labelledby="featured-title"
-        >
-          <div className="section-heading">
-            <p className="section-kicker">Featured specimen</p>
-            <h2 id="featured-title">
-              {featured.taxon.names.english ?? featured.taxon.scientificName}
-            </h2>
-            <p>
-              <i>{featured.taxon.scientificName}</i> ·{" "}
-              {featured.defaultSpecimen.specimenId}
-            </p>
-          </div>
-          <div className="featured-exhibit-copy">
-            <p>
-              Six validated views, calibrated measurements, preparation history,
-              and a stable exact-specimen record form the first complete
-              display.
-            </p>
-            <Link className="primary-link" href={featured.href}>
-              View the display
-            </Link>
-          </div>
-        </section>
-      ) : null}
+      <section
+        className="home-taxonomy-tree content-section"
+        aria-labelledby="home-tree-title"
+      >
+        <div className="section-heading compact-section-heading">
+          <p className="section-kicker">Collection tree</p>
+          <h2 id="home-tree-title">Follow class, order, and family.</h2>
+          <p>
+            This compact hierarchy links directly to each published catalog
+            group. The complete species list remains available in the catalog.
+          </p>
+        </div>
+        <TaxonomyTree branches={catalog.taxonomyTree} compact />
+      </section>
 
       <section
         className="home-map-preview content-section"
@@ -164,7 +162,7 @@ export default function Home() {
             <span />
           </div>
           <ul>
-            {geographicSpecimens.map(({ specimen, taxon, href }) => (
+            {geographicPreview.map(({ specimen, taxon, href }) => (
               <li key={specimen.specimenId}>
                 <Link href={href}>
                   <strong>{taxon.names.english ?? taxon.scientificName}</strong>
@@ -176,7 +174,11 @@ export default function Home() {
               </li>
             ))}
           </ul>
-          <p>Interactive map not available yet.</p>
+          <p>
+            Previewing {geographicPreview.length} of{" "}
+            {geographicSpecimens.length} georeferenced specimens · Interactive
+            map not available yet.
+          </p>
         </div>
       </section>
 

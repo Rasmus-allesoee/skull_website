@@ -1,0 +1,27 @@
+{
+  "schema_version": 2,
+  "specimen_id": "SPEC-0005",
+  "assets": [
+    {
+      "view": "lateral",
+      "alt": "Lateral view of Eurasian oystercatcher skull specimen SPEC-0005.",
+      "orientation": "right"
+    },
+    {
+      "view": "oblique",
+      "alt": "Oblique view of Eurasian oystercatcher skull specimen SPEC-0005."
+    },
+    {
+      "view": "dorsal",
+      "alt": "Dorsal view of Eurasian oystercatcher skull specimen SPEC-0005."
+    },
+    {
+      "view": "ventral",
+      "alt": "Ventral view of Eurasian oystercatcher skull specimen SPEC-0005."
+    },
+    {
+      "view": "mandible-dorsal",
+      "alt": "Dorsal view of the separated mandibles from Eurasian oystercatcher skull specimen SPEC-0005."
+    }
+  ]
+}

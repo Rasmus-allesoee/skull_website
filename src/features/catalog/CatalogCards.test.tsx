@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { buildContent } from "../../../scripts/lib/content";
+import { getCollection } from "@/data/collection";
 import {
   getSpecimenCardRecords,
   getTaxonCardRecords,
@@ -12,13 +12,15 @@ import { SpecimenCard, TaxonCard } from "./CatalogCards";
 
 let collection: CompiledCollection;
 
-beforeAll(async () => {
-  collection = (await buildContent()).collection;
+beforeAll(() => {
+  collection = getCollection();
 });
 
 describe("catalog cards", () => {
   it("keeps a long uncertain taxon name and missing image state explicit", () => {
-    const card = getTaxonCardRecords(collection)[0]!;
+    const card = getTaxonCardRecords(collection).find(
+      ({ taxon }) => taxon.taxonId === "TAX-0001",
+    )!;
     const longName =
       "Exceptionally long common name used to verify resilient catalog wrapping";
     render(
@@ -45,7 +47,9 @@ describe("catalog cards", () => {
   });
 
   it("renders the exact specimen-card mode with a stable nested URL", () => {
-    const card = getSpecimenCardRecords(collection)[0]!;
+    const card = getSpecimenCardRecords(collection).find(
+      ({ specimen }) => specimen.specimenId === "SPEC-0001",
+    )!;
     render(<SpecimenCard card={card} />);
 
     expect(

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "GBIF-2026-08-21-TAX-0014",
+  "provider": "GBIF Species Match API",
+  "endpoint": "https://api.gbif.org/v1/species/match",
+  "queried_on": "2026-08-21",
+  "query": {
+    "taxon_id": "TAX-0014",
+    "scientific_name": "Uria aalge"
+  },
+  "match": {
+    "usage_key": 2481342,
+    "scientific_name": "Uria aalge (Pontoppidan, 1763)",
+    "canonical_name": "Uria aalge",
+    "rank": "SPECIES",
+    "status": "ACCEPTED",
+    "confidence": 99,
+    "match_type": "EXACT",
+    "kingdom": "Animalia",
+    "phylum": "Chordata",
+    "class": "Aves",
+    "order": "Charadriiformes",
+    "family": "Alcidae",
+    "genus": "Uria",
+    "species": "Uria aalge"
+  },
+  "review": {
+    "state": "accepted",
+    "reviewed_on": "2026-08-21",
+    "notes": "Exact accepted species match; scientific name and class/order/family/genus hierarchy agree with the curated review record."
+  }
+}

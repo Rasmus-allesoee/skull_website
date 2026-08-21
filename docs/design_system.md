@@ -150,10 +150,13 @@ Responsive checkpoints are content-derived, with explicit QA at:
 - **Filter panel:** semantic fieldsets, explicit units, applied-filter summary, reset, URL state.
 - **Result mode switch:** radio/toggle semantics with “Species” and “Specimens,” not unlabeled icons.
 - **Taxonomy index:** scannable nested rank links; collapses thoughtfully on mobile without hiding current context.
+- **Taxonomy tree foundation:** server-rendered class → order → family branches with representative lateral image, live counts, and complete rank links. It is a compact systematic pathway, not a phylogenetic-timescale claim; the ordinary taxonomy index remains the equivalent list alternative.
 - **Taxon card:** lateral image, names, rank/confidence when needed, count/range, complete link target.
 - **Specimen card:** lateral image, names, immutable ID, relevant measurements, location/date summary.
-- **Class entry card:** representative lateral image, class name, live published taxon/specimen counts, and one complete class-landing link.
-- **Rank landing:** breadcrumb, rank/title/count intro, separate child-rank links, compact descendant index, and scoped taxon gallery. One template owns class, order, family, and genus.
+- **Class entry card:** representative lateral image with visible vertical breathing room, class name, live published taxon/specimen counts, and one complete class-landing link. Subject bounds must never be allowed to touch the top or bottom edge merely to maximize scale.
+- **Catalog grid:** three columns at wide desktop widths where a family contains enough taxa, two at intermediate widths, and one comfortable column on small screens. All-species and class/order scopes use family subheaders; family/genus scopes remain one unsegmented grid.
+- **Multi-specimen chooser:** a separate action below a multi-specimen taxon card opens a compact native dialog. Each row uses thumbnail, immutable ID/default marker, age, sex, and maximum length—without repeating the species names—and links to the exact specimen route. It closes with its labelled control or Escape and restores focus.
+- **Rank landing:** breadcrumb, rank/title/count intro, separate child-rank links, compact descendant index, and scoped taxon gallery. One template owns class, order, family, and genus; class/order galleries group by family while family/genus landings do not over-segment sparse results.
 
 ### Specimen display
 
@@ -257,7 +260,7 @@ That gate happens before the design scales to the shell/catalog. Material change
 
 Initial implementation evidence on 2026-08-13 led to the owner's detailed Phase 2.1 review. The 2026-08-14 refinement added the responsive rail, true-resolution inspector, working touch gestures, measurement-first hierarchy, and record guidance. Phase 2.2 on 2026-08-15 retuned the normal-Chrome gallery, used alpha-bounded full-resolution display, closed inspector/background gesture conflicts and the network-mobile reload defect, introduced the reusable true-to-scale comparison/difference system, and corrected metadata/dialog alignment. Phase 2.3 on 2026-08-17 removed redundant scale copy, made uncertainty copy demonstrably selection/status-driven, restored native page pinch over the ordinary mobile gallery, and added inspection swipe navigation. The owner approved that gate on 2026-08-17.
 
-Phase 3 scales the approved language into the final shell, Home, catalog, shared rank landings, class/taxon/specimen cards, error surface, and class-aware measurement variants. Manual 2026-08-20 review at 1440 × 900 and 390 × 844 confirms museum/reference hierarchy, responsive menu, long-page rhythm, image containment, and zero horizontal overflow. Automated fixture coverage supplies bird, long-name, uncertain, missing-image, and multi-specimen states while only one reviewed live record exists. Technical evidence is recorded in `project_status.md`; owner product review remains open before Phase 4.
+Phase 3.0 scaled the approved language into the final shell, Home, catalog, shared rank landings, class/taxon/specimen cards, error surface, and class-aware measurement variants. Phase 3.1 replaces fixture-only visual variety with 15 live taxon identities and 18 specimens across Mammalia/Aves; introduces six live Home statistics, family gallery rhythm, vertical image breathing room, the compact systematic tree foundation, and the multi-specimen chooser; and removes the duplicate Home featured section. The comprehensive interactive tree remains Phase 3.2 and must follow the accessibility/content rules in `interactive_taxonomic_tree.md`. Exact gate evidence is recorded in `project_status.md`; owner product review remains open before any later phase begins.
 
 ## 16. Design anti-patterns
 

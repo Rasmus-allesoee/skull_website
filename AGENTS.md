@@ -20,7 +20,7 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **Phase 3 is implemented and passes its complete local technical/visual acceptance gate; owner review is pending**. Consult `docs/project_status.md` for exact evidence and the next action. Do not begin Phase 4 search/faceted-discovery work until the owner approves Phase 3 or supplies a bounded Phase 3 feedback task.
+Current phase: **Phase 3.1 is implemented and passes its complete local technical/visual gate; owner review is pending**. The work is preserved in separate Phase 3.0 and Phase 3.1 local commits with no push/PR. Consult `docs/project_status.md` for exact evidence and the next action. Do not begin Phase 3.2 comprehensive-tree or Phase 4 search/faceted-discovery work until the owner reviews Phase 3.1 and explicitly chooses the next phase.
 
 Use the neutral working title **Skull Collection** from central site configuration until the final name is selected.
 
@@ -55,7 +55,7 @@ The historical approved master plan is `agent_context/website_plan_from_planmode
 ## 4. Architecture invariants
 
 - Pinned Node.js 24.18.0, pnpm 11.21.0, Next.js 16.2.12, React 19.2.8, strict TypeScript.
-- Next.js App Router and React Server Components by default; client islands only for search/filters, gallery, calibrated comparison and guidance-dialog controls, and MapLibre.
+- Next.js App Router and React Server Components by default; client islands only for search/filters, gallery, calibrated comparison, guidance/specimen-chooser dialogs, a future interactive tree, and MapLibre.
 - Known public routes are statically generated and useful before interactive JavaScript finishes.
 - Canonical structured sources are two UTF-8 linked CSVs (`taxa.csv`, `specimens.csv`), cited MDX, and reviewed media/reference declarations.
 - Normal builds never call a live spreadsheet, GBIF, map API, or runtime database.
@@ -65,6 +65,7 @@ The historical approved master plan is `agent_context/website_plan_from_planmode
 - Page code consumes typed records and `MediaAsset` interfaces, not constructed filenames or raw CSV rows.
 - True-to-scale comparison uses a canonical lateral-view maximum length, compiled transparent subject bounds, and explicit lateral orientation. Approximate reference measurements must remain labelled as approximate.
 - The schema-version-4 measurement model stays unified in `specimens.csv`: mammal, bird, and fallback profiles control applicability and presentation without parallel specimen tables. Class-specific fields require explicit `not_applicable` status outside their profile.
+- The Phase 3.1 class → order → family tree and ordinary taxonomy list are projections of the same published canonical hierarchy. Any comprehensive Phase 3.2 tree must preserve tree/list route parity and cannot invent group characteristics or divergence claims.
 - Accessibility targets WCAG 2.2 AA and is part of component/API design, not a later overlay.
 
 ## 5. Content and media safety
@@ -82,11 +83,14 @@ Local context paths:
 - `agent_context/implement_interactive_true_to_scale_skull_comparison.md` — owner-approved functional specification for the Phase 2.2 comparison component.
 - `agent_context/website_screenshots/` — owner-supplied visual targets and defect evidence for Phase 2.2; context only, never runtime assets.
 - `agent_context/class_aware_dynamic_measurement_architecture.md` — Phase 3 design input for the implemented class-aware measurement profiles and comparison matrices; canonical rules live in `docs/` and executable schemas.
+- `agent_context/prompt_phase_3_feedback.md` — owner feedback defining the bounded Phase 3.1 catalog/migration/refinement scope.
+- `agent_context/interactive_taxonomic_tree_plan.md` — owner product direction for the Phase 3.1 tree foundation and future comprehensive Phase 3.2 experience; canonical guidance lives in `docs/interactive_taxonomic_tree.md`.
+- `agent_context/interactive_tree_sketch.png` and the Phase 3.1 reference-site screenshots — local visual context only, never runtime assets.
 - `agent_context/metadata_csv/` — ignored partial spreadsheet exports supplied during Phase 3; migration evidence only, never runtime or canonical input.
 
 Phase 2 uses only staging metadata row `ID = 1` and the six `mårhund_*_1.png` files as migration evidence for `TAX-0001` / `SPEC-0001`. The reviewed canonical values live in `content/`; never make a normal build depend on the ignored staging sources. Owner feedback supersedes the initial slice's display wording and condition classification, but it does not authorize inventing unrecorded pathology, trauma, teeth-set, skeleton, age-evidence, or reuse facts. The Phase 2.2 adult-human comparison source is also ignored staging input; only its reviewed declaration and processed public WebP derivative belong in Git.
 
-Phase 3 expanded the one canonical `specimens.csv` header with reviewed mammal/bird measurement fields and explicit statuses, but it did **not** import the partial rows in `agent_context/metadata_csv/`. Those exports contain legacy/non-canonical IDs, incomplete taxonomy, unreviewed public text, and incomplete media/rights state; normalize and ingest them only in the authorized Phase 6 migration workflow.
+Phase 3.0 expanded the one canonical `specimens.csv` header with reviewed mammal/bird measurement fields and explicit statuses. Phase 3.1 later normalized only the 15-taxon/18-specimen review slice that could be reconciled to 104 cleaned images and satisfy the current publication contract. Raw exports/masters remain ignored, 33 legacy specimen rows remain blocked migration candidates, and Phase 6 must complete the full row/rights/note/media/publication audit recorded in `docs/phase_3_1_migration_audit.md`.
 
 Archival `.af`, PSD, camera originals, TIFF/PNG masters, raw workbooks, private notes, and EXIF/GPS-bearing media stay outside Git. Public specimen derivatives use immutable specimen IDs and canonical views only after `pnpm media:process` and `pnpm validate:media` confirm metadata stripping and the rest of the media contract. Public comparison references use stable reference IDs and the separate `pnpm media:process:reference` maintenance command.
 
@@ -153,6 +157,8 @@ Before a checkpoint:
 | `docs/design_system.md` | Visual tokens, components, interaction, content voice, accessibility |
 | `docs/implementation_plan.md` | Phase order, deliverables, dependencies, gates, deferred backlog |
 | `docs/project_status.md` | Current truth, verification, blockers, next actions, checkpoint log |
+| `docs/phase_3_1_migration_audit.md` | Accepted/blocked review-slice records, normalization decisions, Phase 6 obligations |
+| `docs/interactive_taxonomic_tree.md` | Phase 3.1 tree foundation and comprehensive Phase 3.2 requirements |
 | `docs/decisions/*.md` | Historical material architecture decisions |
 | `CONTRIBUTING.md` | Contributor branch/PR and quality workflow |
 | `RIGHTS.md` | Code versus content/media/data rights boundary |

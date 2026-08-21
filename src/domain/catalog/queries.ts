@@ -27,6 +27,7 @@ export interface TaxonCardRecord {
   taxon: TaxonRecord;
   defaultSpecimen: SpecimenRecord;
   specimenCount: number;
+  specimens: SpecimenCardRecord[];
   image: MediaAsset | null;
   href: string;
 }
@@ -43,11 +44,33 @@ export interface ClassEntry {
   representative: TaxonCardRecord | null;
 }
 
+export interface FamilyTaxonGroup {
+  family: TaxonomyNodeRef | null;
+  cards: TaxonCardRecord[];
+}
+
+export interface TaxonomyTreeBranch {
+  node: TaxonomyNode;
+  representative: TaxonCardRecord | null;
+  children: TaxonomyTreeBranch[];
+}
+
+export interface CatalogRankCounts {
+  species: number;
+  genusLevelRecords: number;
+  classes: number;
+  orders: number;
+  families: number;
+  genera: number;
+}
+
 export interface CatalogModel {
   taxonCount: number;
   specimenCount: number;
+  rankCounts: CatalogRankCounts;
   classEntries: ClassEntry[];
   taxonomyNodes: TaxonomyNode[];
+  taxonomyTree: TaxonomyTreeBranch[];
   taxa: TaxonCardRecord[];
 }
 
@@ -84,12 +107,24 @@ export function getCatalogModel(
       representative:
         taxa.find((card) => node.taxonIds.includes(card.taxon.taxonId)) ?? null,
     }));
+  const countRank = (rank: TaxonomyRank) =>
+    taxonomyNodes.filter((node) => node.rank === rank).length;
 
   return {
     taxonCount: publishedTaxa.length,
     specimenCount: publishedSpecimens.length,
+    rankCounts: {
+      species: publishedTaxa.filter((taxon) => taxon.rank !== "genus").length,
+      genusLevelRecords: publishedTaxa.filter((taxon) => taxon.rank === "genus")
+        .length,
+      classes: countRank("class"),
+      orders: countRank("order"),
+      families: countRank("family"),
+      genera: countRank("genus"),
+    },
     classEntries,
     taxonomyNodes,
+    taxonomyTree: getTaxonomyTree(taxonomyNodes, taxa),
     taxa,
   };
 }
@@ -130,11 +165,22 @@ export function getTaxonCardRecords(
         (specimen) => specimen.specimenId === taxon.defaultSpecimenId,
       );
       if (!defaultSpecimen) return [];
+      const specimenCards = specimens
+        .map((specimen) =>
+          createSpecimenCardRecord(collection, specimen, taxon),
+        )
+        .sort((first, second) =>
+          collator.compare(
+            first.specimen.specimenId,
+            second.specimen.specimenId,
+          ),
+        );
       return [
         {
           taxon,
           defaultSpecimen,
           specimenCount: specimens.length,
+          specimens: specimenCards,
           image: getLateralAsset(collection, defaultSpecimen.specimenId),
           href: `/species/${taxon.slug}`,
         },
@@ -154,14 +200,7 @@ export function getSpecimenCardRecords(
     .flatMap((specimen) => {
       const taxon = taxaById.get(specimen.taxonId);
       if (!taxon) return [];
-      return [
-        {
-          specimen,
-          taxon,
-          image: getLateralAsset(collection, specimen.specimenId),
-          href: `/species/${taxon.slug}/specimens/${specimen.specimenId}`,
-        },
-      ];
+      return [createSpecimenCardRecord(collection, specimen, taxon)];
     })
     .sort(
       (first, second) =>
@@ -171,6 +210,32 @@ export function getSpecimenCardRecords(
         ) ||
         collator.compare(first.specimen.specimenId, second.specimen.specimenId),
     );
+}
+
+export function groupTaxonCardsByFamily(
+  cards: TaxonCardRecord[],
+): FamilyTaxonGroup[] {
+  const groups = new Map<string, FamilyTaxonGroup>();
+  for (const card of cards) {
+    const family =
+      card.taxon.hierarchy.familyName && card.taxon.hierarchy.familySlug
+        ? {
+            rank: "family" as const,
+            name: card.taxon.hierarchy.familyName,
+            slug: card.taxon.hierarchy.familySlug,
+          }
+        : null;
+    const key = family ? family.slug : "__unrecorded__";
+    const group = groups.get(key) ?? { family, cards: [] };
+    group.cards.push(card);
+    groups.set(key, group);
+  }
+  return [...groups.values()].sort((first, second) =>
+    collator.compare(
+      first.family?.name ?? "Family not recorded",
+      second.family?.name ?? "Family not recorded",
+    ),
+  );
 }
 
 export function getTaxonomyNodes(
@@ -363,6 +428,36 @@ export function pluralizeTaxonomyRank(rank: TaxonomyRank): string {
   }[rank];
 }
 
+function getTaxonomyTree(
+  nodes: TaxonomyNode[],
+  cards: TaxonCardRecord[],
+): TaxonomyTreeBranch[] {
+  const buildBranch = (
+    node: TaxonomyNode,
+    childRank: TaxonomyRank | null,
+  ): TaxonomyTreeBranch => ({
+    node,
+    representative:
+      cards.find((card) => node.taxonIds.includes(card.taxon.taxonId)) ?? null,
+    children: childRank
+      ? nodes
+          .filter(
+            (candidate) =>
+              candidate.rank === childRank &&
+              candidate.parent?.rank === node.rank &&
+              candidate.parent.slug === node.slug,
+          )
+          .map((candidate) =>
+            buildBranch(candidate, childRank === "order" ? "family" : null),
+          )
+      : [],
+  });
+
+  return nodes
+    .filter((node) => node.rank === "class")
+    .map((node) => buildBranch(node, "order"));
+}
+
 function getLateralAsset(
   collection: CompiledCollection,
   specimenId: string,
@@ -372,6 +467,19 @@ function getLateralAsset(
       (asset) => asset.specimenId === specimenId && asset.view === "lateral",
     ) ?? null
   );
+}
+
+function createSpecimenCardRecord(
+  collection: CompiledCollection,
+  specimen: SpecimenRecord,
+  taxon: TaxonRecord,
+): SpecimenCardRecord {
+  return {
+    specimen,
+    taxon,
+    image: getLateralAsset(collection, specimen.specimenId),
+    href: `/species/${taxon.slug}/specimens/${specimen.specimenId}`,
+  };
 }
 
 function compareTaxonCards(
