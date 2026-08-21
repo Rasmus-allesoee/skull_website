@@ -27,7 +27,7 @@ describe("content compiler", () => {
       value: null,
       unit: "g",
     });
-    expect(collection.schemaVersion).toBe(3);
+    expect(collection.schemaVersion).toBe(4);
     expect(specimen.condition).toBe("good");
     expect(specimen.ageDetail).toBeNull();
     expect(specimen.pathology).toEqual({
@@ -55,6 +55,7 @@ describe("content compiler", () => {
       expect.objectContaining({
         referenceId: "adult-human-skull",
         isDefault: true,
+        measurementProfile: "mammal",
         measurements: expect.objectContaining({
           skullLength: { status: "approximate", value: 182, unit: "mm" },
         }),

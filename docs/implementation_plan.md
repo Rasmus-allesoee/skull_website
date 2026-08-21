@@ -2,9 +2,9 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Phase 2 complete and explicitly owner-approved; Phase 3 not started
+**Current phase:** Phase 3 technically complete locally; owner product review pending
 
-**Last reviewed:** 2026-08-17
+**Last reviewed:** 2026-08-20
 
 ## 1. How to use this plan
 
@@ -216,26 +216,37 @@ Turn the approved conversational plan into durable sources of truth and create a
 
 ### Shell and foundational routes
 
-- [ ] Implement final responsive header, mobile navigation, skip link, footer, and central site configuration.
-- [ ] Implement Home with featured exhibit, real collection counts, class entries, search entry, map preview, and editorial prompts.
-- [ ] Add route-level not-found/error/loading states only where real latency exists.
-- [ ] Add supporting SEO metadata helpers and default Open Graph treatment.
+- [x] Implement final responsive header, mobile navigation, skip link, footer, and central site configuration.
+- [x] Implement Home with featured display, real collection counts, class entries, an honest catalog/search entry, non-interactive geographic preview, and editorial prompts.
+- [x] Add a route-level not-found state; omit false loading/error surfaces because all current routes are static and have no genuine route latency.
+- [x] Add supporting SEO metadata helpers and default Open Graph treatment.
 
 ### Taxonomy and catalog
 
-- [ ] Generate class/order/family/genus route params from canonical records.
-- [ ] Implement shared rank landing template, breadcrumbs, child index, and scoped gallery.
-- [ ] Implement `/species` default catalog, representative class cards, taxonomy index, sorting foundation, and responsive cards.
-- [ ] Implement species and specimen card modes using canonical queries.
-- [ ] Add default-specimen routing/redirect tests.
-- [ ] When enough taxa exist, add up to three same-family suggestions and up to three deterministic collection-wide suggestions. Exclude the current taxon, deduplicate the groups, omit empty sections, and test stable output.
-- [ ] Add sitemap/robots coverage for current published routes.
+- [x] Generate class/order/family/genus route params from canonical records.
+- [x] Implement shared rank landing template, breadcrumbs, child index, and scoped gallery.
+- [x] Implement `/species` default catalog, representative class cards, taxonomy index, common-name sorting foundation, and responsive cards.
+- [x] Implement species and specimen card modes using canonical queries.
+- [x] Add default-specimen and previous-slug routing/redirect tests.
+- [x] Implement up to three same-family suggestions and three deterministic collection-wide suggestions with current/duplicate exclusion and stable output tests; omit the entire section while the one-record collection has no eligible suggestion.
+- [x] Add sitemap/robots coverage for current published routes.
+
+### Class-aware measurements added in Phase 3
+
+- [x] Keep collection data in the two canonical linked CSVs and expand `specimens.csv` with bird-specific and missing mammal measurement/value-status pairs rather than creating a parallel bird-specimen table.
+- [x] Advance `CompiledCollection` to schema version 4 and derive `mammal`, `bird`, or fallback `other` measurement profiles from the linked taxon's class.
+- [x] Validate that profile-specific fields are `not_applicable` outside their class and that applicable fields never use `not_applicable` as a substitute for missing data.
+- [x] Render profile-specific specimen measurement tables and definition guidance.
+- [x] Render mammal/mammal (6), bird/bird (9), and bidirectional bird/mammal (6) difference matrices, with the cross-class landmark mismatch stated in text.
+- [x] Treat `agent_context/metadata_csv/` as ignored migration evidence only; defer normalization, stable-ID assignment, taxonomy/media/rights review, and row ingestion to Phase 6.
 
 ### Acceptance gate
 
 - A complete keyboard/mobile journey works from Home → class → family → taxon → exact specimen without search or map.
 - Static output contains correct names, links, metadata, default specimens, and no drafts.
 - Visual states are consistent across mammals, birds, long names, uncertain taxa, missing optional angles, and multiple specimens.
+
+**Gate status:** The complete local technical gate passes on 2026-08-20: schema/content/media/fixture validation, formatting, lint, typecheck, 25 unit/component tests, a 14-output static production build, 13 Chromium journeys with axe/no-JavaScript/mobile-keyboard coverage, and manual 1440 × 900 plus 390 × 844 review. Bird, long-name, uncertainty, missing-media, and multiple-specimen states are verified with typed fixtures because only one reviewed mammal specimen is currently publishable. Owner inspection/approval remains the Phase 3 product gate; Phase 4 has not started.
 
 ## 7. Phase 4 — search and faceted exploration
 
@@ -327,6 +338,7 @@ Automated and manual scenarios pass for:
 - [ ] Add concise cited profiles only where useful reviewed overview/identification content exists; otherwise keep the optional profile absent or draft without public placeholder prose.
 - [ ] Keep incomplete records as drafts.
 - [ ] Review repository size against the media-storage threshold.
+- [ ] Normalize the partial exports currently retained under ignored `agent_context/metadata_csv/`; do not reuse their row-number IDs or extra spreadsheet-only helper columns as canonical identity.
 
 ### Acceptance gate
 

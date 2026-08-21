@@ -20,3 +20,7 @@ Each ADR contains context, decision, consequences, considered alternatives, and 
 - [0003 — Curated web media in Git](0003-curated-web-media-in-git.md)
 - [0004 — Build-generated client search and route-lazy map](0004-client-search-and-route-lazy-map.md)
 - [0005 — Species-first pages with stable specimen URLs](0005-species-and-specimen-url-model.md)
+
+## Most recent decision audit
+
+Phase 3 (2026-08-20) required no new ADR. Static rank/catalog routes implement ADR 0001 and ADR 0005, while the unified optional mammal/bird measurement columns and schema-version-4 compiler validation extend ADR 0002 without changing canonical sources, stable identity, public URL semantics, runtime dependencies, rights, or deployment. The accepted records therefore remain unchanged.

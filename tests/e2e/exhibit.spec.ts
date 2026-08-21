@@ -20,7 +20,7 @@ test("taxon/default and exact specimen deep links are static, distinct, and acce
   await expect(page.getByText("Default taxon display")).toBeVisible();
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
-    taxonPath,
+    new RegExp(`${taxonPath}$`),
   );
   await expect(
     page
@@ -50,7 +50,7 @@ test("taxon/default and exact specimen deep links are static, distinct, and acce
   await expect(page.getByText("Exact specimen record")).toBeVisible();
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
-    specimenPath,
+    new RegExp(`${specimenPath}$`),
   );
   expect(consoleErrors).toEqual([]);
 });

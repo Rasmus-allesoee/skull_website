@@ -41,6 +41,7 @@ Thumbs.db
 
 # Private/raw collection sources and working exports
 agent_context/skulls_meta.csv
+agent_context/metadata_csv/
 agent_context/skull_images_clean/
 *.af
 *.afphoto

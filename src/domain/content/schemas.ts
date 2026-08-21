@@ -91,8 +91,24 @@ export const specimenHeaders = [
   "skull_mass_g_status",
   "cranium_width_mm",
   "cranium_width_mm_status",
+  "cranium_height_mm",
+  "cranium_height_mm_status",
+  "rostrum_width_mm",
+  "rostrum_width_mm_status",
+  "interorbital_width_mm",
+  "interorbital_width_mm_status",
+  "orbital_width_mm",
+  "orbital_width_mm_status",
+  "bill_length_mm",
+  "bill_length_mm_status",
+  "bill_width_mm",
+  "bill_width_mm_status",
+  "bill_height_mm",
+  "bill_height_mm_status",
   "mandible_length_mm",
   "mandible_length_mm_status",
+  "maxillary_tooth_row_length_mm",
+  "maxillary_tooth_row_length_mm_status",
   "mandibular_tooth_row_length_mm",
   "mandibular_tooth_row_length_mm_status",
   "mandible_ramus_height_mm",
@@ -237,8 +253,24 @@ export const rawSpecimenSchema = z.strictObject({
   skull_mass_g_status: measurementStatusSchema(),
   cranium_width_mm: cell,
   cranium_width_mm_status: measurementStatusSchema(),
+  cranium_height_mm: cell,
+  cranium_height_mm_status: measurementStatusSchema(),
+  rostrum_width_mm: cell,
+  rostrum_width_mm_status: measurementStatusSchema(),
+  interorbital_width_mm: cell,
+  interorbital_width_mm_status: measurementStatusSchema(),
+  orbital_width_mm: cell,
+  orbital_width_mm_status: measurementStatusSchema(),
+  bill_length_mm: cell,
+  bill_length_mm_status: measurementStatusSchema(),
+  bill_width_mm: cell,
+  bill_width_mm_status: measurementStatusSchema(),
+  bill_height_mm: cell,
+  bill_height_mm_status: measurementStatusSchema(),
   mandible_length_mm: cell,
   mandible_length_mm_status: measurementStatusSchema(),
+  maxillary_tooth_row_length_mm: cell,
+  maxillary_tooth_row_length_mm_status: measurementStatusSchema(),
   mandibular_tooth_row_length_mm: cell,
   mandibular_tooth_row_length_mm_status: measurementStatusSchema(),
   mandible_ramus_height_mm: cell,
@@ -301,30 +333,79 @@ export const mediaAssetSchema = z.strictObject({
 });
 
 const positiveMeasurement = z.number().positive();
+const optionalPositiveMeasurement = positiveMeasurement.optional();
 
-export const comparisonReferenceSourceSchema = z.strictObject({
-  schema_version: z.literal(1),
-  reference_id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-  label: z.string().min(1),
-  is_default: z.boolean(),
-  aliases: z.array(z.string().min(1)),
-  note: z.string().min(1),
-  asset: z.strictObject({
-    public_path: z.string().startsWith("/media/references/"),
-    alt: z.string().min(1),
-    orientation: z.enum(["left", "right"]),
-    credit: z.string().min(1),
-    rights: z.literal("all_rights_reserved"),
-  }),
-  measurements: z.strictObject({
-    skull_length_mm: positiveMeasurement,
-    skull_width_mm: positiveMeasurement,
-    skull_height_mm: positiveMeasurement,
-    skull_mass_g: positiveMeasurement,
-    cranium_width_mm: positiveMeasurement,
-    mandible_length_mm: positiveMeasurement,
-  }),
+const comparisonReferenceMeasurementSchema = z.strictObject({
+  skull_length_mm: optionalPositiveMeasurement,
+  skull_width_mm: optionalPositiveMeasurement,
+  skull_height_mm: optionalPositiveMeasurement,
+  bill_length_mm: optionalPositiveMeasurement,
+  bill_width_mm: optionalPositiveMeasurement,
+  bill_height_mm: optionalPositiveMeasurement,
+  skull_mass_g: optionalPositiveMeasurement,
+  cranium_width_mm: optionalPositiveMeasurement,
+  cranium_height_mm: optionalPositiveMeasurement,
+  orbital_width_mm: optionalPositiveMeasurement,
+  mandible_length_mm: optionalPositiveMeasurement,
 });
+
+export const comparisonReferenceSourceSchema = z
+  .strictObject({
+    schema_version: z.literal(2),
+    reference_id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+    label: z.string().min(1),
+    is_default: z.boolean(),
+    aliases: z.array(z.string().min(1)),
+    note: z.string().min(1),
+    measurement_profile: z.enum(["mammal", "bird", "other"]),
+    asset: z.strictObject({
+      public_path: z.string().startsWith("/media/references/"),
+      alt: z.string().min(1),
+      orientation: z.enum(["left", "right"]),
+      credit: z.string().min(1),
+      rights: z.literal("all_rights_reserved"),
+    }),
+    measurements: comparisonReferenceMeasurementSchema,
+  })
+  .superRefine((source, context) => {
+    const requiredByProfile = {
+      mammal: [
+        "skull_length_mm",
+        "skull_width_mm",
+        "skull_height_mm",
+        "cranium_width_mm",
+        "mandible_length_mm",
+        "skull_mass_g",
+      ],
+      bird: [
+        "skull_length_mm",
+        "bill_length_mm",
+        "bill_width_mm",
+        "bill_height_mm",
+        "cranium_width_mm",
+        "cranium_height_mm",
+        "orbital_width_mm",
+        "mandible_length_mm",
+        "skull_mass_g",
+      ],
+      other: [
+        "skull_length_mm",
+        "cranium_width_mm",
+        "mandible_length_mm",
+        "skull_mass_g",
+      ],
+    } as const;
+
+    for (const key of requiredByProfile[source.measurement_profile]) {
+      if (source.measurements[key] === undefined) {
+        context.addIssue({
+          code: "custom",
+          path: ["measurements", key],
+          message: `Measurement is required for ${source.measurement_profile} comparison references`,
+        });
+      }
+    }
+  });
 
 export const citationSchema = z.strictObject({
   key: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),

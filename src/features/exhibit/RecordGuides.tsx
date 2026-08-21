@@ -1,4 +1,8 @@
-import { measurementDefinitions } from "@/domain/content/types";
+import {
+  measurementDefinitions,
+  measurementProfileLayouts,
+  type MeasurementProfile,
+} from "@/domain/content/types";
 
 import { GuideDialog } from "./GuideDialog";
 
@@ -68,36 +72,6 @@ const conditionClasses = [
   },
 ] as const;
 
-const measurementNotes = [
-  [
-    "Maximum skull length",
-    "The collection's maximum anteroposterior skull-length record.",
-  ],
-  [
-    "Condylobasal length",
-    "The straight distance from the anterior premaxilla to the posterior occipital-condyle landmark.",
-  ],
-  ["Maximum skull width", "The greatest transverse width of the skull."],
-  ["Skull height", "The collection's approved vertical skull-height record."],
-  [
-    "Prepared skull mass",
-    "Mass of the prepared skull configuration recorded for the specimen.",
-  ],
-  ["Cranium width", "The recorded transverse width of the cranium."],
-  ["Maximum mandible length", "The greatest recorded length of the mandible."],
-  [
-    "Mandibular tooth-row length",
-    "The recorded length of the tooth row in the lower jaw.",
-  ],
-  ["Mandibular ramus height", "Straight-line height of the mandibular ramus."],
-  [
-    "Mandibular body height",
-    "Height of the mandibular body at the final molar landmark.",
-  ],
-  ["Maxillary canine length", "The defined exposed upper-canine measurement."],
-  ["Mandibular canine length", "The defined exposed lower-canine measurement."],
-] as const;
-
 export function AgeGuide() {
   return (
     <GuideDialog title="Age-class guide" triggerLabel="How age is estimated">
@@ -136,7 +110,9 @@ export function ConditionGuide() {
   );
 }
 
-export function MeasurementGuide() {
+export function MeasurementGuide({ profile }: { profile: MeasurementProfile }) {
+  const layout = measurementProfileLayouts[profile];
+  const measurementKeys = [...layout.primary, ...layout.additional];
   return (
     <GuideDialog
       title="Measurement guide"
@@ -149,9 +125,9 @@ export function MeasurementGuide() {
       </p>
       <GuideTable
         columns={["Measurement", "Current definition"]}
-        rows={measurementNotes.map(([label, description]) => [
-          `${label} (${findMeasurementUnit(label)})`,
-          description,
+        rows={measurementKeys.map((key) => [
+          `${measurementDefinitions[key].label} (${measurementDefinitions[key].unit})`,
+          measurementDefinitions[key].description,
         ])}
       />
     </GuideDialog>
@@ -188,11 +164,4 @@ function GuideTable({
       </table>
     </div>
   );
-}
-
-function findMeasurementUnit(label: string) {
-  const definition = Object.values(measurementDefinitions).find(
-    (candidate) => candidate.label === label,
-  );
-  return definition?.unit ?? "mm";
 }

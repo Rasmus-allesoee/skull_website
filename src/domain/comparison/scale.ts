@@ -1,9 +1,11 @@
 import type {
   ComparisonMeasurementKey,
   Measurement,
+  MeasurementProfile,
 } from "@/domain/content/types";
 
 import type {
+  ComparisonDifferenceRow,
   MeasurementDifference,
   ScalePresentation,
   SkullComparisonRecord,
@@ -29,7 +31,95 @@ const directionWords: Record<
     larger: "longer",
     equal: "Same length",
   },
+  billLength: { smaller: "shorter", larger: "longer", equal: "Same length" },
+  billWidth: { smaller: "narrower", larger: "wider", equal: "Same width" },
+  billHeight: { smaller: "lower", larger: "higher", equal: "Same height" },
+  craniumHeight: {
+    smaller: "lower",
+    larger: "higher",
+    equal: "Same height",
+  },
+  orbitalWidth: {
+    smaller: "narrower",
+    larger: "wider",
+    equal: "Same width",
+  },
 };
+
+const mammalRows: ComparisonDifferenceRow[] = [
+  row("skullLength", "Max length"),
+  row("skullWidth", "Max width"),
+  row("skullHeight", "Max height"),
+  row("craniumWidth", "Cranium width"),
+  row("mandibleLength", "Max mandible length"),
+  row("skullMass", "Prepared skull mass"),
+];
+
+const birdRows: ComparisonDifferenceRow[] = [
+  row("skullLength", "Max length"),
+  row("billLength", "Bill length"),
+  row("billWidth", "Bill width"),
+  row("billHeight", "Bill height"),
+  row("craniumWidth", "Cranium width"),
+  row("craniumHeight", "Cranium height"),
+  row("orbitalWidth", "Orbital width"),
+  row("mandibleLength", "Max mandible length"),
+  row("skullMass", "Prepared skull mass"),
+];
+
+const sharedRows: ComparisonDifferenceRow[] = [
+  row("skullLength", "Max length"),
+  row("craniumWidth", "Cranium width"),
+  row("mandibleLength", "Max mandible length"),
+  row("skullMass", "Prepared skull mass"),
+];
+
+export function getComparisonDifferenceRows(
+  primaryProfile: MeasurementProfile,
+  comparisonProfile: MeasurementProfile,
+): ComparisonDifferenceRow[] {
+  if (primaryProfile === "mammal" && comparisonProfile === "mammal") {
+    return mammalRows;
+  }
+  if (primaryProfile === "bird" && comparisonProfile === "bird") {
+    return birdRows;
+  }
+  if (
+    (primaryProfile === "mammal" && comparisonProfile === "bird") ||
+    (primaryProfile === "bird" && comparisonProfile === "mammal")
+  ) {
+    const birdIsPrimary = primaryProfile === "bird";
+    return [
+      row("skullLength", "Max length"),
+      {
+        key: "crossWidth",
+        label: "Width (orbital ↔ max)",
+        primaryKey: birdIsPrimary ? "orbitalWidth" : "skullWidth",
+        comparisonKey: birdIsPrimary ? "skullWidth" : "orbitalWidth",
+      },
+      {
+        key: "crossHeight",
+        label: "Height (cranium ↔ skull)",
+        primaryKey: birdIsPrimary ? "craniumHeight" : "skullHeight",
+        comparisonKey: birdIsPrimary ? "skullHeight" : "craniumHeight",
+      },
+      row("craniumWidth", "Cranium width"),
+      row("mandibleLength", "Max mandible length"),
+      row("skullMass", "Prepared skull mass"),
+    ];
+  }
+  return sharedRows;
+}
+
+export function isCrossClassMeasurementPair(
+  primaryProfile: MeasurementProfile,
+  comparisonProfile: MeasurementProfile,
+): boolean {
+  return (
+    (primaryProfile === "mammal" && comparisonProfile === "bird") ||
+    (primaryProfile === "bird" && comparisonProfile === "mammal")
+  );
+}
 
 export function getMeasuredValue(measurement: Measurement): number | null {
   return measurement.status === "measured" ||
@@ -64,6 +154,7 @@ export function calculateMeasurementDifference(
   key: ComparisonMeasurementKey,
   primary: Measurement,
   comparison: Measurement,
+  outputKey: string = key,
 ): MeasurementDifference {
   const primaryValue = getMeasuredValue(primary);
   const comparisonValue = getMeasuredValue(comparison);
@@ -78,7 +169,7 @@ export function calculateMeasurementDifference(
     primary.unit !== comparison.unit
   ) {
     return {
-      key,
+      key: outputKey,
       direction: "unavailable",
       approximate,
       difference: null,
@@ -93,7 +184,7 @@ export function calculateMeasurementDifference(
   const ratio = primaryValue / comparisonValue;
   if (Math.abs(difference) < equalityTolerance) {
     return {
-      key,
+      key: outputKey,
       direction: "equal",
       approximate,
       difference: 0,
@@ -107,7 +198,7 @@ export function calculateMeasurementDifference(
   const direction = difference > 0 ? "larger" : "smaller";
   const approximationMark = approximate ? "~" : "";
   return {
-    key,
+    key: outputKey,
     direction,
     approximate,
     difference,
@@ -116,6 +207,13 @@ export function calculateMeasurementDifference(
     text: `${approximationMark}${formatMagnitude(Math.abs(difference))} ${unit} ${directionWords[key][direction]}`,
     ratioText: `${formatRatio(ratio)}×`,
   };
+}
+
+function row(
+  key: ComparisonMeasurementKey,
+  label: string,
+): ComparisonDifferenceRow {
+  return { key, label, primaryKey: key, comparisonKey: key };
 }
 
 export function comparisonSearchText(record: SkullComparisonRecord): string {

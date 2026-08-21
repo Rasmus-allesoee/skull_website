@@ -2,47 +2,39 @@ import { formatMeasurement } from "@/domain/content/display";
 import type { SkullComparisonRecord } from "@/domain/comparison/types";
 import {
   measurementDefinitions,
+  measurementProfileLayouts,
+  resolveMeasurementProfile,
   type MeasurementKey,
   type SpecimenRecord,
+  type TaxonRecord,
 } from "@/domain/content/types";
 
 import { MeasurementGuide } from "./RecordGuides";
 import { ScaleComparison } from "@/features/comparison/ScaleComparison";
 
-const primaryMeasurements: MeasurementKey[] = [
-  "skullLength",
-  "skullWidth",
-  "skullHeight",
-  "skullMass",
-  "craniumWidth",
-  "mandibleLength",
-];
-
-const additionalMeasurements: MeasurementKey[] = [
-  "condylobasalLength",
-  "mandibularToothRowLength",
-  "mandibleRamusHeight",
-  "mandibleBodyHeight",
-  "maxillaryCanineLength",
-  "mandibularCanineLength",
-  "bodyMass",
-];
-
 export function MeasurementPanel({
+  taxon,
   specimen,
   comparisonPrimary,
   comparisonOptions,
   defaultComparisonId,
 }: {
+  taxon: TaxonRecord;
   specimen: SpecimenRecord;
   comparisonPrimary: SkullComparisonRecord | null;
   comparisonOptions: SkullComparisonRecord[];
   defaultComparisonId: string | null;
 }) {
+  const measurementProfile = resolveMeasurementProfile(
+    taxon.hierarchy.classSlug,
+    taxon.hierarchy.className,
+  );
+  const layout = measurementProfileLayouts[measurementProfile];
   return (
     <section
       className="measurements content-section"
       aria-labelledby="measurements-title"
+      data-measurement-profile={measurementProfile}
     >
       <div className="measurement-layout">
         <div className="measurement-data">
@@ -54,15 +46,12 @@ export function MeasurementPanel({
               range.
             </p>
           </div>
-          <MeasurementList keys={primaryMeasurements} specimen={specimen} />
+          <MeasurementList keys={layout.primary} specimen={specimen} />
           <details>
             <summary>Show additional recorded measurements</summary>
-            <MeasurementList
-              keys={additionalMeasurements}
-              specimen={specimen}
-            />
+            <MeasurementList keys={layout.additional} specimen={specimen} />
           </details>
-          <MeasurementGuide />
+          <MeasurementGuide profile={measurementProfile} />
         </div>
         {comparisonPrimary && defaultComparisonId ? (
           <ScaleComparison
@@ -89,7 +78,7 @@ function MeasurementList({
   keys,
   specimen,
 }: {
-  keys: MeasurementKey[];
+  keys: readonly MeasurementKey[];
   specimen: SpecimenRecord;
 }) {
   return (

@@ -2,9 +2,9 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**Phase 2 is complete:** the raccoon-dog vertical slice passes the complete local and remote technical/visual gate and received explicit owner approval on 2026-08-17. Phase 3 has not started and begins only from a dedicated next task.
+**Phase 3 is implemented locally and ready for owner review:** the museum shell, Home, catalog, taxonomy routes, class-aware measurement system, and complete local acceptance gate pass. Phase 4 search/faceted discovery has not started.
 
-The current specimen display is available at `/species/raccoon-dog`; the exact physical record is `/species/raccoon-dog/specimens/SPEC-0001`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
+Start at `/`, browse the catalog at `/species`, or follow the static taxonomy from `/taxonomy/class/mammals`. The current specimen display is `/species/raccoon-dog`; the exact physical record is `/species/raccoon-dog/specimens/SPEC-0001`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
 
 ## Project principles
 
@@ -12,6 +12,7 @@ The current specimen display is available at `/species/raccoon-dog`; the exact p
 - Species are the primary browsing unit, while every physical specimen receives a stable nested URL.
 - Scientific, English, and Danish names are searchable even though the interface is English.
 - Primary collection content stays human-editable in two linked CSV files; reviewed MDX and media/reference declarations compile with it into validated typed build artifacts.
+- Mammal, bird, and fallback measurement profiles share the canonical specimen CSV while rendering only applicable rows and class-aware comparison matrices.
 - Known content is statically prerendered and remains useful before interactive JavaScript loads.
 - Missing, uncertain, and genus-level data is represented honestly.
 - Archival image masters and private working data never enter the public repository.
@@ -102,7 +103,7 @@ On macOS, find the computer's active LAN IPv4 address (commonly with `ipconfig g
 ## Repository map
 
 ```text
-src/                 Next.js routes, exhibit UI, domain/compiler, and data loading
+src/                 Next.js routes, museum/catalog/exhibit UI, domain/compiler, and data loading
 content/             canonical CSV, cited MDX, media/reference declarations, taxonomy snapshots
 public/media/        curated validated WebP specimen and reference derivatives
 scripts/             content, taxonomy, fixture, staging, and image tooling
@@ -130,7 +131,7 @@ The original approved plan remains in `agent_context/website_plan_from_planmode.
 
 ## Content and image safety
 
-`agent_context/skulls_meta.csv` is an incomplete illustrative draft. `agent_context/skull_images_clean/` contains local source/staging images. Both paths are ignored and must not be published or read by a normal application build.
+`agent_context/skulls_meta.csv` is an incomplete illustrative draft. `agent_context/skull_images_clean/` contains local source/staging images. `agent_context/metadata_csv/` contains partial spreadsheet exports supplied while designing the class-aware measurement model. These paths are ignored and must not be published or read by a normal application build.
 
 Phase 2 established:
 
@@ -140,7 +141,7 @@ Phase 2 established:
 - review-gated MDX for future cited editorial profiles and guides; and
 - `public/media/specimens/` for validated derivatives named `{specimen-id}__{view}.webp`, plus `public/media/references/` for validated comparison assets.
 
-The first canonical records (`TAX-0001`, `SPEC-0001`) were curated from only the explicitly selected staging row `ID = 1` and six matching raccoon-dog PNGs. Staging values remain evidence rather than a production source of truth. Phase 2.2 adds a processed adult-human-skull reference and fixed approximate dimensions for the calibrated specimen-page comparison; its ignored source image is likewise not a runtime input. The current profile is deliberately `draft` and omitted from the public page until useful, cited prose is curated; the compiler, citation model, and reviewed-profile path remain intact.
+The first canonical records (`TAX-0001`, `SPEC-0001`) were curated from only the explicitly selected staging row `ID = 1` and six matching raccoon-dog PNGs. Staging values remain evidence rather than a production source of truth. Phase 2.2 adds a processed adult-human-skull reference and fixed approximate dimensions for the calibrated specimen-page comparison; its ignored source image is likewise not a runtime input. Phase 3 advances the compiled contract to schema version 4 and expands the single specimen CSV with explicit mammal/bird measurement applicability; it does not bulk-ingest the partial raw exports. The current profile is deliberately `draft` and omitted from the public page until useful, cited prose is curated; the compiler, citation model, and reviewed-profile path remain intact.
 
 See [docs/content_data_model.md](docs/content_data_model.md) before editing any future content source.
 
@@ -152,7 +153,7 @@ Do not commit secrets, raw workbooks, archival Affinity/PSD files, private notes
 
 ## Deployment
 
-Vercel is the planned hosting target, connected to GitHub after the release-hardening phase. Pull requests will later receive preview deployments and `main` will become the only production source. No production project, domain, analytics, or runtime service is configured in Phase 2/2.1/2.2.
+Vercel is the planned hosting target, connected to GitHub after the release-hardening phase. Pull requests will later receive preview deployments and `main` will become the only production source. No production project, domain, analytics, or runtime service is configured through Phase 3.
 
 ## Rights and licence
 

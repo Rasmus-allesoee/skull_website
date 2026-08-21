@@ -6,13 +6,15 @@
 
 **Interface language:** English
 
-**Last reviewed:** 2026-08-17
+**Last reviewed:** 2026-08-20
 
 ## 1. Vision
 
 Skull Collection will be a fast, visually led online natural-history museum built around consistent, high-quality photographs of real animal skulls. It should feel calm, precise, and contemporary: visitors encounter the skull first, then reveal taxonomy, measurements, preparation, provenance, and cited natural-history information according to their interest.
 
 The site begins with the collector's own Danish specimens but is designed for a larger, carefully curated reference collection. It must be credible enough for identification and comparison, accessible enough for curious non-specialists, and structured enough to remain maintainable as specimens, contributors, countries, and media types grow.
+
+The shared museum shell, Home, static catalog, and class/order/family/genus browsing are implemented in Phase 3. Search/facets, the interactive map, supporting editorial routes, full collection ingestion, and production remain owned by later phases.
 
 ## 2. Product principles
 
@@ -157,14 +159,16 @@ The home page should establish the collection as a museum, not a generic applica
 
 - Full-width featured transparent skull on a dark, subtly lit field.
 - Working title, one-sentence purpose, and primary “Explore the collection” action.
-- Search entry with visible scientific/common-name examples.
+- An honest catalog entry using scientific/English/Danish-name language; the interactive name search begins in Phase 4.
 - Representative cards for available classes with live taxon/specimen counts.
 - Selected specimen or recently added display.
-- Compact geographic preview that links to the Map but does not load MapLibre.
-- Teasers for the preparation guide, contribution protocol, and About page.
+- Compact geographic preview using only reviewed public coordinate records and never loading MapLibre. It remains non-interactive until `/map` exists in Phase 5, avoiding a dead link.
+- Teasers only for real destinations; Phase 3 links the preparation outline and labels later methodology honestly instead of linking unpublished Contribution/About routes.
 - No invented statistics; empty counts are hidden or explicitly marked as pending.
 
 ### Species catalog
+
+Phase 3 provides the static catalog, class tiles, taxonomy index, deterministic common-name order, and reusable taxon/specimen card modes. The following interactive discovery controls remain Phase 4 work:
 
 - Search field remains prominent and keyboard accessible.
 - Query, filters, sort, taxonomic scope, and result mode serialize to URL parameters.
@@ -194,16 +198,16 @@ The home page should establish the collection as a museum, not a generic applica
 - Use a symmetric full-viewport inspection dialog with wheel/trackpad zoom, desktop pinch gestures, native touch pinch, pointer/touch drag, double-click zoom/reset, a range control, keyboard `+`/`-`/`0`, view navigation at every zoom level, Escape, focus restoration, and reduced-motion behavior. At 100% zoom, horizontal touch swipe changes view; once enlarged, the same one-finger gesture pans instead. Zoom gestures over the inspector must prevent background page scroll/page zoom; users do not need to hold Command/Ctrl.
 - Place the specimen selector near the gallery and keep the default specimen explicit.
 - Put the measurement section immediately below the gallery/selector, followed by the collection and preparation records. A concise cited profile and skull-identification section return only after useful, reviewed, source-backed prose exists; draft profile infrastructure remains build-valid but is not rendered.
-- Present the specimen measurement table directly below the heading/note and retain progressive disclosure for additional recorded measurements. Link a quick measurement-definition dialog. At wide widths, pair the compact table with the reusable `A sense of scale` card; stack them on narrow screens.
+- Present the specimen measurement table directly below the heading/note and retain progressive disclosure for additional recorded measurements. Derive a `mammal`, `bird`, or fallback `other` profile from the linked taxon's class and render only that profile's meaningful rows; class-specific non-applicable fields must not become visible clutter. Link a profile-specific measurement-definition dialog. At wide widths, pair the compact table with the reusable `A sense of scale` card; stack them on narrow screens.
 - The scale card compares canonical lateral views using recorded maximum length, compiled alpha subject bounds, explicit orientation, and one responsive pixels-per-millimetre factor shared by both skulls. Default to the reviewed adult-human reference, allow selection only from eligible default specimens/references, align both skulls to the primary orientation without rewriting assets, and label approximate reference values honestly. Descriptive notes belong to the selected comparison record and disappear when that record has no note. This is a mathematically true relative-size comparison inside the card, not a claim that CSS pixels equal physical millimetres on the visitor's monitor.
-- Include a searchable keyboard-operable comparison selector and dynamic six-row difference table for maximum length, maximum width, height, prepared mass, cranium width, and maximum mandible length. Difference wording and ratio always describe the current page specimen relative to the selected comparison; wording, not color alone, communicates direction. Show the approximation explanation only when at least one displayed difference is actually derived from an approximate source value.
+- Include a searchable keyboard-operable comparison selector and a class-aware difference table. Mammal/mammal uses six rows; bird/bird uses nine; bird/mammal uses six explicitly labelled functional mappings, including orbital width ↔ maximum width and cranium height ↔ skull height. Cross-class mappings are descriptive comparisons between different landmarks, not claims of anatomical homology. Difference wording and ratio always describe the current page specimen relative to the selected comparison; wording, not color alone, communicates direction. Show the approximation explanation only when at least one displayed difference is actually derived from an approximate source value.
 - Put owner, sex, age class, condition, source, date, location, and coordinate precision in the collection record under the `Metadata` kicker. Age and five-level condition definitions open in accessible dialogs; pathology, trauma, teeth-set completeness, and skeleton completeness live under `Show additional recorded data`.
 - In Phase 5, place a `View on map` action near the Collection record for specimens with public coordinates. It focuses the specimen through `/map?specimen={id}`; do not embed MapLibre in the specimen page during Phase 2.
 - Describe preparation as `Skull preparation` and link to the permanent guide route. The guide stays an explicit outline—not procedural or safety advice—until cited content review.
 - Keep photography credit concise as `Photo: {name}`. Reserve collection/media/data reuse through the global `© {year} Rasmus. All rights reserved.` footer rather than a large rights panel; detailed legal scope remains in `RIGHTS.md` and the later Rights page.
 - Hide an entirely empty optional section. Within a populated group, render missing values as “Not recorded” and non-applicable values as “Not applicable.”
 - Give exact specimen URLs unique titles/descriptions and an appropriate relationship to the taxon canonical page.
-- Once Phase 3 has enough eligible taxa, add at most three same-family suggestions and at most three deterministic collection-wide suggestions. Exclude the current taxon, deduplicate the two sets, and omit empty sections rather than displaying placeholders.
+- The Phase 3 suggestion query supports at most three same-family suggestions and three deterministic collection-wide suggestions. Exclude the current taxon, deduplicate the two sets, and omit empty sections rather than displaying placeholders; therefore no related section appears while only one taxon is published.
 
 ### Map
 
@@ -252,6 +256,14 @@ The home page should establish the collection as a museum, not a generic applica
 - Accepted species, subspecies, genus-only records, and uncertain identifications may be published when labelled correctly.
 - Scientific-name updates must preserve immutable local IDs and old public URLs through redirects.
 - External identifiers support verification; they never replace local identity.
+- Repeated hierarchy name/slug pairs must agree across canonical rows so one generated rank URL never acquires conflicting labels or parents.
+
+### Class-aware measurements
+
+- `taxa.csv` and `specimens.csv` remain the only canonical collection tables; bird measurements do not create a second specimen source.
+- Mammal and bird profiles control applicability, table order, definition guidance, and comparison rows. Unknown future classes use the conservative shared-field fallback until a reviewed profile is added.
+- `not_recorded` means an applicable measurement was not supplied; `not_applicable` is reserved for fields outside the specimen's class profile.
+- The partial exports under `agent_context/metadata_csv/` are migration evidence, not public content. Stable identity, taxonomy, notes, dates, rights, and media must be reviewed during Phase 6 before any row is published.
 
 ### Photography and gallery
 

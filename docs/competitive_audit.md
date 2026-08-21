@@ -1,8 +1,10 @@
 # Competitive audit
 
-**Status:** Approved planning evidence
+**Status:** Approved planning evidence; Phase 3 catalog application checked
 
 **Reviewed:** 2026-08-12
+
+**Implementation check:** 2026-08-20
 
 **Scope:** Public browsing, catalog structure, specimen presentation, search, map, and forward-looking media patterns
 
@@ -159,12 +161,25 @@ The combined response is deliberately not a visual average of the three sites:
 - Decorative 3D/AI effects presented as documentary evidence.
 - Direct uploads before storage, consent, security, moderation, and retention are designed.
 
-## 9. Revalidation triggers
+## 9. Phase 3 implementation application
+
+Phase 3 applies the audited patterns without re-copying any reference site's content or branding:
+
+- the shared dark museum shell and large lateral imagery retain the photographic emphasis;
+- `/species` keeps class entries, a compact rank index, and the image gallery structurally separate;
+- one class/order/family/genus template creates predictable, breadcrumbed rank pages rather than long mixed hierarchy pages;
+- taxon and specimen cards use the accepted species-first/exact-specimen URL model;
+- all routes remain static and useful without JavaScript; and
+- the Home geographic preview is a semantic record summary, not a premature or decorative map implementation.
+
+Phase 4 still owns multilingual indexed search, facets, result modes, and URL state. The one-record catalog is not large enough to revisit pagination or virtualization.
+
+## 10. Revalidation triggers
 
 Revisit this audit when:
 
 - a reference site materially redesigns its catalog, search, map, or media experience;
-- Phase 2 exposes a conflict between the approved vertical slice and these assumptions;
+- an implemented phase exposes a conflict between the approved experience and these assumptions;
 - catalog scale makes the current paging/virtualization decision measurable;
 - comparison, 360°, 3D, or direct contributions enter active planning; or
 - usability testing shows that a rejected pattern solves a real visitor problem better than the current design.

@@ -1,8 +1,8 @@
 # Design system
 
-**Status:** Phase 2.3 representative system implemented; owner approval pending
+**Status:** Phase 3 museum shell/catalog system implemented; owner review pending
 
-**Last reviewed:** 2026-08-17
+**Last reviewed:** 2026-08-20
 
 ## 1. Design intent
 
@@ -140,7 +140,7 @@ Responsive checkpoints are content-derived, with explicit QA at:
 ### Global shell
 
 - **Skip link:** first focusable item, visibly enters above navigation.
-- **Site header:** working title, primary navigation, search entry/action, active-page state, mobile menu.
+- **Site header:** working title, only real primary destinations, one active-page state, and a native responsive mobile menu inside a labelled navigation landmark. The Phase 4 search action is added only when it functions.
 - **Footer:** a quiet global copyright notice; add purpose, supporting links, or contact only when those destinations are real.
 - **Page intro:** eyebrow/breadcrumb, title, concise purpose, optional actions.
 
@@ -152,6 +152,8 @@ Responsive checkpoints are content-derived, with explicit QA at:
 - **Taxonomy index:** scannable nested rank links; collapses thoughtfully on mobile without hiding current context.
 - **Taxon card:** lateral image, names, rank/confidence when needed, count/range, complete link target.
 - **Specimen card:** lateral image, names, immutable ID, relevant measurements, location/date summary.
+- **Class entry card:** representative lateral image, class name, live published taxon/specimen counts, and one complete class-landing link.
+- **Rank landing:** breadcrumb, rank/title/count intro, separate child-rank links, compact descendant index, and scoped taxon gallery. One template owns class, order, family, and genus.
 
 ### Specimen display
 
@@ -162,15 +164,15 @@ Responsive checkpoints are content-derived, with explicit QA at:
 - **Specimen selector:** current specimen and concise alternative list; preserves taxon context.
 - **Taxonomy breadcrumb:** ordered hierarchy with current-page semantics.
 - **Status badge:** text-first qualifier/confidence/precision—not a color dot.
-- **Measurement panel:** compact primary table directly below its heading/note, progressively disclosed additional values, canonical units, and measurement-guide dialog. At wide widths it occupies the left third and the scale comparison occupies the remaining space; sections stack without horizontal overflow at narrow widths.
+- **Measurement panel:** compact class-profile primary table directly below its heading/note, progressively disclosed applicable additional values, canonical units, and a profile-specific measurement-guide dialog. Mammal, bird, and fallback profiles never show one another's non-applicable rows. At wide widths it occupies the left third and the scale comparison occupies the remaining space; sections stack without horizontal overflow at narrow widths.
 - **Scale comparison:** vertically stacked lateral skulls share one mathematically calibrated maximum-length scale. The current specimen stays primary; an adult-human reference is the default comparison. Preserve full morphology, use compiled subject bounds rather than transparent canvas width, flip only in presentation when orientation differs, and label approximate reference values. A concise selected-record note may appear below the selector; generic scale mechanics are not repeated in public copy.
 - **Comparison selector:** restrained `Compare` action opening a labelled searchable combobox/listbox; references first, current specimen excluded, keyboard navigation, clear empty state, easy return to the adult-human default, focus restoration, and live announcement of selection.
-- **Measurement differences:** compact six-row table to the right of the skull pair at wide widths and below it when constrained. The current specimen is always the comparison numerator. Absolute wording states longer/shorter, wider/narrower, higher/lower, or heavier/lighter; a restrained semantic color is supplementary; ratio uses sensible precision. Approximation guidance appears only when a displayed result uses an approximate source measurement.
+- **Measurement differences:** compact profile-selected table to the right of the skull pair at wide widths and below it when constrained: six mammal rows, nine bird rows, six explicitly mapped bird/mammal rows, or four shared fallback rows. The current specimen is always the comparison numerator. Absolute wording states longer/shorter, wider/narrower, higher/lower, or heavier/lighter; a restrained semantic color is supplementary; ratio uses sensible precision. Cross-class tables state that mapped width/height landmarks differ. Approximation guidance appears only when a displayed result uses an approximate source measurement.
 - **Collection record:** `Metadata` kicker; owner, source, date, location/precision, sex, age, and condition; reference dialogs for age and the five-level condition scale; pathology, trauma, teeth set, and retained skeleton in one additional-data disclosure. Phase 5 adds a nearby `View on map` link for public coordinates, targeting the accessible focused map route rather than embedding MapLibre early.
 - **Preparation timeline:** semantic ordered list; unknown dates/durations do not break order.
 - **Guide dialog:** native modal semantics, labelled close control, left-aligned title/note, single-line desktop title where space permits, scrollable table, mobile row cards, Escape, and focus restoration.
 - **Citation list:** stable keys/backlinks, readable metadata, external-link indication.
-- **Related taxa:** after Phase 3 has enough content, up to three same-family cards and up to three deterministic collection-wide cards; current/duplicate taxa excluded and empty groups omitted.
+- **Related taxa:** up to three same-family cards and three deterministic collection-wide cards; current/duplicate taxa excluded and empty groups omitted. With one published taxon the component deliberately renders nothing.
 
 ### Map and editorial
 
@@ -237,7 +239,7 @@ Semantic tokens live in the global CSS layer and may be exposed to Tailwind. Com
 
 Token changes are reviewed against all core page families and accessibility states. A new one-off raw value is a signal to revisit the system, not an automatic new token.
 
-## 15. Phase 2 visual-direction gate
+## 15. Phase 2 visual-direction and Phase 3 system gates
 
 The representative raccoon-dog vertical slice must demonstrate and receive user approval for:
 
@@ -253,7 +255,9 @@ The representative raccoon-dog vertical slice must demonstrate and receive user 
 
 That gate happens before the design scales to the shell/catalog. Material changes update this document and, when cross-cutting, an ADR.
 
-Initial implementation evidence on 2026-08-13 led to the owner's detailed Phase 2.1 review. The 2026-08-14 refinement added the responsive rail, true-resolution inspector, working touch gestures, measurement-first hierarchy, and record guidance. Phase 2.2 on 2026-08-15 retuned the normal-Chrome gallery, used alpha-bounded full-resolution display, closed inspector/background gesture conflicts and the network-mobile reload defect, introduced the reusable true-to-scale comparison/difference system, and corrected metadata/dialog alignment. Phase 2.3 on 2026-08-17 removes redundant scale copy, makes uncertainty copy demonstrably selection/status-driven, restores native page pinch over the ordinary mobile gallery, and adds inspection swipe navigation. Automated and manual evidence is recorded in `project_status.md`; the gate remains open for owner approval before Phase 3.
+Initial implementation evidence on 2026-08-13 led to the owner's detailed Phase 2.1 review. The 2026-08-14 refinement added the responsive rail, true-resolution inspector, working touch gestures, measurement-first hierarchy, and record guidance. Phase 2.2 on 2026-08-15 retuned the normal-Chrome gallery, used alpha-bounded full-resolution display, closed inspector/background gesture conflicts and the network-mobile reload defect, introduced the reusable true-to-scale comparison/difference system, and corrected metadata/dialog alignment. Phase 2.3 on 2026-08-17 removed redundant scale copy, made uncertainty copy demonstrably selection/status-driven, restored native page pinch over the ordinary mobile gallery, and added inspection swipe navigation. The owner approved that gate on 2026-08-17.
+
+Phase 3 scales the approved language into the final shell, Home, catalog, shared rank landings, class/taxon/specimen cards, error surface, and class-aware measurement variants. Manual 2026-08-20 review at 1440 × 900 and 390 × 844 confirms museum/reference hierarchy, responsive menu, long-page rhythm, image containment, and zero horizontal overflow. Automated fixture coverage supplies bird, long-name, uncertain, missing-image, and multi-specimen states while only one reviewed live record exists. Technical evidence is recorded in `project_status.md`; owner product review remains open before Phase 4.
 
 ## 16. Design anti-patterns
 

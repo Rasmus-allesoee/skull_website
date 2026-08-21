@@ -1,9 +1,9 @@
-import Link from "next/link";
-
-import { SiteFooter } from "@/components/SiteFooter";
+import { MuseumShell } from "@/components/MuseumShell";
+import { getRelatedTaxa } from "@/data/catalog";
 import { getEligibleSkullComparisons } from "@/data/comparison";
 import type { ExhibitRecord } from "@/data/collection";
 import { humanizeToken } from "@/domain/content/display";
+import { RelatedTaxa } from "@/features/catalog/RelatedTaxa";
 
 import { CollectionRecord } from "./CollectionRecord";
 import { Gallery } from "./Gallery";
@@ -33,70 +33,68 @@ export function ExhibitPage({
     comparisonOptions.find((record) => record.isDefault)?.id ??
     comparisonOptions[0]?.id ??
     null;
+  const suggestions = getRelatedTaxa(taxon.taxonId);
 
   return (
-    <div className="site-shell exhibit-shell">
-      <header className="site-header" aria-label="Site header">
-        <Link className="wordmark" href="/">
-          Skull Collection
-        </Link>
-        <span className="phase-label">Phase 2 · Curator review</span>
-      </header>
+    <MuseumShell
+      activePath="/species"
+      footerContext={`${taxon.names.english ?? taxon.scientificName} · ${specimen.specimenId}`}
+      mainClassName="exhibit-shell"
+    >
+      <TaxonomyBreadcrumb
+        taxon={taxon}
+        specimenId={exactSpecimen ? specimen.specimenId : undefined}
+      />
+      <section className="exhibit-intro" aria-labelledby="exhibit-title">
+        <div className="identity-block">
+          <p className="eyebrow">
+            {taxon.hierarchy.className} · {taxon.hierarchy.orderName}
+          </p>
+          <h1 id="exhibit-title">{commonName}</h1>
+          <p className="scientific-name">
+            <i>{taxon.scientificName}</i>
+          </p>
+          {taxon.names.danish ? (
+            <p className="danish-name">Danish · {taxon.names.danish}</p>
+          ) : null}
+        </div>
+        <div className="status-block">
+          <span className="status-badge">
+            {humanizeToken(taxon.identificationQualifier)} identification
+          </span>
+          <span className="status-badge">
+            {humanizeToken(taxon.identificationConfidence)} confidence
+          </span>
+          <p>
+            {exactSpecimen ? "Exact specimen record" : "Default taxon display"}
+            <strong>{specimen.specimenId}</strong>
+          </p>
+        </div>
+      </section>
 
-      <main id="main-content">
-        <TaxonomyBreadcrumb taxon={taxon} />
-        <section className="exhibit-intro" aria-labelledby="exhibit-title">
-          <div className="identity-block">
-            <p className="eyebrow">
-              {taxon.hierarchy.className} · {taxon.hierarchy.orderName}
-            </p>
-            <h1 id="exhibit-title">{commonName}</h1>
-            <p className="scientific-name">
-              <i>{taxon.scientificName}</i>
-            </p>
-            {taxon.names.danish ? (
-              <p className="danish-name">Danish · {taxon.names.danish}</p>
-            ) : null}
-          </div>
-          <div className="status-block">
-            <span className="status-badge">
-              {humanizeToken(taxon.identificationQualifier)} identification
-            </span>
-            <span className="status-badge">
-              {humanizeToken(taxon.identificationConfidence)} confidence
-            </span>
-            <p>
-              {exactSpecimen
-                ? "Exact specimen record"
-                : "Default taxon display"}
-              <strong>{specimen.specimenId}</strong>
-            </p>
-          </div>
-        </section>
+      <Gallery assets={media} commonName={commonName} />
+      <SpecimenSelector
+        taxon={taxon}
+        specimens={specimens}
+        selectedSpecimenId={specimen.specimenId}
+        exactSpecimen={exactSpecimen}
+      />
+      <MeasurementPanel
+        taxon={taxon}
+        specimen={specimen}
+        comparisonPrimary={comparisonPrimary}
+        comparisonOptions={comparisonOptions}
+        defaultComparisonId={defaultComparisonId}
+      />
 
-        <Gallery assets={media} commonName={commonName} />
-        <SpecimenSelector
-          taxon={taxon}
-          specimens={specimens}
-          selectedSpecimenId={specimen.specimenId}
-        />
-        <MeasurementPanel
-          specimen={specimen}
-          comparisonPrimary={comparisonPrimary}
-          comparisonOptions={comparisonOptions}
-          defaultComparisonId={defaultComparisonId}
-        />
-
-        <section
-          className="record-grid content-section"
-          aria-label="Specimen record"
-        >
-          <CollectionRecord specimen={specimen} />
-          <PreparationTimeline specimen={specimen} />
-        </section>
-      </main>
-
-      <SiteFooter context="Skull Collection · Validated vertical slice" />
-    </div>
+      <section
+        className="record-grid content-section"
+        aria-label="Specimen record"
+      >
+        <CollectionRecord specimen={specimen} />
+        <PreparationTimeline specimen={specimen} />
+      </section>
+      <RelatedTaxa suggestions={suggestions} />
+    </MuseumShell>
   );
 }

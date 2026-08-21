@@ -20,7 +20,7 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **Phase 2 is technically complete and explicitly owner-approved; Phase 3 has not started**. Consult `docs/project_status.md` for exact evidence and the next action. Do not implement Phase 3 catalog/search/map/full-ingestion features until a dedicated Phase 3 task is provided.
+Current phase: **Phase 3 is implemented and passes its complete local technical/visual acceptance gate; owner review is pending**. Consult `docs/project_status.md` for exact evidence and the next action. Do not begin Phase 4 search/faceted-discovery work until the owner approves Phase 3 or supplies a bounded Phase 3 feedback task.
 
 Use the neutral working title **Skull Collection** from central site configuration until the final name is selected.
 
@@ -64,6 +64,7 @@ The historical approved master plan is `agent_context/website_plan_from_planmode
 - MapLibre loads only on `/map`; every map record has an equivalent semantic list path.
 - Page code consumes typed records and `MediaAsset` interfaces, not constructed filenames or raw CSV rows.
 - True-to-scale comparison uses a canonical lateral-view maximum length, compiled transparent subject bounds, and explicit lateral orientation. Approximate reference measurements must remain labelled as approximate.
+- The schema-version-4 measurement model stays unified in `specimens.csv`: mammal, bird, and fallback profiles control applicability and presentation without parallel specimen tables. Class-specific fields require explicit `not_applicable` status outside their profile.
 - Accessibility targets WCAG 2.2 AA and is part of component/API design, not a later overlay.
 
 ## 5. Content and media safety
@@ -80,8 +81,12 @@ Local context paths:
 - `agent_context/prompt_phase_2.1_raccoon_dog_slice_feedback.md` — owner review that defines the Phase 2.2 refinement scope.
 - `agent_context/implement_interactive_true_to_scale_skull_comparison.md` — owner-approved functional specification for the Phase 2.2 comparison component.
 - `agent_context/website_screenshots/` — owner-supplied visual targets and defect evidence for Phase 2.2; context only, never runtime assets.
+- `agent_context/class_aware_dynamic_measurement_architecture.md` — Phase 3 design input for the implemented class-aware measurement profiles and comparison matrices; canonical rules live in `docs/` and executable schemas.
+- `agent_context/metadata_csv/` — ignored partial spreadsheet exports supplied during Phase 3; migration evidence only, never runtime or canonical input.
 
 Phase 2 uses only staging metadata row `ID = 1` and the six `mårhund_*_1.png` files as migration evidence for `TAX-0001` / `SPEC-0001`. The reviewed canonical values live in `content/`; never make a normal build depend on the ignored staging sources. Owner feedback supersedes the initial slice's display wording and condition classification, but it does not authorize inventing unrecorded pathology, trauma, teeth-set, skeleton, age-evidence, or reuse facts. The Phase 2.2 adult-human comparison source is also ignored staging input; only its reviewed declaration and processed public WebP derivative belong in Git.
+
+Phase 3 expanded the one canonical `specimens.csv` header with reviewed mammal/bird measurement fields and explicit statuses, but it did **not** import the partial rows in `agent_context/metadata_csv/`. Those exports contain legacy/non-canonical IDs, incomplete taxonomy, unreviewed public text, and incomplete media/rights state; normalize and ingest them only in the authorized Phase 6 migration workflow.
 
 Archival `.af`, PSD, camera originals, TIFF/PNG masters, raw workbooks, private notes, and EXIF/GPS-bearing media stay outside Git. Public specimen derivatives use immutable specimen IDs and canonical views only after `pnpm media:process` and `pnpm validate:media` confirm metadata stripping and the rest of the media contract. Public comparison references use stable reference IDs and the separate `pnpm media:process:reference` maintenance command.
 
@@ -134,7 +139,7 @@ Before a checkpoint:
 - Never stage unrelated user files silently. Audit the complete scope before commit/push.
 - One coherent verified checkpoint closes each phase; do not mark status complete on code presence alone.
 - GitHub issues/milestones are the active implementation tracker. Do not add a second competing tracker.
-- Production later deploys only from `main`; no production/Vercel configuration belongs to Phase 2.
+- Production later deploys only from `main`; no production/Vercel configuration belongs to Phase 3.
 
 ## 9. Documentation ownership
 
