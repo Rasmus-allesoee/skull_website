@@ -2,9 +2,9 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Phase 3.1 complete locally; owner product review pending
+**Current phase:** Combined Phase 3.2 catalog redesign and Phase 4 discovery complete locally; owner product review pending
 
-**Last reviewed:** 2026-08-21
+**Last reviewed:** 2026-08-22
 
 ## 1. How to use this plan
 
@@ -42,7 +42,7 @@ Phase 3 shared museum shell and taxonomy catalog
         ↓
 Phase 3.1 review-quality catalog expansion and refinement
         ↓
-Phase 4 search and faceted discovery
+Phase 3.2 catalog-first redesign + Phase 4 search/faceted discovery
         ↓
 Phase 5 map and required editorial/supporting pages
         ↓
@@ -262,27 +262,38 @@ Turn the approved conversational plan into durable sources of truth and create a
 - [x] Group the all-species and class/order scoped galleries by family; retain a plain responsive grid on family/genus landings.
 - [x] Use a three/two/one-column card grid where content/viewport supports it and verify mammals, birds, genus-level uncertainty, long names, optional-view gaps, and multiple specimens with live records.
 - [x] Add a compact native specimen chooser to multi-specimen species cards, showing only specimen ID/default state, thumbnail, age, sex, and maximum length, with exact stable links, Escape, and focus restoration.
-- [x] Document the complete source/migration boundary and create a dedicated Phase 3.2 implementation guide for the comprehensive interactive tree.
+- [x] Document the complete source/migration boundary and create a dedicated implementation guide for the comprehensive interactive tree, now reclassified as Phase 3.3.
 - [x] Pass the complete sequential local quality/build/browser/manual visual gate and create the separate verified Phase 3.1 commit.
-- [ ] Receive owner approval of the rendered Phase 3.1 result.
+- [x] Receive owner approval of the rendered Phase 3.1 result.
 
 Phase 3.1 is a review slice, not the final Phase 6 audit. It establishes public URL identity for the accepted 15/18 records, but Phase 6 still reconciles every legacy row, unresolved media/identity/rights/public-note decision, and field transformation. See [phase_3_1_migration_audit.md](phase_3_1_migration_audit.md).
 
-### Phase 3.2 — comprehensive interactive systematic browsing (dedicated future feature)
+### Phase 3.2 — catalog-first Species redesign with integrated Phase 4 discovery
 
-**Scheduling:** Deferred pending Phase 3.1 owner approval and an owner decision on whether this precedes or follows Phase 4. It does not silently block Phase 4.
+**Scheduling:** Owner-authorized replacement for the earlier Phase 3.2-versus-Phase 4 choice. The complete current Phase 4 scope is delivered inside the redesigned `/species` catalog as one acceptance milestone.
+
+- [x] Replace the vertically stacked editorial catalog with a compact heading, sticky operational controls, and the lateral-image grid in the first normal desktop viewport.
+- [x] Implement one species/specimen catalog over the existing canonical query model, with compact class presets, family grouping in browse mode, and global flattening for explicit sort/search states.
+- [x] Add the single required responsive taxonomy drawer/sidebar through class → order → family → genus → taxon, with explicit filter and stable-route actions, nested-list semantics, Escape/focus handling, and a no-JavaScript alternative.
+- [x] Preserve the compact multi-specimen chooser and exact taxon/specimen URLs.
+- [x] Integrate every Phase 4 index, query, interface, URL, progressive-enhancement, performance, and acceptance requirement listed below.
+- [x] Rebuild the six SPEC-0003/0013/0018 lateral/oblique derivatives from their right-facing clean masters through the canonical staging/processing/bounds validation pipeline.
+- [x] Verify the combined layout/discovery gate across desktop, mobile, effective 200% reflow, keyboard, touch, reduced motion, forced colors, axe, no-JavaScript, and browser-history scenarios.
+
+### Phase 3.3 — comprehensive interactive systematic browsing (dedicated future feature)
+
+**Scheduling:** Deferred. This richer tree is optional to the catalog workflow and does not block Phase 5. It begins only after owner review and separate authorization.
 
 - [ ] Reuse one canonical published hierarchy for the visual tree and ordinary nested-list alternative; never create a second classification source.
-- [ ] Extend the current static class/order/family foundation through genus and terminal taxon nodes with explicit expand/collapse and complete stable links.
-- [ ] Design keyboard traversal, touch, pan/zoom/reset, focus management, reduced motion, no-JavaScript fallback, and shareable state before selecting a tree library.
+- [ ] Enhance the implemented drawer/list hierarchy with comprehensive visual branching, keyboard traversal, touch, pan/zoom/reset, and shareable focus/expansion only where useful.
 - [ ] Add compact group previews only with deterministic published imagery and list/route equivalents.
 - [ ] Add group-identification characteristics only after claim-level sources and review.
 - [ ] Add evolutionary divergence estimates only after sources, definitions, uncertainty wording, and owner approval; otherwise omit them.
 - [ ] Verify tree/list node parity, draft exclusion, performance/bundle isolation, 200% zoom, forced colors, screen reader, axe, and responsive behavior.
 
-Detailed implementation constraints and prerequisites live in [interactive_taxonomic_tree.md](interactive_taxonomic_tree.md). Phase 4 remains the owner of multilingual search, facets, result modes, and URL-backed query state.
+Detailed implementation constraints and prerequisites live in [interactive_taxonomic_tree.md](interactive_taxonomic_tree.md). The implemented Phase 3.2 drawer/list is the foundation; Phase 3.3 must not replace the working catalog or route-equivalent semantic list.
 
-## 7. Phase 4 — search and faceted exploration
+## 7. Phase 4 — search and faceted exploration (integrated into Phase 3.2)
 
 ### Dependencies
 
@@ -291,19 +302,19 @@ Detailed implementation constraints and prerequisites live in [interactive_taxon
 
 ### Index and query model
 
-- [ ] Generate deterministic Orama rank, taxon, and specimen documents.
-- [ ] Add normalized scientific/English/Danish/alias/ID fields without changing display values.
-- [ ] Implement exact → prefix → alias/synonym → fuzzy → profile-text ranking.
-- [ ] Add class/order/family/genus facets and skull-length/skull-weight numeric facets.
-- [ ] Define species-mode grouping/count/range and specimen-mode matching behavior.
+- [x] Generate deterministic Orama rank, taxon, and specimen documents.
+- [x] Add normalized scientific/English/Danish/alias/ID fields without changing display values.
+- [x] Implement exact → prefix → alias/synonym → fuzzy → profile-text ranking.
+- [x] Add class/order/family/genus facets and skull-length/skull-weight numeric facets.
+- [x] Define species-mode grouping/count/range and specimen-mode matching behavior.
 
 ### Interface and URLs
 
-- [ ] Build accessible global suggestions grouped by result type.
-- [ ] Build catalog search, filter, sort, active-filter, clear, no-result, and mode controls.
-- [ ] Serialize all meaningful state to stable query parameters.
-- [ ] Restore state on direct load, refresh, and browser back/forward.
-- [ ] Lazy-load index code/data only where search is available and measure shared bundle impact.
+- [x] Build accessible catalog suggestions grouped by rank, taxon, and specimen type.
+- [x] Build catalog search, filter, sort, active-filter, clear, no-result, and mode controls.
+- [x] Serialize all meaningful state to stable query parameters.
+- [x] Restore state on direct load, refresh, and browser back/forward.
+- [x] Lazy-load index code/data only after a query is entered and keep it out of unrelated route behavior.
 
 ### Acceptance gate
 
@@ -316,6 +327,8 @@ Automated and manual scenarios pass for:
 - unknown/not-applicable measurement exclusion and reset recovery;
 - share/reload/back/forward state; and
 - no-result recovery and full keyboard operation.
+
+**Gate result:** Passed locally on 2026-08-22 as part of the combined Phase 3.2 milestone. The 67-document artifact contains 34 rank, 15 taxon, and 18 specimen documents compiled from published canonical records. Owner visual/product review remains open; no push/PR or remote CI was authorized.
 
 ## 8. Phase 5 — map and editorial/supporting pages
 

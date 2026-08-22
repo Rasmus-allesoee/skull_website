@@ -2,7 +2,7 @@
 
 **Status:** Implemented review slice; final Phase 6 migration audit still required
 
-**Audited:** 2026-08-21
+**Audited:** 2026-08-21; Phase 3.2 derivative-orientation reconciliation 2026-08-22
 
 ## 1. Scope
 
@@ -59,6 +59,10 @@ In total, 33 of the 51 legacy specimen rows were not migrated. They remain raw m
 - Normalized explicit acquisition/preparation tokens conservatively. Unmapped values use controlled `other` or `unknown` rather than an invented specific interpretation.
 - Applied the repository's reserved data/media rights state and the explicit owner/photographer credit from the supplied evidence. Phase 6 must still perform the promised final row-by-row rights, public-note, and publication audit.
 - Processed the complete 104-image staging map through the existing deterministic media pipeline. All lateral images have explicit right orientation and compiled transparent subject bounds. The four missing frontal views remain honest non-blocking warnings.
+
+### Phase 3.2 media reconciliation
+
+Owner review identified that the committed SPEC-0003, SPEC-0013, and SPEC-0018 lateral/oblique derivatives faced left even though their reviewed clean masters already faced right. The correction restaged all 104 explicitly mapped masters and reran the ordinary processor rather than editing public WebPs or adding CSS/runtime flips. Git scope confirmed that only the six named derivatives changed; full validation recomputed alpha bounds and reconfirmed sRGB, transparency, dimensions, stripped metadata, rights declarations, and the 24.83 MiB collection total. No identity, measurement, declaration, view count, or Phase 6 migration decision changed.
 
 ## 5. Phase 6 obligations retained
 

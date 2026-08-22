@@ -8,6 +8,7 @@ out/
 dist/
 .generated/
 .staging/
+public/generated/
 *.tsbuildinfo
 
 # Tests and reports
@@ -46,6 +47,7 @@ agent_context/skull_images_clean/
 agent_context/interactive_tree_sketch.png
 agent_context/website_screenshots/skullbase_web_species_gallery.png
 agent_context/website_screenshots/skullindex_web_species_gallery.png
+agent_context/website_screenshots/localhost_3000_species.png
 *.af
 *.afphoto
 *.afdesign

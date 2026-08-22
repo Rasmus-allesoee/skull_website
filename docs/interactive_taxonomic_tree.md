@@ -1,6 +1,6 @@
 # Interactive taxonomic tree implementation guide
 
-**Status:** Phase 3.1 foundation implemented; comprehensive experience deferred to dedicated Phase 3.2
+**Status:** Phase 3.1 foundation and Phase 3.2 catalog drawer/list implemented; comprehensive experience deferred to dedicated Phase 3.3
 
 **Product input:** `agent_context/interactive_taxonomic_tree_plan.md` and the owner's local tree sketch
 
@@ -8,7 +8,7 @@
 
 The comprehensive systematic-browsing experience will visualize the same canonical published taxonomy used by rank pages, cards, search, and breadcrumbs. It is not a separate phylogeny database and must never invent clades, group characteristics, or divergence estimates.
 
-Phase 3.1 implements the bounded foundation:
+Phase 3.1 implemented the bounded Home/catalog foundation:
 
 - a server-rendered class → order → family tree on Home and `/species`;
 - representative lateral imagery and live taxon/specimen counts from canonical records;
@@ -16,7 +16,9 @@ Phase 3.1 implements the bounded foundation:
 - a visually separate but data-equivalent ordinary taxonomy list; and
 - full usefulness without client JavaScript.
 
-Phase 3.2 owns the comprehensive interactive tree. Search/facets remain Phase 4 and must not be smuggled into this feature.
+Phase 3.2 replaced the large exposed `/species` tree with one responsive, closed-by-default class → order → family → genus → taxon drawer/sidebar. The drawer and no-JavaScript nested list use the same canonical hierarchy, distinguish `Filter catalog` from stable rank/taxon navigation, and are now the required foundation for future work. Phase 3.2 also integrated and completed the current Phase 4 search/facet scope.
+
+Phase 3.3 owns only the comprehensive interactive tree enhancement. It must not recreate search, replace the working drawer/list, or delay access to the catalog grid.
 
 ## 2. Canonical model
 
@@ -34,7 +36,7 @@ Class
 
 The future visualization may introduce reviewed intermediate/clade nodes only after a versioned source contract and explicit evidence review. A display branch cannot imply that the current Linnaean rank sequence is a time-calibrated evolutionary tree.
 
-## 3. Phase 3.2 feature plan
+## 3. Phase 3.3 feature plan
 
 ### Tree and list equivalence
 
@@ -73,13 +75,13 @@ The future visualization may introduce reviewed intermediate/clade nodes only af
 - Pass serialized view models into the island; never import filesystem, CSV, or compiler modules into the client.
 - Use semantic nested lists as the DOM baseline. Add SVG branch geometry as a presentational layer, not as the only accessible content.
 - Prefer CSS/SVG authored in the repository over rasterized text or labels.
-- Measure bundle cost separately from Phase 4 search and load the comprehensive tree code only where used.
+- Measure bundle cost separately from the implemented catalog-search island and load comprehensive tree code only where used.
 
 ## 5. Required inputs before implementation
 
 The owner must approve or supply:
 
-1. whether Phase 3.2 is scheduled before or after Phase 4;
+1. when Phase 3.3 should be scheduled relative to Phase 5 and later release work;
 2. whether the first comprehensive version follows only the canonical class/order/family/genus/taxon ranks or also introduces reviewed clade nodes;
 3. source-backed group characteristics, or approval to omit them from the first release;
 4. reviewed divergence sources/wording, or approval to omit divergence estimates;

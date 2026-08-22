@@ -1,8 +1,8 @@
 # Architecture
 
-**Status:** Accepted baseline; Phase 3 museum shell, catalog, taxonomy, and schema-version-4 measurement architecture implemented
+**Status:** Accepted baseline; combined Phase 3.2 catalog redesign and Phase 4 client discovery architecture implemented
 
-**Last reviewed:** 2026-08-20
+**Last reviewed:** 2026-08-22
 
 ## 1. Architectural goals
 
@@ -28,7 +28,7 @@ The architecture must make a photographically rich catalog feel fast while prote
 | Language | TypeScript 6.0.3, strict mode | Newest release supported by the current Next.js ESLint stack; explicit domain boundaries and early contract failures |
 | Styling | Tailwind CSS 4.3.3 plus CSS variables | Semantic design tokens with small custom museum components |
 | Structured content | Two CSVs plus cited MDX | Familiar editing, Git diffs, schema validation, and suitable prose |
-| Search | Orama, added in Phase 4 | Browser-side weighted search over generated documents |
+| Search | Orama 3.1.18 | Browser-side weighted search over deterministic generated documents; pinned exactly |
 | Map | MapLibre GL JS, added in Phase 5 | Provider-independent interactive vector map |
 | Media processing | Sharp 0.35.3 | Deterministic metadata stripping, validation, bounds, and derivatives |
 | Unit/component tests | Vitest, Testing Library, axe | Fast domain and UI feedback |
@@ -62,13 +62,14 @@ Routes, layouts, metadata, taxonomy trees, record selection, and editorial conte
 
 ### Client islands only where interaction requires state
 
-Planned client boundaries are:
+Implemented/planned client boundaries are:
 
 - global/catalog search and suggestions;
 - URL-backed faceted filters and result-mode controls;
 - gallery thumbnail, swipe, high-resolution inspection, zoom/pan, and guidance-dialog controls;
 - calibrated skull comparison, responsive scaling, difference display, and its scoped searchable selector;
 - compact multi-specimen chooser dialogs; and
+- a future Phase 3.3 comprehensive tree enhancement over the current semantic taxonomy drawer/list; and
 - the MapLibre map synchronized with a server-renderable result list.
 
 Client modules may receive serialized domain view models. They must not import filesystem/compiler code or become a parallel data-access layer.
@@ -94,6 +95,7 @@ scripts: parse → validate → link → enrich from reviewed snapshots → proc
                   │
                   ▼
 .generated/ (ignored): typed JSON, media manifest, search documents, map GeoJSON
+public/generated/ (ignored): versioned browser-fetchable search artifact
                   │
                   ▼
 domain/query modules → statically generated routes → small client islands
@@ -107,7 +109,7 @@ Rules:
 - Draft rows may be incomplete but must parse safely and remain excluded from public output.
 - Generated paths are ignored and regenerated in CI.
 
-Phase 2 implements this pipeline with `content:build`, `validate:content`, `validate:media`, and committed invalid fixtures. `.generated/collection.json`, `.generated/media-manifest.json`, and `.generated/comparison-reference-manifest.json` are deterministic ignored outputs regenerated before application builds and relevant tests. Phase 2.1 advanced the compiled collection contract to schema version 2 for condition, pathology, trauma, teeth-set, and skeleton fields. Phase 2.2 advanced it to schema version 3 for explicit lateral orientation and typed comparison-reference records. Phase 3 advances it to schema version 4 for unified class-aware measurement fields, profile applicability validation, and hierarchy-name/slug consistency. Generated artifacts remain replaceable and are never migrated in place.
+Phase 2 implements this pipeline with `content:build`, `validate:content`, `validate:media`, and committed invalid fixtures. `.generated/collection.json`, `.generated/media-manifest.json`, and `.generated/comparison-reference-manifest.json` are deterministic ignored outputs regenerated before application builds and relevant tests. Phase 2.1 advanced the compiled collection contract to schema version 2 for condition, pathology, trauma, teeth-set, and skeleton fields. Phase 2.2 advanced it to schema version 3 for explicit lateral orientation and typed comparison-reference records. Phase 3 advances it to schema version 4 for unified class-aware measurement fields, profile applicability validation, and hierarchy-name/slug consistency. The Phase 3.2/4 content build also writes the same versioned 67-document search artifact to `.generated/search-documents.json` and `public/generated/catalog-search-v1.json`; both copies are ignored and replaceable. Generated artifacts are never migrated in place.
 
 ## 6. Repository boundaries
 
@@ -117,7 +119,7 @@ src/components/       reusable museum UI and route-specific interactive islands
 src/config/           public site/runtime configuration
 src/domain/           pure types, executable schemas, compiler, normalization, invariants
 src/data/             generated-data loading and read-only queries
-src/features/         exhibit and catalog features now; search and map features later
+src/features/         exhibit/catalog/search islands now; map features later
 src/styles/           optional token/component layers if globals grow
 content/taxa/          canonical taxon CSV
 content/specimens/     canonical specimen CSV
@@ -126,6 +128,7 @@ content/guides/        editorial guide MDX
 content/media/         specimen-media declarations
 content/references/    calibrated comparison-reference declarations
 public/media/          curated public web derivatives only
+public/generated/      ignored browser-fetchable build artifacts only
 scripts/               build-time content, taxonomy, and image tooling
 tests/e2e/             cross-route browser and accessibility journeys
 docs/                  canonical product/technical documentation and ADRs
@@ -171,13 +174,13 @@ The content build and application build are separately invocable and composable 
 
 An editorial profile is not a publication prerequisite for a valid taxon/specimen route. Draft profiles may retain the canonical heading structure with empty sections and no citations. The page query returns only `reviewed` profiles; this keeps the parser, citations, and rendering path ready without publishing placeholder prose. Reviewed profiles still require substantive sections and claim-level citation integrity.
 
-### Phase 3 catalog and taxonomy query boundary
+### Phase 3.2 catalog and taxonomy query boundary
 
-`src/domain/catalog/queries.ts` converts a compiled collection into deterministic, framework-free view models for published counts/rank statistics, class entries, rank nodes/lineages, the class → order → family tree foundation, family gallery groups, taxon cards with exact specimen options, specimen cards, slug resolution, and bounded related suggestions. `src/data/catalog.ts` is the server-side adapter used by pages, sitemap, and metadata. Pages never traverse raw CSV rows or reconstruct hierarchy URLs independently.
+`src/domain/catalog/queries.ts` converts a compiled collection into deterministic, framework-free view models for published counts/rank statistics, class entries, rank nodes/lineages, the class → order → family → genus → taxon browser tree, family gallery groups, taxon cards with exact specimen options, specimen cards, slug resolution, and bounded related suggestions. `src/data/catalog.ts` is the server-side adapter used by pages, sitemap, and metadata. Pages never traverse raw CSV rows or reconstruct hierarchy URLs independently.
 
-Known class/order/family/genus nodes become `generateStaticParams` entries for one shared rank template. Taxon pages resolve current and previous slugs, keep default-specimen selection canonical, and exact specimen cards/URLs remain nested. Draft taxa/specimens are excluded before counts, cards, routes, sitemap, and suggestions are produced. Phase 4 may compose these queries with its generated search index, but it must not create a second record or taxonomy model.
+Known class/order/family/genus nodes become `generateStaticParams` entries for one shared rank template. Taxon pages resolve current and previous slugs, keep default-specimen selection canonical, and exact specimen cards/URLs remain nested. Draft taxa/specimens are excluded before counts, cards, routes, sitemap, and search documents are produced. The Phase 3.2/4 catalog composes these serialized view models with generated search matches and pure filter/state modules; it does not create a second record or taxonomy model.
 
-Phase 3.1 renders the tree foundation and its ordinary list alternative entirely from that server-side model. The compact multi-specimen dialog is a presentation-only client island that receives serialized published specimen-card records; it performs no data loading and every option remains an exact link. The comprehensive Phase 3.2 visualization must preserve tree/list node parity and remain an enhancement over stable rank/taxon links; see [interactive_taxonomic_tree.md](interactive_taxonomic_tree.md).
+The statically prerendered `/species` HTML contains the default published cards and a complete no-JavaScript taxonomy alternative. One catalog client island receives the serialized model and owns URL state, filtering, sorting, modes, suggestions, and the responsive taxonomy drawer. The drawer/list/rank links use the same node records; class/order/family/genus selection filters the catalog while an explicit link opens the stable rank route. The compact multi-specimen dialog remains a separate presentation-only island with exact links. The comprehensive Phase 3.3 visualization must preserve this tree/list/route parity; see [interactive_taxonomic_tree.md](interactive_taxonomic_tree.md).
 
 ## 9. Taxonomy maintenance
 
@@ -194,15 +197,19 @@ This preserves reproducible builds when external taxonomy services change or fai
 
 ## 10. Search architecture
 
-Phase 4 compiles canonical records into three Orama document types:
+The integrated Phase 4 compiler emits three Orama document types from published canonical records:
 
 - taxonomic rank documents;
 - taxon documents; and
 - specimen documents.
 
-Weighted order is exact scientific/common/ID, prefix, alias/synonym, fuzzy, then profile text. Normalized match fields coexist with original labels. Result URLs are generated from canonical domain records.
+The current artifact contains 34 rank, 15 taxon, and 18 specimen documents. Scientific, English, Danish, alias, specimen-ID, taxonomy, and optional reviewed-profile fields are normalized with NFKD/diacritic folding, punctuation folding, and case folding without changing display values. Deterministic reranking applies exact → prefix → alias/synonym → credible fuzzy → profile-text tiers, with exact specimen IDs and exact ranks receiving appropriate type priority. Result URLs and lateral thumbnails come from canonical domain records and `MediaAsset` declarations.
 
-The index is a versioned build artifact and lazy-loaded on search-capable routes. URL parameters are the source of truth for active query, taxonomic scope, length/weight range, sorting, and species/specimen mode. Search state remains shareable and survives reload/back/forward navigation.
+`CatalogExplorer` does not import Orama in its initial module. After a non-empty query, it dynamically imports the engine and fetches `/generated/catalog-search-v1.json`; unrelated routes and the query-empty catalog do not request the index. Schema-version mismatch or fetch failure produces an honest search error without changing canonical content.
+
+URL parameters are the source of truth: `q`, `mode`, `class`, `scope={rank}:{slug}`, comma-separated `sex`/`age`/`condition`/`preparation`, `lengthMin`, `lengthMax`, `massMin`, `massMax`, and `sort`. Parsing rejects invalid slugs, ranks, tokens, negative/non-finite numbers, and species-mode numeric sorts. Push/replace history and `popstate` restore meaningful state on direct load, refresh, back, and forward; transient filter/taxonomy-panel open state stays out of the URL.
+
+Species mode retains a taxon when at least one linked specimen matches and reports matched/total count plus recorded length/mass ranges. Specimen mode returns individual exact cards. Numeric filters exclude `not_recorded`/`not_applicable` measurements instead of treating them as zero; numeric sort places unknown values last. Family grouping is the default query-empty browse presentation, while search and explicit global sorts flatten results.
 
 Search never creates a second classification model. Filters and suggestions use the same compiled records as static pages.
 
@@ -238,6 +245,8 @@ Curated web masters are committed under `public/media/specimens/`. The active ga
 
 The committed `scripts/phase-3-1-review-media-source-map.json` is the reproducible filename-to-ID/view map for this bounded migration. It points only into the ignored staging root and cannot make a normal build depend on raw PNGs. `pnpm media:stage:phase3.1` copies those explicitly mapped sources into ignored staging; the ordinary processor then writes/validates the curated derivatives. Four accepted specimens intentionally omit the optional frontal view and compile with warnings, not fabricated files.
 
+Phase 3.2 corrected the six lateral/oblique derivatives for SPEC-0003, SPEC-0013, and SPEC-0018 by restaging their already right-facing reviewed clean masters and regenerating the WebPs through this same processor. This intentionally avoids manual public-file edits: validation recomputes alpha subject bounds, strips metadata, and proves that only the six expected derivatives changed. Lateral declarations already identified those views as right-facing; pixels and metadata now agree.
+
 The gallery client island owns selection, direct controls, keyboard navigation, touch swipe, double-click/double-tap entry, and the native `<dialog>` inspection viewer. The ordinary stage declares browser `manipulation` (`pan-x pan-y pinch-zoom`) so a two-finger pinch may translate while scaling and the zoomed visual viewport may pan in any direction inside the frame. Default-preserving touch observation changes gallery view or opens inspection only when a single-touch gesture began and ended at approximately 100% page scale; zoomed-page pans and any multi-touch gesture remain entirely browser-owned. Inside inspection, a horizontal touch swipe changes view only at 100%; after enlargement, one finger pans and two fingers control image zoom. A non-passive wheel handler captures ordinary wheel/trackpad input and browser-reported pinch-wheel input only over the inspector, centers zoom on the gesture, prevents background scroll/page zoom, and leaves Arrow/Home/End view navigation active at any zoom. Pan is constrained to the enlarged image, the document is scroll-locked while the modal is open, and focus returns to the opening control. Desktop and mobile-landscape layouts use an independently scrollable right rail; mobile portrait keeps view buttons below the image. Core record content and a no-JavaScript image list remain server-rendered.
 
 Comparison-reference sources use stable IDs under `content/references/`, are processed from ignored local staging through `pnpm media:process:reference`, and are committed only as reviewed WebP derivatives under `public/media/references/`. They pass the same sRGB, alpha, dimensions, subject-bounds, and metadata-stripping checks as specimen assets. Exactly one reference is the default.
@@ -262,7 +271,7 @@ The future public comparison route may compose the same records, scaling engine,
 
 Tailwind utilities operate on semantic CSS variables defined in the global token layer. Components use domain-oriented names and small variants rather than a generic theme library. Native HTML is preferred; accessible Radix primitives are permitted only where native elements cannot provide robust dialog/popover behavior.
 
-Server components own the museum shell, Home, catalog, taxonomy landings/tree foundation, cards, static record content, and route metadata. Client components are placed at the lowest practical interactive boundary. Native dialog controls own measurement, age, condition, and compact multi-specimen selection; the comparison card is a separate client island receiving serialized eligible records; the surrounding catalog, hierarchy, measurement, and record sections stay static. Accessibility state—names, expanded/selected/current semantics, live comparison changes, Escape, and focus restoration—is part of component APIs, not a post-release patch.
+Server components own the museum shell, Home, taxonomy landings, default catalog model/cards, static record content, and route metadata. Client components are placed at the lowest practical interactive boundary. The combined catalog island receives serialized published records and owns only discovery/view state; it keeps real links and prerendered default content. Native dialog controls own filters, measurement/age/condition guidance, and compact multi-specimen selection; the taxonomy drawer uses one responsive semantic nested-list component with a mobile focus trap; the comparison card remains a separate client island. Accessibility state—names, expanded/selected/current semantics, live result/search changes, Escape, and focus restoration—is part of component APIs, not a post-release patch.
 
 The Phase 2.1 `/guides/skull-preparation` route is a statically rendered, explicitly labelled outline shell. It provides a real destination from the specimen record without publishing uncited chemical or biological instructions. Full MDX guide content and safety review remain Phase 5 work.
 

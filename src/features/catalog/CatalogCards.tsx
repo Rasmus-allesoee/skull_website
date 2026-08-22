@@ -14,18 +14,40 @@ import {
 } from "@/domain/content/display";
 
 import { SpecimenQuickView } from "./SpecimenQuickView";
+import type { SpeciesMatchSummary } from "./catalogFiltering";
 
-export function TaxonCardGrid({ cards }: { cards: TaxonCardRecord[] }) {
+export function TaxonCardGrid({
+  cards,
+  matchSummaries,
+  showMatchSummary = false,
+}: {
+  cards: TaxonCardRecord[];
+  matchSummaries?: Record<string, SpeciesMatchSummary>;
+  showMatchSummary?: boolean;
+}) {
   return (
     <div className="catalog-grid">
       {cards.map((card) => (
-        <TaxonCard key={card.taxon.taxonId} card={card} />
+        <TaxonCard
+          key={card.taxon.taxonId}
+          card={card}
+          matchSummary={matchSummaries?.[card.taxon.taxonId]}
+          showMatchSummary={showMatchSummary}
+        />
       ))}
     </div>
   );
 }
 
-export function TaxonCard({ card }: { card: TaxonCardRecord }) {
+export function TaxonCard({
+  card,
+  matchSummary,
+  showMatchSummary = false,
+}: {
+  card: TaxonCardRecord;
+  matchSummary?: SpeciesMatchSummary;
+  showMatchSummary?: boolean;
+}) {
   const { taxon } = card;
   const commonName = taxon.names.english ?? taxon.scientificName;
   const needsQualifier =
@@ -58,6 +80,11 @@ export function TaxonCard({ card }: { card: TaxonCardRecord }) {
           {taxon.names.danish ? (
             <p className="card-secondary-name">Danish · {taxon.names.danish}</p>
           ) : null}
+          {showMatchSummary && matchSummary ? (
+            <p className="card-match-summary">
+              {formatSpeciesMatchSummary(matchSummary)}
+            </p>
+          ) : null}
           <div className="card-meta">
             <span>
               {card.specimenCount}{" "}
@@ -82,6 +109,27 @@ export function TaxonCard({ card }: { card: TaxonCardRecord }) {
       ) : null}
     </article>
   );
+}
+
+function formatSpeciesMatchSummary(summary: SpeciesMatchSummary): string {
+  const parts = [
+    `${summary.matchedCount} of ${summary.totalCount} ${summary.totalCount === 1 ? "specimen" : "specimens"} match`,
+  ];
+  if (summary.lengthRange) {
+    parts.push(`length ${formatRange(summary.lengthRange)} mm`);
+  }
+  if (summary.massRange) {
+    parts.push(`mass ${formatRange(summary.massRange)} g`);
+  }
+  return parts.join(" · ");
+}
+
+function formatRange([minimum, maximum]: [number, number]): string {
+  const format = (value: number) =>
+    new Intl.NumberFormat("en", { maximumFractionDigits: 2 }).format(value);
+  return minimum === maximum
+    ? format(minimum)
+    : `${format(minimum)}–${format(maximum)}`;
 }
 
 export function SpecimenCard({ card }: { card: SpecimenCardRecord }) {

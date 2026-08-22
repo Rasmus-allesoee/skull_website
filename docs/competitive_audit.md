@@ -164,7 +164,7 @@ The combined response is deliberately not a visual average of the three sites:
 - Decorative 3D/AI effects presented as documentary evidence.
 - Direct uploads before storage, consent, security, moderation, and retention are designed.
 
-## 9. Phase 3.1 implementation application
+## 9. Phase 3.1 and combined Phase 3.2/4 implementation application
 
 Phase 3.1 applies the audited patterns without re-copying any reference site's content or branding:
 
@@ -176,7 +176,9 @@ Phase 3.1 applies the audited patterns without re-copying any reference site's c
 - all routes remain static and useful without JavaScript; and
 - the Home geographic preview is a semantic record summary, not a premature or decorative map implementation.
 
-Phase 4 still owns multilingual indexed search, facets, result modes, and URL state. The 15-taxon review catalog is still too small to justify pagination or virtualization. The comprehensive interactive systematic tree is separately planned as Phase 3.2; the current class → order → family foundation makes no unsupported identification-characteristic or evolutionary-timescale claims.
+The combined Phase 3.2/4 milestone applies the catalog findings directly: the image grid moves above the former stacked presentation modules; one compact sticky control region owns search, mode, class, facets, sort, active state, and clear; higher-rank suggestions and the taxonomy drawer distinguish fast in-catalog filtering from explicit stable rank routes; and species/specimen results share one URL-backed query model. Scientific/English/Danish/ASCII/alias/specimen-ID fields, credible fuzzy fallback, numeric missing-value semantics, no-result recovery, and browser-history restoration are implemented without a hosted service or second taxonomy source.
+
+The 15-taxon/18-specimen catalog remains too small to justify pagination or virtualization. The comprehensive interactive systematic tree is separately planned as Phase 3.3; the implemented class → order → family → genus → taxon drawer/list makes no unsupported identification-characteristic or evolutionary-timescale claims.
 
 ## 10. Revalidation triggers
 

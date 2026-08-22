@@ -6,7 +6,7 @@
 
 **Interface language:** English
 
-**Last reviewed:** 2026-08-20
+**Last reviewed:** 2026-08-22
 
 ## 1. Vision
 
@@ -14,7 +14,7 @@ Skull Collection will be a fast, visually led online natural-history museum buil
 
 The site begins with the collector's own Danish specimens but is designed for a larger, carefully curated reference collection. It must be credible enough for identification and comparison, accessible enough for curious non-specialists, and structured enough to remain maintainable as specimens, contributors, countries, and media types grow.
 
-The shared museum shell, Home, static catalog, and class/order/family/genus browsing are implemented through Phase 3.1 with a review-quality 15-taxon/18-specimen collection. Search/facets, the comprehensive interactive tree, the interactive map, supporting editorial routes, the complete audited collection migration, and production remain owned by later phases.
+The shared museum shell, Home, class/order/family/genus routes, and review-quality 15-taxon/18-specimen collection are implemented. The combined Phase 3.2/Phase 4 checkpoint adds the catalog-first `/species` redesign, multilingual/fuzzy indexed search, suggestions, facets, sorting, species/specimen modes, URL-backed state, and one responsive semantic taxonomy drawer/list. The comprehensive interactive tree is now Phase 3.3; the interactive map, supporting editorial routes, complete audited collection migration, and production remain later work.
 
 ## 2. Product principles
 
@@ -89,7 +89,7 @@ Exclusion from v1 does not mean rejection. Each feature remains in the deferred 
 | Route | Purpose | Primary content and actions |
 |---|---|---|
 | `/` | Museum entrance | Featured skull, collection summary, class entry points, search entry, map preview, guide and contribution prompts |
-| `/species` | Main catalog | Search, filters, class tiles, compact taxonomy index, sorting, species/specimen view switch |
+| `/species` | Main catalog | Indexed search/suggestions, compact class presets, taxonomy drawer, feature/measurement filters, sorting, species/specimen modes, active state, and lateral-image results |
 | `/taxonomy/{rank}/{slug}` | Rank landing page | Breadcrumb, rank summary, child index, filtered image gallery |
 | `/species/{taxon-slug}` | Canonical taxon display | Default specimen gallery, specimen selector, taxonomy, measurements, collection record, preparation, and reviewed editorial content when available |
 | `/species/{taxon-slug}/specimens/{specimen-id}` | Exact specimen display | Same composition focused on one physical specimen, with unique metadata and canonical relationship |
@@ -119,8 +119,8 @@ Target: no more than three meaningful interactions from entry to a specimen disp
 ### Systematic browsing
 
 1. Choose a class such as Mammalia or Aves.
-2. Follow the class → order → family tree foundation or use its ordinary rank-list alternative.
-3. Narrow through a stable rank landing and its family-grouped gallery.
+2. Open the catalog taxonomy drawer or its no-JavaScript nested-list alternative.
+3. Filter the grid at class/order/family/genus level, or explicitly open the corresponding stable rank landing.
 4. Select a taxon card or, when needed, open its compact physical-specimen chooser.
 
 The hierarchy, ordinary list, and gallery remain separate but synchronized through the same canonical records and routes: structure supports orientation; images support recognition.
@@ -159,28 +159,29 @@ The home page should establish the collection as a museum, not a generic applica
 
 - Full-width featured transparent skull on a dark, subtly lit field.
 - Working title, one-sentence purpose, and primary “Explore the collection” action.
-- An honest catalog entry using scientific/English/Danish-name language; the interactive name search begins in Phase 4.
+- A prominent catalog entry using scientific/English/Danish-name language that leads to the implemented Phase 3.2/4 search control.
 - Representative cards for available classes with live taxon/specimen counts.
 - Six concise live statistics derived from published records: species-level taxa, physical specimens, represented classes, orders, families, and genera. Genus-level identifications remain visible in catalog totals/copy rather than being miscounted as species.
-- A compact class → order → family hierarchy using the same stable routes as the catalog; the comprehensive interactive tree is Phase 3.2.
+- A compact class → order → family hierarchy using the same stable routes as the catalog; the comprehensive interactive tree is deferred to Phase 3.3.
 - Compact geographic preview using only reviewed public coordinate records and never loading MapLibre. It remains non-interactive until `/map` exists in Phase 5, avoiding a dead link.
 - Teasers only for real destinations; Phase 3 links the preparation outline and labels later methodology honestly instead of linking unpublished Contribution/About routes.
 - No invented statistics; empty counts are hidden or explicitly marked as pending.
 
 ### Species catalog
 
-Phase 3.1 provides the static catalog, class tiles, compact hierarchy, ordinary taxonomy-list alternative, deterministic common-name order, family-grouped galleries, and reusable taxon/specimen card modes. A prominent discovery entry links to the published results honestly; it does not imitate a functioning input. The following interactive discovery controls remain Phase 4 work:
+The combined Phase 3.2/4 implementation makes `/species` the operational collection catalog:
 
-- Search field remains prominent and keyboard accessible.
-- Query, filters, sort, taxonomic scope, and result mode serialize to URL parameters.
-- Class tiles precede a compact order/family index when no filters are active.
-- Results use a responsive gallery led by the lateral image, common name, italic scientific name, Danish name where useful, and specimen count.
-- Wide galleries use three columns when a family group contains enough taxa, then two and one as width narrows. The all-species catalog and class/order landings separate grids with family headings; family/genus landings use one unsegmented grid.
-- Specimen mode adds stable specimen ID and key measurements without making cards table-dense.
-- A species with multiple specimens keeps the card's main link pointed at its default display and adds a compact native chooser. The chooser shows thumbnail, immutable specimen ID/default state, age, sex, and maximum length only, and each option links to the exact nested specimen URL.
-- Applied filters are individually removable and have a clear-all action.
-- Empty results explain which conditions removed records and offer recovery actions.
-- Pagination or virtualization is introduced only when measured catalog size warrants it; v1 prefers static, linkable pages.
+- A compact heading and sticky control region put the first lateral-image result row within the normal 1440 × 900 desktop viewport.
+- The labelled combobox searches scientific, English, Danish, ASCII-folded, alias, taxonomy, and specimen-ID fields. Suggestions are grouped as ranks, taxa, and physical specimens, retain display spelling, show canonical lateral thumbnails where available, announce status, support Arrow/Escape/Enter and touch, and offer honest loading/error/no-match states.
+- Choosing a taxon opens its canonical display; choosing a specimen opens its exact nested display; choosing a higher rank filters the catalog and exposes a separate stable rank-page link.
+- Species mode returns one taxon card when any linked specimen matches and reports matching specimen count plus recorded ranges. Specimen mode returns every matching physical record with immutable ID, maximum length, prepared mass, and concise location/date wording.
+- Compact All classes/Mammalia/Aves presets, the responsive taxonomy drawer, controlled-value facets (sex, age, condition, defleshing), and maximum-length/prepared-mass ranges all query the same canonical records. Unknown/non-applicable measurements are excluded only while a numeric range is active and are never zero.
+- The taxonomy component is a closed-by-default sticky sidebar at wide widths and focus-trapped drawer at narrow widths. Its semantic class → order → family → genus → taxon list has explicit expand/collapse, filter, and stable-route actions; a native `<details>` list remains available without JavaScript.
+- Meaningful state is encoded as `q`, `mode`, `class`, `scope`, controlled-value filters, numeric bounds, and `sort`; it restores on direct load, reload, back, and forward. Transient panel open state is intentionally not serialized.
+- Default query-empty species browsing groups by compact family headings. Search and explicit common/scientific/numeric sorts flatten the results globally; numeric sorts exist only in specimen mode and place missing values last.
+- Results retain the lateral-image-led three/two/one-column grid, scientific/English/Danish labels, explicit uncertainty, and compact multi-specimen chooser with exact links.
+- Applied state appears as individually removable chips plus Clear all. Empty results explain measurement exclusion and offer clear/switch-mode recovery.
+- The default cards and complete taxonomy links remain in statically prerendered HTML. Search code/data load only after a query is entered. Pagination or virtualization remains unnecessary at 15 taxa/18 specimens.
 
 ### Taxonomy landing pages
 
@@ -252,7 +253,7 @@ Phase 3.1 provides the static catalog, class tiles, compact hierarchy, ordinary 
 - Index taxon, taxonomic-rank, and specimen documents separately.
 - Rank exact scientific/common/specimen-ID matches above prefix, curated alias or synonym, fuzzy match, and profile text.
 - Normalize case, punctuation, whitespace, and diacritics for matching while preserving original display text.
-- Selecting a rank opens its taxonomy landing page; selecting a taxon or specimen opens its exact display.
+- Selecting a rank suggestion filters the catalog and exposes an explicit rank-page link; selecting a taxon or specimen opens its exact display.
 
 ### Taxonomy and uncertainty
 

@@ -7,11 +7,16 @@ import {
 } from "@/domain/catalog/queries";
 
 import { TaxonCardGrid } from "./CatalogCards";
+import type { SpeciesMatchSummary } from "./catalogFiltering";
 
 export function FamilyGroupedTaxonGallery({
   cards,
+  matchSummaries,
+  showMatchSummary = false,
 }: {
   cards: TaxonCardRecord[];
+  matchSummaries?: Record<string, SpeciesMatchSummary>;
+  showMatchSummary?: boolean;
 }) {
   return (
     <div className="family-gallery-groups">
@@ -34,7 +39,11 @@ export function FamilyGroupedTaxonGallery({
                 </Link>
               ) : null}
             </header>
-            <TaxonCardGrid cards={group.cards} />
+            <TaxonCardGrid
+              cards={group.cards}
+              matchSummaries={matchSummaries}
+              showMatchSummary={showMatchSummary}
+            />
           </section>
         );
       })}

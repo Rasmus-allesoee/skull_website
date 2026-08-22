@@ -105,11 +105,11 @@ export default function Home() {
           <h2 id="discover-title">Begin with a name or the taxonomy.</h2>
           <p>
             Scientific, English, and Danish names are retained in the catalog.
-            Ranked browsing is available now; name search and filters are being
-            prepared.
+            Search, ranked suggestions, taxonomy, feature filters, and
+            measurement ranges now share one visual collection browser.
           </p>
         </div>
-        <Link className="catalog-entry" href="/species">
+        <Link className="catalog-entry" href="/species#catalog-search">
           <span>Scientific, English, or Danish name</span>
           <strong>Browse the catalog →</strong>
         </Link>

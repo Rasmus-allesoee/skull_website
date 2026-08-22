@@ -1,8 +1,8 @@
 # Content and data model
 
-**Status:** Approved contract; executable schema version 4 and class-aware measurement/display rules implemented
+**Status:** Approved contract; schema version 4, class-aware measurements, and generated search projection implemented
 
-**Last reviewed:** 2026-08-20
+**Last reviewed:** 2026-08-22
 
 ## 1. Purpose
 
@@ -341,6 +341,17 @@ Rules:
 - Danish diacritics are preserved. A normalized search field may additionally match ASCII input.
 - Taxonomy refresh records evidence; a human accepts any scientific-name or hierarchy change.
 
+### Generated catalog-search projection
+
+`pnpm content:build` projects published canonical records into a versioned artifact; it never accepts search-only source rows.
+
+- `rank` documents contain the canonical class/order/family/genus name, slug, descendant taxon IDs, stable rank URL, and a deterministic published representative lateral image when one exists.
+- `taxon` documents contain curated English/scientific/Danish display values, taxon ID, aliases/previous slugs, hierarchy text, stable taxon URL, default lateral asset, and reviewed profile text only when such prose exists.
+- `specimen` documents contain the immutable specimen ID, linked taxon names/aliases/hierarchy, exact nested URL, and that specimen's canonical lateral asset.
+- Matching-only values use NFKD/diacritic, case, punctuation, and whitespace normalization. Display labels and URLs remain untouched.
+- Draft/archived taxa, specimens, and profiles are absent. The artifact cannot assign identity, change taxonomy, or make a record publishable.
+- `.generated/search-documents.json` and `public/generated/catalog-search-v1.json` are ignored replaceable copies of the same deterministic document set. They are validated by schema/version at load and never hand-edited.
+
 ## 11. Editorial profiles and citations
 
 One optional profile file is keyed by taxon ID, for example `content/profiles/TAX-0001.mdx`.
@@ -412,6 +423,8 @@ Guide MDX uses explicit title, slug, summary, review date, safety-review status,
 - Lateral is mandatory. Missing optional views generate authoring warnings; unexpected view tokens are errors.
 - Every asset resolves to a specimen and has alt text, credit, rights, dimensions, and deterministic sort order.
 
+Phase 3.2 corrected the committed lateral/oblique pixels for SPEC-0003, SPEC-0013, and SPEC-0018 by rebuilding exactly those six changed derivatives from the already right-facing clean masters through the 104-entry staging map and ordinary processor. No display-time filename/flip exception or manual WebP edit was introduced. The regenerated manifest recomputes subject bounds, so galleries, cards, suggestions, and comparisons share the corrected framing wherever each canonical asset is used.
+
 Alt text describes the useful view and visible specimen condition without repeating the nearby name mechanically. Decorative duplicates use empty alt only when the same information is already adjacent and the image adds no independent function.
 
 ### Comparison references and calibrated eligibility
@@ -421,7 +434,7 @@ Alt text describes the useful view and visible specimen condition without repeat
 - The adult-human reference stores fixed approximate values: maximum length 182 mm, maximum width 124 mm, height 133 mm, prepared mass 800 g, cranium width 138 mm, and maximum mandible length 117 mm. Its note explicitly says these are representative approximate dimensions, not a universal human average.
 - Reference declaration schema version 2 records `measurement_profile`. It requires that profile's complete comparison suite—six mammal, nine bird, or four shared fallback measurements—plus explicit lateral orientation, alt text, credit, rights, and a validated transparent WebP with compiled subject bounds. Fields outside the profile compile to `not_applicable`.
 - An eligible specimen comparison record is the published default specimen for its taxon and has a validated lateral asset, explicit orientation, and measured maximum skull length. A missing/approximate/unusable scaling value excludes it rather than fabricating scale.
-- Reference records sort before specimen records in the scoped selector; the current specimen is excluded. Search matches the reference label/aliases or the eligible specimen's English/scientific names and specimen ID without creating the Phase 4 global index.
+- Reference records sort before specimen records in the scoped comparison selector; the current specimen is excluded. That selector matches its eligible reference/specimen labels, names, aliases, and IDs within its own route-specific record set rather than querying the global catalog index.
 - Calibrated rendering maps `subjectBounds.width` to the record's maximum skull length and applies one shared pixels-per-millimetre factor to the pair. Canvas margins never contribute to anatomical length; source aspect ratio and all anatomical endpoints remain intact.
 - Approximate reference measurements retain `status = approximate` in the compiled record and display approximation markers. Ratios and differences are derived values, never source measurements.
 - `note` belongs to each comparison record and renders only while that record is selected; specimen records do not inherit the adult-human wording. The difference-level approximation explanation renders only when at least one available displayed difference has an approximate source status.

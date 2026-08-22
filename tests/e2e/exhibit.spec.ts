@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { devices, expect, test } from "@playwright/test";
+import { devices, expect, test, type Page } from "@playwright/test";
 
 const taxonPath = "/species/raccoon-dog";
 const specimenPath = "/species/raccoon-dog/specimens/SPEC-0001";
@@ -175,6 +175,42 @@ test("desktop gallery provides high-quality selection and smooth high-resolution
   await page.keyboard.press("Escape");
   await expect(dialog).not.toBeVisible();
   await expect(gallery).toBeFocused();
+});
+
+test("corrected lateral and oblique derivatives face right without escaping their gallery frames", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const correctedSpecimens = [
+    {
+      id: "SPEC-0003",
+      path: "/species/domestic-cat/specimens/SPEC-0003",
+    },
+    {
+      id: "SPEC-0013",
+      path: "/species/harbour-seal/specimens/SPEC-0013",
+    },
+    {
+      id: "SPEC-0018",
+      path: "/species/red-fox/specimens/SPEC-0018",
+    },
+  ];
+
+  for (const specimen of correctedSpecimens) {
+    await page.goto(specimen.path);
+    await expect(page.locator(".gallery-image image")).toHaveAttribute(
+      "href",
+      `/media/specimens/${specimen.id}/${specimen.id}__lateral.webp`,
+    );
+    await expectGalleryImageInsideStage(page);
+
+    await page.getByRole("button", { name: "Show oblique view" }).click();
+    await expect(page.locator(".gallery-image image")).toHaveAttribute(
+      "href",
+      `/media/specimens/${specimen.id}/${specimen.id}__oblique.webp`,
+    );
+    await expectGalleryImageInsideStage(page);
+  }
 });
 
 test("normal-window desktop layout uses a taller alpha-bounded frame and keeps controls with the rail", async ({
@@ -764,3 +800,31 @@ test.describe("without JavaScript", () => {
     await expect(page.locator(".no-script-gallery li")).toHaveCount(6);
   });
 });
+
+async function expectGalleryImageInsideStage(page: Page) {
+  const geometry = await page.locator(".gallery-stage").evaluate((stage) => {
+    const stageBox = stage.getBoundingClientRect();
+    const imageBox = stage
+      .querySelector<SVGSVGElement>(".gallery-image")!
+      .getBoundingClientRect();
+    return {
+      stage: {
+        left: stageBox.left,
+        top: stageBox.top,
+        right: stageBox.right,
+        bottom: stageBox.bottom,
+      },
+      image: {
+        left: imageBox.left,
+        top: imageBox.top,
+        right: imageBox.right,
+        bottom: imageBox.bottom,
+      },
+    };
+  });
+
+  expect(geometry.image.left).toBeGreaterThanOrEqual(geometry.stage.left);
+  expect(geometry.image.top).toBeGreaterThanOrEqual(geometry.stage.top);
+  expect(geometry.image.right).toBeLessThanOrEqual(geometry.stage.right);
+  expect(geometry.image.bottom).toBeLessThanOrEqual(geometry.stage.bottom);
+}

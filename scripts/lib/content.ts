@@ -20,11 +20,13 @@ import {
   formatDiagnostics,
   ValidationError,
 } from "../../src/domain/content/types";
+import { buildCatalogSearchArtifact } from "../../src/domain/search/documents";
 import { validatePublicMedia } from "./media";
 import { fromRepositoryRoot } from "./paths";
 
 export interface ContentBuildResult {
   collection: CompiledCollection;
+  searchDocumentCount: number;
   warnings: Diagnostic[];
 }
 
@@ -70,18 +72,35 @@ export async function buildContent(options?: {
     comparisonReferences,
     taxonomySnapshots,
   });
+  const searchArtifact = buildCatalogSearchArtifact(result.collection);
 
   if (options?.writeArtifact) {
     const generatedDirectory = fromRepositoryRoot(".generated");
+    const publicGeneratedDirectory = fromRepositoryRoot("public", "generated");
     await mkdir(generatedDirectory, { recursive: true });
+    await mkdir(publicGeneratedDirectory, { recursive: true });
     await writeFile(
       path.join(generatedDirectory, "collection.json"),
       `${JSON.stringify(result.collection, null, 2)}\n`,
       "utf8",
     );
+    const serializedSearchArtifact = `${JSON.stringify(searchArtifact, null, 2)}\n`;
+    await writeFile(
+      path.join(generatedDirectory, "search-documents.json"),
+      serializedSearchArtifact,
+      "utf8",
+    );
+    await writeFile(
+      path.join(publicGeneratedDirectory, "catalog-search-v1.json"),
+      serializedSearchArtifact,
+      "utf8",
+    );
   }
 
-  return result;
+  return {
+    ...result,
+    searchDocumentCount: searchArtifact.documents.length,
+  };
 }
 
 async function loadProfiles() {

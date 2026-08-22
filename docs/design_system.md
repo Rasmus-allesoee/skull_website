@@ -1,8 +1,8 @@
 # Design system
 
-**Status:** Phase 3 museum shell/catalog system implemented; owner review pending
+**Status:** Combined Phase 3.2 catalog-first and Phase 4 discovery system implemented; owner review pending
 
-**Last reviewed:** 2026-08-20
+**Last reviewed:** 2026-08-22
 
 ## 1. Design intent
 
@@ -140,21 +140,21 @@ Responsive checkpoints are content-derived, with explicit QA at:
 ### Global shell
 
 - **Skip link:** first focusable item, visibly enters above navigation.
-- **Site header:** working title, only real primary destinations, one active-page state, and a native responsive mobile menu inside a labelled navigation landmark. The Phase 4 search action is added only when it functions.
+- **Site header:** working title, only real primary destinations, one active-page state, and a native responsive mobile menu inside a labelled navigation landmark. Catalog search remains scoped to `/species`; a global-header search is added only if later evidence justifies it.
 - **Footer:** a quiet global copyright notice; add purpose, supporting links, or contact only when those destinations are real.
 - **Page intro:** eyebrow/breadcrumb, title, concise purpose, optional actions.
 
 ### Discovery
 
-- **Global search:** labelled combobox with grouped rank/taxon/specimen suggestions, result type, names, and keyboard instructions.
-- **Filter panel:** semantic fieldsets, explicit units, applied-filter summary, reset, URL state.
+- **Catalog search:** full-width labelled combobox with grouped rank/taxon/specimen suggestions, canonical lateral thumbnail, English/scientific/Danish names, result type, live status, selected state, Arrow/Enter/Escape behavior, and touch selection. The browser-native search cancel control is suppressed when the explicit labelled Clear action is present.
+- **Control region:** compact bounded operational surface directly below the short catalog heading. Search/mode lead; class presets and labelled Filters/Sort/Browse taxonomy actions wrap without page overflow. It becomes sticky after the page header but yields to short-height/mobile-landscape layouts.
+- **Filter dialog:** native modal with semantic fieldsets, controlled-value counts, explicit numeric units, missing-value explanation, draft/apply separation, reset, Escape, backdrop close, focus return, and URL-backed applied state.
 - **Result mode switch:** radio/toggle semantics with “Species” and “Specimens,” not unlabeled icons.
-- **Taxonomy index:** scannable nested rank links; collapses thoughtfully on mobile without hiding current context.
-- **Taxonomy tree foundation:** server-rendered class → order → family branches with representative lateral image, live counts, and complete rank links. It is a compact systematic pathway, not a phylogenetic-timescale claim; the ordinary taxonomy index remains the equivalent list alternative.
+- **Taxonomy drawer/sidebar:** one class → order → family → genus → taxon semantic nested list from canonical nodes. It is a sticky alongside-grid panel on wide screens and a focus-trapped modal drawer on narrow screens. Every rank has distinct expand/collapse, Filter catalog, and Open rank page actions; Escape/scrim/close restore focus. A native no-JavaScript `<details>` list preserves complete route access. It is not the Phase 3.3 comprehensive tree or a phylogenetic-timescale claim.
 - **Taxon card:** lateral image, names, rank/confidence when needed, count/range, complete link target.
 - **Specimen card:** lateral image, names, immutable ID, relevant measurements, location/date summary.
 - **Class entry card:** representative lateral image with visible vertical breathing room, class name, live published taxon/specimen counts, and one complete class-landing link. Subject bounds must never be allowed to touch the top or bottom edge merely to maximize scale.
-- **Catalog grid:** three columns at wide desktop widths where a family contains enough taxa, two at intermediate widths, and one comfortable column on small screens. All-species and class/order scopes use family subheaders; family/genus scopes remain one unsegmented grid.
+- **Catalog grid:** the primary `/species` surface begins immediately after controls. Use three columns at wide desktop where a family contains enough taxa, two at intermediate widths, and one comfortable column on small screens. Default browse uses compact family subheaders; query and explicit global sorts flatten matching cards. Feature-filtered species cards expose matched/total specimens and recorded ranges.
 - **Multi-specimen chooser:** a separate action below a multi-specimen taxon card opens a compact native dialog. Each row uses thumbnail, immutable ID/default marker, age, sex, and maximum length—without repeating the species names—and links to the exact specimen route. It closes with its labelled control or Escape and restores focus.
 - **Rank landing:** breadcrumb, rank/title/count intro, separate child-rank links, compact descendant index, and scoped taxon gallery. One template owns class, order, family, and genus; class/order galleries group by family while family/genus landings do not over-segment sparse results.
 
@@ -260,7 +260,9 @@ That gate happens before the design scales to the shell/catalog. Material change
 
 Initial implementation evidence on 2026-08-13 led to the owner's detailed Phase 2.1 review. The 2026-08-14 refinement added the responsive rail, true-resolution inspector, working touch gestures, measurement-first hierarchy, and record guidance. Phase 2.2 on 2026-08-15 retuned the normal-Chrome gallery, used alpha-bounded full-resolution display, closed inspector/background gesture conflicts and the network-mobile reload defect, introduced the reusable true-to-scale comparison/difference system, and corrected metadata/dialog alignment. Phase 2.3 on 2026-08-17 removed redundant scale copy, made uncertainty copy demonstrably selection/status-driven, restored native page pinch over the ordinary mobile gallery, and added inspection swipe navigation. The owner approved that gate on 2026-08-17.
 
-Phase 3.0 scaled the approved language into the final shell, Home, catalog, shared rank landings, class/taxon/specimen cards, error surface, and class-aware measurement variants. Phase 3.1 replaces fixture-only visual variety with 15 live taxon identities and 18 specimens across Mammalia/Aves; introduces six live Home statistics, family gallery rhythm, vertical image breathing room, the compact systematic tree foundation, and the multi-specimen chooser; and removes the duplicate Home featured section. The comprehensive interactive tree remains Phase 3.2 and must follow the accessibility/content rules in `interactive_taxonomic_tree.md`. Exact gate evidence is recorded in `project_status.md`; owner product review remains open before any later phase begins.
+Phase 3.0 scaled the approved language into the final shell, Home, catalog, shared rank landings, class/taxon/specimen cards, error surface, and class-aware measurement variants. Phase 3.1 replaces fixture-only visual variety with 15 live taxon identities and 18 specimens across Mammalia/Aves; introduces six live Home statistics, family gallery rhythm, vertical image breathing room, the compact systematic tree foundation, and the multi-specimen chooser; and removes the duplicate Home featured section.
+
+The combined Phase 3.2/4 checkpoint recasts `/species` as a working visual catalog: compact orientation, persistent discovery controls, grid-first density, multilingual suggestions, URL-backed filters/modes/sorts, active chips, a single responsive taxonomy drawer/list, and explicit empty/recovery states. Manual review covers 1440 × 900, 390 × 844, effective 200% reflow, reduced motion, and forced colors; axe remains separate from forced-color contrast emulation because that combination reports browser color remapping as authored contrast. The comprehensive interactive tree is Phase 3.3 and must follow `interactive_taxonomic_tree.md`. Exact gate evidence is recorded in `project_status.md`; owner product review remains open before later work begins.
 
 ## 16. Design anti-patterns
 

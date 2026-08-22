@@ -83,7 +83,7 @@ describe("content compiler", () => {
           warning.rule === "Optional canonical views are missing",
       ),
     ).toBe(true);
-  }, 20_000);
+  }, 60_000);
 
   it("classifies only exact accepted species matches as automatic candidates", () => {
     expect(

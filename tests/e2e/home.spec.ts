@@ -31,11 +31,11 @@ test("home and catalog expose published records with metadata and no detectable 
     page.getByRole("heading", { level: 1, name: "Species" }),
   ).toBeVisible();
   await expect(
-    page.getByText("15 results · Sorted by common name"),
+    page.locator(".catalog-active-state").getByText("15 taxa", { exact: true }),
   ).toBeVisible();
   await expect(
     page
-      .getByRole("region", { name: "All species" })
+      .getByRole("region", { name: "Collection taxa" })
       .getByRole("link", { name: /Raccoon dog/i }),
   ).toHaveAttribute("href", "/species/raccoon-dog");
   accessibilityScanResults = await new AxeBuilder({ page }).analyze();

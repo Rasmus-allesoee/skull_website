@@ -55,6 +55,12 @@ export interface TaxonomyTreeBranch {
   children: TaxonomyTreeBranch[];
 }
 
+export interface CatalogTaxonomyBranch {
+  node: TaxonomyNode;
+  children: CatalogTaxonomyBranch[];
+  taxa: TaxonCardRecord[];
+}
+
 export interface CatalogRankCounts {
   species: number;
   genusLevelRecords: number;
@@ -71,7 +77,9 @@ export interface CatalogModel {
   classEntries: ClassEntry[];
   taxonomyNodes: TaxonomyNode[];
   taxonomyTree: TaxonomyTreeBranch[];
+  taxonomyBrowserTree: CatalogTaxonomyBranch[];
   taxa: TaxonCardRecord[];
+  specimens: SpecimenCardRecord[];
 }
 
 export interface TaxonomyLandingModel {
@@ -125,7 +133,9 @@ export function getCatalogModel(
     classEntries,
     taxonomyNodes,
     taxonomyTree: getTaxonomyTree(taxonomyNodes, taxa),
+    taxonomyBrowserTree: getCatalogTaxonomyTree(taxonomyNodes, taxa),
     taxa,
+    specimens: getSpecimenCardRecords(collection, publishedSpecimens),
   };
 }
 
@@ -456,6 +466,40 @@ function getTaxonomyTree(
   return nodes
     .filter((node) => node.rank === "class")
     .map((node) => buildBranch(node, "order"));
+}
+
+function getCatalogTaxonomyTree(
+  nodes: TaxonomyNode[],
+  cards: TaxonCardRecord[],
+): CatalogTaxonomyBranch[] {
+  const childRank: Record<TaxonomyRank, TaxonomyRank | null> = {
+    class: "order",
+    order: "family",
+    family: "genus",
+    genus: null,
+  };
+
+  const buildBranch = (node: TaxonomyNode): CatalogTaxonomyBranch => {
+    const nextRank = childRank[node.rank];
+    const children = nextRank
+      ? nodes
+          .filter(
+            (candidate) =>
+              candidate.rank === nextRank &&
+              candidate.parent?.rank === node.rank &&
+              candidate.parent.slug === node.slug,
+          )
+          .map(buildBranch)
+      : [];
+    const nodeTaxa =
+      node.rank === "genus"
+        ? cards.filter((card) => node.taxonIds.includes(card.taxon.taxonId))
+        : [];
+
+    return { node, children, taxa: nodeTaxa };
+  };
+
+  return nodes.filter((node) => node.rank === "class").map(buildBranch);
 }
 
 function getLateralAsset(
