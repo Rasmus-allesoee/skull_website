@@ -45,8 +45,15 @@ export interface CatalogSearchArtifact {
   documents: CatalogSearchDocument[];
 }
 
+export interface CatalogSearchMatch {
+  tier: number;
+  editDistance: number;
+}
+
 export function normalizeSearchText(value: string): string {
   return value
+    .replace(/[Ææ]/g, "ae")
+    .replace(/[Øø]/g, "o")
     .normalize("NFKD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLocaleLowerCase("en")
@@ -194,19 +201,60 @@ export function getSearchMatchTier(
   document: CatalogSearchDocument,
   rawQuery: string,
 ): number {
+  return getCatalogSearchMatch(document, rawQuery)?.tier ?? 5;
+}
+
+export function getCatalogSearchMatch(
+  document: CatalogSearchDocument,
+  rawQuery: string,
+): CatalogSearchMatch | null {
   const query = normalizeSearchText(rawQuery);
-  if (!query) return 5;
-  if (document.exactValues.includes(query)) return 0;
-  if (document.prefixValues.some((value) => value.startsWith(query))) return 1;
+  if (!query) return null;
+
+  const identifierMatch = getIdentifierSearchMatch(document, query);
+  if (identifierMatch !== undefined) return identifierMatch;
+
+  if (document.exactValues.includes(query)) {
+    return { tier: 0, editDistance: 0 };
+  }
+  if (document.prefixValues.some((value) => value.startsWith(query))) {
+    return { tier: 1, editDistance: 0 };
+  }
   if (
     document.aliasValues.some(
       (value) => value === query || value.startsWith(query),
     )
   ) {
-    return 2;
+    return { tier: 2, editDistance: 0 };
   }
-  if (document.profileText.includes(query)) return 4;
-  return 3;
+
+  const queryTokens = tokenize(query);
+  if (queryTokens.length === 1) {
+    const token = queryTokens[0] ?? "";
+    if (valuesContainToken(document.exactValues, token)) {
+      return { tier: 1, editDistance: 0 };
+    }
+    if (valuesContainToken(document.aliasValues, token)) {
+      return { tier: 2, editDistance: 0 };
+    }
+    if (tokenize(document.taxonomy).some((value) => value.startsWith(token))) {
+      return { tier: 3, editDistance: 0 };
+    }
+  }
+
+  if (
+    query.replaceAll(" ", "").length >= 4 &&
+    document.profileText.includes(query)
+  ) {
+    return { tier: 4, editDistance: 0 };
+  }
+
+  const fuzzyDistance = minimumFuzzyDistance(document, query);
+  if (fuzzyDistance <= getFuzzyDistanceBudget(query)) {
+    return { tier: 3, editDistance: fuzzyDistance };
+  }
+
+  return null;
 }
 
 export function getSearchTypePriority(
@@ -232,11 +280,67 @@ export function getSearchEditDistance(
   document: CatalogSearchDocument,
   rawQuery: string,
 ): number {
-  const query = normalizeSearchText(rawQuery);
+  return (
+    getCatalogSearchMatch(document, rawQuery)?.editDistance ??
+    Number.MAX_SAFE_INTEGER
+  );
+}
+
+function getIdentifierSearchMatch(
+  document: CatalogSearchDocument,
+  query: string,
+): CatalogSearchMatch | null | undefined {
+  const match = /^(spec|tax)(?: \d*)?$/.exec(query);
+  if (!match) return undefined;
+
+  const identifier =
+    match[1] === "spec" ? document.specimenId : document.taxonId;
+  if (!identifier) return null;
+
+  const normalizedIdentifier = normalizeSearchText(identifier);
+  if (!normalizedIdentifier.startsWith(query)) return null;
+  return {
+    tier: normalizedIdentifier === query ? 0 : 1,
+    editDistance: 0,
+  };
+}
+
+function minimumFuzzyDistance(
+  document: CatalogSearchDocument,
+  query: string,
+): number {
+  const queryTokens = tokenize(query);
+  const candidateValues = [
+    ...document.exactValues,
+    ...document.aliasValues,
+    document.taxonomy,
+  ].filter(Boolean);
+  const candidates =
+    queryTokens.length === 1
+      ? candidateValues.flatMap((value) => tokenize(value))
+      : candidateValues;
+
   return Math.min(
-    ...[...document.exactValues, ...document.aliasValues].map((value) =>
-      levenshteinDistance(value, query),
-    ),
+    ...candidates.map((candidate) => levenshteinDistance(candidate, query)),
+  );
+}
+
+function getFuzzyDistanceBudget(query: string): number {
+  const longestToken = Math.max(
+    ...tokenize(query).map((token) => token.length),
+  );
+  if (longestToken >= 12) return 2;
+  if (longestToken >= 4) return 1;
+  return 0;
+}
+
+function tokenize(value: string): string[] {
+  return value.split(" ").filter(Boolean);
+}
+
+function valuesContainToken(values: string[], queryToken: string): boolean {
+  return values.some((value) =>
+    tokenize(value).some((token) => token.startsWith(queryToken)),
   );
 }
 

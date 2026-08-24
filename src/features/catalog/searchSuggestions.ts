@@ -102,15 +102,22 @@ export function buildCatalogSuggestionModel({
     } satisfies TaxonSuggestion;
   });
 
-  const matchedTaxonIds = new Set(orderedTaxonIds);
+  const broadMatchedTaxonIds = new Set(
+    results
+      .filter((document) => document.type !== "specimen")
+      .flatMap((document) => document.taxonIds),
+  );
+  const matchedSpecimenIds = new Set(
+    results
+      .filter((document) => document.type === "specimen")
+      .map((document) => document.specimenId),
+  );
   const specimens = specimenDocuments
     .filter((document) => {
       if (document.type !== "specimen") return false;
-      if (matchedTaxonIds.has(document.taxonId)) return true;
-      return results.some(
-        (result) =>
-          result.type === "specimen" &&
-          result.specimenId === document.specimenId,
+      return (
+        broadMatchedTaxonIds.has(document.taxonId) ||
+        matchedSpecimenIds.has(document.specimenId)
       );
     })
     .sort((first, second) =>

@@ -73,6 +73,47 @@ test("multilingual, alias, scientific-name, and misspelling searches rank the ca
   ).toBeVisible();
 });
 
+test("fuzzy search rejects unrelated lineages and keeps exact identifiers strict", async ({
+  page,
+}) => {
+  await page.goto("/species");
+  const search = page.getByRole("combobox", { name: searchLabel });
+  const listbox = page.getByRole("listbox", { name: "Search suggestions" });
+
+  await search.fill("Canidae");
+  await expect(listbox).toBeVisible();
+  await expect(listbox.getByText("Laridae", { exact: true })).not.toBeVisible();
+  await expect(listbox.getByText("Gull", { exact: true })).not.toBeVisible();
+  await expectCatalogCount(page, "2 taxa");
+  await expect(page.getByText("Gull", { exact: true })).not.toBeVisible();
+
+  for (const query of ["fox", "ræv", "red fox", "rød ræb"]) {
+    await search.fill(query);
+    await expectCatalogCount(page, "1 taxon");
+    await expect(
+      page
+        .getByRole("region", { name: `Results for “${query}”` })
+        .getByRole("link", { name: /Red fox/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Razorbill", { exact: true }),
+    ).not.toBeVisible();
+  }
+
+  await search.fill("SPEC-0013");
+  await expectCatalogCount(page, "1 taxon");
+  await page.getByRole("radio", { name: "Specimens" }).check();
+  await expectCatalogCount(page, "1 specimen");
+  await search.click();
+  const specimenOptions = listbox
+    .getByRole("group", { name: "Physical specimens" })
+    .getByRole("option");
+  await expect(specimenOptions).toHaveCount(1);
+  await expect(specimenOptions.first()).toHaveAccessibleName(
+    /SPEC-0013.*Physical specimen/i,
+  );
+});
+
 test("autocomplete suggestions follow result mode and disclose additional specimens", async ({
   page,
 }) => {

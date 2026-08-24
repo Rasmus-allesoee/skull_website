@@ -40,6 +40,8 @@ describe("catalog search documents", () => {
       (document) => document.id === "taxon:TAX-0001",
     )!;
     expect(normalizeSearchText("  MÅRHUND  ")).toBe("marhund");
+    expect(normalizeSearchText("Rød ræv")).toBe("rod raev");
+    expect(normalizeSearchText("Spættet sæl")).toBe("spaettet sael");
     expect(getSearchMatchTier(raccoonDog, "Mårhund")).toBe(0);
     expect(getSearchMatchTier(raccoonDog, "Nyctereu")).toBe(1);
     expect(getSearchMatchTier(raccoonDog, "Chinese raccoon dog")).toBe(2);

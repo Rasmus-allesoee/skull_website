@@ -1,12 +1,12 @@
 import { create, insertMultiple, search } from "@orama/orama";
 
 import {
-  getSearchEditDistance,
-  getSearchMatchTier,
+  getCatalogSearchMatch,
   getSearchTypePriority,
   normalizeSearchText,
   type CatalogSearchArtifact,
   type CatalogSearchDocument,
+  type CatalogSearchMatch,
 } from "@/domain/search/documents";
 
 const schema = {
@@ -57,8 +57,11 @@ export async function searchCatalogDocuments(
       taxonomy: 1.5,
       profileText: 0.5,
     },
-    tolerance: query.length >= 7 ? 2 : query.length >= 4 ? 1 : 0,
-    limit,
+    tolerance: getOramaTolerance(query),
+    // Keep index retrieval broad enough to find a misspelled token in a
+    // multi-word phrase. The deterministic matcher below owns acceptance.
+    threshold: 1,
+    limit: Math.max(limit, engine.documents.length),
   });
   const documentsById = new Map(
     engine.documents.map((document) => [document.id, document]),
@@ -69,19 +72,44 @@ export async function searchCatalogDocuments(
       score: hit.score,
     }))
     .filter(
-      (result): result is { document: CatalogSearchDocument; score: number } =>
-        result.document !== undefined,
+      (
+        result,
+      ): result is {
+        document: CatalogSearchDocument;
+        score: number;
+      } => result.document !== undefined,
+    )
+    .map((result) => ({
+      ...result,
+      match: getCatalogSearchMatch(result.document, query),
+    }))
+    .filter(
+      (
+        result,
+      ): result is {
+        document: CatalogSearchDocument;
+        score: number;
+        match: CatalogSearchMatch;
+      } => result.match !== null,
     )
     .sort(
       (first, second) =>
-        getSearchMatchTier(first.document, query) -
-          getSearchMatchTier(second.document, query) ||
+        first.match.tier - second.match.tier ||
         getSearchTypePriority(first.document, query) -
           getSearchTypePriority(second.document, query) ||
-        getSearchEditDistance(first.document, query) -
-          getSearchEditDistance(second.document, query) ||
+        first.match.editDistance - second.match.editDistance ||
         second.score - first.score ||
         first.document.id.localeCompare(second.document.id, "en"),
     )
+    .slice(0, limit)
     .map((result) => result.document);
+}
+
+function getOramaTolerance(query: string): number {
+  const longestToken = Math.max(
+    ...query.split(" ").map((token) => token.length),
+  );
+  if (longestToken >= 12) return 2;
+  if (longestToken >= 4) return 1;
+  return 0;
 }

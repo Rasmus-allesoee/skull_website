@@ -116,5 +116,10 @@ describe("catalog search suggestion projection", () => {
     expect(
       entries.find(({ document }) => document.specimenId === "SPEC-0013"),
     ).toMatchObject({ kind: "specimen", taxonId: "TAX-0012" });
+    expect(
+      flattenCatalogSuggestionEntries(model, "specimens", new Set()).map(
+        ({ document }) => document.specimenId,
+      ),
+    ).toEqual(["SPEC-0013"]);
   });
 });
