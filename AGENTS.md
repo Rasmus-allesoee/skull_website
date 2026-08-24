@@ -145,6 +145,7 @@ Before a checkpoint:
 - Use conventional commit prefixes such as `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`, and `ci:`.
 - Never stage unrelated user files silently. Audit the complete scope before commit/push.
 - One coherent verified checkpoint closes each phase; do not mark status complete on code presence alone.
+- Stage and commit each coherent implementation or fix as its own checkpoint; do not accumulate unrelated changes into one giant commit.
 - GitHub issues/milestones are the active implementation tracker. Do not add a second competing tracker.
 - Production later deploys only from `main`; no production/Vercel configuration belongs to Phase 3.
 
