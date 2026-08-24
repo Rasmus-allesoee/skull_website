@@ -3543,13 +3543,17 @@ h3 {
   top: calc(100% + 0.35rem);
   right: 0;
   left: 0;
-  max-height: min(70vh, 36rem);
+  max-height: min(
+    70vh,
+    36rem,
+    var(--catalog-suggestions-available-height, calc(100dvh - 1rem))
+  );
   overflow-y: auto;
   border: 1px solid var(--color-border);
   border-radius: 0.25rem;
   background: var(--color-surface-elevated);
   box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 65%);
-  overscroll-behavior: contain;
+  overscroll-behavior: auto;
 }
 
 .catalog-suggestions-surface > p {

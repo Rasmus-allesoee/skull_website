@@ -1,6 +1,6 @@
 # Project status
 
-**Snapshot date:** 2026-08-22
+**Snapshot date:** 2026-08-24
 
 **Current phase:** Combined Phase 3.2 Species-catalog redesign and Phase 4 search/faceted discovery — complete local technical/visual gate pass; owner review pending
 
@@ -25,7 +25,7 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 
 - Pinned `@orama/orama` 3.1.18 and added a deterministic schema-v1 artifact with 67 documents: 34 canonical rank nodes, 15 published taxa, and 18 published specimens. Draft/blocked records and the draft profile remain absent.
 - Search normalizes case, punctuation, whitespace, and Danish diacritics without changing display text; deterministic reranking covers exact, prefix, alias, credible fuzzy, and optional reviewed-profile tiers. Scientific, English, Danish/ASCII, aliases, taxonomy, and specimen IDs are tested.
-- Suggestions group ranks, taxa, and physical specimens and show canonical lateral thumbnails, display names, scientific/Danish context, and result type. Arrow/Enter/Escape, live status, touch/click, exact specimen navigation, rank filtering, and explicit rank-page links are implemented.
+- Suggestions group ranks, taxa, and physical specimens and show canonical lateral thumbnails, display names, scientific/Danish context, and result type. Arrow/Enter/Escape, live status, touch/click, exact specimen navigation, rank filtering, and explicit rank-page links are implemented. The autocomplete surface is constrained to the available viewport height and hands boundary wheel scrolling back to the page immediately while retaining native touch scroll chaining.
 - Feature facets cover sex, age, condition, and defleshing method with live canonical counts. Maximum-length and prepared-mass ranges exclude `not_recorded`/`not_applicable` rather than treating them as zero. Empty states explain exclusion and offer clear/switch-mode recovery.
 - URL state includes query, mode, class, taxonomic scope, controlled-value filters, numeric bounds, and sort. Invalid tokens/ranges are rejected; direct load, reload, back, and forward restore the same result state. Filter/taxonomy-panel open state is deliberately transient.
 - Orama code and `/generated/catalog-search-v1.json` load only after a non-empty query. The default static catalog, cards, and complete no-JavaScript taxonomy links remain useful without the index or client JavaScript.
@@ -225,11 +225,12 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 | Invalid fixtures | `pnpm test:fixtures`: 6 expected failures detected, including class-profile mismatch | Pass |
 | Types/lint/tests | Final `CI=true pnpm check`: formatting, ESLint, content/media/type checks, 10 files / 40 tests, and 6 invalid fixtures pass; search ranking, artifact determinism, state parsing, filtering/sorting/missing semantics, taxonomy/cards, class-aware measurements, and retained behavior are covered | Pass |
 | Production build | Final `CI=true pnpm build`: 75 static outputs; Home, not-found, guide, robots, sitemap, catalog, 15 taxon paths, 18 exact specimen paths, and 34 rank paths prerender | Pass |
-| Browser/accessibility | Final `CI=true PLAYWRIGHT_PORT=3102 pnpm test:e2e`: 24/24 Chromium journeys; includes multilingual/alias/fuzzy/ID/rank search, facets, numeric missing semantics, modes/sorts, URL reload/history, taxonomy drawer/fallback, desktop/mobile/reflow, reduced motion, forced colors, keyboard, exact links, all six corrected lateral/oblique gallery frames, and axe `[]` under normal-color evaluation | Pass |
+| Browser/accessibility | Final `PLAYWRIGHT_PORT=3102 pnpm test:e2e`: 25/25 Chromium journeys; includes multilingual/alias/fuzzy/ID/rank search, viewport-constrained autocomplete suggestions with page-scroll handoff, facets, numeric missing semantics, modes/sorts, URL reload/history, taxonomy drawer/fallback, desktop/mobile/reflow, reduced motion, forced colors, keyboard, exact links, all six corrected lateral/oblique gallery frames, and axe `[]` under normal-color evaluation | Pass |
+| Post-fix focused checks | Prettier, ESLint, TypeScript, catalog Vitest suite (15 tests), fresh `pnpm build`, and the new autocomplete regression all pass | Pass |
 | Manual visual/responsive | Production Playwright review at 1440 × 900 and 390 × 844 covers default catalog density, search suggestions, filters, wide sidebar/mobile drawer, no-result recovery, and corrected SPEC-0003/0013/0018 gallery framing. First result begins within the desktop viewport; horizontal overflow is `0`; regenerated lateral/oblique pixels all face right | Pass |
 | Git/base/scope audit | Phase 3.1 base is `ce7dbc3`; the separate checkpoint contains only owner specification, catalog/search/media/test/docs/dependency changes. Raw metadata/PNG masters, supplied before-state screenshot, generated artifacts, dependency state, and browser/test output remain ignored | Pass |
 | Remote Phase 3.2/4 CI | No push, PR, or remote CI was authorized | Not run; not a local implementation blocker |
-| Complete local gate | `CI=true pnpm check`, `CI=true pnpm build`, and complete Playwright pass after final documentation/code reconciliation | Pass after the final commands recorded in this section |
+| Complete local gate | The prior combined gate passed; post-fix focused formatting/lint/type checks, fresh `pnpm build`, and complete Playwright pass succeeded. The wrapper `CI=true pnpm check` was attempted but could not complete because its nested pnpm reconciliation required unavailable registry access; direct post-fix checks passed | Pass with wrapper-environment limitation |
 
 Package-manager gates must run sequentially with `CI=true` in non-interactive environments; concurrent pnpm commands can reconcile `node_modules` against different lifecycle states and are not a valid speed optimization.
 

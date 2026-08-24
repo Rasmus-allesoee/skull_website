@@ -73,6 +73,61 @@ test("multilingual, alias, scientific-name, and misspelling searches rank the ca
   ).toBeVisible();
 });
 
+test("autocomplete listbox fits the viewport and hands scroll back to the page", async ({
+  page,
+}) => {
+  for (const viewport of [
+    { width: 1280, height: 720 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/species");
+    await page.evaluate(() => window.scrollTo(0, 0));
+    const search = page.getByRole("combobox", { name: searchLabel });
+    await search.fill("a");
+    const listbox = page.getByRole("listbox", { name: "Search suggestions" });
+    await expect(listbox).toBeVisible();
+    const surface = page.locator(".catalog-suggestions-surface");
+    await expect(surface).toBeVisible();
+
+    const geometry = await surface.evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      return {
+        top: box.top,
+        bottom: box.bottom,
+        clientHeight: element.clientHeight,
+        scrollHeight: element.scrollHeight,
+      };
+    });
+    expect(geometry.top).toBeGreaterThanOrEqual(0);
+    expect(geometry.bottom).toBeLessThanOrEqual(viewport.height);
+    expect(geometry.scrollHeight).toBeGreaterThan(geometry.clientHeight);
+  }
+
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto("/species");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  const search = page.getByRole("combobox", { name: searchLabel });
+  await search.fill("a");
+  const listbox = page.getByRole("listbox", { name: "Search suggestions" });
+  await expect(listbox).toBeVisible();
+  const surface = page.locator(".catalog-suggestions-surface");
+  await surface.evaluate((element) => {
+    element.scrollTop = element.scrollHeight;
+  });
+  const surfaceBox = await surface.boundingBox();
+  expect(surfaceBox).not.toBeNull();
+  await page.mouse.move(
+    surfaceBox!.x + surfaceBox!.width / 2,
+    surfaceBox!.y + surfaceBox!.height / 2,
+  );
+  const pageScrollBefore = await page.evaluate(() => window.scrollY);
+  await page.mouse.wheel(0, 400);
+  await expect
+    .poll(() => page.evaluate(() => window.scrollY), { timeout: 1000 })
+    .toBeGreaterThan(pageScrollBefore);
+});
+
 test("combobox keyboard selection filters a higher rank and opens an exact specimen", async ({
   page,
 }) => {

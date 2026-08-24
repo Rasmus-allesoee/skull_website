@@ -1,6 +1,13 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import {
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type WheelEvent,
+} from "react";
 
 import { SubjectImage } from "@/components/SubjectImage";
 import type {
@@ -28,6 +35,7 @@ export function CatalogSearchBox({
   const statusId = useId();
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const suggestionsSurfaceRef = useRef<HTMLDivElement>(null);
   const suggestions = results.slice(0, 10);
   const grouped = useMemo(() => {
     const typeOrder = [
@@ -43,6 +51,46 @@ export function CatalogSearchBox({
   const orderedSuggestions = grouped.flatMap((group) => group.documents);
 
   const activeDocument = orderedSuggestions[activeIndex] ?? null;
+
+  useLayoutEffect(() => {
+    const surface = suggestionsSurfaceRef.current;
+    if (!surface || !open || !query.trim()) return;
+
+    const updateAvailableHeight = () => {
+      const surfaceTop = surface.getBoundingClientRect().top;
+      const availableHeight = Math.max(0, window.innerHeight - surfaceTop - 16);
+      surface.style.setProperty(
+        "--catalog-suggestions-available-height",
+        `${availableHeight}px`,
+      );
+    };
+
+    updateAvailableHeight();
+    const resizeObserver = new ResizeObserver(updateAvailableHeight);
+    resizeObserver.observe(surface.parentElement ?? surface);
+    window.addEventListener("resize", updateAvailableHeight);
+    window.addEventListener("scroll", updateAvailableHeight, true);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateAvailableHeight);
+      window.removeEventListener("scroll", updateAvailableHeight, true);
+    };
+  }, [open, query, loading, error, suggestions.length]);
+
+  const handleSuggestionsWheel = (event: WheelEvent<HTMLDivElement>) => {
+    const surface = event.currentTarget;
+    const atTop = surface.scrollTop <= 0;
+    const atBottom =
+      surface.scrollTop + surface.clientHeight >= surface.scrollHeight - 1;
+    const scrollingBeyondSurface =
+      (event.deltaY < 0 && atTop) || (event.deltaY > 0 && atBottom);
+
+    if (scrollingBeyondSurface) {
+      event.preventDefault();
+      window.scrollBy({ top: event.deltaY, behavior: "instant" });
+    }
+  };
 
   return (
     <div className="catalog-search-box">
@@ -118,7 +166,11 @@ export function CatalogSearchBox({
               : "Enter a scientific, English, Danish, taxonomic, or specimen name."}
       </p>
       {open && query.trim() ? (
-        <div className="catalog-suggestions-surface">
+        <div
+          ref={suggestionsSurfaceRef}
+          className="catalog-suggestions-surface"
+          onWheel={handleSuggestionsWheel}
+        >
           {loading ? (
             <p>Preparing collection search…</p>
           ) : error ? (
