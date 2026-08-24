@@ -37,18 +37,31 @@ import {
 } from "./catalogState";
 import { filterCatalog, hasSpecimenFeatureFilters } from "./catalogFiltering";
 import type { CatalogSearchEngine } from "./searchEngine";
+import type { CatalogSearchTaxonMeta } from "./searchSuggestions";
 
 export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
   const [state, setState] = useState(defaultCatalogState);
   const [searchDocuments, setSearchDocuments] = useState<
     CatalogSearchDocument[] | null
   >(null);
+  const [availableSearchDocuments, setAvailableSearchDocuments] = useState<
+    CatalogSearchDocument[]
+  >([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [taxonomyOpen, setTaxonomyOpen] = useState(false);
   const searchEngineRef = useRef<Promise<CatalogSearchEngine> | null>(null);
   const taxonomyTriggerRef = useRef<HTMLButtonElement>(null);
   const filterTriggerRef = useRef<HTMLButtonElement>(null);
+  const searchTaxonMeta = useMemo<CatalogSearchTaxonMeta[]>(
+    () =>
+      catalog.taxa.map(({ taxon, defaultSpecimen }) => ({
+        taxonId: taxon.taxonId,
+        slug: taxon.slug,
+        defaultSpecimenId: defaultSpecimen.specimenId,
+      })),
+    [catalog.taxa],
+  );
 
   useEffect(() => {
     const initialize = window.setTimeout(
@@ -102,6 +115,7 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
         .then(async (engine) => {
           const searchModule = await import("./searchEngine");
           if (!cancelled) {
+            setAvailableSearchDocuments(engine.documents);
             setSearchDocuments(
               await searchModule.searchCatalogDocuments(engine, query),
             );
@@ -181,7 +195,10 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
         <div className="catalog-primary-controls">
           <CatalogSearchBox
             query={state.query}
+            mode={state.mode}
             results={searchDocuments ?? []}
+            availableDocuments={availableSearchDocuments}
+            taxonMeta={searchTaxonMeta}
             loading={searchLoading}
             error={searchError}
             onQueryChange={(query) =>

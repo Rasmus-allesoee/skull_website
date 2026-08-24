@@ -73,6 +73,47 @@ test("multilingual, alias, scientific-name, and misspelling searches rank the ca
   ).toBeVisible();
 });
 
+test("autocomplete suggestions follow result mode and disclose additional specimens", async ({
+  page,
+}) => {
+  await page.goto("/species");
+  const search = page.getByRole("combobox", { name: searchLabel });
+  await search.fill("Carnivora");
+  const listbox = page.getByRole("listbox", { name: "Search suggestions" });
+  await expect(listbox).toBeVisible();
+
+  const taxaGroup = listbox.getByRole("group", { name: "Taxa" });
+  await expect(taxaGroup).toBeVisible();
+  await expect(
+    listbox.getByRole("group", { name: "Physical specimens" }),
+  ).not.toBeVisible();
+  await expect(
+    taxaGroup.getByRole("option", {
+      name: /European badger.*SPEC-0010.*Default specimen/i,
+    }),
+  ).toBeVisible();
+
+  await taxaGroup
+    .getByRole("button", {
+      name: "Show 1 other specimens for European badger",
+    })
+    .click();
+  await expect(
+    taxaGroup.getByRole("option", {
+      name: /SPEC-0009.*Physical specimen/i,
+    }),
+  ).toBeVisible();
+
+  await page.getByRole("radio", { name: "Specimens" }).check();
+  await search.click();
+  await expect(listbox.getByRole("group", { name: "Taxa" })).not.toBeVisible();
+  const specimenGroup = listbox.getByRole("group", {
+    name: "Physical specimens",
+  });
+  await expect(specimenGroup).toBeVisible();
+  await expect(specimenGroup.getByRole("option")).toHaveCount(10);
+});
+
 test("autocomplete listbox fits the viewport and hands scroll back to the page", async ({
   page,
 }) => {
@@ -153,6 +194,11 @@ test("combobox keyboard selection filters a higher rank and opens an exact speci
 
   await search.fill("SPEC-0013");
   await expect(listbox).toBeVisible();
+  await expect(
+    listbox.getByRole("option", {
+      name: /SPEC-0013.*Physical specimen/i,
+    }),
+  ).toBeVisible();
   await search.press("ArrowDown");
   await search.press("Enter");
   await expect(page).toHaveURL("/species/harbour-seal/specimens/SPEC-0013");

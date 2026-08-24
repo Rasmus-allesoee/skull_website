@@ -277,6 +277,7 @@ Phase 3.1 is a review slice, not the final Phase 6 audit. It establishes public 
 - [x] Add the single required responsive taxonomy drawer/sidebar through class → order → family → genus → taxon, with explicit filter and stable-route actions, nested-list semantics, Escape/focus handling, and a no-JavaScript alternative.
 - [x] Preserve the compact multi-specimen chooser and exact taxon/specimen URLs.
 - [x] Integrate every Phase 4 index, query, interface, URL, progressive-enhancement, performance, and acceptance requirement listed below.
+- [x] Refine autocomplete suggestions into a mode-dependent hybrid: unique taxon parents with progressive exact-specimen disclosure in Species mode, direct physical-specimen results in Specimens mode, and exact-ID subsection prioritization without pre-grouping truncation.
 - [x] Rebuild the six SPEC-0003/0013/0018 lateral/oblique derivatives from their right-facing clean masters through the canonical staging/processing/bounds validation pipeline.
 - [x] Verify the combined layout/discovery gate across desktop, mobile, effective 200% reflow, keyboard, touch, reduced motion, forced colors, axe, no-JavaScript, and browser-history scenarios.
 
