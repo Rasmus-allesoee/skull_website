@@ -85,18 +85,28 @@ export function CatalogTaxonomyDrawer({
             <h2 id={headingId}>Browse taxonomy</h2>
             <p>Filter the catalog or open a stable taxonomy page.</p>
           </div>
-          <button
-            ref={closeRef}
-            type="button"
-            className="dialog-close"
-            onClick={() => {
-              onClose();
-              openerRef.current?.focus();
-            }}
-          >
-            <span aria-hidden="true">×</span>
-            <span className="visually-hidden">Close taxonomy drawer</span>
-          </button>
+          <div className="catalog-taxonomy-header-actions">
+            <button
+              type="button"
+              className="catalog-taxonomy-reset"
+              title="Collapse all taxonomy branches"
+              onClick={() => setExpanded(new Set())}
+            >
+              Reset
+            </button>
+            <button
+              ref={closeRef}
+              type="button"
+              className="dialog-close"
+              onClick={() => {
+                onClose();
+                openerRef.current?.focus();
+              }}
+            >
+              <span aria-hidden="true">×</span>
+              <span className="visually-hidden">Close taxonomy drawer</span>
+            </button>
+          </div>
         </header>
         <nav aria-label="Published collection taxonomy">
           <ul className="catalog-taxonomy-list">

@@ -385,6 +385,46 @@ test("the one canonical taxonomy drawer filters the grid, preserves route parity
   await expect(
     drawer.getByRole("button", { name: "Collapse Mammalia" }),
   ).toBeVisible();
+
+  await drawer.getByRole("button", { name: "Reset" }).click();
+  await expect(
+    drawer.getByRole("button", { name: "Expand Aves" }),
+  ).toBeVisible();
+  await expect(
+    drawer.getByRole("button", { name: "Expand Mammalia" }),
+  ).toBeVisible();
+  await expect(
+    drawer.getByRole("button", { name: "Expand Carnivora" }),
+  ).not.toBeVisible();
+
+  await page.evaluate(() => window.scrollTo(0, 600));
+  await expect
+    .poll(() => page.evaluate(() => window.scrollY))
+    .toBeGreaterThan(0);
+  const stickyGeometry = await page.evaluate(() => {
+    const control = document.querySelector<HTMLElement>(
+      ".catalog-control-region",
+    );
+    const taxonomy = document.querySelector<HTMLElement>(
+      ".catalog-taxonomy-drawer",
+    );
+    if (!control || !taxonomy) return null;
+    const controlBox = control.getBoundingClientRect();
+    const taxonomyBox = taxonomy.getBoundingClientRect();
+    return {
+      controlTop: controlBox.top,
+      controlBottom: controlBox.bottom,
+      taxonomyTop: taxonomyBox.top,
+    };
+  });
+  expect(stickyGeometry).not.toBeNull();
+  expect(stickyGeometry!.controlTop).toBeLessThanOrEqual(1);
+  expect(stickyGeometry!.taxonomyTop).toBeGreaterThanOrEqual(
+    stickyGeometry!.controlBottom - 1,
+  );
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await drawer.getByRole("button", { name: "Expand Mammalia" }).click();
   await drawer.getByRole("button", { name: "Expand Carnivora" }).click();
   await drawer.getByRole("button", { name: "Mustelidae 3 taxa" }).click();
   await expect(page).toHaveURL(/scope=family%3Amustelidae/);
@@ -415,7 +455,7 @@ test("mobile, effective 200 percent reflow, reduced motion, forced colors, and t
   await expect(drawer).toBeVisible();
   const drawerBox = await drawer.boundingBox();
   expect(drawerBox).not.toBeNull();
-  expect(drawerBox!.x).toBeGreaterThanOrEqual(0);
+  expect(drawerBox!.x).toBe(0);
   expect(drawerBox!.x + drawerBox!.width).toBeLessThanOrEqual(390);
   await page.keyboard.press("Escape");
   await expect(opener).toBeFocused();

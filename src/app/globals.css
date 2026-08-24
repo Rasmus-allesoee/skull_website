@@ -3909,8 +3909,8 @@ h3 {
 .catalog-taxonomy-drawer {
   position: sticky;
   z-index: 10;
-  top: 12rem;
-  max-height: calc(100dvh - 13rem);
+  top: 14.5rem;
+  max-height: calc(100dvh - 15.5rem);
   overflow: auto;
   border: 1px solid var(--color-border);
   background: var(--color-surface);
@@ -3928,6 +3928,23 @@ h3 {
   padding: 1rem;
   border-bottom: 1px solid var(--color-border);
   background: var(--color-surface);
+}
+
+.catalog-taxonomy-header-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.35rem;
+  align-items: start;
+}
+
+.catalog-taxonomy-reset {
+  min-height: 2.5rem;
+  padding-inline: 0.55rem;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-accent);
+  cursor: pointer;
+  font-size: 0.65rem;
 }
 
 .catalog-taxonomy-drawer h2 {
@@ -4046,7 +4063,7 @@ h3 {
 
 .catalog-live-results {
   min-width: 0;
-  scroll-margin-top: 12rem;
+  scroll-margin-top: 14.5rem;
 }
 
 .catalog-live-results-heading {
@@ -4363,11 +4380,12 @@ h3 {
     position: fixed;
     z-index: 75;
     top: 0;
-    right: 0;
+    right: auto;
+    left: 0;
     width: min(92vw, 30rem);
     height: 100dvh;
     max-height: none;
-    box-shadow: -2rem 0 5rem rgb(0 0 0 / 70%);
+    box-shadow: 2rem 0 5rem rgb(0 0 0 / 70%);
   }
 
   .catalog-live-results {

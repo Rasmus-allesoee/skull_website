@@ -1,6 +1,6 @@
 # Project status
 
-**Snapshot date:** 2026-08-24
+**Snapshot date:** 2026-08-25
 
 **Current phase:** Combined Phase 3.2 Species-catalog redesign and Phase 4 search/faceted discovery — complete local technical/visual gate pass; owner review pending
 
@@ -13,6 +13,13 @@
 Present the verified catalog-first `/species` redesign, complete Phase 4 discovery behavior, right-facing SPEC-0003/0013/0018 media correction, and reconciled documentation for owner inspection. Keep the checkpoint local and do not begin Phase 3.3 or Phase 5.
 
 ## 2. Combined Phase 3.2 catalog redesign and Phase 4 discovery
+
+### Owner-review taxonomy drawer correction (2026-08-25)
+
+- Moved the wide-screen sticky taxonomy panel below the full sticky catalog control region so its heading remains visible while the page scrolls.
+- Added a visible `Reset` action that collapses every expanded taxonomy branch without changing the selected catalog scope or closing the panel.
+- Re-anchored the narrow-screen drawer to the left edge and mirrored its shadow treatment to match the new placement.
+- Verified the focused source checks, rebuilt the 75 static routes, and passed all 12 catalog Playwright journeys at desktop/mobile sizes, including sticky clearance, reset behavior, left-edge placement, accessibility, and no-JavaScript route access.
 
 ### Catalog-first information architecture
 
