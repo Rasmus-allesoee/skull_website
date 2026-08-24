@@ -255,12 +255,15 @@ Applied filters should appear as removable chips or a compact summary in the sti
 
 Provide a compact sort control near the result count. Initial choices should be clear and limited, for example:
 
+- Family groups;
 - Common name;
 - Scientific name;
-- Skull length, when the selected mode supports it;
-- Skull weight/mass, when the selected mode supports it.
+- Skull length; and
+- Skull weight/mass.
 
-Unknown numeric values must remain explicit and must not be silently converted to zero. The chosen sort and meaningful catalog state belong in the URL in the combined catalog milestone.
+Every sort is available in Species and Specimens modes. Add one compact direction toggle: A–Z/Z–A for family and name sorts and low–high/high–low for numeric sorts. The selected direction is meaningful catalog state and belongs in the URL.
+
+In Species mode, numeric ordering uses the largest applicable recorded measurement among the specimens currently matching that taxon. The same physical specimen supplies the species card's lateral image and exact link, and the card identifies the specimen and measurement so the ordering is not hidden. If no matching specimen has that measurement, retain the reviewed default specimen as the visual fallback and place the taxon after measured taxa. Unknown numeric values must remain explicit and must never become zero; they stay last in both directions.
 
 ### 5.8 Taxonomy access: the chosen drawer/sidebar
 
@@ -332,11 +335,13 @@ Family headings may remain at broad catalog scopes because they help orient syst
 - The active filter/scope should be obvious above the grid.
 - A family heading should not force the visitor to open a separate family page just to see the matching cards.
 
-The family grouping is the default browse presentation, not a rule that applies to every result state. When the visitor activates any explicit global sort, especially skull length or skull weight, flatten all matching cards into one globally ordered grid and remove the family headings. The result header should state the active global sort, for example `Sorted across all results by maximum length`.
+Family groups is the default browse presentation and an explicit working sort in both Species and Specimens modes. Switching result mode must preserve it and render the corresponding taxon or physical-specimen cards inside real family sections. Its direction toggle reverses family order; the selected direction and grouping must agree with the visible control and result explanation.
+
+When the visitor activates any explicit global name or measurement sort, flatten all matching cards into one globally ordered grid and remove the family headings. The result header should state the active global sort and direction, for example `Sorted across all results by skull length · High–low`.
 
 Resetting the explicit global sort returns to the normal family-grouped browse presentation when the current scope supports family grouping. Search and filter results must not be trapped inside independently sorted family sections when the visitor has requested a global order.
 
-Measurement sorting is most meaningful in Specimens mode, where every physical skull is an individual result. In Species mode, do not silently choose one hidden specimen or invent an aggregate ordering. Keep name-based sorting available in Species mode; enable individual length/mass sorting in Specimens mode. Measurement filters may still be used in Species mode, with the taxon card reporting how many specimens matched and the relevant range.
+In Specimens mode, measurement sorts compare individual physical skulls. In Species mode, use the largest recorded matching specimen as the transparent representative and taxon sort key defined in section 5.7. Measurement filters still report how many specimens matched and the relevant range.
 
 ### 6.3 Species card (the default)
 

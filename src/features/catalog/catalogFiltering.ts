@@ -19,6 +19,7 @@ export interface FilteredCatalog {
   taxa: TaxonCardRecord[];
   specimens: SpecimenCardRecord[];
   summaries: Record<string, SpeciesMatchSummary>;
+  taxonRepresentatives: Record<string, SpecimenCardRecord>;
 }
 
 const collator = new Intl.Collator("en", {
@@ -51,6 +52,7 @@ export function filterCatalog(
   }
 
   const summaries: Record<string, SpeciesMatchSummary> = {};
+  const taxonRepresentatives: Record<string, SpecimenCardRecord> = {};
   const filteredTaxa = catalog.taxa.flatMap((card) => {
     if (!taxonMatchesScope(card, state)) return [];
     if (
@@ -87,6 +89,11 @@ export function filterCatalog(
         ),
       ),
     };
+    taxonRepresentatives[card.taxon.taxonId] = selectTaxonRepresentative(
+      card,
+      matchingSpecimens,
+      state,
+    );
     return [card];
   });
 
@@ -102,7 +109,7 @@ export function filterCatalog(
   });
 
   return {
-    taxa: sortTaxa(filteredTaxa, state, queryTaxonOrder),
+    taxa: sortTaxa(filteredTaxa, state, queryTaxonOrder, taxonRepresentatives),
     specimens: sortSpecimens(
       filteredSpecimens,
       state,
@@ -111,6 +118,7 @@ export function filterCatalog(
       querySpecimenOrder,
     ),
     summaries,
+    taxonRepresentatives,
   };
 }
 
@@ -218,14 +226,26 @@ function sortTaxa(
   cards: TaxonCardRecord[],
   state: CatalogState,
   queryOrder: Map<string, number>,
+  representatives: Record<string, SpecimenCardRecord>,
 ): TaxonCardRecord[] {
   return [...cards].sort((first, second) => {
-    if (state.query.trim()) {
+    if (state.sort === "browse" && state.query.trim()) {
       return (
         (queryOrder.get(first.taxon.taxonId) ?? Number.MAX_SAFE_INTEGER) -
           (queryOrder.get(second.taxon.taxonId) ?? Number.MAX_SAFE_INTEGER) ||
         collator.compare(first.taxon.taxonId, second.taxon.taxonId)
       );
+    }
+    if (state.sort === "skull-length" || state.sort === "skull-mass") {
+      const key = state.sort === "skull-length" ? "skullLength" : "skullMass";
+      const firstRepresentative = representatives[first.taxon.taxonId];
+      const secondRepresentative = representatives[second.taxon.taxonId];
+      const difference = compareMeasurements(
+        firstRepresentative?.specimen.measurements[key],
+        secondRepresentative?.specimen.measurements[key],
+        state.direction,
+      );
+      if (difference !== 0) return difference;
     }
     const scientific = state.sort === "scientific-name";
     const firstName = scientific
@@ -234,9 +254,12 @@ function sortTaxa(
     const secondName = scientific
       ? second.taxon.scientificName
       : (second.taxon.names.english ?? second.taxon.scientificName);
-    return (
-      collator.compare(firstName, secondName) ||
-      collator.compare(first.taxon.taxonId, second.taxon.taxonId)
+    return compareText(
+      firstName,
+      secondName,
+      first.taxon.taxonId,
+      second.taxon.taxonId,
+      state.direction,
     );
   });
 }
@@ -249,7 +272,7 @@ function sortSpecimens(
   specimenOrder: Map<string, number>,
 ): SpecimenCardRecord[] {
   return [...cards].sort((first, second) => {
-    if (state.query.trim()) {
+    if (state.sort === "browse" && state.query.trim()) {
       const firstOrder = broadTaxonIds.has(first.taxon.taxonId)
         ? (taxonOrder.get(first.taxon.taxonId) ?? Number.MAX_SAFE_INTEGER)
         : (specimenOrder.get(first.specimen.specimenId) ??
@@ -265,6 +288,7 @@ function sortSpecimens(
       const difference = compareMeasurements(
         first.specimen.measurements[key],
         second.specimen.measurements[key],
+        state.direction,
       );
       if (difference !== 0) return difference;
     }
@@ -275,29 +299,89 @@ function sortSpecimens(
     const secondName = scientific
       ? second.taxon.scientificName
       : (second.taxon.names.english ?? second.taxon.scientificName);
-    return (
-      collator.compare(firstName, secondName) ||
-      collator.compare(first.specimen.specimenId, second.specimen.specimenId)
+    return compareText(
+      firstName,
+      secondName,
+      first.specimen.specimenId,
+      second.specimen.specimenId,
+      state.direction,
     );
   });
 }
 
 function compareMeasurements(
-  first: SpecimenCardRecord["specimen"]["measurements"]["skullLength"],
-  second: SpecimenCardRecord["specimen"]["measurements"]["skullLength"],
+  first:
+    SpecimenCardRecord["specimen"]["measurements"]["skullLength"] | undefined,
+  second:
+    SpecimenCardRecord["specimen"]["measurements"]["skullLength"] | undefined,
+  direction: CatalogState["direction"],
 ): number {
-  const firstValue =
-    first.status === "measured" || first.status === "approximate"
-      ? first.value
-      : null;
-  const secondValue =
-    second.status === "measured" || second.status === "approximate"
-      ? second.value
-      : null;
+  const firstValue = measurementValue(first);
+  const secondValue = measurementValue(second);
   if (firstValue === null && secondValue === null) return 0;
   if (firstValue === null) return 1;
   if (secondValue === null) return -1;
-  return firstValue - secondValue;
+  return direction === "ascending"
+    ? firstValue - secondValue
+    : secondValue - firstValue;
+}
+
+function selectTaxonRepresentative(
+  card: TaxonCardRecord,
+  matchingSpecimens: SpecimenCardRecord[],
+  state: CatalogState,
+): SpecimenCardRecord {
+  const defaultCard =
+    card.specimens.find(
+      ({ specimen }) => specimen.specimenId === card.defaultSpecimen.specimenId,
+    ) ?? card.specimens[0]!;
+  if (state.sort !== "skull-length" && state.sort !== "skull-mass") {
+    return defaultCard;
+  }
+
+  const key = state.sort === "skull-length" ? "skullLength" : "skullMass";
+  return (
+    [...matchingSpecimens]
+      .filter(
+        ({ specimen }) => measurementValue(specimen.measurements[key]) !== null,
+      )
+      .sort((first, second) => {
+        const firstValue = measurementValue(first.specimen.measurements[key]);
+        const secondValue = measurementValue(second.specimen.measurements[key]);
+        return (
+          (secondValue ?? Number.NEGATIVE_INFINITY) -
+            (firstValue ?? Number.NEGATIVE_INFINITY) ||
+          collator.compare(
+            first.specimen.specimenId,
+            second.specimen.specimenId,
+          )
+        );
+      })[0] ?? defaultCard
+  );
+}
+
+function measurementValue(
+  measurement:
+    SpecimenCardRecord["specimen"]["measurements"]["skullLength"] | undefined,
+): number | null {
+  return measurement &&
+    (measurement.status === "measured" || measurement.status === "approximate")
+    ? measurement.value
+    : null;
+}
+
+function compareText(
+  first: string,
+  second: string,
+  firstId: string,
+  secondId: string,
+  direction: CatalogState["direction"],
+): number {
+  const multiplier = direction === "ascending" ? 1 : -1;
+  return (
+    multiplier * collator.compare(first, second) ||
+    multiplier * collator.compare(firstId, secondId)
+  );
 }
 
 function keepLowest(map: Map<string, number>, key: string, value: number) {

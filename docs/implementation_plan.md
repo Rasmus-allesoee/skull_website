@@ -313,6 +313,7 @@ Detailed implementation constraints and prerequisites live in [interactive_taxon
 
 - [x] Build accessible catalog suggestions grouped by rank, taxon, and specimen type.
 - [x] Build catalog search, filter, sort, active-filter, clear, no-result, and mode controls.
+- [x] Make family grouping and bidirectional name/measurement sorting truthful in both modes; species numeric sorts use the largest matching measured specimen as their visible representative and sort key.
 - [x] Serialize all meaningful state to stable query parameters.
 - [x] Restore state on direct load, refresh, and browser back/forward.
 - [x] Lazy-load index code/data only after a query is entered and keep it out of unrelated route behavior.
@@ -326,6 +327,7 @@ Automated and manual scenarios pass for:
 - class/order/family/genus result navigation;
 - length/weight filtering in both result modes;
 - unknown/not-applicable measurement exclusion and reset recovery;
+- bidirectional family/name/measurement sorting in both result modes, including stable mode switches and largest-specimen species representatives;
 - share/reload/back/forward state; and
 - no-result recovery and full keyboard operation.
 

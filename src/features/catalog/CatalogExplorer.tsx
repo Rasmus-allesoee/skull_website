@@ -24,7 +24,10 @@ import {
 } from "./CatalogFilters";
 import { CatalogTaxonomyDrawer } from "./CatalogTaxonomy";
 import { SpecimenCard, TaxonCardGrid } from "./CatalogCards";
-import { FamilyGroupedTaxonGallery } from "./FamilyGroupedTaxonGallery";
+import {
+  FamilyGroupedSpecimenGallery,
+  FamilyGroupedTaxonGallery,
+} from "./FamilyGroupedTaxonGallery";
 import {
   catalogStateIsActive,
   defaultCatalogState,
@@ -170,8 +173,11 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
           node.rank === state.scope?.rank && node.slug === state.scope.slug,
       ) ?? null)
     : null;
-  const groupByFamily =
-    state.mode === "species" && state.sort === "browse" && !state.query.trim();
+  const groupByFamily = state.sort === "browse";
+  const measurementSort =
+    state.sort === "skull-length" || state.sort === "skull-mass"
+      ? state.sort
+      : undefined;
 
   const selectTaxonomyNode = (node: TaxonomyNode) => {
     if (node.rank === "class") {
@@ -229,9 +235,7 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
                 name="catalog-mode"
                 value="species"
                 checked={state.mode === "species"}
-                onChange={() =>
-                  commitState({ ...state, mode: "species", sort: "browse" })
-                }
+                onChange={() => commitState({ ...state, mode: "species" })}
               />
               <span>Species</span>
             </label>
@@ -291,28 +295,43 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
               triggerRef={filterTriggerRef}
               onApply={(next) => commitState(next)}
             />
-            <label className="catalog-sort-control">
-              <span>Sort</span>
-              <select
-                value={state.sort}
-                onChange={(event) =>
+            <div className="catalog-sort-controls">
+              <label className="catalog-sort-control">
+                <span>Sort</span>
+                <select
+                  value={state.sort}
+                  onChange={(event) =>
+                    commitState({
+                      ...state,
+                      sort: event.target.value as CatalogViewSort,
+                    })
+                  }
+                >
+                  <option value="browse">Family groups</option>
+                  <option value="common-name">Common name</option>
+                  <option value="scientific-name">Scientific name</option>
+                  <option value="skull-length">Skull length</option>
+                  <option value="skull-mass">Skull mass</option>
+                </select>
+              </label>
+              <button
+                type="button"
+                className="catalog-sort-direction"
+                aria-label={`Reverse result order. Current direction: ${sortDirectionText(state.sort, state.direction)}.`}
+                title={`Current direction: ${sortDirectionText(state.sort, state.direction)}`}
+                onClick={() =>
                   commitState({
                     ...state,
-                    sort: event.target.value as CatalogViewSort,
+                    direction:
+                      state.direction === "ascending"
+                        ? "descending"
+                        : "ascending",
                   })
                 }
               >
-                <option value="browse">Family groups</option>
-                <option value="common-name">Common name</option>
-                <option value="scientific-name">Scientific name</option>
-                {state.mode === "specimens" ? (
-                  <>
-                    <option value="skull-length">Skull length</option>
-                    <option value="skull-mass">Skull mass</option>
-                  </>
-                ) : null}
-              </select>
-            </label>
+                {sortDirectionText(state.sort, state.direction)}
+              </button>
+            </div>
             <button
               ref={taxonomyTriggerRef}
               type="button"
@@ -408,7 +427,6 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
                     commitState({
                       ...state,
                       mode: state.mode === "species" ? "specimens" : "species",
-                      sort: "browse",
                     })
                   }
                 >
@@ -422,14 +440,24 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
                 cards={filtered.taxa}
                 matchSummaries={filtered.summaries}
                 showMatchSummary={featureFiltersActive}
+                representatives={filtered.taxonRepresentatives}
+                measurementSort={measurementSort}
+                direction={state.direction}
               />
             ) : (
               <TaxonCardGrid
                 cards={filtered.taxa}
                 matchSummaries={filtered.summaries}
                 showMatchSummary={featureFiltersActive}
+                representatives={filtered.taxonRepresentatives}
+                measurementSort={measurementSort}
               />
             )
+          ) : groupByFamily ? (
+            <FamilyGroupedSpecimenGallery
+              cards={filtered.specimens}
+              direction={state.direction}
+            />
           ) : (
             <div className="catalog-grid">
               {filtered.specimens.map((card) => (
@@ -509,8 +537,15 @@ function ActiveStateChips({
   if (state.sort !== "browse") {
     chips.push({
       key: "sort",
-      label: `Sorted: ${humanizeToken(state.sort)}`,
+      label: `Sorted: ${sortDisplayName(state.sort)}`,
       clear: () => onChange({ ...state, sort: "browse" }),
+    });
+  }
+  if (state.direction !== "ascending") {
+    chips.push({
+      key: "direction",
+      label: "Direction: descending",
+      clear: () => onChange({ ...state, direction: "ascending" }),
     });
   }
 
@@ -572,16 +607,37 @@ function resultContext(
 ): string {
   const parts: string[] = [];
   if (selectedScopeNode) parts.push(`${selectedScopeNode.name} scope`);
-  if (
-    state.sort === "browse" &&
-    state.mode === "species" &&
-    !state.query.trim()
-  ) {
-    parts.push("Grouped by family");
-  } else if (state.query.trim()) {
-    parts.push("Ranked across all results");
+  if (state.sort === "browse") {
+    parts.push(
+      `Grouped by family · ${sortDirectionText(state.sort, state.direction)}`,
+    );
   } else {
-    parts.push(`Sorted across all results by ${humanizeToken(state.sort)}`);
+    parts.push(
+      `Sorted across all results by ${sortDisplayName(state.sort)} · ${sortDirectionText(state.sort, state.direction)}`,
+    );
   }
   return parts.join(" · ");
+}
+
+function sortDisplayName(sort: CatalogViewSort): string {
+  return {
+    browse: "family groups",
+    "common-name": "common name",
+    "scientific-name": "scientific name",
+    "skull-length": "skull length",
+    "skull-mass": "skull mass",
+  }[sort];
+}
+
+function sortDirectionText(
+  sort: CatalogViewSort,
+  direction: CatalogState["direction"],
+): string {
+  if (sort === "skull-length" || sort === "skull-mass") {
+    return direction === "ascending" ? "Low–high" : "High–low";
+  }
+  if (sort === "browse") {
+    return direction === "ascending" ? "A–Z families" : "Z–A families";
+  }
+  return direction === "ascending" ? "A–Z" : "Z–A";
 }

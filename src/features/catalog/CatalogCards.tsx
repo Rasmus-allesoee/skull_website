@@ -15,15 +15,22 @@ import {
 
 import { SpecimenQuickView } from "./SpecimenQuickView";
 import type { SpeciesMatchSummary } from "./catalogFiltering";
+import type { CatalogViewSort } from "./catalogState";
+
+type MeasurementSort = Extract<CatalogViewSort, "skull-length" | "skull-mass">;
 
 export function TaxonCardGrid({
   cards,
   matchSummaries,
   showMatchSummary = false,
+  representatives,
+  measurementSort,
 }: {
   cards: TaxonCardRecord[];
   matchSummaries?: Record<string, SpeciesMatchSummary>;
   showMatchSummary?: boolean;
+  representatives?: Record<string, SpecimenCardRecord>;
+  measurementSort?: MeasurementSort;
 }) {
   return (
     <div className="catalog-grid">
@@ -33,6 +40,8 @@ export function TaxonCardGrid({
           card={card}
           matchSummary={matchSummaries?.[card.taxon.taxonId]}
           showMatchSummary={showMatchSummary}
+          representative={representatives?.[card.taxon.taxonId]}
+          measurementSort={measurementSort}
         />
       ))}
     </div>
@@ -43,23 +52,40 @@ export function TaxonCard({
   card,
   matchSummary,
   showMatchSummary = false,
+  representative,
+  measurementSort,
 }: {
   card: TaxonCardRecord;
   matchSummary?: SpeciesMatchSummary;
   showMatchSummary?: boolean;
+  representative?: SpecimenCardRecord;
+  measurementSort?: MeasurementSort;
 }) {
   const { taxon } = card;
+  const displayImage = measurementSort
+    ? (representative?.image ?? card.image)
+    : card.image;
+  const displayHref = measurementSort ? representative?.href : card.href;
+  const representativeMeasurement =
+    measurementSort && representative
+      ? representative.specimen.measurements[
+          measurementSort === "skull-length" ? "skullLength" : "skullMass"
+        ]
+      : null;
+  const representativeMeasurementRecorded =
+    representativeMeasurement?.status === "measured" ||
+    representativeMeasurement?.status === "approximate";
   const commonName = taxon.names.english ?? taxon.scientificName;
   const needsQualifier =
     taxon.identificationQualifier !== "confirmed" ||
     taxon.identificationConfidence !== "high";
   return (
     <article className="collection-card taxon-card">
-      <Link href={card.href} className="collection-card-link">
+      <Link href={displayHref ?? card.href} className="collection-card-link">
         <div className="collection-card-image">
-          {card.image ? (
+          {displayImage ? (
             <SubjectImage
-              asset={card.image}
+              asset={displayImage}
               sizes="(max-width: 48rem) 92vw, (max-width: 80rem) 45vw, 30vw"
             />
           ) : (
@@ -79,6 +105,13 @@ export function TaxonCard({
           </p>
           {taxon.names.danish ? (
             <p className="card-secondary-name">Danish · {taxon.names.danish}</p>
+          ) : null}
+          {measurementSort && representative ? (
+            <p className="card-sort-representative">
+              {representativeMeasurementRecorded && representativeMeasurement
+                ? `Largest recorded ${measurementSortLabel(measurementSort)} · ${representative.specimen.specimenId} · ${formatMeasurement(representativeMeasurement)}`
+                : `${measurementSortLabel(measurementSort, true)} not recorded · Default specimen ${representative.specimen.specimenId}`}
+            </p>
           ) : null}
           {showMatchSummary && matchSummary ? (
             <p className="card-match-summary">
@@ -109,6 +142,15 @@ export function TaxonCard({
       ) : null}
     </article>
   );
+}
+
+function measurementSortLabel(
+  sort: MeasurementSort,
+  sentenceCase = false,
+): string {
+  const label =
+    sort === "skull-length" ? "skull length" : "prepared skull mass";
+  return sentenceCase ? `${label[0]?.toUpperCase()}${label.slice(1)}` : label;
 }
 
 function formatSpeciesMatchSummary(summary: SpeciesMatchSummary): string {

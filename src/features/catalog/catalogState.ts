@@ -1,4 +1,4 @@
-import type { TaxonomyRank } from "@/domain/catalog/queries";
+import type { SortDirection, TaxonomyRank } from "@/domain/catalog/queries";
 
 export const catalogModes = ["species", "specimens"] as const;
 export const catalogSorts = [
@@ -8,6 +8,7 @@ export const catalogSorts = [
   "skull-length",
   "skull-mass",
 ] as const;
+export const catalogSortDirections = ["ascending", "descending"] as const;
 
 export type CatalogMode = (typeof catalogModes)[number];
 export type CatalogViewSort = (typeof catalogSorts)[number];
@@ -31,6 +32,7 @@ export interface CatalogState {
   massMin: number | null;
   massMax: number | null;
   sort: CatalogViewSort;
+  direction: SortDirection;
 }
 
 export const defaultCatalogState: CatalogState = {
@@ -47,12 +49,14 @@ export const defaultCatalogState: CatalogState = {
   massMin: null,
   massMax: null,
   sort: "browse",
+  direction: "ascending",
 };
 
 export function parseCatalogState(search: string): CatalogState {
   const parameters = new URLSearchParams(search);
   const mode = parameters.get("mode");
   const sort = parameters.get("sort");
+  const direction = parameters.get("direction");
   const scope = parseScope(parameters.get("scope"));
 
   return normalizeCatalogState({
@@ -73,11 +77,13 @@ export function parseCatalogState(search: string): CatalogState {
     sort: catalogSorts.includes(sort as CatalogViewSort)
       ? (sort as CatalogViewSort)
       : "browse",
+    direction: catalogSortDirections.includes(direction as SortDirection)
+      ? (direction as SortDirection)
+      : "ascending",
   });
 }
 
 export function normalizeCatalogState(state: CatalogState): CatalogState {
-  const numericSort = ["skull-length", "skull-mass"].includes(state.sort);
   return {
     ...state,
     query: state.query.trimStart().slice(0, 120),
@@ -89,7 +95,9 @@ export function normalizeCatalogState(state: CatalogState): CatalogState {
     lengthMax: normalizeRangeValue(state.lengthMax),
     massMin: normalizeRangeValue(state.massMin),
     massMax: normalizeRangeValue(state.massMax),
-    sort: state.mode === "species" && numericSort ? "browse" : state.sort,
+    direction: catalogSortDirections.includes(state.direction)
+      ? state.direction
+      : "ascending",
   };
 }
 
@@ -114,6 +122,9 @@ export function serializeCatalogState(state: CatalogState): string {
   setNumber(parameters, "massMin", normalized.massMin);
   setNumber(parameters, "massMax", normalized.massMax);
   if (normalized.sort !== "browse") parameters.set("sort", normalized.sort);
+  if (normalized.direction !== "ascending") {
+    parameters.set("direction", normalized.direction);
+  }
   return parameters.toString();
 }
 

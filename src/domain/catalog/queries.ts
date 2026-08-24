@@ -9,6 +9,7 @@ export const taxonomyRanks = ["class", "order", "family", "genus"] as const;
 
 export type TaxonomyRank = (typeof taxonomyRanks)[number];
 export type CatalogSort = "common-name" | "scientific-name";
+export type SortDirection = "ascending" | "descending";
 
 export interface TaxonomyNodeRef {
   rank: TaxonomyRank;
@@ -47,6 +48,11 @@ export interface ClassEntry {
 export interface FamilyTaxonGroup {
   family: TaxonomyNodeRef | null;
   cards: TaxonCardRecord[];
+}
+
+export interface FamilySpecimenGroup {
+  family: TaxonomyNodeRef | null;
+  cards: SpecimenCardRecord[];
 }
 
 export interface TaxonomyTreeBranch {
@@ -224,6 +230,7 @@ export function getSpecimenCardRecords(
 
 export function groupTaxonCardsByFamily(
   cards: TaxonCardRecord[],
+  direction: SortDirection = "ascending",
 ): FamilyTaxonGroup[] {
   const groups = new Map<string, FamilyTaxonGroup>();
   for (const card of cards) {
@@ -240,11 +247,43 @@ export function groupTaxonCardsByFamily(
     group.cards.push(card);
     groups.set(key, group);
   }
-  return [...groups.values()].sort((first, second) =>
-    collator.compare(
-      first.family?.name ?? "Family not recorded",
-      second.family?.name ?? "Family not recorded",
-    ),
+  return sortFamilyGroups([...groups.values()], direction);
+}
+
+export function groupSpecimenCardsByFamily(
+  cards: SpecimenCardRecord[],
+  direction: SortDirection = "ascending",
+): FamilySpecimenGroup[] {
+  const groups = new Map<string, FamilySpecimenGroup>();
+  for (const card of cards) {
+    const family =
+      card.taxon.hierarchy.familyName && card.taxon.hierarchy.familySlug
+        ? {
+            rank: "family" as const,
+            name: card.taxon.hierarchy.familyName,
+            slug: card.taxon.hierarchy.familySlug,
+          }
+        : null;
+    const key = family ? family.slug : "__unrecorded__";
+    const group = groups.get(key) ?? { family, cards: [] };
+    group.cards.push(card);
+    groups.set(key, group);
+  }
+  return sortFamilyGroups([...groups.values()], direction);
+}
+
+function sortFamilyGroups<T extends FamilyTaxonGroup | FamilySpecimenGroup>(
+  groups: T[],
+  direction: SortDirection,
+): T[] {
+  const multiplier = direction === "ascending" ? 1 : -1;
+  return groups.sort(
+    (first, second) =>
+      multiplier *
+      collator.compare(
+        first.family?.name ?? "Family not recorded",
+        second.family?.name ?? "Family not recorded",
+      ),
   );
 }
 

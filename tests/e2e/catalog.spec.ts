@@ -278,6 +278,13 @@ test("feature and numeric facets filter physical records without treating unknow
   await expect(page).toHaveURL(/mode=specimens/);
   await expect(page).toHaveURL(/sort=skull-length/);
   expect(await specimenIds(page)).toEqual(["SPEC-0015", "SPEC-0014"]);
+  await page
+    .getByRole("button", {
+      name: /Reverse result order.*Current direction: Low–high/i,
+    })
+    .click();
+  await expect(page).toHaveURL(/direction=descending/);
+  expect(await specimenIds(page)).toEqual(["SPEC-0014", "SPEC-0015"]);
 
   await page.goto("/species?scope=family%3Atalpidae&lengthMin=1");
   await expect(
@@ -289,6 +296,55 @@ test("feature and numeric facets filter physical records without treating unknow
   await expectCatalogCount(page, "0 taxa");
   await page.getByRole("button", { name: "Clear filters and search" }).click();
   await expectCatalogCount(page, "15 taxa");
+});
+
+test("measurement sorting works in Species mode and Family groups works in Specimens mode", async ({
+  page,
+}) => {
+  await page.goto("/species");
+  const sort = page.getByLabel("Sort");
+
+  await sort.selectOption("skull-length");
+  await expect(sort).toHaveValue("skull-length");
+  await expect(page).toHaveURL(/sort=skull-length/);
+  await page
+    .getByRole("button", {
+      name: /Reverse result order.*Current direction: Low–high/i,
+    })
+    .click();
+  await expect(page).toHaveURL(/direction=descending/);
+  const firstTaxonCard = page.locator(".taxon-card").first();
+  await expect(firstTaxonCard.getByRole("heading", { level: 3 })).toHaveText(
+    "Harbour seal",
+  );
+  await expect(
+    firstTaxonCard.getByText(
+      /Largest recorded skull length.*SPEC-0014.*230 mm/i,
+    ),
+  ).toBeVisible();
+  await expect(firstTaxonCard.getByRole("link").first()).toHaveAttribute(
+    "href",
+    "/species/harbour-seal/specimens/SPEC-0014",
+  );
+
+  await sort.selectOption("browse");
+  await page.getByRole("radio", { name: "Specimens" }).check();
+  await expect(sort).toHaveValue("browse");
+  await expect(
+    page.getByText(/Grouped by family.*Z–A families/i),
+  ).toBeVisible();
+  const headingsDescending = await page
+    .locator(".family-gallery-heading h3")
+    .allTextContents();
+  expect(headingsDescending.length).toBeGreaterThan(2);
+  expect(headingsDescending).toEqual(
+    [...headingsDescending].sort((first, second) =>
+      second.localeCompare(first, "en"),
+    ),
+  );
+  await expect(
+    page.getByRole("region", { name: "Phocidae" }).locator(".specimen-card"),
+  ).toHaveCount(3);
 });
 
 test("mode, class, sort, reload, and browser history restore the same URL-backed catalog state", async ({
