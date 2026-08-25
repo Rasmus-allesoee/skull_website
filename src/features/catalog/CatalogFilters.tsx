@@ -4,6 +4,7 @@ import { useId, useRef, useState } from "react";
 
 import { humanizeToken } from "@/domain/content/display";
 
+import { FilterControlIcon } from "./CatalogControlIcons";
 import type { CatalogState } from "./catalogState";
 
 export interface CatalogFilterOption {
@@ -38,13 +39,16 @@ export function CatalogFilters({
       <button
         ref={triggerRef}
         type="button"
-        className="catalog-action-button"
+        className="catalog-action-button catalog-icon-button"
+        aria-label="Filters"
+        title="Filter physical skulls"
         onClick={() => {
           setDraft(state);
           dialogRef.current?.showModal();
         }}
       >
-        Filters
+        <FilterControlIcon />
+        <span className="catalog-control-label">Filters</span>
       </button>
       <dialog
         ref={dialogRef}

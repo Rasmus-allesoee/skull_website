@@ -22,6 +22,11 @@ import {
   type CatalogFilterOption,
   type CatalogFilterOptions,
 } from "./CatalogFilters";
+import {
+  ResetControlIcon,
+  SortDirectionControlIcon,
+  TaxonomyControlIcon,
+} from "./CatalogControlIcons";
 import { CatalogTaxonomyDrawer } from "./CatalogTaxonomy";
 import { SpecimenCard, TaxonCardGrid } from "./CatalogCards";
 import {
@@ -253,6 +258,47 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
         </div>
 
         <div className="catalog-secondary-controls">
+          <div className="catalog-mobile-context-controls">
+            <label className="catalog-compact-select">
+              <span>Result mode</span>
+              <select
+                aria-label="Result mode"
+                title="Result mode"
+                value={state.mode}
+                onChange={(event) =>
+                  commitState({
+                    ...state,
+                    mode: event.target.value as CatalogState["mode"],
+                  })
+                }
+              >
+                <option value="species">Species</option>
+                <option value="specimens">Specimens</option>
+              </select>
+            </label>
+            <label className="catalog-compact-select">
+              <span>Class</span>
+              <select
+                aria-label="Class"
+                title="Filter by class"
+                value={state.classSlug ?? ""}
+                onChange={(event) =>
+                  commitState({
+                    ...state,
+                    classSlug: event.target.value || null,
+                    scope: null,
+                  })
+                }
+              >
+                <option value="">All classes</option>
+                {catalog.classEntries.map((entry) => (
+                  <option key={entry.node.slug} value={entry.node.slug}>
+                    {entry.node.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
           <div className="catalog-class-presets" aria-label="Filter by class">
             <button
               type="button"
@@ -299,6 +345,7 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
               <label className="catalog-sort-control">
                 <span>Sort</span>
                 <select
+                  title="Sort results"
                   value={state.sort}
                   onChange={(event) =>
                     commitState({
@@ -316,7 +363,7 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
               </label>
               <button
                 type="button"
-                className="catalog-sort-direction"
+                className="catalog-sort-direction catalog-icon-button"
                 aria-label={`Reverse result order. Current direction: ${sortDirectionText(state.sort, state.direction)}.`}
                 title={`Current direction: ${sortDirectionText(state.sort, state.direction)}`}
                 onClick={() =>
@@ -329,17 +376,23 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
                   })
                 }
               >
-                {sortDirectionText(state.sort, state.direction)}
+                <SortDirectionControlIcon direction={state.direction} />
+                <span className="catalog-control-label">
+                  {sortDirectionText(state.sort, state.direction)}
+                </span>
               </button>
             </div>
             <button
               ref={taxonomyTriggerRef}
               type="button"
-              className="catalog-action-button"
+              className="catalog-action-button catalog-icon-button"
+              aria-label="Browse taxonomy"
+              title="Browse taxonomy"
               aria-expanded={taxonomyOpen}
               onClick={() => setTaxonomyOpen((open) => !open)}
             >
-              Browse taxonomy
+              <TaxonomyControlIcon />
+              <span className="catalog-control-label">Browse taxonomy</span>
             </button>
           </div>
         </div>
@@ -364,10 +417,13 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
           {catalogStateIsActive(state) ? (
             <button
               type="button"
-              className="catalog-clear-all"
+              className="catalog-clear-all catalog-icon-button"
+              aria-label="Clear all"
+              title="Clear all catalog controls"
               onClick={() => commitState(defaultCatalogState)}
             >
-              Clear all
+              <ResetControlIcon />
+              <span className="catalog-control-label">Clear all</span>
             </button>
           ) : null}
         </div>

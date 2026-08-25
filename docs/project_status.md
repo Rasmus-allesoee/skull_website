@@ -1,6 +1,6 @@
 # Project status
 
-**Snapshot date:** 2026-08-25
+**Snapshot date:** 2026-08-26
 
 **Current phase:** Combined Phase 3.2 Species-catalog redesign and Phase 4 search/faceted discovery — complete local technical/visual gate pass; owner review pending
 
@@ -41,6 +41,13 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 
 - Preserved each compiled subject frame's aspect ratio when the catalog transitions from three to two columns and from two to one column. The frame now fits both available card-image dimensions instead of retaining a wide width while its height is capped.
 - Added responsive regression coverage for the raccoon-dog and European-hare cards at the exact 1024px and 768px breakpoints, including the raw canvas ratio used by the subject-bound crop.
+
+### Owner-directed compact mobile control region (2026-08-26)
+
+- Replaced the tall narrow-screen mode buttons and class presets with labelled native selects, while preserving the existing segmented controls on wider screens. Filters, sort direction, and taxonomy now use familiar labelled icons with accessible names and browser tooltips; the full sort choice remains visible because its current value matters.
+- Consolidated the narrow control region into a search row, two compact control rows, and one non-wrapping active-state row. Applied chips scroll horizontally instead of increasing the sticky region's height, and the compact reset action remains directly available.
+- At the 390 × 844 review viewport the complete control region measures 200.8 px, or 23.8% of the viewport, leaving 76.2% for the published displays. Controls retain 44 px touch targets and the page has no horizontal overflow. At short narrow viewports the region becomes non-sticky so it can leave the viewport instead of permanently crowding results.
+- Added a Playwright regression journey for the height budget, narrow-mode controls, URL-backed mode/class changes, compact active state, short-screen sticky fallback, and horizontal overflow. The final repository-wide check/build and browser-suite results are recorded in the checkpoint evidence below.
 
 ### Catalog-first information architecture
 
@@ -251,14 +258,14 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 | Content/search build | `pnpm content:build`: 15 taxa, 18 specimens, 104 specimen assets, 67 search documents, 1 comparison reference, 0 reviewed profiles (1 profile source); only four expected optional-frontal warnings | Pass |
 | Media | Full restage/process plus `pnpm validate:media`: 104 specimen assets plus 1 reference, 24.83 MiB, sRGB/alpha/bounds valid, no EXIF/IPTC/XMP; Git shows only the six requested right-facing derivative changes | Pass |
 | Invalid fixtures | `pnpm test:fixtures`: 6 expected failures detected, including class-profile mismatch | Pass |
-| Types/lint/tests | Catalog-change Prettier, focused ESLint, TypeScript, and full Vitest pass: 11 files / 54 tests. The earlier complete `CI=true pnpm check` also passed content/media validation and 6 invalid fixtures; search ranking, artifact determinism, URL state, bidirectional sorting, largest-specimen selection, filtering/missing semantics, taxonomy/cards, class-aware measurements, and retained behavior are covered | Pass |
+| Types/lint/tests | Final `CI=true pnpm check` passes formatting, lint, content/media validation, TypeScript, 11 Vitest files / 55 tests, and 6 actionable invalid fixtures. Search ranking, artifact determinism, URL state, bidirectional sorting, largest-specimen selection, filtering/missing semantics, taxonomy/cards, compact-control behavior, class-aware measurements, and retained behavior are covered | Pass |
 | Production build | Final `CI=true pnpm build`: 75 static outputs; Home, not-found, guide, robots, sitemap, catalog, 15 taxon paths, 18 exact specimen paths, and 34 rank paths prerender | Pass |
-| Browser/accessibility | Catalog-only `PLAYWRIGHT_PORT=3102 pnpm exec playwright test tests/e2e/catalog.spec.ts`: 12/12 Chromium journeys, including mode-dependent hybrid suggestions, strict fuzzy/identifier behavior, bidirectional measurement order, Species numeric representatives, and Specimens family grouping; the earlier full suite reached 25/26, with one unrelated corrected-gallery geometry assertion exceeding its frame by 0.44 px on isolated rerun | Search/catalog pass; unrelated gallery check remains |
-| Post-fix focused checks | Prettier, ESLint, TypeScript, full Vitest suite (54 tests), fresh 75-route `pnpm build`, and the 12-test catalog Chromium suite all pass | Pass |
-| Manual visual/responsive | Production Playwright review covers the default grouped catalog, Species skull-length ordering and exact-linked representative labels, honest missing-measurement fallback wording, direction control semantics, specimen family sections, prior desktop/mobile catalog states, and corrected SPEC-0003/0013/0018 gallery framing. First result begins within the desktop viewport; horizontal overflow is `0`; regenerated lateral/oblique pixels all face right | Pass |
+| Browser/accessibility | Final full `PLAYWRIGHT_PORT=3102 CI=true pnpm test:e2e`: 30/30 Chromium journeys. Coverage includes the complete catalog/search behavior, gallery/comparison regressions, accessibility smoke tests, and the compact narrow-screen control height, interactions, URL state, non-sticky short-screen fallback, and overflow contract | Pass |
+| Post-fix focused checks | Prettier, focused mobile-control Playwright test, complete `CI=true pnpm check` (55 unit tests), fresh 75-route `CI=true pnpm build`, and full 30-test Chromium suite all pass | Pass |
+| Manual visual/responsive | Production Playwright review covers the default grouped catalog, Species skull-length ordering and exact-linked representative labels, honest missing-measurement fallback wording, direction control semantics, specimen family sections, prior desktop/mobile catalog states, and corrected SPEC-0003/0013/0018 gallery framing. At 390 × 844 the compact control region is 200.8 px (23.8%), leaving 76.2% for results; touch targets remain 44 px and horizontal overflow is `0`. Desktop retains its segmented controls | Pass |
 | Git/base/scope audit | Phase 3.1 base is `ce7dbc3`; the separate checkpoint contains only owner specification, catalog/search/media/test/docs/dependency changes. Raw metadata/PNG masters, supplied before-state screenshot, generated artifacts, dependency state, and browser/test output remain ignored | Pass |
 | Remote Phase 3.2/4 CI | No push, PR, or remote CI was authorized | Not run; not a local implementation blocker |
-| Complete local gate | Search-specific formatting/lint/type/unit/build/catalog-browser checks pass. The full browser suite has one unrelated corrected-gallery geometry failure; the wrapper `CI=true pnpm check` was not rerun because its nested pnpm reconciliation previously required unavailable registry access | Search change passes; full gate has unrelated gallery limitation |
+| Complete local gate | The final sequential formatting/lint/type/unit/content/media/fixture/build/browser gate passes. No remote operation was authorized | Pass locally |
 
 Package-manager gates must run sequentially with `CI=true` in non-interactive environments; concurrent pnpm commands can reconcile `node_modules` against different lifecycle states and are not a valid speed optimization.
 
@@ -358,5 +365,10 @@ No new content is required for the current visual/product review. Phase 5 will r
 - The owner approved Phase 3.1 at `ce7dbc3` and supplied `species_page_redesign_phase_3_2.md` as the replacement specification for the earlier tree-versus-search sequencing choice.
 - `/species` now delivers the catalog-first layout plus the complete current Phase 4 indexed search, suggestions, facets, sorting, modes, active state, URL/history behavior, one responsive semantic taxonomy drawer/list, and no-JavaScript path. The comprehensive tree is reclassified as Phase 3.3.
 - SPEC-0003, SPEC-0013, and SPEC-0018 lateral/oblique WebPs were regenerated from their right-facing clean masters through the full media pipeline. The final sequential quality/build/browser/manual/scope gate passes; no push, PR, or remote CI was authorized.
+
+### 2026-08-26 — compact mobile catalog controls verified locally
+
+- Owner review identified that the narrow-screen sticky controls left too little room for the primary published displays. Mobile now uses compact labelled mode/class selects, familiar action icons, the full sort selector, and a single scrollable active-state row; wider-screen controls are unchanged.
+- At 390 × 844 the controls occupy 23.8% of the viewport and leave 76.2% for results. Short narrow screens allow the controls to scroll away. The complete local check, 75-route production build, and 30/30 Chromium journeys pass; the coherent fix remains local with no push or PR authorized.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.

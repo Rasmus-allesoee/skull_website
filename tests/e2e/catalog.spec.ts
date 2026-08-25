@@ -102,6 +102,59 @@ test("catalog card subject images preserve their aspect ratio at two and one col
   }
 });
 
+test("mobile catalog controls preserve at least three quarters of the viewport for results", async ({
+  page,
+}) => {
+  const viewport = { width: 390, height: 844 };
+  await page.setViewportSize(viewport);
+  await page.goto("/species?sort=skull-mass&direction=descending");
+
+  const controls = page.getByRole("region", { name: "Catalog controls" });
+  await controls.evaluate((element) =>
+    element.scrollIntoView({ block: "start" }),
+  );
+  const controlGeometry = await controls.evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    return { height: box.height };
+  });
+  expect(controlGeometry.height).toBeLessThanOrEqual(viewport.height * 0.25);
+  expect(viewport.height - controlGeometry.height).toBeGreaterThanOrEqual(
+    viewport.height * 0.75,
+  );
+
+  const mode = page.getByLabel("Result mode");
+  const classFilter = page.getByLabel("Class", { exact: true });
+  const sort = page.getByLabel("Sort");
+  await expect(mode).toBeVisible();
+  await expect(mode).toHaveValue("species");
+  await expect(classFilter).toBeVisible();
+  await expect(classFilter).toHaveValue("");
+  await expect(sort).toBeVisible();
+  await expect(sort).toHaveValue("skull-mass");
+  await expect(page.getByRole("button", { name: "Filters" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Browse taxonomy" }),
+  ).toBeVisible();
+  await expect(page.getByRole("radio", { name: "Species" })).not.toBeVisible();
+
+  const activeStateHeight = await page
+    .locator(".catalog-active-state")
+    .evaluate((element) => element.getBoundingClientRect().height);
+  expect(activeStateHeight).toBeLessThanOrEqual(36);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+
+  await mode.selectOption("specimens");
+  await expect(page).toHaveURL(/mode=specimens/);
+  await classFilter.selectOption("birds");
+  await expect(page).toHaveURL(/class=birds/);
+  await expectCatalogCount(page, "6 specimens");
+
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto("/species");
+  await expect(controls).toHaveCSS("position", "static");
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+});
+
 test("multilingual, alias, scientific-name, and misspelling searches rank the canonical taxon", async ({
   page,
 }) => {
