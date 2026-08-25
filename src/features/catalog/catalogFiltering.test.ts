@@ -85,8 +85,13 @@ describe("catalog filtering", () => {
     const nonDefault = badger.specimens.find(
       ({ specimen }) => specimen.specimenId === "SPEC-0009",
     )!;
+    const secondSpecimen = badger.specimens.find(
+      ({ specimen }) => specimen.specimenId === "SPEC-0010",
+    )!;
     nonDefault.specimen.measurements.skullLength.value = 500;
     nonDefault.specimen.measurements.skullLength.status = "measured";
+    secondSpecimen.specimen.measurements.skullMass.value = 1000;
+    secondSpecimen.specimen.measurements.skullMass.status = "measured";
 
     const result = filterCatalog(
       fixture,
@@ -104,8 +109,13 @@ describe("catalog filtering", () => {
       result.taxonRepresentatives[badger.taxon.taxonId]?.specimen.specimenId,
     ).toBe("SPEC-0009");
     expect(
-      result.taxonLargestSpecimens[badger.taxon.taxonId]?.specimen.specimenId,
+      result.taxonMetricSpecimens[badger.taxon.taxonId]?.skullLength?.specimen
+        .specimenId,
     ).toBe("SPEC-0009");
+    expect(
+      result.taxonMetricSpecimens[badger.taxon.taxonId]?.skullMass?.specimen
+        .specimenId,
+    ).toBe("SPEC-0010");
   });
 
   it("reverses numeric ordering while keeping unknown measurements last", () => {

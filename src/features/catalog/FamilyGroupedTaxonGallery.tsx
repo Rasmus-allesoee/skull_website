@@ -10,7 +10,10 @@ import {
 } from "@/domain/catalog/queries";
 
 import { SpecimenCard, TaxonCardGrid } from "./CatalogCards";
-import type { SpeciesMatchSummary } from "./catalogFiltering";
+import type {
+  SpeciesMatchSummary,
+  TaxonMetricSpecimens,
+} from "./catalogFiltering";
 import type { CatalogViewSort } from "./catalogState";
 
 export function FamilyGroupedTaxonGallery({
@@ -18,8 +21,7 @@ export function FamilyGroupedTaxonGallery({
   matchSummaries,
   showMatchSummary = false,
   representatives,
-  largestSpecimens,
-  largestSpecimenLabel = "Largest recorded",
+  metricSpecimens,
   measurementSort,
   direction = "ascending",
 }: {
@@ -27,8 +29,7 @@ export function FamilyGroupedTaxonGallery({
   matchSummaries?: Record<string, SpeciesMatchSummary>;
   showMatchSummary?: boolean;
   representatives?: Record<string, SpecimenCardRecord>;
-  largestSpecimens?: Record<string, SpecimenCardRecord>;
-  largestSpecimenLabel?: string;
+  metricSpecimens?: Record<string, TaxonMetricSpecimens>;
   measurementSort?: Extract<CatalogViewSort, "skull-length" | "skull-mass">;
   direction?: SortDirection;
 }) {
@@ -58,8 +59,7 @@ export function FamilyGroupedTaxonGallery({
               matchSummaries={matchSummaries}
               showMatchSummary={showMatchSummary}
               representatives={representatives}
-              largestSpecimens={largestSpecimens}
-              largestSpecimenLabel={largestSpecimenLabel}
+              metricSpecimens={metricSpecimens}
               measurementSort={measurementSort}
             />
           </section>

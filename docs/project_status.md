@@ -29,6 +29,14 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 - Specimen cards now share the same image/name hierarchy and show immutable ID, skull length, skull mass, age, sex, condition, and location/date in a dense, divided fact grid with explicit missing-value semantics.
 - Added regression coverage for the new card facts, largest-specimen selection, equal image-stage heights, image-dominant card proportions, and the search-surface mode-switch focus handoff.
 
+### Owner-directed card affordance refinement (2026-08-25)
+
+- Restored brass/gold emphasis to the class/family context and the specimen-count or immutable-ID metadata on both card modes.
+- Removed long specimen locations from specimen cards; the compact fact grid now retains only the acquisition date alongside the requested specimen facts.
+- Replaced the multi-specimen `Largest recorded` line with independent hover/focus tooltips on the skull-length and skull-mass facts. Each tooltip names the actual record supplying that measurement, including when the two maxima differ or filters are active.
+- Moved the multi-specimen chooser to the compact count affordance in the card's upper-right metadata line. A responsive mouse/tap cue communicates that the count opens the chooser without adding a full-width action row.
+- Expanded each chooser row to show age, sex, length, mass, condition, and date while retaining the thumbnail, default marker, and exact specimen link. Dense mobile labels use `N/A`, abbreviated month/year, and `Ex.` to keep every fact on one line.
+
 ### Catalog-first information architecture
 
 - Replaced the large editorial `/species` sequence with a short Collection catalog heading, sticky operational controls, and immediate published results. At 1440 × 900 the first card begins within the first viewport; the default grid remains three/two/one columns without horizontal overflow.

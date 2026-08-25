@@ -166,10 +166,6 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
   const resultCount =
     state.mode === "species" ? filtered.taxa.length : filtered.specimens.length;
   const featureFiltersActive = hasSpecimenFeatureFilters(state);
-  const largestSpecimenLabel =
-    state.query.trim() || featureFiltersActive
-      ? "Largest matching"
-      : "Largest recorded";
   const filterOptions = useMemo(() => buildFilterOptions(catalog), [catalog]);
   const selectedScopeNode = state.scope
     ? (catalog.taxonomyNodes.find(
@@ -445,8 +441,7 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
                 matchSummaries={filtered.summaries}
                 showMatchSummary={featureFiltersActive}
                 representatives={filtered.taxonRepresentatives}
-                largestSpecimens={filtered.taxonLargestSpecimens}
-                largestSpecimenLabel={largestSpecimenLabel}
+                metricSpecimens={filtered.taxonMetricSpecimens}
                 measurementSort={measurementSort}
                 direction={state.direction}
               />
@@ -456,8 +451,7 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
                 matchSummaries={filtered.summaries}
                 showMatchSummary={featureFiltersActive}
                 representatives={filtered.taxonRepresentatives}
-                largestSpecimens={filtered.taxonLargestSpecimens}
-                largestSpecimenLabel={largestSpecimenLabel}
+                metricSpecimens={filtered.taxonMetricSpecimens}
                 measurementSort={measurementSort}
               />
             )

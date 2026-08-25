@@ -342,9 +342,11 @@ test("measurement sorting works in Species mode and Family groups works in Speci
     firstTaxonCard.locator(".taxon-card-facts").getByText("230 mm"),
   ).toBeVisible();
   await expect(firstTaxonCard.getByText("Skull mass")).toBeVisible();
+  const lengthFact = firstTaxonCard.locator(".taxon-card-facts > div").first();
+  await lengthFact.hover();
   await expect(
-    firstTaxonCard.getByText("Largest recorded · SPEC-0014"),
-  ).toBeVisible();
+    firstTaxonCard.getByRole("tooltip", { name: "SPEC-0014" }).first(),
+  ).toHaveCSS("opacity", "1");
   await expect(firstTaxonCard.getByRole("link").first()).toHaveAttribute(
     "href",
     "/species/harbour-seal/specimens/SPEC-0014",

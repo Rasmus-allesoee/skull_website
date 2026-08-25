@@ -15,12 +15,17 @@ export interface SpeciesMatchSummary {
   massRange: [number, number] | null;
 }
 
+export interface TaxonMetricSpecimens {
+  skullLength: SpecimenCardRecord | null;
+  skullMass: SpecimenCardRecord | null;
+}
+
 export interface FilteredCatalog {
   taxa: TaxonCardRecord[];
   specimens: SpecimenCardRecord[];
   summaries: Record<string, SpeciesMatchSummary>;
   taxonRepresentatives: Record<string, SpecimenCardRecord>;
-  taxonLargestSpecimens: Record<string, SpecimenCardRecord>;
+  taxonMetricSpecimens: Record<string, TaxonMetricSpecimens>;
 }
 
 const collator = new Intl.Collator("en", {
@@ -54,7 +59,7 @@ export function filterCatalog(
 
   const summaries: Record<string, SpeciesMatchSummary> = {};
   const taxonRepresentatives: Record<string, SpecimenCardRecord> = {};
-  const taxonLargestSpecimens: Record<string, SpecimenCardRecord> = {};
+  const taxonMetricSpecimens: Record<string, TaxonMetricSpecimens> = {};
   const filteredTaxa = catalog.taxa.flatMap((card) => {
     if (!taxonMatchesScope(card, state)) return [];
     if (
@@ -96,10 +101,16 @@ export function filterCatalog(
       matchingSpecimens,
       state,
     );
-    taxonLargestSpecimens[card.taxon.taxonId] = selectLargestTaxonSpecimen(
-      matchingSpecimens,
-      matchingSpecimens[0]!,
-    );
+    taxonMetricSpecimens[card.taxon.taxonId] = {
+      skullLength: selectLargestTaxonSpecimenForMeasurement(
+        matchingSpecimens,
+        "skullLength",
+      ),
+      skullMass: selectLargestTaxonSpecimenForMeasurement(
+        matchingSpecimens,
+        "skullMass",
+      ),
+    };
     return [card];
   });
 
@@ -125,7 +136,7 @@ export function filterCatalog(
     ),
     summaries,
     taxonRepresentatives,
-    taxonLargestSpecimens,
+    taxonMetricSpecimens,
   };
 }
 
@@ -337,35 +348,30 @@ export function selectLargestTaxonSpecimen(
   candidates: SpecimenCardRecord[],
   fallback: SpecimenCardRecord,
 ): SpecimenCardRecord {
-  const byLength = [...candidates]
-    .filter(
-      ({ specimen }) =>
-        measurementValue(specimen.measurements.skullLength) !== null,
-    )
-    .sort((first, second) =>
-      compareRecordedMeasurements(
-        first.specimen.measurements.skullLength,
-        second.specimen.measurements.skullLength,
-        first.specimen.specimenId,
-        second.specimen.specimenId,
-      ),
-    );
-  if (byLength[0]) return byLength[0];
+  return (
+    selectLargestTaxonSpecimenForMeasurement(candidates, "skullLength") ??
+    selectLargestTaxonSpecimenForMeasurement(candidates, "skullMass") ??
+    fallback
+  );
+}
 
-  const byMass = [...candidates]
+export function selectLargestTaxonSpecimenForMeasurement(
+  candidates: SpecimenCardRecord[],
+  key: "skullLength" | "skullMass",
+): SpecimenCardRecord | null {
+  const byMeasurement = [...candidates]
     .filter(
-      ({ specimen }) =>
-        measurementValue(specimen.measurements.skullMass) !== null,
+      ({ specimen }) => measurementValue(specimen.measurements[key]) !== null,
     )
     .sort((first, second) =>
       compareRecordedMeasurements(
-        first.specimen.measurements.skullMass,
-        second.specimen.measurements.skullMass,
+        first.specimen.measurements[key],
+        second.specimen.measurements[key],
         first.specimen.specimenId,
         second.specimen.specimenId,
       ),
     );
-  return byMass[0] ?? fallback;
+  return byMeasurement[0] ?? null;
 }
 
 function compareRecordedMeasurements(

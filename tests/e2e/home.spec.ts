@@ -109,6 +109,14 @@ test("family galleries form a three-column desktop grid and the compact specimen
   await expect(
     dialog.getByText("Length", { exact: true }).first(),
   ).toBeVisible();
+  await expect(dialog.getByText("Mass", { exact: true }).first()).toBeVisible();
+  await expect(
+    dialog.getByText("Condition", { exact: true }).first(),
+  ).toBeVisible();
+  await expect(dialog.getByText("Date", { exact: true }).first()).toBeVisible();
+  await expect(dialog.getByText("N/A", { exact: true }).first()).toBeVisible();
+  await expect(dialog.getByText("Ex.", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("Oct 2024", { exact: true })).toBeVisible();
   const dialogBox = await dialog.boundingBox();
   expect(dialogBox).not.toBeNull();
   expect(dialogBox!.width).toBeLessThan(800);

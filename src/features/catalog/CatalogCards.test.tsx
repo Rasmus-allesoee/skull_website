@@ -67,6 +67,25 @@ describe("catalog cards", () => {
     expect(screen.getByText("Age")).toBeInTheDocument();
     expect(screen.getByText("Sex")).toBeInTheDocument();
     expect(screen.getByText("Condition")).toBeInTheDocument();
-    expect(screen.getByText("Location · date")).toBeInTheDocument();
+    expect(screen.getByText("Date")).toBeInTheDocument();
+    expect(screen.queryByText("Location · date")).not.toBeInTheDocument();
+  });
+
+  it("uses a compact specimen-count trigger and per-measurement specimen tooltips", () => {
+    const taxonCard = getTaxonCardRecords(collection).find(
+      ({ taxon }) => taxon.names.english === "Harbour seal",
+    )!;
+    render(<TaxonCard card={taxonCard} />);
+
+    expect(
+      screen.getByRole("button", { name: "Choose from 3 specimens" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("3 skulls")).toBeInTheDocument();
+    expect(screen.queryByText(/Largest recorded/)).not.toBeInTheDocument();
+
+    const tooltipIds = screen
+      .getAllByRole("tooltip")
+      .map((tooltip) => tooltip.textContent);
+    expect(tooltipIds).toEqual(expect.arrayContaining(["SPEC-0014"]));
   });
 });

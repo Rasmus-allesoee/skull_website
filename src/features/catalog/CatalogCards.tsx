@@ -15,8 +15,9 @@ import {
 
 import { SpecimenQuickView } from "./SpecimenQuickView";
 import {
-  selectLargestTaxonSpecimen,
+  selectLargestTaxonSpecimenForMeasurement,
   type SpeciesMatchSummary,
+  type TaxonMetricSpecimens,
 } from "./catalogFiltering";
 import type { CatalogViewSort } from "./catalogState";
 
@@ -27,16 +28,14 @@ export function TaxonCardGrid({
   matchSummaries,
   showMatchSummary = false,
   representatives,
-  largestSpecimens,
-  largestSpecimenLabel = "Largest recorded",
+  metricSpecimens,
   measurementSort,
 }: {
   cards: TaxonCardRecord[];
   matchSummaries?: Record<string, SpeciesMatchSummary>;
   showMatchSummary?: boolean;
   representatives?: Record<string, SpecimenCardRecord>;
-  largestSpecimens?: Record<string, SpecimenCardRecord>;
-  largestSpecimenLabel?: string;
+  metricSpecimens?: Record<string, TaxonMetricSpecimens>;
   measurementSort?: MeasurementSort;
 }) {
   return (
@@ -48,8 +47,7 @@ export function TaxonCardGrid({
           matchSummary={matchSummaries?.[card.taxon.taxonId]}
           showMatchSummary={showMatchSummary}
           representative={representatives?.[card.taxon.taxonId]}
-          largestSpecimen={largestSpecimens?.[card.taxon.taxonId]}
-          largestSpecimenLabel={largestSpecimenLabel}
+          metricSpecimens={metricSpecimens?.[card.taxon.taxonId]}
           measurementSort={measurementSort}
         />
       ))}
@@ -62,16 +60,14 @@ export function TaxonCard({
   matchSummary,
   showMatchSummary = false,
   representative,
-  largestSpecimen,
-  largestSpecimenLabel = "Largest recorded",
+  metricSpecimens,
   measurementSort,
 }: {
   card: TaxonCardRecord;
   matchSummary?: SpeciesMatchSummary;
   showMatchSummary?: boolean;
   representative?: SpecimenCardRecord;
-  largestSpecimen?: SpecimenCardRecord;
-  largestSpecimenLabel?: string;
+  metricSpecimens?: TaxonMetricSpecimens;
   measurementSort?: MeasurementSort;
 }) {
   const { taxon } = card;
@@ -80,17 +76,28 @@ export function TaxonCard({
     : card.image;
   const displayHref = measurementSort ? representative?.href : card.href;
   const commonName = taxon.names.english ?? taxon.scientificName;
-  const fallbackSpecimen = card.specimens[0];
-  const metricSpecimen =
-    largestSpecimen ??
-    (fallbackSpecimen
-      ? selectLargestTaxonSpecimen(card.specimens, fallbackSpecimen)
-      : null);
-  const metricLength = metricSpecimen?.specimen.measurements.skullLength;
-  const metricMass = metricSpecimen?.specimen.measurements.skullMass;
+  const metricLengthSpecimen =
+    metricSpecimens !== undefined
+      ? metricSpecimens.skullLength
+      : selectLargestTaxonSpecimenForMeasurement(card.specimens, "skullLength");
+  const metricMassSpecimen =
+    metricSpecimens !== undefined
+      ? metricSpecimens.skullMass
+      : selectLargestTaxonSpecimenForMeasurement(card.specimens, "skullMass");
+  const metricLength = metricLengthSpecimen?.specimen.measurements.skullLength;
+  const metricMass = metricMassSpecimen?.specimen.measurements.skullMass;
+  const cardHref = displayHref ?? card.href;
   return (
-    <article className="collection-card taxon-card">
-      <Link href={displayHref ?? card.href} className="collection-card-link">
+    <article
+      className={[
+        "collection-card",
+        "taxon-card",
+        card.specimenCount > 1 && "taxon-card-has-chooser",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <Link href={cardHref} className="collection-card-link">
         <div className="collection-card-image">
           {displayImage ? (
             <SubjectImage
@@ -104,16 +111,15 @@ export function TaxonCard({
           )}
         </div>
         <div className="collection-card-copy">
-          <p className="card-overline card-overline-split">
+          <div className="card-overline card-overline-split">
             <span>
               {taxon.hierarchy.className} ·{" "}
               {taxon.hierarchy.familyName ?? taxon.rank}
             </span>
-            <span>
-              {card.specimenCount}{" "}
-              {card.specimenCount === 1 ? "skull" : "skulls"}
-            </span>
-          </p>
+            {card.specimenCount === 1 ? (
+              <span className="card-overline-count">1 skull</span>
+            ) : null}
+          </div>
           <h3>{commonName}</h3>
           <p className="card-scientific-name">
             <ScientificIdentification taxon={taxon} />
@@ -132,19 +138,18 @@ export function TaxonCard({
               value={
                 metricLength ? formatMeasurement(metricLength) : "Not recorded"
               }
+              tooltip={metricLengthSpecimen?.specimen.specimenId}
+              tooltipId={`${taxon.taxonId}-skull-length-specimen`}
             />
             <CardFact
               label="Skull mass"
               value={
                 metricMass ? formatMeasurement(metricMass) : "Not recorded"
               }
+              tooltip={metricMassSpecimen?.specimen.specimenId}
+              tooltipId={`${taxon.taxonId}-skull-mass-specimen`}
             />
           </dl>
-          {card.specimenCount > 1 && metricSpecimen ? (
-            <p className="card-representative-note">
-              {largestSpecimenLabel} · {metricSpecimen.specimen.specimenId}
-            </p>
-          ) : null}
         </div>
       </Link>
       {card.specimenCount > 1 ? (
@@ -232,8 +237,8 @@ export function SpecimenCard({ card }: { card: SpecimenCardRecord }) {
               value={humanizeToken(card.specimen.condition)}
             />
             <CardFact
-              label="Location · date"
-              value={formatSpecimenLocationDate(card)}
+              label="Date"
+              value={formatPartialDate(card.specimen.acquisitionDate)}
             />
           </dl>
         </div>
@@ -242,19 +247,44 @@ export function SpecimenCard({ card }: { card: SpecimenCardRecord }) {
   );
 }
 
-function CardFact({ label, value }: { label: string; value: string }) {
+function CardFact({
+  label,
+  value,
+  tooltip,
+  tooltipId,
+}: {
+  label: string;
+  value: string;
+  tooltip?: string;
+  tooltipId?: string;
+}) {
   return (
-    <div>
+    <div className={tooltip ? "card-fact-with-tooltip" : undefined}>
       <dt>{label}</dt>
-      <dd>{value}</dd>
+      <dd>
+        {tooltip && tooltipId ? (
+          <span
+            className="card-fact-tooltip-value"
+            tabIndex={0}
+            title={tooltip}
+            aria-describedby={tooltipId}
+          >
+            {value}
+          </span>
+        ) : (
+          value
+        )}
+        {tooltip && tooltipId ? (
+          <span
+            id={tooltipId}
+            className="card-fact-tooltip-bubble"
+            role="tooltip"
+          >
+            {tooltip}
+          </span>
+        ) : null}
+      </dd>
     </div>
-  );
-}
-
-function formatSpecimenLocationDate(card: SpecimenCardRecord): string {
-  const location = card.specimen.location.label ?? "Location not recorded";
-  return [location, formatPartialDate(card.specimen.acquisitionDate)].join(
-    " · ",
   );
 }
 
