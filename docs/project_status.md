@@ -37,6 +37,11 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 - Moved the multi-specimen chooser to the compact count affordance in the card's upper-right metadata line. A responsive mouse/tap cue communicates that the count opens the chooser without adding a full-width action row.
 - Expanded each chooser row to show age, sex, length, mass, condition, and date while retaining the thumbnail, default marker, and exact specimen link. Dense mobile labels use `N/A`, abbreviated month/year, and `Ex.` to keep every fact on one line.
 
+### Owner-directed responsive card image-fit correction (2026-08-25)
+
+- Preserved each compiled subject frame's aspect ratio when the catalog transitions from three to two columns and from two to one column. The frame now fits both available card-image dimensions instead of retaining a wide width while its height is capped.
+- Added responsive regression coverage for the raccoon-dog and European-hare cards at the exact 1024px and 768px breakpoints, including the raw canvas ratio used by the subject-bound crop.
+
 ### Catalog-first information architecture
 
 - Replaced the large editorial `/species` sequence with a short Collection catalog heading, sticky operational controls, and immediate published results. At 1440 × 900 the first card begins within the first viewport; the default grid remains three/two/one columns without horizontal overflow.

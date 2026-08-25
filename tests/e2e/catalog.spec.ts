@@ -62,6 +62,46 @@ test("catalog-first layout reaches a responsive three-column collection grid in 
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 
+test("catalog card subject images preserve their aspect ratio at two and one columns", async ({
+  page,
+}) => {
+  for (const width of [1024, 768]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/species");
+
+    for (const name of ["Raccoon dog", "European hare"]) {
+      const card = page.locator(".taxon-card").filter({ hasText: name });
+      const image = card.locator(".subject-image img");
+      await image.scrollIntoViewIfNeeded();
+      await expect
+        .poll(() =>
+          image.evaluate((node) => {
+            const candidate = node as HTMLImageElement;
+            return candidate.complete && candidate.naturalWidth > 0;
+          }),
+        )
+        .toBe(true);
+      const geometry = await card
+        .locator(".subject-image")
+        .evaluate((element) => {
+          const frame = element.getBoundingClientRect();
+          const computed = getComputedStyle(element);
+          const image = element.querySelector("img");
+          const canvas = image?.getBoundingClientRect();
+          return {
+            frameRatio: frame.width / frame.height,
+            expectedFrameRatio: Number.parseFloat(computed.aspectRatio),
+            canvasRatio: canvas ? canvas.width / canvas.height : 0,
+            sourceRatio: image ? image.naturalWidth / image.naturalHeight : 0,
+          };
+        });
+
+      expect(geometry.frameRatio).toBeCloseTo(geometry.expectedFrameRatio, 2);
+      expect(geometry.canvasRatio).toBeCloseTo(geometry.sourceRatio, 2);
+    }
+  }
+});
+
 test("multilingual, alias, scientific-name, and misspelling searches rank the canonical taxon", async ({
   page,
 }) => {

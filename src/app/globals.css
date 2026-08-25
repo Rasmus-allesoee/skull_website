@@ -2836,6 +2836,7 @@ h3 {
 
 .collection-card-image {
   display: grid;
+  container-type: size;
   height: var(--collection-card-image-height);
   min-height: 0;
   place-items: center;
@@ -2848,6 +2849,15 @@ h3 {
 .collection-card-image .subject-image {
   width: 94%;
   max-height: 100%;
+}
+
+@supports (width: 1cqw) and (height: 1cqh) {
+  .collection-card-image .subject-image {
+    width: min(94cqw, calc(100cqh * var(--subject-aspect)));
+    height: min(100cqh, calc(94cqw * var(--subject-aspect-inverse)));
+    max-width: none;
+    max-height: none;
+  }
 }
 
 .collection-card-copy {

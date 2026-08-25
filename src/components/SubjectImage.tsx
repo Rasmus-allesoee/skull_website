@@ -5,6 +5,7 @@ import type { MediaAsset } from "@/domain/content/types";
 
 type SubjectStyle = CSSProperties & {
   "--subject-aspect": string;
+  "--subject-aspect-inverse": string;
   "--subject-canvas-width": string;
   "--subject-canvas-height": string;
   "--subject-canvas-left": string;
@@ -25,6 +26,7 @@ export function SubjectImage({
   const { subjectBounds } = asset;
   const style: SubjectStyle = {
     "--subject-aspect": `${subjectBounds.width / subjectBounds.height}`,
+    "--subject-aspect-inverse": `${subjectBounds.height / subjectBounds.width}`,
     "--subject-canvas-width": `${(asset.width / subjectBounds.width) * 100}%`,
     "--subject-canvas-height": `${(asset.height / subjectBounds.height) * 100}%`,
     "--subject-canvas-left": `${(-subjectBounds.x / subjectBounds.width) * 100}%`,
