@@ -21,12 +21,20 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 - Re-anchored the narrow-screen drawer to the left edge and mirrored its shadow treatment to match the new placement.
 - Verified the focused source checks, rebuilt the 75 static routes, and passed all 12 catalog Playwright journeys at desktop/mobile sizes, including sticky clearance, reset behavior, left-edge placement, accessibility, and no-JavaScript route access.
 
+### Owner-directed compact card redesign (2026-08-25)
+
+- Replaced variable-height catalog image regions and oversized copy blocks with one bounded, equal-height lateral-image stage and a compact two-column fact grid. The stage remains capped so cards do not become taller merely to make the image fill more space.
+- Species cards now always show skull length and skull mass from the largest recorded specimen, or from the largest specimen still matching the active query/feature filters. The metric specimen may differ from the curated default lateral image; multi-specimen cards identify it as `Largest recorded` or `Largest matching`.
+- Removed the separate confirmation/confidence line from species cards. Genus-level records retain the explicit scientific `sp.` label, which communicates their identification level without redundant copy.
+- Specimen cards now share the same image/name hierarchy and show immutable ID, skull length, skull mass, age, sex, condition, and location/date in a dense, divided fact grid with explicit missing-value semantics.
+- Added regression coverage for the new card facts, largest-specimen selection, equal image-stage heights, image-dominant card proportions, and the search-surface mode-switch focus handoff.
+
 ### Catalog-first information architecture
 
 - Replaced the large editorial `/species` sequence with a short Collection catalog heading, sticky operational controls, and immediate published results. At 1440 × 900 the first card begins within the first viewport; the default grid remains three/two/one columns without horizontal overflow.
 - One control region now owns the labelled search combobox, Species/Specimens radio mode, compact All classes/Aves/Mammalia presets, Filters, Sort, Browse taxonomy, result count, active chips, and Clear all. The Home discovery action targets this real control instead of an honest future-search placeholder.
 - Family groups is now a truthful grouped sort in both Species and Specimens modes and survives mode changes. Explicit common/scientific/numeric sorts flatten results into one global order, and one URL-backed direction toggle reverses family, name, or measurement ordering.
-- Species cards remain one per taxon and report matched specimen count/length/mass range while feature filters are active. Numeric species sorts use the largest recorded matching specimen as the sort key, visible lateral representative, and exact card link; the card names that specimen and measurement, while missing measurements keep the reviewed default visual and sort last in either direction. Specimen cards expose immutable ID, maximum length, prepared mass, and concise location/date wording.
+- Species cards remain one per taxon and report matched specimen count/length/mass range while feature filters are active. They always show skull length and skull mass from the largest recorded or largest matching specimen, independently of the curated default lateral image; numeric sorts still use the largest matching sort specimen as their visual representative and exact card link, while missing measurements remain explicit and sort last in either direction. Specimen cards expose immutable ID, skull length, skull mass, age, sex, condition, and concise location/date facts.
 
 ### Complete search, facets, and URL behavior
 

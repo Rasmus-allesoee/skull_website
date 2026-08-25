@@ -103,6 +103,9 @@ describe("catalog filtering", () => {
     expect(
       result.taxonRepresentatives[badger.taxon.taxonId]?.specimen.specimenId,
     ).toBe("SPEC-0009");
+    expect(
+      result.taxonLargestSpecimens[badger.taxon.taxonId]?.specimen.specimenId,
+    ).toBe("SPEC-0009");
   });
 
   it("reverses numeric ordering while keeping unknown measurements last", () => {

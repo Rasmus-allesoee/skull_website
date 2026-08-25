@@ -14,7 +14,10 @@ import {
 } from "@/domain/content/display";
 
 import { SpecimenQuickView } from "./SpecimenQuickView";
-import type { SpeciesMatchSummary } from "./catalogFiltering";
+import {
+  selectLargestTaxonSpecimen,
+  type SpeciesMatchSummary,
+} from "./catalogFiltering";
 import type { CatalogViewSort } from "./catalogState";
 
 type MeasurementSort = Extract<CatalogViewSort, "skull-length" | "skull-mass">;
@@ -24,12 +27,16 @@ export function TaxonCardGrid({
   matchSummaries,
   showMatchSummary = false,
   representatives,
+  largestSpecimens,
+  largestSpecimenLabel = "Largest recorded",
   measurementSort,
 }: {
   cards: TaxonCardRecord[];
   matchSummaries?: Record<string, SpeciesMatchSummary>;
   showMatchSummary?: boolean;
   representatives?: Record<string, SpecimenCardRecord>;
+  largestSpecimens?: Record<string, SpecimenCardRecord>;
+  largestSpecimenLabel?: string;
   measurementSort?: MeasurementSort;
 }) {
   return (
@@ -41,6 +48,8 @@ export function TaxonCardGrid({
           matchSummary={matchSummaries?.[card.taxon.taxonId]}
           showMatchSummary={showMatchSummary}
           representative={representatives?.[card.taxon.taxonId]}
+          largestSpecimen={largestSpecimens?.[card.taxon.taxonId]}
+          largestSpecimenLabel={largestSpecimenLabel}
           measurementSort={measurementSort}
         />
       ))}
@@ -53,12 +62,16 @@ export function TaxonCard({
   matchSummary,
   showMatchSummary = false,
   representative,
+  largestSpecimen,
+  largestSpecimenLabel = "Largest recorded",
   measurementSort,
 }: {
   card: TaxonCardRecord;
   matchSummary?: SpeciesMatchSummary;
   showMatchSummary?: boolean;
   representative?: SpecimenCardRecord;
+  largestSpecimen?: SpecimenCardRecord;
+  largestSpecimenLabel?: string;
   measurementSort?: MeasurementSort;
 }) {
   const { taxon } = card;
@@ -66,19 +79,15 @@ export function TaxonCard({
     ? (representative?.image ?? card.image)
     : card.image;
   const displayHref = measurementSort ? representative?.href : card.href;
-  const representativeMeasurement =
-    measurementSort && representative
-      ? representative.specimen.measurements[
-          measurementSort === "skull-length" ? "skullLength" : "skullMass"
-        ]
-      : null;
-  const representativeMeasurementRecorded =
-    representativeMeasurement?.status === "measured" ||
-    representativeMeasurement?.status === "approximate";
   const commonName = taxon.names.english ?? taxon.scientificName;
-  const needsQualifier =
-    taxon.identificationQualifier !== "confirmed" ||
-    taxon.identificationConfidence !== "high";
+  const fallbackSpecimen = card.specimens[0];
+  const metricSpecimen =
+    largestSpecimen ??
+    (fallbackSpecimen
+      ? selectLargestTaxonSpecimen(card.specimens, fallbackSpecimen)
+      : null);
+  const metricLength = metricSpecimen?.specimen.measurements.skullLength;
+  const metricMass = metricSpecimen?.specimen.measurements.skullMass;
   return (
     <article className="collection-card taxon-card">
       <Link href={displayHref ?? card.href} className="collection-card-link">
@@ -95,43 +104,47 @@ export function TaxonCard({
           )}
         </div>
         <div className="collection-card-copy">
-          <p className="card-overline">
-            {taxon.hierarchy.className} ·{" "}
-            {taxon.hierarchy.familyName ?? taxon.rank}
+          <p className="card-overline card-overline-split">
+            <span>
+              {taxon.hierarchy.className} ·{" "}
+              {taxon.hierarchy.familyName ?? taxon.rank}
+            </span>
+            <span>
+              {card.specimenCount}{" "}
+              {card.specimenCount === 1 ? "skull" : "skulls"}
+            </span>
           </p>
           <h3>{commonName}</h3>
           <p className="card-scientific-name">
             <ScientificIdentification taxon={taxon} />
+            {taxon.names.danish ? (
+              <span className="card-danish-name"> · {taxon.names.danish}</span>
+            ) : null}
           </p>
-          {taxon.names.danish ? (
-            <p className="card-secondary-name">Danish · {taxon.names.danish}</p>
-          ) : null}
-          {measurementSort && representative ? (
-            <p className="card-sort-representative">
-              {representativeMeasurementRecorded && representativeMeasurement
-                ? `Largest recorded ${measurementSortLabel(measurementSort)} · ${representative.specimen.specimenId} · ${formatMeasurement(representativeMeasurement)}`
-                : `${measurementSortLabel(measurementSort, true)} not recorded · Default specimen ${representative.specimen.specimenId}`}
-            </p>
-          ) : null}
           {showMatchSummary && matchSummary ? (
             <p className="card-match-summary">
               {formatSpeciesMatchSummary(matchSummary)}
             </p>
           ) : null}
-          <div className="card-meta">
-            <span>
-              {card.specimenCount}{" "}
-              {card.specimenCount === 1 ? "skull" : "skulls"}
-            </span>
-            {needsQualifier ? (
-              <span>
-                {humanizeToken(taxon.identificationQualifier)} ·{" "}
-                {humanizeToken(taxon.identificationConfidence)} confidence
-              </span>
-            ) : (
-              <span>Confirmed identification</span>
-            )}
-          </div>
+          <dl className="card-facts taxon-card-facts">
+            <CardFact
+              label="Skull length"
+              value={
+                metricLength ? formatMeasurement(metricLength) : "Not recorded"
+              }
+            />
+            <CardFact
+              label="Skull mass"
+              value={
+                metricMass ? formatMeasurement(metricMass) : "Not recorded"
+              }
+            />
+          </dl>
+          {card.specimenCount > 1 && metricSpecimen ? (
+            <p className="card-representative-note">
+              {largestSpecimenLabel} · {metricSpecimen.specimen.specimenId}
+            </p>
+          ) : null}
         </div>
       </Link>
       {card.specimenCount > 1 ? (
@@ -142,15 +155,6 @@ export function TaxonCard({
       ) : null}
     </article>
   );
-}
-
-function measurementSortLabel(
-  sort: MeasurementSort,
-  sentenceCase = false,
-): string {
-  const label =
-    sort === "skull-length" ? "skull length" : "prepared skull mass";
-  return sentenceCase ? `${label[0]?.toUpperCase()}${label.slice(1)}` : label;
 }
 
 function formatSpeciesMatchSummary(summary: SpeciesMatchSummary): string {
@@ -192,30 +196,65 @@ export function SpecimenCard({ card }: { card: SpecimenCardRecord }) {
           )}
         </div>
         <div className="collection-card-copy">
-          <p className="card-overline">{card.specimen.specimenId}</p>
+          <p className="card-overline card-overline-split">
+            <span>
+              {card.taxon.hierarchy.className} ·{" "}
+              {card.taxon.hierarchy.familyName ?? card.taxon.rank}
+            </span>
+            <span>{card.specimen.specimenId}</span>
+          </p>
           <h3>{commonName}</h3>
           <p className="card-scientific-name">
             <ScientificIdentification taxon={card.taxon} />
+            {card.taxon.names.danish ? (
+              <span className="card-danish-name">
+                {" "}
+                · {card.taxon.names.danish}
+              </span>
+            ) : null}
           </p>
-          <dl className="card-measurements">
-            <div>
-              <dt>Max length</dt>
-              <dd>
-                {formatMeasurement(card.specimen.measurements.skullLength)}
-              </dd>
-            </div>
-            <div>
-              <dt>Prepared mass</dt>
-              <dd>{formatMeasurement(card.specimen.measurements.skullMass)}</dd>
-            </div>
+          <dl className="card-facts specimen-card-facts">
+            <CardFact
+              label="Skull length"
+              value={formatMeasurement(card.specimen.measurements.skullLength)}
+            />
+            <CardFact
+              label="Skull mass"
+              value={formatMeasurement(card.specimen.measurements.skullMass)}
+            />
+            <CardFact
+              label="Age"
+              value={humanizeToken(card.specimen.ageClass)}
+            />
+            <CardFact label="Sex" value={humanizeToken(card.specimen.sex)} />
+            <CardFact
+              label="Condition"
+              value={humanizeToken(card.specimen.condition)}
+            />
+            <CardFact
+              label="Location · date"
+              value={formatSpecimenLocationDate(card)}
+            />
           </dl>
-          <p className="card-location">
-            {card.specimen.location.label ?? "Location not recorded"} ·{" "}
-            {formatPartialDate(card.specimen.acquisitionDate)}
-          </p>
         </div>
       </Link>
     </article>
+  );
+}
+
+function CardFact({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt>{label}</dt>
+      <dd>{value}</dd>
+    </div>
+  );
+}
+
+function formatSpecimenLocationDate(card: SpecimenCardRecord): string {
+  const location = card.specimen.location.label ?? "Location not recorded";
+  return [location, formatPartialDate(card.specimen.acquisitionDate)].join(
+    " · ",
   );
 }
 

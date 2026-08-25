@@ -18,6 +18,8 @@ export function FamilyGroupedTaxonGallery({
   matchSummaries,
   showMatchSummary = false,
   representatives,
+  largestSpecimens,
+  largestSpecimenLabel = "Largest recorded",
   measurementSort,
   direction = "ascending",
 }: {
@@ -25,6 +27,8 @@ export function FamilyGroupedTaxonGallery({
   matchSummaries?: Record<string, SpeciesMatchSummary>;
   showMatchSummary?: boolean;
   representatives?: Record<string, SpecimenCardRecord>;
+  largestSpecimens?: Record<string, SpecimenCardRecord>;
+  largestSpecimenLabel?: string;
   measurementSort?: Extract<CatalogViewSort, "skull-length" | "skull-mass">;
   direction?: SortDirection;
 }) {
@@ -54,6 +58,8 @@ export function FamilyGroupedTaxonGallery({
               matchSummaries={matchSummaries}
               showMatchSummary={showMatchSummary}
               representatives={representatives}
+              largestSpecimens={largestSpecimens}
+              largestSpecimenLabel={largestSpecimenLabel}
               measurementSort={measurementSort}
             />
           </section>

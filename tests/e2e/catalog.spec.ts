@@ -39,6 +39,26 @@ test("catalog-first layout reaches a responsive three-column collection grid in 
   expect(positions[0]!.x).toBeLessThan(positions[1]!.x);
   expect(positions[1]!.x).toBeLessThan(positions[2]!.x);
 
+  const cardGeometry = await mustelidaeCards.evaluateAll((cards) =>
+    cards.map((card) => ({
+      imageHeight:
+        card.querySelector(".collection-card-image")?.getBoundingClientRect()
+          .height ?? 0,
+      copyHeight:
+        card.querySelector(".collection-card-copy")?.getBoundingClientRect()
+          .height ?? 0,
+    })),
+  );
+  expect(
+    new Set(cardGeometry.map(({ imageHeight }) => Math.round(imageHeight)))
+      .size,
+  ).toBe(1);
+  expect(
+    cardGeometry.every(
+      ({ imageHeight, copyHeight }) => imageHeight > copyHeight,
+    ),
+  ).toBe(true);
+
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 
@@ -317,10 +337,13 @@ test("measurement sorting works in Species mode and Family groups works in Speci
   await expect(firstTaxonCard.getByRole("heading", { level: 3 })).toHaveText(
     "Harbour seal",
   );
+  await expect(firstTaxonCard.getByText("Skull length")).toBeVisible();
   await expect(
-    firstTaxonCard.getByText(
-      /Largest recorded skull length.*SPEC-0014.*230 mm/i,
-    ),
+    firstTaxonCard.locator(".taxon-card-facts").getByText("230 mm"),
+  ).toBeVisible();
+  await expect(firstTaxonCard.getByText("Skull mass")).toBeVisible();
+  await expect(
+    firstTaxonCard.getByText("Largest recorded · SPEC-0014"),
   ).toBeVisible();
   await expect(firstTaxonCard.getByRole("link").first()).toHaveAttribute(
     "href",
@@ -512,7 +535,9 @@ async function expectCatalogCount(page: Page, expected: string) {
 }
 
 async function specimenIds(page: Page): Promise<string[]> {
-  return page.locator(".specimen-card .card-overline").allTextContents();
+  return page
+    .locator(".specimen-card .card-overline-split > span:last-child")
+    .allTextContents();
 }
 
 async function horizontalOverflow(page: Page): Promise<number> {

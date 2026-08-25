@@ -2834,53 +2834,108 @@ h3 {
 
 .collection-card-image {
   display: grid;
-  min-height: 16rem;
+  height: clamp(13rem, 23vw, 18rem);
+  min-height: 0;
   place-items: center;
-  padding: 1.25rem;
+  overflow: hidden;
+  padding: 0.9rem;
   border-bottom: 1px solid var(--color-border);
   background: #080a09;
 }
 
 .collection-card-image .subject-image {
   width: 94%;
+  max-height: 100%;
 }
 
 .collection-card-copy {
   display: flex;
-  min-height: 16rem;
+  min-height: 0;
   flex: 1;
   flex-direction: column;
-  padding: 1.25rem;
+  gap: 0.45rem;
+  padding: 0.9rem 1rem;
 }
 
 .collection-card h3 {
   max-width: 22ch;
-  margin-bottom: 0.35rem;
+  margin: 0;
   overflow-wrap: anywhere;
   font-family: var(--font-display);
   font-size: clamp(1.55rem, 3vw, 2.2rem);
   font-weight: 400;
 }
 
-.card-scientific-name,
-.card-secondary-name,
-.card-location {
-  margin-bottom: 0.2rem;
+.card-scientific-name {
+  margin: 0;
   color: var(--color-text-muted);
   font-size: 0.8rem;
 }
 
-.card-meta {
+.card-danish-name {
+  color: var(--color-text-muted);
+  font-style: normal;
+}
+
+.card-overline-split {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem 1rem;
   justify-content: space-between;
-  margin-top: auto;
-  padding-top: 1.25rem;
+  margin: 0;
   color: var(--color-text-muted);
   font-size: 0.7rem;
 }
 
+.card-overline-split > span:last-child {
+  color: var(--color-text-muted);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.card-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: auto 0 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.card-facts > div {
+  display: flex;
+  min-width: 0;
+  min-height: 2.2rem;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.55rem;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.68rem;
+}
+
+.card-facts > div:nth-child(odd) {
+  border-right: 1px solid var(--color-border);
+}
+
+.card-facts dt {
+  min-width: 0;
+  color: var(--color-text-muted);
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.card-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.card-representative-note {
+  margin: 0;
+  color: var(--color-data);
+  font-size: 0.62rem;
+}
 .specimen-quick-trigger {
   display: flex;
   width: 100%;
@@ -3068,29 +3123,6 @@ h3 {
   color: var(--color-accent);
   font-size: 0.72rem;
   text-decoration: none;
-}
-
-.card-measurements {
-  margin: auto 0 0;
-  padding-top: 1rem;
-}
-
-.card-measurements > div {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-block: 0.45rem;
-  border-top: 1px solid var(--color-border);
-  font-size: 0.75rem;
-}
-
-.card-measurements dt {
-  color: var(--color-text-muted);
-}
-
-.card-measurements dd {
-  margin: 0;
-  font-variant-numeric: tabular-nums;
 }
 
 .media-placeholder {
@@ -3364,7 +3396,8 @@ h3 {
   }
 
   .collection-card-image {
-    min-height: 14rem;
+    height: clamp(13rem, 31vw, 16rem);
+    min-height: 0;
   }
 
   .specimen-quick-dialog li > a {
@@ -4107,13 +4140,14 @@ h3 {
 }
 
 .catalog-live-results .collection-card-image {
-  min-height: 13rem;
-  padding: 1rem;
+  height: clamp(13rem, 23vw, 18rem);
+  min-height: 0;
+  padding: 0.85rem;
 }
 
 .catalog-live-results .collection-card-copy {
-  min-height: 12rem;
-  padding: 1rem;
+  min-height: 0;
+  padding: 0.85rem 0.95rem;
 }
 
 .catalog-live-results .collection-card h3 {
@@ -4121,17 +4155,11 @@ h3 {
 }
 
 .card-match-summary {
-  margin: 0.65rem 0 0;
+  margin: 0.35rem 0 0;
   padding-left: 0.65rem;
   border-left: 2px solid var(--color-data);
   color: var(--color-data);
   font-size: 0.68rem;
-}
-
-.card-sort-representative {
-  margin: 0.65rem 0 0;
-  color: var(--color-data);
-  font-size: 0.72rem;
 }
 
 .catalog-empty-state {

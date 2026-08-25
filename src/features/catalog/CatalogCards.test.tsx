@@ -17,7 +17,7 @@ beforeAll(() => {
 });
 
 describe("catalog cards", () => {
-  it("keeps a long uncertain taxon name and missing image state explicit", () => {
+  it("keeps a long taxon name and missing image state explicit", () => {
     const card = getTaxonCardRecords(collection).find(
       ({ taxon }) => taxon.taxonId === "TAX-0001",
     )!;
@@ -43,7 +43,14 @@ describe("catalog cards", () => {
       screen.getByRole("link", { name: new RegExp(longName) }),
     ).toHaveAttribute("href", "/species/raccoon-dog");
     expect(screen.getByText("Lateral view not available")).toBeInTheDocument();
-    expect(screen.getByText("Uncertain · Low confidence")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Uncertain · Low confidence"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Confirmed identification"),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Skull length")).toBeInTheDocument();
+    expect(screen.getByText("Skull mass")).toBeInTheDocument();
   });
 
   it("renders the exact specimen-card mode with a stable nested URL", () => {
@@ -55,7 +62,11 @@ describe("catalog cards", () => {
     expect(
       screen.getByRole("link", { name: /SPEC-0001 Raccoon dog/i }),
     ).toHaveAttribute("href", "/species/raccoon-dog/specimens/SPEC-0001");
-    expect(screen.getByText("Max length")).toBeInTheDocument();
-    expect(screen.getByText("Prepared mass")).toBeInTheDocument();
+    expect(screen.getByText("Skull length")).toBeInTheDocument();
+    expect(screen.getByText("Skull mass")).toBeInTheDocument();
+    expect(screen.getByText("Age")).toBeInTheDocument();
+    expect(screen.getByText("Sex")).toBeInTheDocument();
+    expect(screen.getByText("Condition")).toBeInTheDocument();
+    expect(screen.getByText("Location · date")).toBeInTheDocument();
   });
 });

@@ -20,6 +20,7 @@ export interface FilteredCatalog {
   specimens: SpecimenCardRecord[];
   summaries: Record<string, SpeciesMatchSummary>;
   taxonRepresentatives: Record<string, SpecimenCardRecord>;
+  taxonLargestSpecimens: Record<string, SpecimenCardRecord>;
 }
 
 const collator = new Intl.Collator("en", {
@@ -53,6 +54,7 @@ export function filterCatalog(
 
   const summaries: Record<string, SpeciesMatchSummary> = {};
   const taxonRepresentatives: Record<string, SpecimenCardRecord> = {};
+  const taxonLargestSpecimens: Record<string, SpecimenCardRecord> = {};
   const filteredTaxa = catalog.taxa.flatMap((card) => {
     if (!taxonMatchesScope(card, state)) return [];
     if (
@@ -94,6 +96,10 @@ export function filterCatalog(
       matchingSpecimens,
       state,
     );
+    taxonLargestSpecimens[card.taxon.taxonId] = selectLargestTaxonSpecimen(
+      matchingSpecimens,
+      matchingSpecimens[0]!,
+    );
     return [card];
   });
 
@@ -119,6 +125,7 @@ export function filterCatalog(
     ),
     summaries,
     taxonRepresentatives,
+    taxonLargestSpecimens,
   };
 }
 
@@ -324,6 +331,54 @@ function compareMeasurements(
   return direction === "ascending"
     ? firstValue - secondValue
     : secondValue - firstValue;
+}
+
+export function selectLargestTaxonSpecimen(
+  candidates: SpecimenCardRecord[],
+  fallback: SpecimenCardRecord,
+): SpecimenCardRecord {
+  const byLength = [...candidates]
+    .filter(
+      ({ specimen }) =>
+        measurementValue(specimen.measurements.skullLength) !== null,
+    )
+    .sort((first, second) =>
+      compareRecordedMeasurements(
+        first.specimen.measurements.skullLength,
+        second.specimen.measurements.skullLength,
+        first.specimen.specimenId,
+        second.specimen.specimenId,
+      ),
+    );
+  if (byLength[0]) return byLength[0];
+
+  const byMass = [...candidates]
+    .filter(
+      ({ specimen }) =>
+        measurementValue(specimen.measurements.skullMass) !== null,
+    )
+    .sort((first, second) =>
+      compareRecordedMeasurements(
+        first.specimen.measurements.skullMass,
+        second.specimen.measurements.skullMass,
+        first.specimen.specimenId,
+        second.specimen.specimenId,
+      ),
+    );
+  return byMass[0] ?? fallback;
+}
+
+function compareRecordedMeasurements(
+  first: SpecimenCardRecord["specimen"]["measurements"]["skullLength"],
+  second: SpecimenCardRecord["specimen"]["measurements"]["skullLength"],
+  firstId: string,
+  secondId: string,
+): number {
+  return (
+    (measurementValue(second) ?? Number.NEGATIVE_INFINITY) -
+      (measurementValue(first) ?? Number.NEGATIVE_INFINITY) ||
+    collator.compare(firstId, secondId)
+  );
 }
 
 function selectTaxonRepresentative(

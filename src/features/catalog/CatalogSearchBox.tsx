@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useEffect,
   useId,
   useLayoutEffect,
   useMemo,
@@ -55,6 +56,7 @@ export function CatalogSearchBox({
     () => new Set(),
   );
   const suggestionsSurfaceRef = useRef<HTMLDivElement>(null);
+  const blurTimeoutRef = useRef<number | null>(null);
   const suggestionModel = useMemo<CatalogSuggestionModel>(
     () =>
       buildCatalogSuggestionModel({
@@ -83,6 +85,14 @@ export function CatalogSearchBox({
   );
   const activeEntry = suggestionEntries[activeIndex] ?? null;
   const activeDocument = activeEntry?.document ?? null;
+
+  useEffect(() => {
+    return () => {
+      if (blurTimeoutRef.current !== null) {
+        window.clearTimeout(blurTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useLayoutEffect(() => {
     const surface = suggestionsSurfaceRef.current;
@@ -145,10 +155,25 @@ export function CatalogSearchBox({
               : undefined
           }
           aria-describedby={statusId}
+          onMouseDown={() => {
+            if (blurTimeoutRef.current !== null) {
+              window.clearTimeout(blurTimeoutRef.current);
+              blurTimeoutRef.current = null;
+            }
+            if (query.trim()) setOpen(true);
+          }}
           onFocus={() => {
+            if (blurTimeoutRef.current !== null) {
+              window.clearTimeout(blurTimeoutRef.current);
+              blurTimeoutRef.current = null;
+            }
             if (query.trim()) setOpen(true);
           }}
           onChange={(event) => {
+            if (blurTimeoutRef.current !== null) {
+              window.clearTimeout(blurTimeoutRef.current);
+              blurTimeoutRef.current = null;
+            }
             setActiveIndex(-1);
             setExpandedTaxonIds(new Set());
             setOpen(Boolean(event.target.value.trim()));
@@ -232,7 +257,13 @@ export function CatalogSearchBox({
             ) {
               return;
             }
-            window.setTimeout(() => setOpen(false), 100);
+            if (blurTimeoutRef.current !== null) {
+              window.clearTimeout(blurTimeoutRef.current);
+            }
+            blurTimeoutRef.current = window.setTimeout(() => {
+              blurTimeoutRef.current = null;
+              setOpen(false);
+            }, 100);
           }}
         />
         {query ? (
