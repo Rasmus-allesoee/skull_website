@@ -137,6 +137,23 @@ test("mobile catalog controls preserve at least three quarters of the viewport f
   ).toBeVisible();
   await expect(page.getByRole("radio", { name: "Species" })).not.toBeVisible();
 
+  const filterButton = page.getByRole("button", { name: "Filters" });
+  await expect(filterButton).toHaveAttribute(
+    "data-tooltip",
+    "Filter physical skulls",
+  );
+  await filterButton.focus();
+  await expect
+    .poll(() =>
+      filterButton.evaluate(
+        (element) => getComputedStyle(element, "::after").visibility,
+      ),
+    )
+    .toBe("visible");
+  await expect(mode).toHaveAttribute("title", "Result mode");
+  await expect(classFilter).toHaveAttribute("title", "Filter by class");
+  await expect(sort).toHaveAttribute("title", "Sort results");
+
   const activeStateHeight = await page
     .locator(".catalog-active-state")
     .evaluate((element) => element.getBoundingClientRect().height);
@@ -151,7 +168,84 @@ test("mobile catalog controls preserve at least three quarters of the viewport f
 
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto("/species");
-  await expect(controls).toHaveCSS("position", "static");
+  await expect(controls).toHaveCSS("position", "sticky");
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+
+  const narrowSearch = page.getByRole("combobox", { name: searchLabel });
+  await narrowSearch.fill("carnivora");
+  const surface = page.locator(".catalog-suggestions-surface");
+  await expect(surface).toBeVisible();
+  const overlayGeometry = await surface.evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    const x = Math.min(innerWidth - 1, Math.max(0, box.left + 8));
+    const y = Math.min(
+      innerHeight - 1,
+      Math.max(0, box.top + Math.min(120, box.height / 2)),
+    );
+    const hit = document.elementFromPoint(x, y);
+    const control = element.closest(".catalog-control-region");
+    return {
+      hitWithinSurface: hit ? element.contains(hit) : false,
+      surfaceZIndex: getComputedStyle(element).zIndex,
+      controlPosition: control ? getComputedStyle(control).position : "",
+    };
+  });
+  expect(overlayGeometry.hitWithinSurface).toBe(true);
+  expect(overlayGeometry.surfaceZIndex).toBe("60");
+  expect(overlayGeometry.controlPosition).toBe("sticky");
+
+  await narrowSearch.press("Escape");
+  await page.evaluate(() =>
+    window.scrollTo({ top: document.documentElement.scrollHeight }),
+  );
+  await expect
+    .poll(() =>
+      controls.evaluate((element) => element.getBoundingClientRect().top),
+    )
+    .toBeLessThanOrEqual(1);
+});
+
+test("medium catalog breakpoint keeps compact controls in one horizontal row", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 900, height: 900 });
+  await page.goto("/species?sort=skull-mass&direction=descending");
+
+  const controls = page.getByRole("region", { name: "Catalog controls" });
+  await expect(controls).toHaveCSS("position", "sticky");
+  await expect(page.getByRole("radio", { name: "Species" })).toBeVisible();
+  await expect(page.locator(".catalog-class-presets")).toHaveCSS(
+    "display",
+    "none",
+  );
+  await expect(page.getByLabel("Class", { exact: true })).toBeVisible();
+
+  const rowGeometry = await page
+    .locator(".catalog-secondary-controls")
+    .evaluate((element) => {
+      const context = element.querySelector(".catalog-mobile-context-controls");
+      const actions = element.querySelector(".catalog-action-controls");
+      const contextBox = context?.getBoundingClientRect();
+      const actionBox = actions?.getBoundingClientRect();
+      return {
+        contextTop: contextBox?.top ?? 0,
+        actionTop: actionBox?.top ?? 0,
+        contextHeight: contextBox?.height ?? 0,
+        actionHeight: actionBox?.height ?? 0,
+      };
+    });
+  expect(Math.abs(rowGeometry.contextTop - rowGeometry.actionTop)).toBeLessThan(
+    1,
+  );
+  expect(rowGeometry.contextHeight).toBeLessThanOrEqual(48);
+  expect(rowGeometry.actionHeight).toBeLessThanOrEqual(48);
+
+  for (const name of ["Filters", "Browse taxonomy"]) {
+    await expect(page.getByRole("button", { name })).toHaveCSS("width", "44px");
+  }
+  await expect(
+    page.getByRole("button", { name: /Reverse result order/ }),
+  ).toHaveCSS("width", "44px");
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 

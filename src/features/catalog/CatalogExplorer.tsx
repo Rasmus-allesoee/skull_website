@@ -365,6 +365,7 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
                 type="button"
                 className="catalog-sort-direction catalog-icon-button"
                 aria-label={`Reverse result order. Current direction: ${sortDirectionText(state.sort, state.direction)}.`}
+                data-tooltip={`Sort ${sortDirectionText(state.sort, state.direction).toLowerCase()}`}
                 title={`Current direction: ${sortDirectionText(state.sort, state.direction)}`}
                 onClick={() =>
                   commitState({
@@ -387,6 +388,7 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
               type="button"
               className="catalog-action-button catalog-icon-button"
               aria-label="Browse taxonomy"
+              data-tooltip="Browse taxonomy"
               title="Browse taxonomy"
               aria-expanded={taxonomyOpen}
               onClick={() => setTaxonomyOpen((open) => !open)}
@@ -419,6 +421,7 @@ export function CatalogExplorer({ catalog }: { catalog: CatalogModel }) {
               type="button"
               className="catalog-clear-all catalog-icon-button"
               aria-label="Clear all"
+              data-tooltip="Clear all catalog controls"
               title="Clear all catalog controls"
               onClick={() => commitState(defaultCatalogState)}
             >

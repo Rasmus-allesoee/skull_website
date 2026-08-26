@@ -41,6 +41,7 @@ export function CatalogFilters({
         type="button"
         className="catalog-action-button catalog-icon-button"
         aria-label="Filters"
+        data-tooltip="Filter physical skulls"
         title="Filter physical skulls"
         onClick={() => {
           setDraft(state);
