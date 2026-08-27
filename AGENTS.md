@@ -141,11 +141,15 @@ Before a checkpoint:
 ## 8. Git and GitHub workflow
 
 - Initial repository bootstrap occurs on `main` as explicitly approved.
-- After bootstrap, branch from current `main` using `agent/<short-description>` and use focused draft pull requests.
+- `main` is the stable, deployable integration branch. For this solo project, do not create a permanent `dev` branch; use short-lived task branches instead.
+- After bootstrap, branch from the latest `main` using `agent/<short-description>` and use focused draft pull requests.
+- Keep each branch and pull request focused on one phase, coherent feature, or independent fix. If an unrelated bug or improvement is discovered during a phase, record it separately, create a new branch from the latest `main`, and merge that fix into `main` before merging the updated `main` back into the phase branch. A change may remain in the phase branch when it is genuinely required for that phase.
 - Use conventional commit prefixes such as `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`, and `ci:`.
 - Never stage unrelated user files silently. Audit the complete scope before commit/push.
 - One coherent verified checkpoint closes each phase; do not mark status complete on code presence alone.
 - Stage and commit each coherent implementation or fix as its own checkpoint; do not accumulate unrelated changes into one giant commit.
+- Preserve meaningful commit history. Merge completed pull requests with GitHub's `Create a merge commit` / a normal non-squash merge so individual coherent commits remain visible; do not squash or rewrite them unless the owner explicitly requests it.
+- After a merge, update local `main`, delete the merged feature branch locally and remotely, and create the next task branch from the updated `main` rather than from a stale feature branch. Avoid rebasing or force-pushing branches that have been published for review.
 - GitHub issues/milestones are the active implementation tracker. Do not add a second competing tracker.
 - Production later deploys only from `main`; no production/Vercel configuration belongs to Phase 3.
 

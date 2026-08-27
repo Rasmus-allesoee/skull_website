@@ -21,11 +21,15 @@ pnpm dev
 
 ## Branches and commits
 
-- Start from current `main`.
+- `main` is the stable, deployable branch; this solo project does not use a permanent `dev` branch.
+- Start each phase, feature, or independent fix from the latest `main`.
 - Name branches `agent/<short-description>`.
 - Keep changes focused on one coherent issue or vertical sub-slice.
+- If an unrelated issue appears during a feature, track it separately, create a separate branch from `main`, and merge that fix into `main` before updating the original feature branch from `main`.
 - Use conventional commit prefixes: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`, or `ci:`.
 - Do not mix formatting sweeps or unrelated user changes into a feature commit.
+- After a pull request is merged, delete its merged local and remote branch and create the next branch from the updated `main`.
+- Preserve coherent commit history by using a normal merge commit rather than squash merging; do not rewrite a published review branch without explicit agreement.
 
 ## Required checks
 
