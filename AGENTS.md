@@ -89,6 +89,7 @@ Local context paths:
 - `agent_context/interactive_tree_sketch.png` and the Phase 3.1 reference-site screenshots — local visual context only, never runtime assets.
 - `agent_context/metadata_csv/` — ignored partial spreadsheet exports supplied during Phase 3; migration evidence only, never runtime or canonical input.
 - `agent_context/prompt_species_page_redesign_suggestions.md` and `agent_context/species_page_redesign_phase_3_2.md` — owner-approved input and binding Phase 3.2/Phase 4 catalog specification; canonical implemented behavior lives in `docs/`.
+- `agent_context/phase_5_map_feature_plan.md` — owner-authored map-only Phase 5 implementation brief; supporting/editorial pages remain deferred.
 - `agent_context/website_screenshots/localhost_3000_species.png` — ignored before-state visual evidence only, never a runtime asset.
 
 Phase 2 uses only staging metadata row `ID = 1` and the six `mårhund_*_1.png` files as migration evidence for `TAX-0001` / `SPEC-0001`. The reviewed canonical values live in `content/`; never make a normal build depend on the ignored staging sources. Owner feedback supersedes the initial slice's display wording and condition classification, but it does not authorize inventing unrecorded pathology, trauma, teeth-set, skeleton, age-evidence, or reuse facts. The Phase 2.2 adult-human comparison source is also ignored staging input; only its reviewed declaration and processed public WebP derivative belong in Git.
