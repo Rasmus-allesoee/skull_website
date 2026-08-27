@@ -2,9 +2,9 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**Phase 2 is complete:** the raccoon-dog vertical slice passes the complete local and remote technical/visual gate and received explicit owner approval on 2026-08-17. Phase 3 has not started and begins only from a dedicated next task.
+**The combined Phase 3.2 catalog redesign and Phase 4 discovery scope is implemented locally and ready for owner review:** `/species` is now a compact catalog-first surface with multilingual/fuzzy search, typed suggestions, species/specimen modes, taxonomy/class/feature/measurement facets, sorting, URL-backed state, a responsive taxonomy drawer, no-JavaScript fallbacks, and the 15-taxon/18-specimen review collection. Six SPEC-0003/0013/0018 lateral/oblique derivatives were also rebuilt from their right-facing clean masters through the canonical media pipeline. Phase 3.1 remains at local commit `ce7dbc3`; no Phase 3.2 push or PR was authorized.
 
-The current specimen display is available at `/species/raccoon-dog`; the exact physical record is `/species/raccoon-dog/specimens/SPEC-0001`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
+Start at `/`, browse the catalog at `/species`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
 
 ## Project principles
 
@@ -12,6 +12,7 @@ The current specimen display is available at `/species/raccoon-dog`; the exact p
 - Species are the primary browsing unit, while every physical specimen receives a stable nested URL.
 - Scientific, English, and Danish names are searchable even though the interface is English.
 - Primary collection content stays human-editable in two linked CSV files; reviewed MDX and media/reference declarations compile with it into validated typed build artifacts.
+- Mammal, bird, and fallback measurement profiles share the canonical specimen CSV while rendering only applicable rows and class-aware comparison matrices.
 - Known content is statically prerendered and remains useful before interactive JavaScript loads.
 - Missing, uncertain, and genus-level data is represented honestly.
 - Archival image masters and private working data never enter the public repository.
@@ -25,6 +26,7 @@ The approved scope and experience are specified in [docs/project_overview.md](do
 - Next.js `16.2.12` with the App Router
 - React `19.2.8`
 - strict TypeScript
+- Orama `3.1.18` for the build-generated, browser-side catalog index
 - Tailwind CSS 4 with semantic CSS variables
 - Zod, csv-parse, gray-matter, and Sharp for the build-time content/media pipeline
 - self-hosted Newsreader and IBM Plex Sans
@@ -86,6 +88,7 @@ On macOS, find the computer's active LAN IPv4 address (commonly with `ipconfig g
 | `pnpm validate:media` | Validate declared public WebP files, metadata, alpha, dimensions, naming, and bounds |
 | `pnpm test:fixtures` | Confirm intentionally invalid representative records fail actionably |
 | `pnpm media:stage:phase2` | Copy only the approved six local Phase 2 PNGs into ignored canonical staging names |
+| `pnpm media:stage:phase3.1` | Copy the explicit 104-image Phase 3.1 review map from ignored local sources into ignored canonical staging names |
 | `pnpm media:process` | Build and validate public sRGB WebP derivatives from canonical staged PNGs |
 | `pnpm media:process:reference` | Rebuild a declared public comparison-reference WebP from its ignored local source |
 | `pnpm taxonomy:refresh -- --taxon-id TAX-0001 --dry-run` | Query GBIF explicitly without changing curated taxonomy or writing a snapshot |
@@ -102,7 +105,7 @@ On macOS, find the computer's active LAN IPv4 address (commonly with `ipconfig g
 ## Repository map
 
 ```text
-src/                 Next.js routes, exhibit UI, domain/compiler, and data loading
+src/                 Next.js routes, museum/catalog/exhibit UI, domain/compiler, and data loading
 content/             canonical CSV, cited MDX, media/reference declarations, taxonomy snapshots
 public/media/        curated validated WebP specimen and reference derivatives
 scripts/             content, taxonomy, fixture, staging, and image tooling
@@ -112,7 +115,7 @@ docs/                canonical product, design, architecture, and status docs
 agent_context/        planning context and local-only source/staging material
 ```
 
-Generated `.generated/`, local `.staging/`, browser artifacts, dependencies, and private source material are ignored and replaceable.
+Generated `.generated/` and `public/generated/` search output, local `.staging/`, browser artifacts, dependencies, and private source material are ignored and replaceable.
 
 ## Documentation reading order
 
@@ -124,13 +127,15 @@ Generated `.generated/`, local `.staging/`, browser artifacts, dependencies, and
 6. [docs/design_system.md](docs/design_system.md) — visual and interaction rules
 7. [docs/implementation_plan.md](docs/implementation_plan.md) — phased delivery plan and gates
 8. [docs/competitive_audit.md](docs/competitive_audit.md) — reference-site evidence
-9. [docs/decisions/](docs/decisions/) — accepted architecture decisions
+9. [docs/phase_3_1_migration_audit.md](docs/phase_3_1_migration_audit.md) — accepted/blocked review-slice records and transformations
+10. [docs/interactive_taxonomic_tree.md](docs/interactive_taxonomic_tree.md) — current taxonomy foundations and dedicated Phase 3.3 plan
+11. [docs/decisions/](docs/decisions/) — accepted architecture decisions
 
 The original approved plan remains in `agent_context/website_plan_from_planmode.md` as historical source context. Canonical implementation guidance belongs in `docs/`; contradictory guidance must be resolved and recorded rather than guessed.
 
 ## Content and image safety
 
-`agent_context/skulls_meta.csv` is an incomplete illustrative draft. `agent_context/skull_images_clean/` contains local source/staging images. Both paths are ignored and must not be published or read by a normal application build.
+`agent_context/skulls_meta.csv` is an incomplete illustrative draft. `agent_context/skull_images_clean/` contains local source/staging images. `agent_context/metadata_csv/` contains partial spreadsheet exports supplied while designing the class-aware measurement model. These paths are ignored and must not be published or read by a normal application build.
 
 Phase 2 established:
 
@@ -140,7 +145,7 @@ Phase 2 established:
 - review-gated MDX for future cited editorial profiles and guides; and
 - `public/media/specimens/` for validated derivatives named `{specimen-id}__{view}.webp`, plus `public/media/references/` for validated comparison assets.
 
-The first canonical records (`TAX-0001`, `SPEC-0001`) were curated from only the explicitly selected staging row `ID = 1` and six matching raccoon-dog PNGs. Staging values remain evidence rather than a production source of truth. Phase 2.2 adds a processed adult-human-skull reference and fixed approximate dimensions for the calibrated specimen-page comparison; its ignored source image is likewise not a runtime input. The current profile is deliberately `draft` and omitted from the public page until useful, cited prose is curated; the compiler, citation model, and reviewed-profile path remain intact.
+The first canonical records (`TAX-0001`, `SPEC-0001`) were curated from only the explicitly selected staging row `ID = 1` and six matching raccoon-dog PNGs. Phase 2.2 added a processed adult-human-skull reference and fixed approximate dimensions for the calibrated specimen-page comparison. Phase 3.0 advanced the compiled contract to schema version 4 and expanded the single specimen CSV with explicit mammal/bird measurement applicability. Phase 3.1 then normalized only the 15-taxon/18-specimen subset that could be matched to 104 cleaned images and satisfy the current publication contract; the raw exports/PNG masters remain ignored and the complete Phase 6 audit remains mandatory. Phase 3.2/4 compiles those published records into an ignored 67-document rank/taxon/specimen search artifact; search never reads the raw exports or masters. See the [migration audit](docs/phase_3_1_migration_audit.md). The current raccoon-dog profile remains deliberately `draft` and omitted from the public page until useful, cited prose is curated.
 
 See [docs/content_data_model.md](docs/content_data_model.md) before editing any future content source.
 
@@ -152,7 +157,7 @@ Do not commit secrets, raw workbooks, archival Affinity/PSD files, private notes
 
 ## Deployment
 
-Vercel is the planned hosting target, connected to GitHub after the release-hardening phase. Pull requests will later receive preview deployments and `main` will become the only production source. No production project, domain, analytics, or runtime service is configured in Phase 2/2.1/2.2.
+Vercel is the planned hosting target, connected to GitHub after the release-hardening phase. Pull requests will later receive preview deployments and `main` will become the only production source. No production project, domain, analytics, or runtime service is configured through the current combined Phase 3.2/4 checkpoint.
 
 ## Rights and licence
 

@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "specimen_id": "SPEC-0010",
+  "assets": [
+    {
+      "view": "lateral",
+      "alt": "Lateral view of European badger skull specimen SPEC-0010.",
+      "orientation": "right"
+    },
+    {
+      "view": "oblique",
+      "alt": "Oblique view of European badger skull specimen SPEC-0010."
+    },
+    {
+      "view": "frontal",
+      "alt": "Frontal view of European badger skull specimen SPEC-0010."
+    },
+    {
+      "view": "dorsal",
+      "alt": "Dorsal view of European badger skull specimen SPEC-0010."
+    },
+    {
+      "view": "ventral",
+      "alt": "Ventral view of European badger skull specimen SPEC-0010."
+    },
+    {
+      "view": "mandible-dorsal",
+      "alt": "Dorsal view of the separated mandibles from European badger skull specimen SPEC-0010."
+    }
+  ]
+}

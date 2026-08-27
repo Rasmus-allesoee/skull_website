@@ -8,6 +8,7 @@ out/
 dist/
 .generated/
 .staging/
+public/generated/
 *.tsbuildinfo
 
 # Tests and reports
@@ -41,7 +42,12 @@ Thumbs.db
 
 # Private/raw collection sources and working exports
 agent_context/skulls_meta.csv
+agent_context/metadata_csv/
 agent_context/skull_images_clean/
+agent_context/interactive_tree_sketch.png
+agent_context/website_screenshots/skullbase_web_species_gallery.png
+agent_context/website_screenshots/skullindex_web_species_gallery.png
+agent_context/website_screenshots/localhost_3000_species.png
 *.af
 *.afphoto
 *.afdesign

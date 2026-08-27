@@ -19,7 +19,13 @@ import type {
   TaxonProfile,
   TaxonRecord,
 } from "./types";
-import { canonicalViews, ValidationError } from "./types";
+import {
+  canonicalViews,
+  isMeasurementApplicable,
+  measurementDefinitions,
+  resolveMeasurementProfile,
+  ValidationError,
+} from "./types";
 
 export interface CompilationInput {
   taxa: ParsedRow<RawTaxon>[];
@@ -47,6 +53,8 @@ export function compileCollection(input: CompilationInput): CompilationResult {
   const specimens = input.specimens.map((row) =>
     transformSpecimen(row, diagnostics),
   );
+
+  validateHierarchyConsistency(taxa, diagnostics);
 
   validateUniqueValues(
     taxa,
@@ -165,6 +173,8 @@ export function compileCollection(input: CompilationInput): CompilationResult {
       });
     }
 
+    validateMeasurementApplicability(specimen, taxon, diagnostics);
+
     const assets = input.media.filter(
       (asset) => asset.specimenId === specimen.specimenId,
     );
@@ -260,7 +270,7 @@ export function compileCollection(input: CompilationInput): CompilationResult {
 
   return {
     collection: {
-      schemaVersion: 3,
+      schemaVersion: 4,
       taxa: taxa.sort((a, b) => a.taxonId.localeCompare(b.taxonId)),
       specimens: specimens.sort((a, b) =>
         a.specimenId.localeCompare(b.specimenId),
@@ -596,12 +606,76 @@ function transformSpecimen(
       "cranium_width_mm",
       diagnostics,
     ),
+    craniumHeight: parseMeasurement(
+      raw.cranium_height_mm,
+      raw.cranium_height_mm_status,
+      "mm",
+      row,
+      "cranium_height_mm",
+      diagnostics,
+    ),
+    rostrumWidth: parseMeasurement(
+      raw.rostrum_width_mm,
+      raw.rostrum_width_mm_status,
+      "mm",
+      row,
+      "rostrum_width_mm",
+      diagnostics,
+    ),
+    interorbitalWidth: parseMeasurement(
+      raw.interorbital_width_mm,
+      raw.interorbital_width_mm_status,
+      "mm",
+      row,
+      "interorbital_width_mm",
+      diagnostics,
+    ),
+    orbitalWidth: parseMeasurement(
+      raw.orbital_width_mm,
+      raw.orbital_width_mm_status,
+      "mm",
+      row,
+      "orbital_width_mm",
+      diagnostics,
+    ),
+    billLength: parseMeasurement(
+      raw.bill_length_mm,
+      raw.bill_length_mm_status,
+      "mm",
+      row,
+      "bill_length_mm",
+      diagnostics,
+    ),
+    billWidth: parseMeasurement(
+      raw.bill_width_mm,
+      raw.bill_width_mm_status,
+      "mm",
+      row,
+      "bill_width_mm",
+      diagnostics,
+    ),
+    billHeight: parseMeasurement(
+      raw.bill_height_mm,
+      raw.bill_height_mm_status,
+      "mm",
+      row,
+      "bill_height_mm",
+      diagnostics,
+    ),
     mandibleLength: parseMeasurement(
       raw.mandible_length_mm,
       raw.mandible_length_mm_status,
       "mm",
       row,
       "mandible_length_mm",
+      diagnostics,
+    ),
+    maxillaryToothRowLength: parseMeasurement(
+      raw.maxillary_tooth_row_length_mm,
+      raw.maxillary_tooth_row_length_mm_status,
+      "mm",
+      row,
+      "maxillary_tooth_row_length_mm",
       diagnostics,
     ),
     mandibularToothRowLength: parseMeasurement(
@@ -765,6 +839,96 @@ function transformSpecimen(
     publicNotes: nullable(raw.public_notes),
     sourceReferences: parseList(raw.source_references),
   };
+}
+
+function validateMeasurementApplicability(
+  specimen: SpecimenRecord,
+  taxon: TaxonRecord,
+  diagnostics: Diagnostic[],
+) {
+  const profile = resolveMeasurementProfile(
+    taxon.hierarchy.classSlug,
+    taxon.hierarchy.className,
+  );
+  for (const key of Object.keys(measurementDefinitions) as MeasurementKey[]) {
+    const measurement = specimen.measurements[key];
+    const applicable = isMeasurementApplicable(key, profile);
+    if (applicable && measurement.status === "not_applicable") {
+      diagnostics.push({
+        source: "content/specimens/specimens.csv",
+        key: specimen.specimenId,
+        field: key,
+        value: measurement.status,
+        rule: `Measurement is applicable to the ${profile} profile`,
+        suggestion:
+          "Use measured, approximate, or not_recorded for an applicable field.",
+      });
+    }
+    if (!applicable && measurement.status !== "not_applicable") {
+      diagnostics.push({
+        source: "content/specimens/specimens.csv",
+        key: specimen.specimenId,
+        field: key,
+        value: measurement.status,
+        rule: `Measurement is not applicable to the ${profile} profile`,
+        suggestion:
+          "Clear the numeric value and use the explicit not_applicable status.",
+      });
+    }
+  }
+}
+
+function validateHierarchyConsistency(
+  taxa: TaxonRecord[],
+  diagnostics: Diagnostic[],
+) {
+  const bySlug = new Map<string, { name: string; parent: string | null }>();
+  const byName = new Map<string, string>();
+  for (const taxon of taxa) {
+    const lineage = [
+      ["class", taxon.hierarchy.className, taxon.hierarchy.classSlug],
+      ["order", taxon.hierarchy.orderName, taxon.hierarchy.orderSlug],
+      ["family", taxon.hierarchy.familyName, taxon.hierarchy.familySlug],
+      ["genus", taxon.hierarchy.genusName, taxon.hierarchy.genusSlug],
+    ] as const;
+    let parent: string | null = null;
+    for (const [rank, name, slug] of lineage) {
+      if (!name || !slug) continue;
+      const slugKey = `${rank}:${slug}`;
+      const nameKey = `${rank}:${name.toLocaleLowerCase("en")}`;
+      const existingBySlug = bySlug.get(slugKey);
+      if (
+        existingBySlug &&
+        (existingBySlug.name !== name || existingBySlug.parent !== parent)
+      ) {
+        diagnostics.push({
+          source: "content/taxa/taxa.csv",
+          key: taxon.taxonId,
+          field: `${rank}_name/${rank}_slug`,
+          value: { name, slug },
+          rule: "Taxonomy route slug has inconsistent name or parent hierarchy",
+          suggestion:
+            "Use one reviewed name, slug, and parent path for every repeated rank.",
+        });
+      } else {
+        bySlug.set(slugKey, { name, parent });
+      }
+      const existingSlug = byName.get(nameKey);
+      if (existingSlug && existingSlug !== slug) {
+        diagnostics.push({
+          source: "content/taxa/taxa.csv",
+          key: taxon.taxonId,
+          field: `${rank}_slug`,
+          value: slug,
+          rule: "Taxonomy rank name has inconsistent public slugs",
+          suggestion: `Use the existing stable slug ${existingSlug}.`,
+        });
+      } else {
+        byName.set(nameKey, slug);
+      }
+      parent = slugKey;
+    }
+  }
 }
 
 function validateTaxonomySnapshot(

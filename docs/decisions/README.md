@@ -20,3 +20,7 @@ Each ADR contains context, decision, consequences, considered alternatives, and 
 - [0003 — Curated web media in Git](0003-curated-web-media-in-git.md)
 - [0004 — Build-generated client search and route-lazy map](0004-client-search-and-route-lazy-map.md)
 - [0005 — Species-first pages with stable specimen URLs](0005-species-and-specimen-url-model.md)
+
+## Most recent decision audit
+
+Phase 3.1 (2026-08-21) required no new ADR. The review-slice rows and media use the existing CSV/compiler and curated-media boundaries in ADR 0002/0003; new stable taxon/specimen routes follow ADR 0005; family galleries and the server-rendered tree foundation extend the static presentation in ADR 0001; and the compact specimen dialog is a bounded client island that performs no runtime data access. The deferred comprehensive tree is constrained to the same canonical taxonomy and will require a new ADR only if it introduces a new source hierarchy, URL/identity semantics, or cross-cutting visualization dependency. The accepted records therefore remain unchanged.

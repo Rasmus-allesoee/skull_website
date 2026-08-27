@@ -1,4 +1,4 @@
-import type { Measurement, PartialDate } from "./types";
+import type { Measurement, PartialDate, TaxonRecord } from "./types";
 
 const months = [
   "January",
@@ -35,6 +35,12 @@ export function formatPartialDate(date: PartialDate): string {
 export function humanizeToken(value: string): string {
   const words = value.replaceAll("_", " ");
   return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+export function formatScientificIdentification(taxon: TaxonRecord): string {
+  return taxon.identificationQualifier === "sp"
+    ? `${taxon.scientificName} sp.`
+    : taxon.scientificName;
 }
 
 export function formatCoordinate(

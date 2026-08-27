@@ -16,6 +16,10 @@ Generate GeoJSON from valid published specimen coordinates. Dynamically load Map
 
 Neither search nor map owns canonical record data or URLs.
 
+## Implementation status
+
+The search half was implemented in the combined Phase 3.2/4 checkpoint on 2026-08-22 with pinned Orama 3.1.18, a deterministic 67-document artifact, query-triggered dynamic import/fetch, canonical rank/taxon/specimen URLs and media, pure filtering/sorting modules, and complete URL/history restoration. Map/GeoJSON work remains Phase 5. This implementation does not change the accepted decision.
+
 ## Consequences
 
 ### Positive

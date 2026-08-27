@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 
 import Home from "./page";
 
-describe("Home vertical slice", () => {
-  it("introduces the museum and labels the current phase", () => {
+describe("museum home", () => {
+  it("introduces the real collection and exposes catalog and taxonomy entry points", () => {
     render(<Home />);
 
     expect(
@@ -13,15 +13,23 @@ describe("Home vertical slice", () => {
         name: "A visual archive of animal skulls.",
       }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Phase 2 · Vertical slice")).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "View the raccoon dog display" }),
-    ).toHaveAttribute("href", "/species/raccoon-dog");
+      screen.getByRole("link", { name: "Explore the collection" }),
+    ).toHaveAttribute("href", "/species");
+    expect(
+      screen
+        .getAllByRole("link", { name: /Mammalia/i })
+        .some(
+          (link) => link.getAttribute("href") === "/taxonomy/class/mammals",
+        ),
+    ).toBe(true);
+    expect(screen.getByText("13", { selector: "strong" })).toBeInTheDocument();
+    expect(screen.getByText("18", { selector: "strong" })).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
-        level: 2,
-        name: "Built for visual study and reference.",
+        name: "Follow class, order, and family.",
       }),
     ).toBeInTheDocument();
+    expect(screen.queryByText("Featured specimen")).not.toBeInTheDocument();
   });
 });

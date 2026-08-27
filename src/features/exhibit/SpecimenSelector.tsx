@@ -6,10 +6,12 @@ export function SpecimenSelector({
   taxon,
   specimens,
   selectedSpecimenId,
+  exactSpecimen = false,
 }: {
   taxon: TaxonRecord;
   specimens: SpecimenRecord[];
   selectedSpecimenId: string;
+  exactSpecimen?: boolean;
 }) {
   return (
     <nav className="specimen-selector" aria-label="Specimen selector">
@@ -27,7 +29,8 @@ export function SpecimenSelector({
             <li key={specimen.specimenId}>
               <Link
                 href={`/species/${taxon.slug}/specimens/${specimen.specimenId}`}
-                aria-current={isSelected ? "page" : undefined}
+                scroll={false}
+                aria-current={isSelected && exactSpecimen ? "page" : undefined}
               >
                 <span>{specimen.specimenId}</span>
                 <small>

@@ -1,10 +1,11 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "reference_id": "adult-human-skull",
   "label": "Adult human skull",
   "is_default": true,
   "aliases": ["human skull", "Homo sapiens", "adult skull"],
   "note": "Representative adult-human reference; dimensions and mass are approximate and are not a universal human average.",
+  "measurement_profile": "mammal",
   "asset": {
     "public_path": "/media/references/adult-human-skull.webp",
     "alt": "Lateral view of an adult human skull reference facing right.",

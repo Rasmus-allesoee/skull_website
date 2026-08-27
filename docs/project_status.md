@@ -1,18 +1,158 @@
 # Project status
 
-**Snapshot date:** 2026-08-17
+**Snapshot date:** 2026-08-27
 
-**Current phase:** Phase 2 — complete and explicitly owner-approved
+**Current phase:** Combined Phase 3.2 Species-catalog redesign and Phase 4 search/faceted discovery — complete local technical/visual gate pass; owner review pending
 
-**Overall state:** Complete local, manual, Git, GitHub Actions, and owner product gates pass
+**Overall state:** The owner approved Phase 3.1 at `ce7dbc3`; the combined Phase 3.2/4 implementation is preserved as a separate verified local checkpoint on `agent/phase-3-museum-shell-catalog`, with no push/PR or remote CI authorized
 
-**Next phase:** Phase 3 — not started; awaits a dedicated implementation prompt
+**Next phase:** Not authorized. First obtain owner review of the combined catalog/discovery checkpoint. The comprehensive interactive tree is reclassified as optional Phase 3.3; Phase 5 remains the next critical-path milestone unless the owner separately prioritizes Phase 3.3.
 
 ## 1. Current objective
 
-Preserve the approved Phase 2 baseline and its verification evidence. Begin Phase 3 only from a dedicated next task; no Phase 3 implementation belongs in the Phase 2 closure work.
+Present the verified catalog-first `/species` redesign, complete Phase 4 discovery behavior, right-facing SPEC-0003/0013/0018 media correction, and reconciled documentation for owner inspection. Keep the checkpoint local and do not begin Phase 3.3 or Phase 5.
 
-## 2. Phase 2.3 implementation
+## 2. Combined Phase 3.2 catalog redesign and Phase 4 discovery
+
+### Owner-review taxonomy drawer correction (2026-08-25)
+
+- Moved the wide-screen sticky taxonomy panel below the full sticky catalog control region so its heading remains visible while the page scrolls.
+- Added a visible `Reset` action that collapses every expanded taxonomy branch without changing the selected catalog scope or closing the panel.
+- Re-anchored the narrow-screen drawer to the left edge and mirrored its shadow treatment to match the new placement.
+- Verified the focused source checks, rebuilt the 75 static routes, and passed all 12 catalog Playwright journeys at desktop/mobile sizes, including sticky clearance, reset behavior, left-edge placement, accessibility, and no-JavaScript route access.
+
+### Owner-directed compact card redesign (2026-08-25)
+
+- Replaced variable-height catalog image regions and oversized copy blocks with one bounded, equal-height lateral-image stage and a compact two-column fact grid. The stage remains capped so cards do not become taller merely to make the image fill more space.
+- Species cards now always show skull length and skull mass from the largest recorded specimen, or from the largest specimen still matching the active query/feature filters. The metric specimen may differ from the curated default lateral image; multi-specimen cards identify it as `Largest recorded` or `Largest matching`.
+- Removed the separate confirmation/confidence line from species cards. Genus-level records retain the explicit scientific `sp.` label, which communicates their identification level without redundant copy.
+- Specimen cards now share the same image/name hierarchy and show immutable ID, skull length, skull mass, age, sex, condition, and location/date in a dense, divided fact grid with explicit missing-value semantics.
+- Added regression coverage for the new card facts, largest-specimen selection, equal image-stage heights, image-dominant card proportions, and the search-surface mode-switch focus handoff.
+
+### Owner-directed card affordance refinement (2026-08-25)
+
+- Restored brass/gold emphasis to the class/family context and the specimen-count or immutable-ID metadata on both card modes.
+- Removed long specimen locations from specimen cards; the compact fact grid now retains only the acquisition date alongside the requested specimen facts.
+- Replaced the multi-specimen `Largest recorded` line with independent hover/focus tooltips on the skull-length and skull-mass facts. Each tooltip names the actual record supplying that measurement, including when the two maxima differ or filters are active.
+- Moved the multi-specimen chooser to the compact count affordance in the card's upper-right metadata line. A responsive mouse/tap cue communicates that the count opens the chooser without adding a full-width action row.
+- Expanded each chooser row to show age, sex, length, mass, condition, and date while retaining the thumbnail, default marker, and exact specimen link. Dense mobile labels use `N/A`, abbreviated month/year, and `Ex.` to keep every fact on one line.
+
+### Owner-directed responsive card image-fit correction (2026-08-25)
+
+- Preserved each compiled subject frame's aspect ratio when the catalog transitions from three to two columns and from two to one column. The frame now fits both available card-image dimensions instead of retaining a wide width while its height is capped.
+- Added responsive regression coverage for the raccoon-dog and European-hare cards at the exact 1024px and 768px breakpoints, including the raw canvas ratio used by the subject-bound crop.
+
+### Owner-directed compact mobile control region (2026-08-26)
+
+- Replaced the tall narrow-screen mode buttons and class presets with labelled native selects, while preserving the existing segmented controls on wider screens. Filters, sort direction, and taxonomy now use familiar labelled icons with accessible names and browser tooltips; the full sort choice remains visible because its current value matters.
+- Consolidated the narrow control region into a search row, two compact control rows, and one non-wrapping active-state row. Applied chips scroll horizontally instead of increasing the sticky region's height, and the compact reset action remains directly available.
+- At the 390 × 844 review viewport the complete control region measures 200.8 px, or 23.8% of the viewport, leaving 76.2% for the published displays. Controls retain 44 px touch targets and the page has no horizontal overflow. The region remains sticky at short narrow viewports so the control bar and listbox retain their intended stacking behavior.
+- Added Playwright coverage for the height budget, narrow-mode controls, icon/dropdown tooltips, URL-backed mode/class changes, compact active state, sticky behavior at short heights, listbox stacking, two-column alignment, and horizontal overflow. The final repository-wide check/build and browser-suite results are recorded in the checkpoint evidence below.
+
+### Owner-directed specimen and comparison refinements (2026-08-27)
+
+- Matched the multi-specimen catalog count trigger to the brass uppercase overline style used by single-specimen cards, while retaining its labelled chooser behavior.
+- Made `Physical specimen` route transitions preserve the current scroll position, so selecting another specimen does not unexpectedly return the visitor to the top of the page.
+- Removed the public incomplete-media warning banner. Optional view availability remains represented by the actual gallery controls and the existing authoring/validation rules; missing optional views are not presented as a visitor-facing error.
+- Made a selected collection specimen in `A sense of scale` a semantic exact-record link that opens on double-click (and remains keyboard accessible). Non-collection references such as the adult-human skull remain non-navigable.
+
+### Catalog-first information architecture
+
+- Replaced the large editorial `/species` sequence with a short Collection catalog heading, sticky operational controls, and immediate published results. At 1440 × 900 the first card begins within the first viewport; the default grid remains three/two/one columns without horizontal overflow.
+- One control region now owns the labelled search combobox, Species/Specimens radio mode, compact All classes/Aves/Mammalia presets, Filters, Sort, Browse taxonomy, result count, active chips, and Clear all. The Home discovery action targets this real control instead of an honest future-search placeholder.
+- Family groups is now a truthful grouped sort in both Species and Specimens modes and survives mode changes. Explicit common/scientific/numeric sorts flatten results into one global order, and one URL-backed direction toggle reverses family, name, or measurement ordering.
+- Species cards remain one per taxon and report matched specimen count/length/mass range while feature filters are active. They always show skull length and skull mass from the largest recorded or largest matching specimen, independently of the curated default lateral image; numeric sorts still use the largest matching sort specimen as their visual representative and exact card link, while missing measurements remain explicit and sort last in either direction. Specimen cards expose immutable ID, skull length, skull mass, age, sex, condition, and concise location/date facts.
+
+### Complete search, facets, and URL behavior
+
+- Pinned `@orama/orama` 3.1.18 and added a deterministic schema-v1 artifact with 67 documents: 34 canonical rank nodes, 15 published taxa, and 18 published specimens. Draft/blocked records and the draft profile remain absent.
+- Search normalizes case, punctuation, whitespace, and Danish letters without changing display text; explicit `æ`/`ø` transliteration prevents words such as `ræv` from collapsing into single-letter fragments. Orama now supplies broad candidates to a shared deterministic acceptance policy covering exact, prefix, alias, bounded credible fuzzy, and optional reviewed-profile tiers. Ordinary names permit at most one edit, long tokens at most two, multi-word queries cannot match on one unrelated token, and `SPEC-`/`TAX-` inputs use strict identifier-prefix matching. Regression coverage confirms that `Canidae` excludes Laridae/Gull, fox/Danish/typo queries resolve only Red fox, and exact `SPEC-0013` resolves only that physical record while `Racoon dog` remains supported.
+- Suggestions group ranks, taxa, and physical specimens and show canonical lateral thumbnails, display names, scientific/Danish context, and result type. Species mode now presents one row per matching taxon with progressive disclosure for non-default specimens; Specimens mode presents physical specimens directly. Exact specimen-ID searches auto-open the relevant Species-mode subsection and restrict Specimens-mode suggestions and published results to that exact record. Arrow/Enter/Escape, live status, touch/click, exact specimen navigation, rank filtering, and explicit rank-page links are implemented. Grouping precedes presentation, so the UI no longer hides current records behind a global top-10 slice. The autocomplete surface is constrained to the available viewport height and hands boundary wheel scrolling back to the page immediately while retaining native touch scroll chaining.
+- Feature facets cover sex, age, condition, and defleshing method with live canonical counts. Maximum-length and prepared-mass ranges exclude `not_recorded`/`not_applicable` rather than treating them as zero. Empty states explain exclusion and offer clear/switch-mode recovery.
+- URL state includes query, mode, class, taxonomic scope, controlled-value filters, numeric bounds, sort, and direction. Invalid tokens/ranges are rejected; direct load, reload, back, and forward restore the same result state. Filter/taxonomy-panel open state is deliberately transient.
+- Orama code and `/generated/catalog-search-v1.json` load only after a non-empty query. The default static catalog, cards, and complete no-JavaScript taxonomy links remain useful without the index or client JavaScript.
+
+### One taxonomy source and deferred comprehensive tree
+
+- The required class → order → family → genus → terminal-taxon taxonomy surface is one responsive component: sticky alongside-grid sidebar on wide screens, labelled focus-trapped drawer on narrow screens, and a native `<details>` nested-list fallback without JavaScript.
+- Every rank has separate expand/collapse, Filter catalog, and Open rank page actions; exact node/count/route data comes from the same canonical view model as rank pages, cards, and search documents.
+- The richer branching/pan/zoom/group-preview experience is reclassified as Phase 3.3. It must enhance, not replace, the current drawer/list and cannot introduce unsupported group characteristics, clades, or divergence claims.
+
+### Corrected media orientation
+
+- Reconciled the six left-facing committed derivatives for SPEC-0003, SPEC-0013, and SPEC-0018 with their already right-facing reviewed clean masters. Restaging all 104 approved PNGs and running the ordinary processor changed only each named specimen's lateral and oblique WebPs.
+- The pipeline—not a manual public-file edit or display-time CSS exception—recomputed alpha subject bounds, converted to sRGB, stripped metadata, and validated the complete 104-asset collection plus comparison reference. Cards, suggestions, specimen galleries, and calibrated presentation therefore share the corrected assets and framing.
+
+## 3. Phase 3.1 refinement
+
+### Review-quality collection expansion
+
+- Inventoried 22 legacy taxon rows, 51 specimen rows, and 104 cleaned PNGs. The images resolve to 18 physical specimens representing 15 taxon identities: 13 species-level records and two deliberate genus-level identifications (`Gavia sp.` and `Larus sp.`).
+- Published 15 canonical taxa and 18 canonical specimens that meet the current contract. The three multi-specimen taxa are European badger (2), harbour seal (3), and the remaining taxa with one specimen each. All 15/18 are public; there are zero canonical draft taxon/specimen rows and one retained draft editorial profile.
+- Left 33 legacy specimen rows as blocked migration candidates rather than manufacturing canonical drafts. Seven raw taxon rows remain outside the slice: unsupported family-level `Cervidae`, plus *Cervus elaphus*, *Martes martes*, *Oryctolagus cuniculus*, *Ovis aries*, *Phocoena phocoena*, and *Sorex araneus* without accepted matching essential-media sets.
+- Assigned stable `TAX-0002`–`TAX-0015` and `SPEC-0002`–`SPEC-0018` identities independent of raw row numbers. These IDs now own public URL semantics and must be preserved in Phase 6.
+- Refreshed and manually accepted dated GBIF snapshots for the 14 new taxa. Species matches are exact/accepted; the two genus records retain explicit `sp.`/unassessed labels instead of pretending to species precision.
+- Added 17 media declarations and a reproducible 104-entry local staging map. The existing processor generated 104 validated WebPs (24.80 MiB total specimen media); every lateral asset is explicitly right-facing and alpha-bounded. `SPEC-0002`, `SPEC-0005`, `SPEC-0011`, and `SPEC-0017` honestly warn that the optional frontal view is absent.
+- Normalized dates/coordinates/controlled tokens conservatively and copied only compatible measurements. Ambiguous body mass, raw numeric tooth counts, private-style notes, and unreviewed preparation durations were not converted into public claims. Details are durable in `phase_3_1_migration_audit.md`.
+
+### Home, catalog, and taxonomy refinement
+
+- Home now reports six live published-collection statistics (13 species, 18 specimens, 2 classes, 6 orders, 11 families, 15 genera), retains hero/search/geographic/editorial pathways, and removes the redundant standalone Featured specimen section.
+- Class cards now give every alpha-bounded skull deliberate top/bottom breathing room. The rule also applies to taxonomy-tree and compact specimen thumbnails.
+- Home and `/species` now share a server-rendered class → order → family tree foundation built from the same canonical rank nodes/routes as the ordinary taxonomy-list alternative. No group traits, clades, or divergence estimates were invented.
+- Phase 3.1 gave `/species` a prominent honest discovery pathway above class browsing; the approved Phase 3.2/4 checkpoint has now replaced it with the functioning catalog control region.
+- Published galleries use a three/two/one-column responsive grid. All-species and class/order scopes are separated by family headings and family-route links; family/genus landings retain one unsegmented grid.
+- Multi-specimen taxon cards keep the card's main link pointed at the reviewed default display and add a compact native chooser. It exposes thumbnail, immutable ID/default state, age, sex, maximum length, and exact nested links without repeating species names.
+- Scientific labels render genus records as italicized genus plus roman `sp.`. Static metadata no longer falsely promises six views for the four five-view records.
+
+### Future comprehensive tree boundary
+
+- Added `interactive_taxonomic_tree.md`; the owner later reclassified its comprehensive visualization from Phase 3.2 to Phase 3.3. It owns richer branching, keyboard/pan/zoom/reset, optional group previews, tree/list parity, and any sourced characteristics/divergence content.
+- Phase 3.1 remains the original compact linked foundation. The combined Phase 3.2/4 work now supplies the complete genus/taxon semantic drawer/list required before any optional Phase 3.3 visual enhancement.
+
+## 4. Phase 3.0 implementation
+
+### Repository and phase boundary
+
+- Verified GitHub draft PR #4 was merged and local `main` already matched merge commit `8c2413467f9d68ab29009fe9513c134e7226f2e7` before implementation.
+- Created `agent/phase-3-museum-shell-catalog` from that exact base. After the owner authorized a separate pre-refinement checkpoint, Phase 3.0 was committed locally as `9a1d996` before any Phase 3.1 edit. It has not been pushed and has no remote PR/CI.
+- At the Phase 3.0 checkpoint, Phase 4 search/facets, Phase 5 MapLibre/editorial work, Phase 6 row/media ingestion, and Phase 7 production were unstarted.
+
+### Museum shell and Home
+
+- Replaced the temporary phase entrance with the final static museum shell: central site configuration, skip link, responsive header/active navigation, native mobile menu, context-aware footer, and one consistent shell across Home, catalog, taxonomy, guide, taxon, specimen, and not-found pages.
+- Home now uses the reviewed lateral skull as the visual lead and derives published taxon/specimen/class counts from canonical records. It provides a real catalog entry, class entry cards, featured display, an honest non-interactive geographic record preview, and only real or clearly unavailable editorial destinations.
+- Added central page-metadata helpers, absolute canonical/Open Graph metadata based on `NEXT_PUBLIC_SITE_URL`, default social imagery, static sitemap, robots, and a useful record-not-found route. No false loading skeleton or runtime error surface was added because the route family is static and has no genuine latency.
+
+### Catalog, taxonomy, and discovery foundation
+
+- Added pure catalog queries for published records, deterministic common/scientific sorting, class entries, rank nodes/lineages, taxonomy landings, taxon/specimen card modes, current/previous slug resolution, public route paths, coordinate-bearing specimen summaries, and bounded related suggestions.
+- `/species` now renders live counts, class entries, a compact class/order/family/genus index, and a responsive species gallery. Specimen-card mode is implemented and tested as the Phase 4 view-mode foundation without prematurely adding interactive controls.
+- One shared `/taxonomy/[rank]/[slug]` template statically generates class, order, family, and genus pages with parent breadcrumbs, immediate children, scoped descendant index, and scoped gallery. The compiler now rejects conflicting repeated hierarchy name/slug/parent declarations before those URLs are generated.
+- Taxon and exact-specimen pages use the shared shell, link every breadcrumb rank, preserve canonical default/exact semantics, redirect explicit previous slugs, and render related results only when deterministic non-current records exist. The one-record live collection therefore shows no empty suggestion placeholder.
+
+### Class-aware measurement architecture
+
+- Kept the canonical two-table architecture. `specimens.csv` now contains the reviewed mammal and bird measurement value/status pairs; no parallel bird specimen table was introduced.
+- Advanced `CompiledCollection` to schema version 4. Mammal, bird, and conservative `other` profiles are derived from the linked taxon's class and control applicability, primary/additional table rows, and measurement-definition guidance.
+- Validation now requires applicable blank fields to remain `not_recorded`, requires out-of-profile fields to be blank/`not_applicable`, and reports profile mismatches actionably. The published raccoon-dog row was migrated without changing any known measurement value.
+- The comparison difference engine now selects six mammal rows, nine bird rows, six bidirectional bird/mammal mappings, or four shared fallback rows. Cross-class width and height name both landmarks and display a limitation note; they are not presented as homologous dimensions.
+- Comparison-reference declaration schema version 2 now records its measurement profile. The adult-human record remains a mammal reference with its existing six approximate values; non-applicable bird fields compile explicitly.
+- `agent_context/metadata_csv/` is ignored migration evidence. Its partial rows were not ingested because legacy IDs, taxonomy, dates, notes, rights, and media still need the Phase 6 review workflow.
+
+### Phase 3 acceptance result
+
+| Requirement | State | Evidence |
+|---|---|---|
+| Home → class → family → taxon → exact specimen keyboard/mobile journey | Pass locally | Production Chromium journey at 390 × 844 activates every link with keyboard Enter and reaches `/species/raccoon-dog/specimens/SPEC-0001` |
+| Correct static names, links, metadata, defaults, redirects, and draft exclusion | Pass locally | Pure query/component tests plus a 14-output static build; sitemap/robots and not-found are browser-tested; canonical URLs are absolute and route-correct |
+| Mammal, bird, long-name, uncertain, missing-media, and multiple-specimen states | Pass locally | Live mammal route plus typed unit/component fixtures verify bird profile/matrix, resilient wrapping, explicit uncertainty, missing lateral placeholder, draft exclusion, and exact multi-specimen links |
+| Responsive/accessibility/no-JavaScript behavior | Pass locally | 13/13 Playwright journeys, axe violations `[]`, static no-JavaScript catalog/taxonomy/specimen content, and manual 1440 × 900/390 × 844 review with no horizontal overflow |
+| Owner approves scaled museum/catalog direction | Passed into refinement | Owner approved most of Phase 3.0 and supplied the bounded Phase 3.1 corrections/features on 2026-08-21 |
+
+**Gate conclusion:** Phase 3.0's complete local technical/visual gate passed and the owner review opened Phase 3.1. Phase 3.0 is preserved separately; Phase 4 did not begin.
+
+## 5. Phase 2.3 implementation
 
 ### Comparison copy and uncertainty
 
@@ -31,7 +171,7 @@ Preserve the approved Phase 2 baseline and its verification evidence. Begin Phas
 
 - Kept MapLibre out of Phase 2. Phase 5 now explicitly adds a `View on map` action near Collection record location data, targeting `/map?specimen={id}` so the central map route owns marker/list selection and the textual record remains the accessible equivalent.
 
-## 3. Phase 2.2 implementation
+## 6. Phase 2.2 implementation
 
 ### Photography, inspection, and real-device behavior
 
@@ -57,7 +197,7 @@ Preserve the approved Phase 2 baseline and its verification evidence. Begin Phas
 - Changed the collection kicker from `Provenance` to `Metadata`.
 - Left-aligned age/condition guide notes and headings. The desktop `Specimen-condition guide` title remains on one line; narrow layouts may wrap naturally.
 
-## 4. Phase 2.1 implementation (retained foundation)
+## 7. Phase 2.1 implementation (retained foundation)
 
 ### Photography and navigation
 
@@ -85,7 +225,7 @@ Preserve the approved Phase 2 baseline and its verification evidence. Begin Phas
 - Specified Phase 3 discovery sections as at most three same-family cards plus three deterministic collection-wide cards, excluding the current taxon and duplicates and omitting empty groups. They are not rendered with only one taxon.
 - Kept all section kickers for now, including the explicitly preferred `Mammalia · Carnivora` and `Physical specimen`; canonical design guidance marks the remaining kickers for reconsideration after the stable release.
 
-## 5. Phase 2 acceptance gate
+## 8. Phase 2 acceptance gate
 
 | Requirement | State | Evidence |
 |---|---|---|
@@ -93,12 +233,12 @@ Preserve the approved Phase 2 baseline and its verification evidence. Begin Phas
 | Invalid representative fixtures fail actionably | Pass locally | Five deliberate relationship/date/rights/media/observation failures report source, key/field, rule, and correction guidance |
 | No EXIF/GPS or archival source reaches public output | Pass locally | All six specimen WebPs plus the human reference pass EXIF/IPTC/XMP inspection; both source PNG sets remain ignored |
 | Refined desktop/mobile/landscape interactions and presentation pass | Pass locally | Ten Playwright journeys plus final desktop/mobile visual review; real-touch coverage includes 100%-scale gallery swipe, pinch scaling with two-finger translation, post-zoom horizontal/vertical/diagonal pan, and inspection swipe |
-| Canonical docs, Git scope, branch, and remote CI agree | Pass | Canonical Phase 2.3 docs and scope are reconciled; implementation commit `83d577b` passed GitHub Actions run `32063339841`; draft PR #4 remains open |
+| Canonical docs, Git scope, branch, and remote CI agree | Pass | Canonical Phase 2.3 docs and scope are reconciled; implementation commit `83d577b` passed GitHub Actions run `32063339841`; PR #4 later merged through its protected path |
 | Owner approves refined visual direction, density, interactions, and wording | Pass | Owner answered `YES I APPROVE!` on 2026-08-17 after reviewing Phase 2.3 |
 
-**Gate conclusion:** The complete Phase 2 technical, visual, and owner-approval gate passes. Phase 2 is closed; Phase 3 remains unstarted until the next dedicated task.
+**Gate conclusion:** The complete Phase 2 technical, visual, and owner-approval gate passed. Phase 2 closed before the separately authorized Phase 3 work recorded above.
 
-## 6. Representative record decisions
+## 9. Representative record decisions
 
 | Decision | Current answer | Reason/evidence |
 |---|---|---|
@@ -113,58 +253,64 @@ Preserve the approved Phase 2 baseline and its verification evidence. Begin Phas
 | Rights/credit | `Rasmus`; all rights reserved | Owner context supports ownership/original photography; concise display wording is separated from structured rights enforcement |
 | Profile | draft, not public; zero reviewed profiles | Owner deferred species overview/identification until it can be useful, curated, and cited |
 | Comparison reference | `adult-human-skull`; right-facing; six approximate values; default | Owner supplied the staged image and functional specification; the declaration makes measurement uncertainty, orientation, credit, and rights explicit |
+| Measurement profiles | Mammal, bird, conservative `other`; unified specimen CSV; schema version 4 | The linked taxon's class owns applicability; separate class-specific specimen tables would duplicate identity and provenance |
 | Rendering | static App Router/RSC plus gallery, comparison, selector, and guide-dialog client islands | Preserves useful static/no-JavaScript content while isolating genuine interaction |
 | Production compiler | `next build --webpack` | Pinned Turbopack production build did not terminate reliably in Phase 2; webpack remains deterministic and verified |
 
-## 7. Verification evidence in this refinement
+## 10. Verification evidence
 
 | Gate | Most recent evidence | Status |
 |---|---|---|
-| Exact toolchain/install | Node `v24.18.0`; pnpm `11.21.0`; `CI=true pnpm install --frozen-lockfile` restored all 470 pinned packages from the verified lockfile/store | Pass |
-| Content build | `pnpm content:build`: 1 taxon, 1 specimen, 6 specimen media assets, 1 comparison reference, 0 reviewed profiles (1 profile source) | Pass |
-| Media | `pnpm validate:media`: 6 specimen assets plus 1 reference, sRGB/alpha/bounds valid, no EXIF/IPTC/XMP | Pass |
-| Invalid fixtures | `pnpm test:fixtures`: 5 expected failures detected | Pass |
-| Types/lint/tests | `pnpm typecheck`; `pnpm lint`; `CI=true pnpm test`: 4 files / 16 tests, including scaling invariants, bounds offsets, orientation, ratio wording, dynamic selection, and profile-citation state | Pass |
-| Production build | `CI=true pnpm build`: 7 static routes including both specimen forms and `/guides/skull-preparation` | Pass |
-| Browser/accessibility | `CI=true PLAYWRIGHT_PORT=3102 pnpm test:e2e`: 10 Chromium journeys in 17.5 s; axe violations `[]`; desktop geometry/optical inset, master delivery, inspector isolation/navigation, full native gallery manipulation, 100%-scale real-touch swipe, two-finger pinch translation, post-zoom two-dimensional pan, inspection swipe/pinch/drag, dialogs, comparison ratios, reduced motion, third-party boundary, and no-JavaScript covered | Pass |
-| Manual visual/responsive | Retained Phase 2.2 review at 1440 × 696, 1440 × 900, 390 × 844, and 844 × 390. Final Phase 2.3 Playwright CLI review at 390 × 844 and 1440 × 900 confirmed the shorter scale-card heading, selection-driven human note, no horizontal overflow, and zero console errors/warnings | Pass |
-| Local-network regression | Fresh `dev:network` sessions at loopback and the Mac LAN IPv4: zero console errors and `Next` remained on `2 / 6 · Oblique` instead of resetting through HMR reload | Pass |
-| Remote CI | Phase 2.3 implementation commit [`83d577b`](https://github.com/Rasmus-allesoee/skull_website/commit/83d577b) passed [Actions run 32063339841](https://github.com/Rasmus-allesoee/skull_website/actions/runs/32063339841); documentation checkpoint [`a89b723`](https://github.com/Rasmus-allesoee/skull_website/commit/a89b723) passed [run 32064897700](https://github.com/Rasmus-allesoee/skull_website/actions/runs/32064897700) | Pass |
-| Phase 2.3 final local gate | `CI=true pnpm check`: pass (4 files / 16 tests; 5 expected invalid fixtures); `CI=true pnpm build`: 7 routes; focused mobile: 2/2; desktop isolation stress: 5/5 without retries; complete Playwright: 10/10 without retries | Pass |
+| Exact toolchain/install | Node `v24.18.0`; pnpm `11.21.0`; `pnpm install --frozen-lockfile` passes from the exact lockfile with pinned Orama 3.1.18 | Pass |
+| Content/search build | `pnpm content:build`: 15 taxa, 18 specimens, 104 specimen assets, 67 search documents, 1 comparison reference, 0 reviewed profiles (1 profile source); only four expected optional-frontal warnings | Pass |
+| Media | Full restage/process plus `pnpm validate:media`: 104 specimen assets plus 1 reference, 24.83 MiB, sRGB/alpha/bounds valid, no EXIF/IPTC/XMP; Git shows only the six requested right-facing derivative changes | Pass |
+| Invalid fixtures | `pnpm test:fixtures`: 6 expected failures detected, including class-profile mismatch | Pass |
+| Types/lint/tests | Sequential formatting, lint, content/media validation, TypeScript, 11 Vitest files / 55 tests, and 6 actionable invalid fixtures pass. Search ranking, artifact determinism, URL state, bidirectional sorting, largest-specimen selection, filtering/missing semantics, taxonomy/cards, compact-control behavior, class-aware measurements, specimen navigation, optional-media presentation, and comparison-link behavior are covered | Pass |
+| Production build | `next build --webpack` completes successfully with 75 static outputs; Home, not-found, guide, robots, sitemap, catalog, 15 taxon paths, 18 exact specimen paths, and 34 rank paths prerender | Pass |
+| Browser/accessibility | Full `PLAYWRIGHT_PORT=3102 node_modules/.bin/playwright test`: 33/33 Chromium journeys. Coverage includes catalog/search behavior, gallery/comparison regressions, accessibility smoke tests, compact-control behavior, scroll-preserving specimen switching, and exact compared-specimen navigation | Pass |
+| Post-fix focused checks | Focused catalog/exhibit/domain tests (15 tests), dedicated scroll/comparison browser checks, complete 55-test Vitest suite, fresh production build, and full 33-test Chromium suite all pass | Pass |
+| Manual visual/responsive | Production Playwright screenshots and browser checks cover the desktop catalog, narrow specimen comparison, multi-specimen card context, existing mobile/desktop catalog states, optional-view galleries, and exact comparison-link presentation. Existing 390 × 844 control-region budget remains 200.8 px (23.8%), leaving 76.2% for results; touch targets remain 44 px and horizontal overflow is `0` | Pass |
+| Git/base/scope audit | Phase 3.1 base is `ce7dbc3`; the separate checkpoint contains only owner specification, catalog/search/media/test/docs/dependency changes. Raw metadata/PNG masters, supplied before-state screenshot, generated artifacts, dependency state, and browser/test output remain ignored | Pass |
+| Remote Phase 3.2/4 CI | No push, PR, or remote CI was authorized | Not run; not a local implementation blocker |
+| Complete local gate | The final sequential formatting/lint/type/unit/content/media/fixture/build/browser gate passes. No remote operation was authorized | Pass locally |
 
 Package-manager gates must run sequentially with `CI=true` in non-interactive environments; concurrent pnpm commands can reconcile `node_modules` against different lifecycle states and are not a valid speed optimization.
 
-## 8. Known limitations and controls
+## 11. Known limitations and controls
 
-- Only one taxon/specimen exists. Home remains a phase entrance, not the Phase 3 museum shell/catalog; related-family and random discovery sections therefore have no honest content yet.
-- No class/order/family/genus landings, catalog, search, map, full ingestion, deployment, analytics, 360°, 3D, upload, or AI overlay has started.
-- The specimen-page `View on map` action is intentionally deferred with the Phase 5 map route; Phase 2 keeps the reviewed textual locality, coordinates, and precision in the Collection record.
+- The 15/18 Phase 3.1 review slice is public and inspectable, but 33 raw specimen rows remain blocked migration candidates. Phase 6 still owns the complete audited migration, not a blind append of the remaining rows.
+- The comprehensive interactive tree (Phase 3.3), interactive map/editorial routes (Phase 5), complete migration (Phase 6), deployment/release checks (Phase 7), analytics, 360°, 3D, uploads, and AI overlays have not started. The current semantic taxonomy drawer/list is complete for the combined catalog scope.
+- Home links directly to the functioning Species search control but does not duplicate the index/combobox on Home. Its geographic preview is explicitly non-interactive and non-cartographic; the specimen `View on map` action remains deferred until `/map?specimen={id}` exists.
+- Search is intentionally client-side and catalog-scoped. The 67-document artifact is adequate for the current 15/18 collection; pagination, virtualization, a hosted search service, and a global-header search remain unjustified until measured scale/use requires them.
+- The partial `metadata_csv` exports and PNG masters remain ignored migration evidence and are not runtime/public files. Only the transformations explicitly recorded in the Phase 3.1 migration audit became canonical records; no raw row-number identity was accepted.
 - The calibrated card is a true relative comparison between visible skull subjects; it does not calibrate the visitor's monitor so displayed CSS pixels are not literal real-world millimetres.
-- Only one collection specimen is published, so the live selector currently offers only the adult-human default. Its reusable dynamic-specimen path is covered with synthetic test records and will gain real options as reviewed default specimens are ingested.
+- The calibrated comparison selector now has real mammal and bird defaults but still excludes published specimens without a usable default lateral/maximum-length combination. `SPEC-0016` has no recorded maximum length and is correctly ineligible.
 - The adult-human dimensions are explicitly approximate representative values and not a universal adult average. A future source-methodology review may refine the reference without changing the comparison architecture.
 - Measurement definitions are a quick field guide, not a reproducible anatomical protocol. Dedicated illustrated methodology remains future content.
 - The age and condition dialogs are general collection criteria. Future methodology must cite them, explain species variation, and add reviewed real-skull examples.
 - The preparation route is a labelled shell, not actionable chemical, biological, legal, or safety guidance.
 - The current editorial profile is intentionally absent from the public page; GBIF taxonomy evidence remains available in structured data but is not expanded into low-value prose.
 - Footer copyright starts at 2026 because no repository evidence supports a 2023 publication start; the start year can change only with owner-supplied evidence/preference.
-- Chrome/Chromium is the Phase 2 browser target. Firefox/WebKit and formal 200%/forced-colors/screen-reader release checks remain Phase 7 gates.
-- The connected GitHub app previously returned `403 Resource not accessible by integration` for issue/PR writes; the authenticated local `gh` session remains the established remote-write path.
+- Chrome/Chromium is the current phase browser target. Effective 200% reflow, reduced motion, forced colors, keyboard, and automated axe checks pass; Firefox/WebKit and a manual screen-reader release audit remain Phase 7 gates.
+- `NEXT_PUBLIC_SITE_URL` still defaults to `http://localhost:3000`; the final domain is a Phase 7 decision. Canonical/Open Graph/sitemap URLs are structurally complete but intentionally use that default locally.
+- Phase 3.0, Phase 3.1 (`ce7dbc3`), and the separately gated combined Phase 3.2/4 checkpoint are local. No Phase 3 branch push, PR, or remote CI is authorized.
 
-## 9. Exact next action
+## 12. Exact next action
 
-1. Land the exact approved Phase 2 head through PR #4's normal protected path, close the Phase 2 issue/milestone, verify final `main` Actions, and audit local/remote state.
-2. Begin Phase 3 only in the next dedicated implementation prompt.
+1. The owner inspects `/species` at desktop and mobile widths: multilingual suggestions, class/taxonomy scopes, Filters, both result modes, name/numeric sorts, active chips/clear, reload/back/forward, no-result recovery, and the compact multi-specimen chooser. Also inspect SPEC-0003, SPEC-0013, and SPEC-0018 lateral/oblique galleries for right-facing orientation and comfortable framing.
+2. The owner either supplies one bounded catalog feedback task or explicitly approves the combined Phase 3.2/4 checkpoint.
+3. After approval, the recommended critical-path next task is Phase 5 map plus required editorial/supporting pages. The owner may instead separately authorize optional Phase 3.3 comprehensive tree work, but must then decide its sourced-content/clade/preview boundaries. Remote publishing remains a separate authorization.
 
-No new metadata, source measurements, or images are required merely to review/approve Phase 2.3. The later illustrated methodology requires owner-created/reviewed assets; real collection choices in the comparison selector and related/random sections require additional reviewed taxa/specimens and belong to later authorized work.
+No new content is required for the current visual/product review. Phase 5 will require an owner decision on map tile/style/provider configuration and reviewed content/contact details for the supporting pages identified in the plan. If Phase 3.3 is selected first, the outstanding inputs are listed in `interactive_taxonomic_tree.md`. Phase 6 still needs completed/corrected metadata, missing accepted image sets, and final rights/public-note/publication decisions for blocked rows.
 
-## 10. Decision/blocker protocol
+## 13. Decision/blocker protocol
 
 - A failing test or lint rule is implementation work, not automatically a blocker.
 - A decision that changes public identity, rights, data publication, scope, or external account state is surfaced to the owner.
 - Blockers record what was tried, exact evidence, safe work completed, and the smallest required owner action.
 - When resolved, retain a short resolution in the checkpoint log rather than deleting history.
 
-## 11. Checkpoint log
+## 14. Checkpoint log
 
 ### 2026-08-12 — Phase 0/1 completed
 
@@ -202,6 +348,41 @@ No new metadata, source measurements, or images are required merely to review/ap
 - The owner approved the Phase 2.2 direction subject to three small corrections: remove redundant scale copy and verify conditional uncertainty wording; restore native page pinch over the main mobile image; and add mobile swipe navigation inside inspection.
 - The owner also deferred a specimen-location map action to Phase 5. Canonical plans now connect Collection record locations to `/map?specimen={id}` without introducing MapLibre on specimen routes.
 - The complete local gate passes: quality checks, 7-route production build, real-touch mobile coverage, five-run desktop isolation stress check, 10/10 final browser journeys, responsive visual review, and zero console errors. Implementation commit `83d577b` passed GitHub Actions run `32063339841`; documentation checkpoint `a89b723` passed run `32064897700`.
-- The owner explicitly answered `YES I APPROVE!` on 2026-08-17. This closes the Phase 2 product gate; Phase 3 remains unstarted pending its dedicated task.
+- The owner explicitly answered `YES I APPROVE!` on 2026-08-17. This closed the Phase 2 product gate; PR #4 was subsequently merged as commit `8c2413467f9d68ab29009fe9513c134e7226f2e7` before Phase 3 began.
+
+### 2026-08-20 — Phase 3 implemented locally; owner review pending
+
+- The owner explicitly authorized all of Phase 3 and supplied a class-aware mammal/bird measurement design plus partial spreadsheet exports for future migration.
+- `agent/phase-3-museum-shell-catalog` now contains the static museum shell/Home/catalog/rank routes, shared query/card architecture, SEO routes, schema-version-4 measurement profiles, and class-aware comparison matrices. Phase 4 and bulk ingestion were not started.
+- The complete local quality/build/browser gate and manual desktop/mobile review pass. The change remains uncommitted/unpublished pending owner inspection and explicit Git authorization; owner product approval is the only current Phase 3 gate item.
+
+### 2026-08-21 — Phase 3.0 checkpoint preserved
+
+- Before any feedback edit, the complete Phase 3.0 worktree was rechecked with `CI=true pnpm check` and committed locally as `9a1d996 feat: complete phase 3 museum shell and catalog`.
+- The checkpoint contains the approved class-aware architecture proposal but excludes all new Phase 3.1 context/raw/generated/test/unrelated files. It has not been pushed and no PR was opened.
+
+### 2026-08-21 — Phase 3.1 review expansion/refinement checkpointed locally
+
+- The owner authorized a bounded multi-record review expansion, Home/catalog refinements, family-group galleries, a compact multi-specimen chooser, and a static foundation plus future dedicated plan for comprehensive systematic browsing.
+- The canonical collection now contains 15 published taxon identities and 18 specimens backed by 104 validated media assets and 14 new reviewed GBIF snapshots. Thirty-three legacy specimen rows remain blocked migration candidates.
+- UI, tests, migration audit, tree guide, and canonical documentation are implemented. The final sequential quality/build/browser gate, desktop/mobile visual review, and scope audit pass; the work is preserved in a separate local Phase 3.1 commit and awaits owner visual review.
+
+### 2026-08-22 — combined Phase 3.2 catalog redesign and Phase 4 discovery checkpointed locally
+
+- The owner approved Phase 3.1 at `ce7dbc3` and supplied `species_page_redesign_phase_3_2.md` as the replacement specification for the earlier tree-versus-search sequencing choice.
+- `/species` now delivers the catalog-first layout plus the complete current Phase 4 indexed search, suggestions, facets, sorting, modes, active state, URL/history behavior, one responsive semantic taxonomy drawer/list, and no-JavaScript path. The comprehensive tree is reclassified as Phase 3.3.
+- SPEC-0003, SPEC-0013, and SPEC-0018 lateral/oblique WebPs were regenerated from their right-facing clean masters through the full media pipeline. The final sequential quality/build/browser/manual/scope gate passes; no push, PR, or remote CI was authorized.
+
+### 2026-08-26 — compact mobile catalog controls verified locally
+
+- Owner review identified that the narrow-screen sticky controls left too little room for the primary published displays and that the prior compact fallback broke stickiness and listbox stacking. Mobile now uses compact labelled mode/class selects, familiar action icons, the full sort selector, and a single scrollable active-state row; medium widths use a compact class select and keep all actions on one row; wide controls use the same icon language.
+- At 390 × 844 the controls occupy 23.8% of the viewport and leave 76.2% for results. The control region remains sticky at short heights, the listbox stays above published content, and the complete local check, 75-route production build, and 31/31 Chromium journeys pass; the coherent fix remains local with no push or PR authorized.
+
+### 2026-08-27 — specimen navigation and comparison refinements verified locally
+
+- Matched the clickable multi-specimen card count to the existing uppercase, bold brass overline treatment.
+- Made same-taxonomy specimen-selector links preserve scroll position, removed the visitor-facing optional-media warning, and retained the underlying authoring/validation warnings for genuinely incomplete staging records.
+- Added exact routes to collection comparison records. The selected comparison specimen is now a keyboard-accessible link whose pointer navigation is activated by double-click; reference records, including the adult-human skull, remain non-navigable.
+- The focused and full local checks pass: 55/55 Vitest tests, strict TypeScript/lint/format/content/media/fixture validation, the 75-route production build, dedicated scroll/comparison browser checks, and 33/33 Chromium journeys. The checkpoint remains local with no push or PR authorized.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.

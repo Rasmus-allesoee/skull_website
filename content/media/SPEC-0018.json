@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "specimen_id": "SPEC-0018",
+  "assets": [
+    {
+      "view": "lateral",
+      "alt": "Lateral view of red fox skull specimen SPEC-0018.",
+      "orientation": "right"
+    },
+    {
+      "view": "oblique",
+      "alt": "Oblique view of red fox skull specimen SPEC-0018."
+    },
+    {
+      "view": "frontal",
+      "alt": "Frontal view of red fox skull specimen SPEC-0018."
+    },
+    {
+      "view": "dorsal",
+      "alt": "Dorsal view of red fox skull specimen SPEC-0018."
+    },
+    {
+      "view": "ventral",
+      "alt": "Ventral view of red fox skull specimen SPEC-0018."
+    },
+    {
+      "view": "mandible-dorsal",
+      "alt": "Dorsal view of the separated mandibles from red fox skull specimen SPEC-0018."
+    }
+  ]
+}

@@ -8,6 +8,7 @@ import type {
   TaxonProfile,
   TaxonRecord,
 } from "@/domain/content/types";
+import { resolvePublishedTaxonSlug } from "@/domain/catalog/queries";
 
 let collectionCache: CompiledCollection | undefined;
 
@@ -33,6 +34,10 @@ export function getPublishedTaxa(): TaxonRecord[] {
   return getCollection().taxa.filter(
     (taxon) => taxon.publicationStatus === "published",
   );
+}
+
+export function getTaxonSlugResolution(taxonSlug: string) {
+  return resolvePublishedTaxonSlug(getCollection(), taxonSlug);
 }
 
 export function getExhibit(

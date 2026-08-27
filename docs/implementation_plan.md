@@ -2,9 +2,9 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Phase 2 complete and explicitly owner-approved; Phase 3 not started
+**Current phase:** Combined Phase 3.2 catalog redesign and Phase 4 discovery complete locally; owner product review pending
 
-**Last reviewed:** 2026-08-17
+**Last reviewed:** 2026-08-22
 
 ## 1. How to use this plan
 
@@ -40,11 +40,13 @@ Phase 2 validated real-data vertical slice and visual approval
         ↓
 Phase 3 shared museum shell and taxonomy catalog
         ↓
-Phase 4 search and faceted discovery
+Phase 3.1 review-quality catalog expansion and refinement
+        ↓
+Phase 3.2 catalog-first redesign + Phase 4 search/faceted discovery
         ↓
 Phase 5 map and required editorial/supporting pages
         ↓
-Phase 6 full reviewed collection ingestion
+Phase 6 complete audited collection migration
         ↓
 Phase 7 release hardening, production, and v1.0.0
 ```
@@ -146,7 +148,7 @@ Turn the approved conversational plan into durable sources of truth and create a
 - [x] Add static taxon and nested specimen routes with correct default selection and metadata.
 - [x] Build the responsive six-view gallery with keyboard, swipe, zoom/fullscreen, and reduced-motion support.
 - [x] Build taxonomic breadcrumb, identification/confidence labels, specimen selector, measurement/record/preparation panels, review-gated profile/citation infrastructure, and concise rights/credit presentation.
-- [x] Implement missing/unknown/not-applicable and incomplete-media states.
+- [x] Implement missing/unknown/not-applicable semantics and optional-media presentation without treating missing optional views as a visitor-facing error.
 - [x] Self-host Newsreader and IBM Plex Sans with licence files.
 - [x] Validate real-image performance and responsive treatment.
 
@@ -216,20 +218,29 @@ Turn the approved conversational plan into durable sources of truth and create a
 
 ### Shell and foundational routes
 
-- [ ] Implement final responsive header, mobile navigation, skip link, footer, and central site configuration.
-- [ ] Implement Home with featured exhibit, real collection counts, class entries, search entry, map preview, and editorial prompts.
-- [ ] Add route-level not-found/error/loading states only where real latency exists.
-- [ ] Add supporting SEO metadata helpers and default Open Graph treatment.
+- [x] Implement final responsive header, mobile navigation, skip link, footer, and central site configuration.
+- [x] Implement Home with featured display, real collection counts, class entries, an honest catalog/search entry, non-interactive geographic preview, and editorial prompts.
+- [x] Add a route-level not-found state; omit false loading/error surfaces because all current routes are static and have no genuine route latency.
+- [x] Add supporting SEO metadata helpers and default Open Graph treatment.
 
 ### Taxonomy and catalog
 
-- [ ] Generate class/order/family/genus route params from canonical records.
-- [ ] Implement shared rank landing template, breadcrumbs, child index, and scoped gallery.
-- [ ] Implement `/species` default catalog, representative class cards, taxonomy index, sorting foundation, and responsive cards.
-- [ ] Implement species and specimen card modes using canonical queries.
-- [ ] Add default-specimen routing/redirect tests.
-- [ ] When enough taxa exist, add up to three same-family suggestions and up to three deterministic collection-wide suggestions. Exclude the current taxon, deduplicate the groups, omit empty sections, and test stable output.
-- [ ] Add sitemap/robots coverage for current published routes.
+- [x] Generate class/order/family/genus route params from canonical records.
+- [x] Implement shared rank landing template, breadcrumbs, child index, and scoped gallery.
+- [x] Implement `/species` default catalog, representative class cards, taxonomy index, common-name sorting foundation, and responsive cards.
+- [x] Implement species and specimen card modes using canonical queries.
+- [x] Add default-specimen and previous-slug routing/redirect tests.
+- [x] Implement up to three same-family suggestions and three deterministic collection-wide suggestions with current/duplicate exclusion and stable output tests; omit the entire section while the one-record collection has no eligible suggestion.
+- [x] Add sitemap/robots coverage for current published routes.
+
+### Class-aware measurements added in Phase 3
+
+- [x] Keep collection data in the two canonical linked CSVs and expand `specimens.csv` with bird-specific and missing mammal measurement/value-status pairs rather than creating a parallel bird-specimen table.
+- [x] Advance `CompiledCollection` to schema version 4 and derive `mammal`, `bird`, or fallback `other` measurement profiles from the linked taxon's class.
+- [x] Validate that profile-specific fields are `not_applicable` outside their class and that applicable fields never use `not_applicable` as a substitute for missing data.
+- [x] Render profile-specific specimen measurement tables and definition guidance.
+- [x] Render mammal/mammal (6), bird/bird (9), and bidirectional bird/mammal (6) difference matrices, with the cross-class landmark mismatch stated in text.
+- [x] Treat `agent_context/metadata_csv/` as ignored migration evidence only; defer normalization, stable-ID assignment, taxonomy/media/rights review, and row ingestion to Phase 6.
 
 ### Acceptance gate
 
@@ -237,7 +248,53 @@ Turn the approved conversational plan into durable sources of truth and create a
 - Static output contains correct names, links, metadata, default specimens, and no drafts.
 - Visual states are consistent across mammals, birds, long names, uncertain taxa, missing optional angles, and multiple specimens.
 
-## 7. Phase 4 — search and faceted exploration
+**Phase 3.0 checkpoint:** The complete local technical gate passed on 2026-08-20: schema/content/media/fixture validation, formatting, lint, typecheck, 25 unit/component tests, a 14-output static production build, 13 Chromium journeys with axe/no-JavaScript/mobile-keyboard coverage, and manual 1440 × 900 plus 390 × 844 review. The owner then approved most of the direction and authorized the bounded Phase 3.1 refinement below. Phase 3.0 is preserved in local commit `9a1d996`; no remote write was authorized.
+
+### Phase 3.1 — review-quality catalog expansion and owner-feedback refinement
+
+- [x] Inventory 22 legacy taxon rows, 51 legacy specimen rows, and 104 cleaned PNGs; reconcile 18 physical image sets representing 15 taxon identities.
+- [x] Normalize and publish the 15 identities/18 specimens that meet the current contract, including 13 species-level and two explicit genus-level `sp.` identifications; retain a durable migration audit and keep raw exports/masters ignored.
+- [x] Refresh, review, and snapshot taxonomy for the 14 new canonical taxon records; preserve stable new taxon/specimen IDs and exact nested routes.
+- [x] Process and validate 104 specimen WebPs; keep four missing optional frontal views explicit rather than fabricating completeness.
+- [x] Expand Home to six concise live statistics, preserve hero/search/map/editorial pathways, remove the duplicate Featured specimen section, and improve class-card image breathing room.
+- [x] Add a prominent honest `/species` discovery entry without beginning Phase 4 search behavior.
+- [x] Add a shared server-rendered class → order → family tree foundation on Home and `/species`, while retaining the ordinary taxonomy list as its accessible data-equivalent alternative.
+- [x] Group the all-species and class/order scoped galleries by family; retain a plain responsive grid on family/genus landings.
+- [x] Use a three/two/one-column card grid where content/viewport supports it and verify mammals, birds, genus-level uncertainty, long names, optional-view gaps, and multiple specimens with live records.
+- [x] Add a compact native specimen chooser to multi-specimen species cards, showing only specimen ID/default state, thumbnail, age, sex, and maximum length, with exact stable links, Escape, and focus restoration.
+- [x] Document the complete source/migration boundary and create a dedicated implementation guide for the comprehensive interactive tree, now reclassified as Phase 3.3.
+- [x] Pass the complete sequential local quality/build/browser/manual visual gate and create the separate verified Phase 3.1 commit.
+- [x] Receive owner approval of the rendered Phase 3.1 result.
+
+Phase 3.1 is a review slice, not the final Phase 6 audit. It establishes public URL identity for the accepted 15/18 records, but Phase 6 still reconciles every legacy row, unresolved media/identity/rights/public-note decision, and field transformation. See [phase_3_1_migration_audit.md](phase_3_1_migration_audit.md).
+
+### Phase 3.2 — catalog-first Species redesign with integrated Phase 4 discovery
+
+**Scheduling:** Owner-authorized replacement for the earlier Phase 3.2-versus-Phase 4 choice. The complete current Phase 4 scope is delivered inside the redesigned `/species` catalog as one acceptance milestone.
+
+- [x] Replace the vertically stacked editorial catalog with a compact heading, sticky operational controls, and the lateral-image grid in the first normal desktop viewport.
+- [x] Implement one species/specimen catalog over the existing canonical query model, with compact class presets, family grouping in browse mode, and global flattening for explicit sort/search states.
+- [x] Add the single required responsive taxonomy drawer/sidebar through class → order → family → genus → taxon, with explicit filter and stable-route actions, nested-list semantics, Escape/focus handling, and a no-JavaScript alternative.
+- [x] Preserve the compact multi-specimen chooser and exact taxon/specimen URLs.
+- [x] Integrate every Phase 4 index, query, interface, URL, progressive-enhancement, performance, and acceptance requirement listed below.
+- [x] Refine autocomplete suggestions into a mode-dependent hybrid: unique taxon parents with progressive exact-specimen disclosure in Species mode, direct physical-specimen results in Specimens mode, and exact-ID subsection prioritization without pre-grouping truncation.
+- [x] Rebuild the six SPEC-0003/0013/0018 lateral/oblique derivatives from their right-facing clean masters through the canonical staging/processing/bounds validation pipeline.
+- [x] Verify the combined layout/discovery gate across desktop, mobile, effective 200% reflow, keyboard, touch, reduced motion, forced colors, axe, no-JavaScript, and browser-history scenarios.
+
+### Phase 3.3 — comprehensive interactive systematic browsing (dedicated future feature)
+
+**Scheduling:** Deferred. This richer tree is optional to the catalog workflow and does not block Phase 5. It begins only after owner review and separate authorization.
+
+- [ ] Reuse one canonical published hierarchy for the visual tree and ordinary nested-list alternative; never create a second classification source.
+- [ ] Enhance the implemented drawer/list hierarchy with comprehensive visual branching, keyboard traversal, touch, pan/zoom/reset, and shareable focus/expansion only where useful.
+- [ ] Add compact group previews only with deterministic published imagery and list/route equivalents.
+- [ ] Add group-identification characteristics only after claim-level sources and review.
+- [ ] Add evolutionary divergence estimates only after sources, definitions, uncertainty wording, and owner approval; otherwise omit them.
+- [ ] Verify tree/list node parity, draft exclusion, performance/bundle isolation, 200% zoom, forced colors, screen reader, axe, and responsive behavior.
+
+Detailed implementation constraints and prerequisites live in [interactive_taxonomic_tree.md](interactive_taxonomic_tree.md). The implemented Phase 3.2 drawer/list is the foundation; Phase 3.3 must not replace the working catalog or route-equivalent semantic list.
+
+## 7. Phase 4 — search and faceted exploration (integrated into Phase 3.2)
 
 ### Dependencies
 
@@ -246,19 +303,20 @@ Turn the approved conversational plan into durable sources of truth and create a
 
 ### Index and query model
 
-- [ ] Generate deterministic Orama rank, taxon, and specimen documents.
-- [ ] Add normalized scientific/English/Danish/alias/ID fields without changing display values.
-- [ ] Implement exact → prefix → alias/synonym → fuzzy → profile-text ranking.
-- [ ] Add class/order/family/genus facets and skull-length/skull-weight numeric facets.
-- [ ] Define species-mode grouping/count/range and specimen-mode matching behavior.
+- [x] Generate deterministic Orama rank, taxon, and specimen documents.
+- [x] Add normalized scientific/English/Danish/alias/ID fields without changing display values.
+- [x] Implement exact → prefix → alias/synonym → fuzzy → profile-text ranking.
+- [x] Add class/order/family/genus facets and skull-length/skull-weight numeric facets.
+- [x] Define species-mode grouping/count/range and specimen-mode matching behavior.
 
 ### Interface and URLs
 
-- [ ] Build accessible global suggestions grouped by result type.
-- [ ] Build catalog search, filter, sort, active-filter, clear, no-result, and mode controls.
-- [ ] Serialize all meaningful state to stable query parameters.
-- [ ] Restore state on direct load, refresh, and browser back/forward.
-- [ ] Lazy-load index code/data only where search is available and measure shared bundle impact.
+- [x] Build accessible catalog suggestions grouped by rank, taxon, and specimen type.
+- [x] Build catalog search, filter, sort, active-filter, clear, no-result, and mode controls.
+- [x] Make family grouping and bidirectional name/measurement sorting truthful in both modes; species numeric sorts use the largest matching measured specimen as their visible representative and sort key.
+- [x] Serialize all meaningful state to stable query parameters.
+- [x] Restore state on direct load, refresh, and browser back/forward.
+- [x] Lazy-load index code/data only after a query is entered and keep it out of unrelated route behavior.
 
 ### Acceptance gate
 
@@ -269,8 +327,11 @@ Automated and manual scenarios pass for:
 - class/order/family/genus result navigation;
 - length/weight filtering in both result modes;
 - unknown/not-applicable measurement exclusion and reset recovery;
+- bidirectional family/name/measurement sorting in both result modes, including stable mode switches and largest-specimen species representatives;
 - share/reload/back/forward state; and
 - no-result recovery and full keyboard operation.
+
+**Gate result:** Passed locally on 2026-08-22 as part of the combined Phase 3.2 milestone. The 67-document artifact contains 34 rank, 15 taxon, and 18 specimen documents compiled from published canonical records. Owner visual/product review remains open; no push/PR or remote CI was authorized.
 
 ## 8. Phase 5 — map and editorial/supporting pages
 
@@ -307,19 +368,22 @@ Automated and manual scenarios pass for:
 - Editorial pages have reviewed structure, links, citations/safety states, and mobile/keyboard behavior.
 - No upload backend, cookie, or tracking behavior has been introduced.
 
-## 9. Phase 6 — full collection ingestion
+## 9. Phase 6 — complete audited collection migration
 
 ### Dependencies
 
-- User supplies replacement completed metadata exports and cleaned images with specimen IDs.
+- User supplies completed/corrected metadata for unresolved rows and any missing accepted image sets.
 - Rights/credits and public-note decisions are available.
 - Phase 2 compiler/media contract is stable.
+- The Phase 3.1 ID/URL map and [migration audit](phase_3_1_migration_audit.md) are treated as the starting checkpoint, not discarded.
 
 ### Ingestion
 
 - [ ] Back up private originals outside Git.
-- [ ] Map replacement data into `taxa.csv`/`specimens.csv` without treating legacy rows as identity.
-- [ ] Assign and review immutable IDs, slugs, hierarchy, default specimens, and publication states.
+- [ ] Reconcile all 22 legacy taxon rows and 51 specimen rows against the Phase 3.1 accepted/blocked ledger.
+- [ ] Map replacement data into `taxa.csv`/`specimens.csv` without treating legacy row numbers as identity.
+- [ ] Preserve and review Phase 3.1 immutable IDs/URLs; assign new IDs only to genuinely unmapped physical records.
+- [ ] Review slugs, hierarchy, default specimens, and publication states.
 - [ ] Separate private working notes from public prose.
 - [ ] Verify taxonomy and resolve all blocking match flags.
 - [ ] Validate dates, units, measurements, coordinates/precision, preparation, rights, and credits.
@@ -327,6 +391,7 @@ Automated and manual scenarios pass for:
 - [ ] Add concise cited profiles only where useful reviewed overview/identification content exists; otherwise keep the optional profile absent or draft without public placeholder prose.
 - [ ] Keep incomplete records as drafts.
 - [ ] Review repository size against the media-storage threshold.
+- [ ] Normalize the partial exports currently retained under ignored `agent_context/metadata_csv/`; do not reuse their row-number IDs or extra spreadsheet-only helper columns as canonical identity.
 
 ### Acceptance gate
 

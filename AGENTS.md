@@ -20,7 +20,7 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **Phase 2 is technically complete and explicitly owner-approved; Phase 3 has not started**. Consult `docs/project_status.md` for exact evidence and the next action. Do not implement Phase 3 catalog/search/map/full-ingestion features until a dedicated Phase 3 task is provided.
+Current phase: **the combined Phase 3.2 Species-catalog redesign and Phase 4 search/faceted-discovery scope is implemented locally and passes its complete technical/visual gate; owner review is pending**. Phase 3.1 remains preserved at `ce7dbc3`; the combined checkpoint is local only with no push/PR. Consult `docs/project_status.md` for exact evidence and the next action. Do not begin Phase 3.3 comprehensive-tree or Phase 5 work until the owner reviews this checkpoint and explicitly authorizes the next bounded task.
 
 Use the neutral working title **Skull Collection** from central site configuration until the final name is selected.
 
@@ -55,7 +55,7 @@ The historical approved master plan is `agent_context/website_plan_from_planmode
 ## 4. Architecture invariants
 
 - Pinned Node.js 24.18.0, pnpm 11.21.0, Next.js 16.2.12, React 19.2.8, strict TypeScript.
-- Next.js App Router and React Server Components by default; client islands only for search/filters, gallery, calibrated comparison and guidance-dialog controls, and MapLibre.
+- Next.js App Router and React Server Components by default; client islands only for search/filters, gallery, calibrated comparison, guidance/specimen-chooser dialogs, a future interactive tree, and MapLibre.
 - Known public routes are statically generated and useful before interactive JavaScript finishes.
 - Canonical structured sources are two UTF-8 linked CSVs (`taxa.csv`, `specimens.csv`), cited MDX, and reviewed media/reference declarations.
 - Normal builds never call a live spreadsheet, GBIF, map API, or runtime database.
@@ -64,6 +64,9 @@ The historical approved master plan is `agent_context/website_plan_from_planmode
 - MapLibre loads only on `/map`; every map record has an equivalent semantic list path.
 - Page code consumes typed records and `MediaAsset` interfaces, not constructed filenames or raw CSV rows.
 - True-to-scale comparison uses a canonical lateral-view maximum length, compiled transparent subject bounds, and explicit lateral orientation. Approximate reference measurements must remain labelled as approximate.
+- The schema-version-4 measurement model stays unified in `specimens.csv`: mammal, bird, and fallback profiles control applicability and presentation without parallel specimen tables. Class-specific fields require explicit `not_applicable` status outside their profile.
+- The catalog taxonomy drawer, no-JavaScript nested list, rank pages, search rank documents, and cards are projections of the same published class → order → family → genus → taxon hierarchy. Any comprehensive Phase 3.3 tree must preserve tree/list route parity and cannot invent group characteristics or divergence claims.
+- Catalog query state is URL-backed on `/species`: `q`, `mode`, `class`, `scope`, controlled-value filters, length/mass bounds, and `sort` restore on direct load, reload, and browser history. The generated Orama artifact is replaceable ignored output and loads only after a query is entered.
 - Accessibility targets WCAG 2.2 AA and is part of component/API design, not a later overlay.
 
 ## 5. Content and media safety
@@ -80,8 +83,17 @@ Local context paths:
 - `agent_context/prompt_phase_2.1_raccoon_dog_slice_feedback.md` — owner review that defines the Phase 2.2 refinement scope.
 - `agent_context/implement_interactive_true_to_scale_skull_comparison.md` — owner-approved functional specification for the Phase 2.2 comparison component.
 - `agent_context/website_screenshots/` — owner-supplied visual targets and defect evidence for Phase 2.2; context only, never runtime assets.
+- `agent_context/class_aware_dynamic_measurement_architecture.md` — Phase 3 design input for the implemented class-aware measurement profiles and comparison matrices; canonical rules live in `docs/` and executable schemas.
+- `agent_context/prompt_phase_3_feedback.md` — owner feedback defining the bounded Phase 3.1 catalog/migration/refinement scope.
+- `agent_context/interactive_taxonomic_tree_plan.md` — owner product direction for the Phase 3.1 tree foundation and future comprehensive Phase 3.3 experience; canonical guidance lives in `docs/interactive_taxonomic_tree.md`.
+- `agent_context/interactive_tree_sketch.png` and the Phase 3.1 reference-site screenshots — local visual context only, never runtime assets.
+- `agent_context/metadata_csv/` — ignored partial spreadsheet exports supplied during Phase 3; migration evidence only, never runtime or canonical input.
+- `agent_context/prompt_species_page_redesign_suggestions.md` and `agent_context/species_page_redesign_phase_3_2.md` — owner-approved input and binding Phase 3.2/Phase 4 catalog specification; canonical implemented behavior lives in `docs/`.
+- `agent_context/website_screenshots/localhost_3000_species.png` — ignored before-state visual evidence only, never a runtime asset.
 
 Phase 2 uses only staging metadata row `ID = 1` and the six `mårhund_*_1.png` files as migration evidence for `TAX-0001` / `SPEC-0001`. The reviewed canonical values live in `content/`; never make a normal build depend on the ignored staging sources. Owner feedback supersedes the initial slice's display wording and condition classification, but it does not authorize inventing unrecorded pathology, trauma, teeth-set, skeleton, age-evidence, or reuse facts. The Phase 2.2 adult-human comparison source is also ignored staging input; only its reviewed declaration and processed public WebP derivative belong in Git.
+
+Phase 3.0 expanded the one canonical `specimens.csv` header with reviewed mammal/bird measurement fields and explicit statuses. Phase 3.1 later normalized only the 15-taxon/18-specimen review slice that could be reconciled to 104 cleaned images and satisfy the current publication contract. Raw exports/masters remain ignored, 33 legacy specimen rows remain blocked migration candidates, and Phase 6 must complete the full row/rights/note/media/publication audit recorded in `docs/phase_3_1_migration_audit.md`.
 
 Archival `.af`, PSD, camera originals, TIFF/PNG masters, raw workbooks, private notes, and EXIF/GPS-bearing media stay outside Git. Public specimen derivatives use immutable specimen IDs and canonical views only after `pnpm media:process` and `pnpm validate:media` confirm metadata stripping and the rest of the media contract. Public comparison references use stable reference IDs and the separate `pnpm media:process:reference` maintenance command.
 
@@ -129,12 +141,17 @@ Before a checkpoint:
 ## 8. Git and GitHub workflow
 
 - Initial repository bootstrap occurs on `main` as explicitly approved.
-- After bootstrap, branch from current `main` using `agent/<short-description>` and use focused draft pull requests.
+- `main` is the stable, deployable integration branch. For this solo project, do not create a permanent `dev` branch; use short-lived task branches instead.
+- After bootstrap, branch from the latest `main` using `agent/<short-description>` and use focused draft pull requests.
+- Keep each branch and pull request focused on one phase, coherent feature, or independent fix. If an unrelated bug or improvement is discovered during a phase, record it separately, create a new branch from the latest `main`, and merge that fix into `main` before merging the updated `main` back into the phase branch. A change may remain in the phase branch when it is genuinely required for that phase.
 - Use conventional commit prefixes such as `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`, and `ci:`.
 - Never stage unrelated user files silently. Audit the complete scope before commit/push.
 - One coherent verified checkpoint closes each phase; do not mark status complete on code presence alone.
+- Stage and commit each coherent implementation or fix as its own checkpoint; do not accumulate unrelated changes into one giant commit.
+- Preserve meaningful commit history. Merge completed pull requests with GitHub's `Create a merge commit` / a normal non-squash merge so individual coherent commits remain visible; do not squash or rewrite them unless the owner explicitly requests it.
+- After a merge, update local `main`, delete the merged feature branch locally and remotely, and create the next task branch from the updated `main` rather than from a stale feature branch. Avoid rebasing or force-pushing branches that have been published for review.
 - GitHub issues/milestones are the active implementation tracker. Do not add a second competing tracker.
-- Production later deploys only from `main`; no production/Vercel configuration belongs to Phase 2.
+- Production later deploys only from `main`; no production/Vercel configuration belongs to Phase 3.
 
 ## 9. Documentation ownership
 
@@ -148,6 +165,8 @@ Before a checkpoint:
 | `docs/design_system.md` | Visual tokens, components, interaction, content voice, accessibility |
 | `docs/implementation_plan.md` | Phase order, deliverables, dependencies, gates, deferred backlog |
 | `docs/project_status.md` | Current truth, verification, blockers, next actions, checkpoint log |
+| `docs/phase_3_1_migration_audit.md` | Accepted/blocked review-slice records, normalization decisions, Phase 6 obligations |
+| `docs/interactive_taxonomic_tree.md` | Phase 3.1/tree-drawer foundations and comprehensive Phase 3.3 requirements |
 | `docs/decisions/*.md` | Historical material architecture decisions |
 | `CONTRIBUTING.md` | Contributor branch/PR and quality workflow |
 | `RIGHTS.md` | Code versus content/media/data rights boundary |

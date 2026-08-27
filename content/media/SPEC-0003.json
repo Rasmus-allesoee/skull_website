@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "specimen_id": "SPEC-0003",
+  "assets": [
+    {
+      "view": "lateral",
+      "alt": "Lateral view of domestic cat skull specimen SPEC-0003.",
+      "orientation": "right"
+    },
+    {
+      "view": "oblique",
+      "alt": "Oblique view of domestic cat skull specimen SPEC-0003."
+    },
+    {
+      "view": "frontal",
+      "alt": "Frontal view of domestic cat skull specimen SPEC-0003."
+    },
+    {
+      "view": "dorsal",
+      "alt": "Dorsal view of domestic cat skull specimen SPEC-0003."
+    },
+    {
+      "view": "ventral",
+      "alt": "Ventral view of domestic cat skull specimen SPEC-0003."
+    },
+    {
+      "view": "mandible-dorsal",
+      "alt": "Dorsal view of the separated mandibles from domestic cat skull specimen SPEC-0003."
+    }
+  ]
+}

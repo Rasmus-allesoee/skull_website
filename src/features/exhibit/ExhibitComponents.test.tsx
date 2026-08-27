@@ -76,15 +76,36 @@ describe("exhibit components", () => {
     expect(inspectButton).toHaveFocus();
   });
 
-  it("shows an explicit incomplete-media state", () => {
+  it("does not show an incomplete-media warning for a partial media set", () => {
     render(
       <Gallery assets={exhibit.media.slice(0, 2)} commonName="Raccoon dog" />,
     );
-    expect(
-      screen.getByText(
-        "Incomplete media set: 2 of 6 canonical views are available.",
-      ),
-    ).toBeInTheDocument();
+    expect(screen.queryByText(/Incomplete media set:/)).not.toBeInTheDocument();
+  });
+
+  it("renders multiple physical specimen links without losing taxon context", () => {
+    const secondSpecimen = {
+      ...exhibit.specimen,
+      specimenId: "SPEC-0002",
+    };
+    render(
+      <SpecimenSelector
+        taxon={exhibit.taxon}
+        specimens={[exhibit.specimen, secondSpecimen]}
+        selectedSpecimenId={secondSpecimen.specimenId}
+        exactSpecimen
+      />,
+    );
+
+    expect(screen.getByText("2 published skulls")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /SPEC-0001/ })).toHaveAttribute(
+      "href",
+      "/species/raccoon-dog/specimens/SPEC-0001",
+    );
+    expect(screen.getByRole("link", { name: /SPEC-0002/ })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
   });
 
   it("marks the selected/default specimen and preserves missing measurement semantics", async () => {
@@ -95,8 +116,10 @@ describe("exhibit components", () => {
           taxon={exhibit.taxon}
           specimens={exhibit.specimens}
           selectedSpecimenId={exhibit.specimen.specimenId}
+          exactSpecimen
         />
         <MeasurementPanel
+          taxon={exhibit.taxon}
           specimen={exhibit.specimen}
           comparisonPrimary={comparisonPrimary}
           comparisonOptions={comparisonOptions}
@@ -144,6 +167,94 @@ describe("exhibit components", () => {
     );
   });
 
+  it("renders the bird measurement profile without mammal-only rows", async () => {
+    const user = userEvent.setup();
+    const notApplicable = {
+      status: "not_applicable" as const,
+      value: null,
+      unit: "mm" as const,
+    };
+    const birdTaxon = {
+      ...exhibit.taxon,
+      taxonId: "TAX-0100",
+      slug: "razorbill",
+      scientificName: "Alca torda",
+      hierarchy: {
+        ...exhibit.taxon.hierarchy,
+        className: "Aves",
+        classSlug: "birds",
+      },
+    };
+    const birdSpecimen = {
+      ...exhibit.specimen,
+      specimenId: "SPEC-0100",
+      taxonId: birdTaxon.taxonId,
+      measurements: {
+        ...exhibit.specimen.measurements,
+        skullWidth: notApplicable,
+        skullHeight: notApplicable,
+        condylobasalLength: notApplicable,
+        rostrumWidth: notApplicable,
+        maxillaryToothRowLength: notApplicable,
+        mandibularToothRowLength: notApplicable,
+        mandibleRamusHeight: notApplicable,
+        mandibleBodyHeight: notApplicable,
+        maxillaryCanineLength: notApplicable,
+        mandibularCanineLength: notApplicable,
+        billLength: {
+          status: "measured" as const,
+          value: 48.5,
+          unit: "mm" as const,
+        },
+        billWidth: {
+          status: "measured" as const,
+          value: 13.5,
+          unit: "mm" as const,
+        },
+        billHeight: {
+          status: "measured" as const,
+          value: 12,
+          unit: "mm" as const,
+        },
+        craniumHeight: {
+          status: "measured" as const,
+          value: 22,
+          unit: "mm" as const,
+        },
+        orbitalWidth: {
+          status: "measured" as const,
+          value: 31,
+          unit: "mm" as const,
+        },
+        interorbitalWidth: {
+          status: "measured" as const,
+          value: 12.5,
+          unit: "mm" as const,
+        },
+      },
+    };
+
+    render(
+      <MeasurementPanel
+        taxon={birdTaxon}
+        specimen={birdSpecimen}
+        comparisonPrimary={null}
+        comparisonOptions={[]}
+        defaultComparisonId={null}
+      />,
+    );
+
+    expect(
+      screen.getByText("Bill length").nextElementSibling,
+    ).toHaveTextContent("48.5 mm");
+    expect(screen.getByText("Orbital width")).toBeInTheDocument();
+    expect(screen.queryByText("Maximum skull width")).not.toBeInTheDocument();
+    await user.click(screen.getByText("Show additional recorded measurements"));
+    expect(
+      screen.getByText("Interorbital width").nextElementSibling,
+    ).toHaveTextContent("12.5 mm");
+  });
+
   it("renders alpha-bounded physical scale and updates the pair from the searchable selector", async () => {
     const user = userEvent.setup();
     const human = comparisonOptions[0]!;
@@ -153,6 +264,7 @@ describe("exhibit components", () => {
       label: "Red fox",
       scientificName: "Vulpes vulpes",
       specimenId: "SPEC-0014",
+      href: "/species/red-fox/specimens/SPEC-0014",
       aliases: ["Rød ræv"],
       measurements: {
         ...comparisonPrimary.measurements,
@@ -216,6 +328,11 @@ describe("exhibit components", () => {
     expect(
       document.querySelector('[data-comparison-id="specimen:SPEC-0014"]'),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", {
+        name: "Open Red fox specimen SPEC-0014",
+      }),
+    ).toHaveAttribute("href", "/species/red-fox/specimens/SPEC-0014");
     expect(screen.getByText("26 mm shorter")).toBeInTheDocument();
     expect(screen.getByText("(0.82×)")).toBeInTheDocument();
     expect(
@@ -239,8 +356,10 @@ describe("exhibit components", () => {
           taxon={exhibit.taxon}
           specimens={exhibit.specimens}
           selectedSpecimenId={exhibit.specimen.specimenId}
+          exactSpecimen
         />
         <MeasurementPanel
+          taxon={exhibit.taxon}
           specimen={exhibit.specimen}
           comparisonPrimary={comparisonPrimary}
           comparisonOptions={comparisonOptions}

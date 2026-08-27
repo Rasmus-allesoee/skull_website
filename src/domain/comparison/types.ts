@@ -2,6 +2,7 @@ import type {
   ComparisonMeasurementKey,
   LateralOrientation,
   Measurement,
+  MeasurementProfile,
   SubjectBounds,
 } from "@/domain/content/types";
 
@@ -12,8 +13,10 @@ export interface SkullComparisonRecord {
   isDefault: boolean;
   scientificName: string | null;
   specimenId: string | null;
+  href: string | null;
   aliases: string[];
   note: string | null;
+  measurementProfile: MeasurementProfile;
   measurements: Record<ComparisonMeasurementKey, Measurement>;
   image: {
     publicPath: string;
@@ -38,8 +41,15 @@ export interface ScalePresentation {
 
 export type DifferenceDirection = "larger" | "smaller" | "equal";
 
+export interface ComparisonDifferenceRow {
+  key: string;
+  label: string;
+  primaryKey: ComparisonMeasurementKey;
+  comparisonKey: ComparisonMeasurementKey;
+}
+
 export interface MeasurementDifference {
-  key: ComparisonMeasurementKey;
+  key: string;
   direction: DifferenceDirection | "unavailable";
   approximate: boolean;
   difference: number | null;

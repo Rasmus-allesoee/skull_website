@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "specimen_id": "SPEC-0004",
+  "assets": [
+    {
+      "view": "lateral",
+      "alt": "Lateral view of loon skull specimen SPEC-0004.",
+      "orientation": "right"
+    },
+    {
+      "view": "oblique",
+      "alt": "Oblique view of loon skull specimen SPEC-0004."
+    },
+    {
+      "view": "frontal",
+      "alt": "Frontal view of loon skull specimen SPEC-0004."
+    },
+    {
+      "view": "dorsal",
+      "alt": "Dorsal view of loon skull specimen SPEC-0004."
+    },
+    {
+      "view": "ventral",
+      "alt": "Ventral view of loon skull specimen SPEC-0004."
+    },
+    {
+      "view": "mandible-dorsal",
+      "alt": "Dorsal view of the separated mandibles from loon skull specimen SPEC-0004."
+    }
+  ]
+}

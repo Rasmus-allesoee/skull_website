@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "specimen_id": "SPEC-0008",
+  "assets": [
+    {
+      "view": "lateral",
+      "alt": "Lateral view of beech marten skull specimen SPEC-0008.",
+      "orientation": "right"
+    },
+    {
+      "view": "oblique",
+      "alt": "Oblique view of beech marten skull specimen SPEC-0008."
+    },
+    {
+      "view": "frontal",
+      "alt": "Frontal view of beech marten skull specimen SPEC-0008."
+    },
+    {
+      "view": "dorsal",
+      "alt": "Dorsal view of beech marten skull specimen SPEC-0008."
+    },
+    {
+      "view": "ventral",
+      "alt": "Ventral view of beech marten skull specimen SPEC-0008."
+    },
+    {
+      "view": "mandible-dorsal",
+      "alt": "Dorsal view of the separated mandibles from beech marten skull specimen SPEC-0008."
+    }
+  ]
+}

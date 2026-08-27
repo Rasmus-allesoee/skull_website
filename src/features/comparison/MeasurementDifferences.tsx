@@ -2,18 +2,12 @@
 
 import { useId } from "react";
 
-import { calculateMeasurementDifference } from "@/domain/comparison/scale";
+import {
+  calculateMeasurementDifference,
+  getComparisonDifferenceRows,
+  isCrossClassMeasurementPair,
+} from "@/domain/comparison/scale";
 import type { SkullComparisonRecord } from "@/domain/comparison/types";
-import type { ComparisonMeasurementKey } from "@/domain/content/types";
-
-const rows: { key: ComparisonMeasurementKey; label: string }[] = [
-  { key: "skullLength", label: "Max length" },
-  { key: "skullWidth", label: "Max width" },
-  { key: "skullHeight", label: "Max height" },
-  { key: "skullMass", label: "Skull mass" },
-  { key: "craniumWidth", label: "Cranium width" },
-  { key: "mandibleLength", label: "Max mandible length" },
-];
 
 export function MeasurementDifferences({
   primary,
@@ -23,13 +17,18 @@ export function MeasurementDifferences({
   comparison: SkullComparisonRecord;
 }) {
   const titleId = useId();
-  const differences = rows.map(({ key, label }) => ({
-    key,
-    label,
+  const rows = getComparisonDifferenceRows(
+    primary.measurementProfile,
+    comparison.measurementProfile,
+  );
+  const differences = rows.map((row) => ({
+    key: row.key,
+    label: row.label,
     difference: calculateMeasurementDifference(
-      key,
-      primary.measurements[key],
-      comparison.measurements[key],
+      row.primaryKey,
+      primary.measurements[row.primaryKey],
+      comparison.measurements[row.comparisonKey],
+      row.key,
     ),
   }));
   const hasApproximateDifference = differences.some(
@@ -64,6 +63,15 @@ export function MeasurementDifferences({
           );
         })}
       </dl>
+      {isCrossClassMeasurementPair(
+        primary.measurementProfile,
+        comparison.measurementProfile,
+      ) ? (
+        <p className="difference-note">
+          Cross-class width and height rows map different anatomical landmarks;
+          each mapping is named in the table.
+        </p>
+      ) : null}
       {hasApproximateDifference ? (
         <p className="difference-note">
           Approximate source values make the resulting difference approximate.

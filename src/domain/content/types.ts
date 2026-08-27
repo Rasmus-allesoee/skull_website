@@ -24,28 +24,198 @@ export const canonicalViewLabels: Record<CanonicalView, string> = {
 };
 
 export const measurementDefinitions = {
-  skullLength: { label: "Maximum skull length", unit: "mm" },
-  condylobasalLength: { label: "Condylobasal length", unit: "mm" },
-  skullWidth: { label: "Maximum skull width", unit: "mm" },
-  skullHeight: { label: "Skull height", unit: "mm" },
-  skullMass: { label: "Prepared skull mass", unit: "g" },
-  craniumWidth: { label: "Cranium width", unit: "mm" },
-  mandibleLength: { label: "Maximum mandible length", unit: "mm" },
+  skullLength: {
+    label: "Maximum skull length",
+    unit: "mm",
+    description:
+      "The collection's maximum anteroposterior skull-length record.",
+    profiles: ["mammal", "bird", "other"],
+  },
+  skullMass: {
+    label: "Prepared skull mass",
+    unit: "g",
+    description:
+      "Mass of the prepared skull configuration recorded for the specimen.",
+    profiles: ["mammal", "bird", "other"],
+  },
+  craniumWidth: {
+    label: "Cranium width",
+    unit: "mm",
+    description: "The recorded transverse width of the cranium.",
+    profiles: ["mammal", "bird", "other"],
+  },
+  mandibleLength: {
+    label: "Maximum mandible length",
+    unit: "mm",
+    description: "The greatest recorded length of the mandible.",
+    profiles: ["mammal", "bird", "other"],
+  },
+  bodyMass: {
+    label: "Animal body mass",
+    unit: "g",
+    description: "Recorded body mass of the animal before preparation.",
+    profiles: ["mammal", "bird", "other"],
+  },
+  skullWidth: {
+    label: "Maximum skull width",
+    unit: "mm",
+    description: "The greatest transverse width of the skull.",
+    profiles: ["mammal"],
+  },
+  skullHeight: {
+    label: "Skull height",
+    unit: "mm",
+    description: "The collection's approved vertical skull-height record.",
+    profiles: ["mammal"],
+  },
+  condylobasalLength: {
+    label: "Condylobasal length",
+    unit: "mm",
+    description:
+      "The straight distance from the anterior premaxilla to the posterior occipital-condyle landmark.",
+    profiles: ["mammal"],
+  },
+  rostrumWidth: {
+    label: "Rostrum width",
+    unit: "mm",
+    description: "The recorded transverse width of the rostrum.",
+    profiles: ["mammal"],
+  },
+  maxillaryToothRowLength: {
+    label: "Maxillary tooth-row length",
+    unit: "mm",
+    description: "The recorded length of the tooth row in the upper jaw.",
+    profiles: ["mammal"],
+  },
   mandibularToothRowLength: {
     label: "Mandibular tooth-row length",
     unit: "mm",
+    description: "The recorded length of the tooth row in the lower jaw.",
+    profiles: ["mammal"],
   },
-  mandibleRamusHeight: { label: "Mandibular ramus height", unit: "mm" },
-  mandibleBodyHeight: { label: "Mandibular body height", unit: "mm" },
-  maxillaryCanineLength: { label: "Maxillary canine length", unit: "mm" },
-  mandibularCanineLength: { label: "Mandibular canine length", unit: "mm" },
-  bodyMass: { label: "Animal body mass", unit: "g" },
+  mandibleRamusHeight: {
+    label: "Mandibular ramus height",
+    unit: "mm",
+    description: "Straight-line height of the mandibular ramus.",
+    profiles: ["mammal"],
+  },
+  mandibleBodyHeight: {
+    label: "Mandibular body height",
+    unit: "mm",
+    description: "Height of the mandibular body at the final molar landmark.",
+    profiles: ["mammal"],
+  },
+  maxillaryCanineLength: {
+    label: "Maxillary canine length",
+    unit: "mm",
+    description: "The defined exposed upper-canine measurement.",
+    profiles: ["mammal"],
+  },
+  mandibularCanineLength: {
+    label: "Mandibular canine length",
+    unit: "mm",
+    description: "The defined exposed lower-canine measurement.",
+    profiles: ["mammal"],
+  },
+  billLength: {
+    label: "Bill length",
+    unit: "mm",
+    description: "The collection's approved bill-length landmark pair.",
+    profiles: ["bird"],
+  },
+  billWidth: {
+    label: "Bill width",
+    unit: "mm",
+    description: "The collection's approved transverse bill-width record.",
+    profiles: ["bird"],
+  },
+  billHeight: {
+    label: "Bill height",
+    unit: "mm",
+    description: "The collection's approved vertical bill-height record.",
+    profiles: ["bird"],
+  },
+  craniumHeight: {
+    label: "Cranium height",
+    unit: "mm",
+    description: "The collection's approved vertical cranium-height record.",
+    profiles: ["bird"],
+  },
+  interorbitalWidth: {
+    label: "Interorbital width",
+    unit: "mm",
+    description: "The recorded minimum width between the orbits.",
+    profiles: ["bird"],
+  },
+  orbitalWidth: {
+    label: "Orbital width",
+    unit: "mm",
+    description: "The recorded transverse width of the orbit.",
+    profiles: ["bird"],
+  },
 } as const;
+
+export const measurementProfileLayouts = {
+  mammal: {
+    primary: [
+      "skullLength",
+      "skullWidth",
+      "skullHeight",
+      "craniumWidth",
+      "mandibleLength",
+      "skullMass",
+    ],
+    additional: [
+      "condylobasalLength",
+      "rostrumWidth",
+      "maxillaryToothRowLength",
+      "mandibularToothRowLength",
+      "mandibleRamusHeight",
+      "mandibleBodyHeight",
+      "maxillaryCanineLength",
+      "mandibularCanineLength",
+      "bodyMass",
+    ],
+  },
+  bird: {
+    primary: [
+      "skullLength",
+      "billLength",
+      "billWidth",
+      "billHeight",
+      "craniumWidth",
+      "craniumHeight",
+      "orbitalWidth",
+      "mandibleLength",
+      "skullMass",
+    ],
+    additional: ["interorbitalWidth", "bodyMass"],
+  },
+  other: {
+    primary: ["skullLength", "craniumWidth", "mandibleLength", "skullMass"],
+    additional: ["bodyMass"],
+  },
+} as const;
+
+export const comparisonMeasurementKeys = [
+  "skullLength",
+  "skullWidth",
+  "skullHeight",
+  "billLength",
+  "billWidth",
+  "billHeight",
+  "craniumWidth",
+  "craniumHeight",
+  "orbitalWidth",
+  "mandibleLength",
+  "skullMass",
+] as const;
 
 export type PublicationStatus = (typeof publicationStatuses)[number];
 export type CanonicalView = (typeof canonicalViews)[number];
 export type LateralOrientation = "left" | "right";
 export type MeasurementKey = keyof typeof measurementDefinitions;
+export type MeasurementProfile = keyof typeof measurementProfileLayouts;
 export type MeasurementUnit = "mm" | "g" | "days" | "hours" | "percent";
 export type MeasurementStatus =
   "measured" | "approximate" | "not_recorded" | "not_applicable";
@@ -218,12 +388,7 @@ export interface MediaAsset {
 }
 
 export type ComparisonMeasurementKey =
-  | "skullLength"
-  | "skullWidth"
-  | "skullHeight"
-  | "skullMass"
-  | "craniumWidth"
-  | "mandibleLength";
+  (typeof comparisonMeasurementKeys)[number];
 
 export interface ComparisonReferenceRecord {
   referenceId: string;
@@ -231,6 +396,7 @@ export interface ComparisonReferenceRecord {
   isDefault: boolean;
   aliases: string[];
   note: string;
+  measurementProfile: MeasurementProfile;
   measurements: Record<ComparisonMeasurementKey, Measurement>;
   media: {
     width: number;
@@ -271,12 +437,42 @@ export interface TaxonProfile {
 }
 
 export interface CompiledCollection {
-  schemaVersion: 3;
+  schemaVersion: 4;
   taxa: TaxonRecord[];
   specimens: SpecimenRecord[];
   media: MediaAsset[];
   comparisonReferences: ComparisonReferenceRecord[];
   profiles: TaxonProfile[];
+}
+
+export function resolveMeasurementProfile(
+  classSlug: string,
+  className?: string,
+): MeasurementProfile {
+  const normalizedSlug = classSlug.toLocaleLowerCase("en");
+  const normalizedName = className?.toLocaleLowerCase("en");
+  if (
+    ["mammal", "mammals", "mammalia"].includes(normalizedSlug) ||
+    normalizedName === "mammalia"
+  ) {
+    return "mammal";
+  }
+  if (
+    ["bird", "birds", "aves"].includes(normalizedSlug) ||
+    normalizedName === "aves"
+  ) {
+    return "bird";
+  }
+  return "other";
+}
+
+export function isMeasurementApplicable(
+  key: MeasurementKey,
+  profile: MeasurementProfile,
+): boolean {
+  return (measurementDefinitions[key].profiles as readonly string[]).includes(
+    profile,
+  );
 }
 
 export interface Diagnostic {

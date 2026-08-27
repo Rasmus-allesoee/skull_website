@@ -27,7 +27,7 @@ describe("content compiler", () => {
       value: null,
       unit: "g",
     });
-    expect(collection.schemaVersion).toBe(3);
+    expect(collection.schemaVersion).toBe(4);
     expect(specimen.condition).toBe("good");
     expect(specimen.ageDetail).toBeNull();
     expect(specimen.pathology).toEqual({
@@ -46,15 +46,20 @@ describe("content compiler", () => {
         mediaRights: "all_rights_reserved",
       }),
     );
-    expect(collection.media).toHaveLength(6);
+    expect(collection.media).toHaveLength(104);
     expect(collection.media[0]?.orientation).toBe("right");
     expect(
-      collection.media.slice(1).every((asset) => asset.orientation === null),
+      collection.media.every((asset) =>
+        asset.view === "lateral"
+          ? asset.orientation === "right"
+          : asset.orientation === null,
+      ),
     ).toBe(true);
     expect(collection.comparisonReferences).toEqual([
       expect.objectContaining({
         referenceId: "adult-human-skull",
         isDefault: true,
+        measurementProfile: "mammal",
         measurements: expect.objectContaining({
           skullLength: { status: "approximate", value: 182, unit: "mm" },
         }),
@@ -70,8 +75,15 @@ describe("content compiler", () => {
         asset.publicPath.endsWith(`${asset.specimenId}__${asset.view}.webp`),
       ),
     ).toBe(true);
-    expect(warnings).toEqual([]);
-  });
+    expect(warnings).toHaveLength(4);
+    expect(
+      warnings.every(
+        (warning) =>
+          warning.field === "media" &&
+          warning.rule === "Optional canonical views are missing",
+      ),
+    ).toBe(true);
+  }, 60_000);
 
   it("classifies only exact accepted species matches as automatic candidates", () => {
     expect(

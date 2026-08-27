@@ -1,18 +1,11 @@
 import { getCollection } from "@/data/collection";
 import type { SkullComparisonRecord } from "@/domain/comparison/types";
-import type {
-  ComparisonMeasurementKey,
-  CompiledCollection,
+import { formatScientificIdentification } from "@/domain/content/display";
+import {
+  comparisonMeasurementKeys,
+  resolveMeasurementProfile,
+  type CompiledCollection,
 } from "@/domain/content/types";
-
-const measurementKeys: ComparisonMeasurementKey[] = [
-  "skullLength",
-  "skullWidth",
-  "skullHeight",
-  "skullMass",
-  "craniumWidth",
-  "mandibleLength",
-];
 
 export function getEligibleSkullComparisons(
   collection: CompiledCollection = getCollection(),
@@ -26,8 +19,10 @@ export function getEligibleSkullComparisons(
       isDefault: reference.isDefault,
       scientificName: null,
       specimenId: null,
+      href: null,
       aliases: reference.aliases,
       note: reference.note,
+      measurementProfile: reference.measurementProfile,
       measurements: reference.measurements,
       image: reference.media,
     }));
@@ -58,21 +53,26 @@ export function getEligibleSkullComparisons(
     if (!lateral || lateral.orientation === null) continue;
 
     const measurements = Object.fromEntries(
-      measurementKeys.map((key) => [key, specimen.measurements[key]]),
+      comparisonMeasurementKeys.map((key) => [key, specimen.measurements[key]]),
     ) as SkullComparisonRecord["measurements"];
     specimens.push({
       id: `specimen:${specimen.specimenId}`,
       kind: "specimen",
       label: taxon.names.english ?? taxon.scientificName,
       isDefault: false,
-      scientificName: taxon.scientificName,
+      scientificName: formatScientificIdentification(taxon),
       specimenId: specimen.specimenId,
+      href: `/species/${taxon.slug}/specimens/${specimen.specimenId}`,
       aliases: [
         taxon.names.danish,
         ...taxon.names.aliases,
         taxon.hierarchy.genusName,
       ].filter((value): value is string => Boolean(value)),
       note: null,
+      measurementProfile: resolveMeasurementProfile(
+        taxon.hierarchy.classSlug,
+        taxon.hierarchy.className,
+      ),
       measurements,
       image: {
         publicPath: lateral.publicPath,

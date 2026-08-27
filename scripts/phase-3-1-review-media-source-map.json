@@ -1,0 +1,423 @@
+{
+  "schema_version": 1,
+  "source_root": "agent_context/skull_images_clean",
+  "staging_root": ".staging/media",
+  "entries": [
+    {
+      "source_file": "mårhund_lateral_1.png",
+      "target_file": "SPEC-0001__lateral.png"
+    },
+    {
+      "source_file": "mårhund_angle_1.png",
+      "target_file": "SPEC-0001__oblique.png"
+    },
+    {
+      "source_file": "mårhund_frontal_1.png",
+      "target_file": "SPEC-0001__frontal.png"
+    },
+    {
+      "source_file": "mårhund_dorsal_1.png",
+      "target_file": "SPEC-0001__dorsal.png"
+    },
+    {
+      "source_file": "mårhund_ventral_1.png",
+      "target_file": "SPEC-0001__ventral.png"
+    },
+    {
+      "source_file": "mårhund_mandible_1.png",
+      "target_file": "SPEC-0001__mandible-dorsal.png"
+    },
+    {
+      "source_file": "alk_lateral_1.png",
+      "target_file": "SPEC-0002__lateral.png"
+    },
+    {
+      "source_file": "alk_angle_1.png",
+      "target_file": "SPEC-0002__oblique.png"
+    },
+    {
+      "source_file": "alk_dorsal_1.png",
+      "target_file": "SPEC-0002__dorsal.png"
+    },
+    {
+      "source_file": "alk_ventral_1.png",
+      "target_file": "SPEC-0002__ventral.png"
+    },
+    {
+      "source_file": "alk_mandible_1.png",
+      "target_file": "SPEC-0002__mandible-dorsal.png"
+    },
+    {
+      "source_file": "cat_lateral_1.png",
+      "target_file": "SPEC-0003__lateral.png"
+    },
+    {
+      "source_file": "cat_angle_1.png",
+      "target_file": "SPEC-0003__oblique.png"
+    },
+    {
+      "source_file": "cat_frontal_1.png",
+      "target_file": "SPEC-0003__frontal.png"
+    },
+    {
+      "source_file": "cat_dorsal_1.png",
+      "target_file": "SPEC-0003__dorsal.png"
+    },
+    {
+      "source_file": "cat_ventral_1.png",
+      "target_file": "SPEC-0003__ventral.png"
+    },
+    {
+      "source_file": "cat_mandible_1.png",
+      "target_file": "SPEC-0003__mandible-dorsal.png"
+    },
+    {
+      "source_file": "gavia_lateral_1.png",
+      "target_file": "SPEC-0004__lateral.png"
+    },
+    {
+      "source_file": "gavia_angle_1.png",
+      "target_file": "SPEC-0004__oblique.png"
+    },
+    {
+      "source_file": "gavia_frontal_1.png",
+      "target_file": "SPEC-0004__frontal.png"
+    },
+    {
+      "source_file": "gavia_dorsal_1.png",
+      "target_file": "SPEC-0004__dorsal.png"
+    },
+    {
+      "source_file": "gavia_ventral_1.png",
+      "target_file": "SPEC-0004__ventral.png"
+    },
+    {
+      "source_file": "gavia_mandible_1.png",
+      "target_file": "SPEC-0004__mandible-dorsal.png"
+    },
+    {
+      "source_file": "strandskade_lateral_1.png",
+      "target_file": "SPEC-0005__lateral.png"
+    },
+    {
+      "source_file": "strandskade_angle_1.png",
+      "target_file": "SPEC-0005__oblique.png"
+    },
+    {
+      "source_file": "strandskade_dorsal_1.png",
+      "target_file": "SPEC-0005__dorsal.png"
+    },
+    {
+      "source_file": "standskade_ventral_1.png",
+      "target_file": "SPEC-0005__ventral.png"
+    },
+    {
+      "source_file": "strandskade_mandible_1.png",
+      "target_file": "SPEC-0005__mandible-dorsal.png"
+    },
+    {
+      "source_file": "måge_lateral_4.png",
+      "target_file": "SPEC-0006__lateral.png"
+    },
+    {
+      "source_file": "måge_angle_4.png",
+      "target_file": "SPEC-0006__oblique.png"
+    },
+    {
+      "source_file": "måge_frontal_4.png",
+      "target_file": "SPEC-0006__frontal.png"
+    },
+    {
+      "source_file": "måge_dorsal_4.png",
+      "target_file": "SPEC-0006__dorsal.png"
+    },
+    {
+      "source_file": "måge_ventral_4.png",
+      "target_file": "SPEC-0006__ventral.png"
+    },
+    {
+      "source_file": "måge_mandible_4.png",
+      "target_file": "SPEC-0006__mandible-dorsal.png"
+    },
+    {
+      "source_file": "hare_lateral_1.png",
+      "target_file": "SPEC-0007__lateral.png"
+    },
+    {
+      "source_file": "hare_angle_1.png",
+      "target_file": "SPEC-0007__oblique.png"
+    },
+    {
+      "source_file": "hare_frontal_1.png",
+      "target_file": "SPEC-0007__frontal.png"
+    },
+    {
+      "source_file": "hare_dorsal_1.png",
+      "target_file": "SPEC-0007__dorsal.png"
+    },
+    {
+      "source_file": "hare_ventral_1.png",
+      "target_file": "SPEC-0007__ventral.png"
+    },
+    {
+      "source_file": "hare_mandible_1.png",
+      "target_file": "SPEC-0007__mandible-dorsal.png"
+    },
+    {
+      "source_file": "martes_foina_lateral.png",
+      "target_file": "SPEC-0008__lateral.png"
+    },
+    {
+      "source_file": "martes_foina_angle_1.png",
+      "target_file": "SPEC-0008__oblique.png"
+    },
+    {
+      "source_file": "martes_foina_frontal.png",
+      "target_file": "SPEC-0008__frontal.png"
+    },
+    {
+      "source_file": "martes_foina_dorsal.png",
+      "target_file": "SPEC-0008__dorsal.png"
+    },
+    {
+      "source_file": "martes_foina_ventral_1.png",
+      "target_file": "SPEC-0008__ventral.png"
+    },
+    {
+      "source_file": "martes_foina_mandible_1.png",
+      "target_file": "SPEC-0008__mandible-dorsal.png"
+    },
+    {
+      "source_file": "meles_lateral_1.png",
+      "target_file": "SPEC-0009__lateral.png"
+    },
+    {
+      "source_file": "meles_angle_1.png",
+      "target_file": "SPEC-0009__oblique.png"
+    },
+    {
+      "source_file": "meles_frontal_1.png",
+      "target_file": "SPEC-0009__frontal.png"
+    },
+    {
+      "source_file": "meles_dorsal_1.png",
+      "target_file": "SPEC-0009__dorsal.png"
+    },
+    {
+      "source_file": "meles_ventral_1.png",
+      "target_file": "SPEC-0009__ventral.png"
+    },
+    {
+      "source_file": "meles_mandibles_1.png",
+      "target_file": "SPEC-0009__mandible-dorsal.png"
+    },
+    {
+      "source_file": "meles_lateral_3.png",
+      "target_file": "SPEC-0010__lateral.png"
+    },
+    {
+      "source_file": "meles_angle_3.png",
+      "target_file": "SPEC-0010__oblique.png"
+    },
+    {
+      "source_file": "meles_frontal_3.png",
+      "target_file": "SPEC-0010__frontal.png"
+    },
+    {
+      "source_file": "meles_dorsal_3.png",
+      "target_file": "SPEC-0010__dorsal.png"
+    },
+    {
+      "source_file": "meles_ventral_3.png",
+      "target_file": "SPEC-0010__ventral.png"
+    },
+    {
+      "source_file": "meles_mandible_3.png",
+      "target_file": "SPEC-0010__mandible-dorsal.png"
+    },
+    {
+      "source_file": "sule_lateral_2.png",
+      "target_file": "SPEC-0011__lateral.png"
+    },
+    {
+      "source_file": "sule_angle_2.png",
+      "target_file": "SPEC-0011__oblique.png"
+    },
+    {
+      "source_file": "sule_dorsal_2.png",
+      "target_file": "SPEC-0011__dorsal.png"
+    },
+    {
+      "source_file": "sule_ventral_2.png",
+      "target_file": "SPEC-0011__ventral.png"
+    },
+    {
+      "source_file": "sule_mandible_2.png",
+      "target_file": "SPEC-0011__mandible-dorsal.png"
+    },
+    {
+      "source_file": "mustela_lateral_1.png",
+      "target_file": "SPEC-0012__lateral.png"
+    },
+    {
+      "source_file": "mustela_angle_1.png",
+      "target_file": "SPEC-0012__oblique.png"
+    },
+    {
+      "source_file": "mustela_frontal_1.png",
+      "target_file": "SPEC-0012__frontal.png"
+    },
+    {
+      "source_file": "mustela_dorsal_1.png",
+      "target_file": "SPEC-0012__dorsal.png"
+    },
+    {
+      "source_file": "mustela_ventral_1.png",
+      "target_file": "SPEC-0012__ventral.png"
+    },
+    {
+      "source_file": "mustela_mandible_1.png",
+      "target_file": "SPEC-0012__mandible-dorsal.png"
+    },
+    {
+      "source_file": "seal_lateral_1.png",
+      "target_file": "SPEC-0013__lateral.png"
+    },
+    {
+      "source_file": "seal_angle_1.png",
+      "target_file": "SPEC-0013__oblique.png"
+    },
+    {
+      "source_file": "seal_frontal_1.png",
+      "target_file": "SPEC-0013__frontal.png"
+    },
+    {
+      "source_file": "seal_dorsal_1.png",
+      "target_file": "SPEC-0013__dorsal.png"
+    },
+    {
+      "source_file": "seal_ventral_1.png",
+      "target_file": "SPEC-0013__ventral.png"
+    },
+    {
+      "source_file": "seal_mandible_1.png",
+      "target_file": "SPEC-0013__mandible-dorsal.png"
+    },
+    {
+      "source_file": "seal_lateral_6.png",
+      "target_file": "SPEC-0014__lateral.png"
+    },
+    {
+      "source_file": "seal_angle_6.png",
+      "target_file": "SPEC-0014__oblique.png"
+    },
+    {
+      "source_file": "seal_frontal_6.png",
+      "target_file": "SPEC-0014__frontal.png"
+    },
+    {
+      "source_file": "seal_dorsal_6.png",
+      "target_file": "SPEC-0014__dorsal.png"
+    },
+    {
+      "source_file": "seal_ventral_6.png",
+      "target_file": "SPEC-0014__ventral.png"
+    },
+    {
+      "source_file": "seal_mandible_6.png",
+      "target_file": "SPEC-0014__mandible-dorsal.png"
+    },
+    {
+      "source_file": "seal_lateral_7.png",
+      "target_file": "SPEC-0015__lateral.png"
+    },
+    {
+      "source_file": "seal_angle_7.png",
+      "target_file": "SPEC-0015__oblique.png"
+    },
+    {
+      "source_file": "seal_front_7.png",
+      "target_file": "SPEC-0015__frontal.png"
+    },
+    {
+      "source_file": "seal_dorsal_7.png",
+      "target_file": "SPEC-0015__dorsal.png"
+    },
+    {
+      "source_file": "seal_ventral_7.png",
+      "target_file": "SPEC-0015__ventral.png"
+    },
+    {
+      "source_file": "seal_mandible_dorsal_7.png",
+      "target_file": "SPEC-0015__mandible-dorsal.png"
+    },
+    {
+      "source_file": "mole_lateral_1.png",
+      "target_file": "SPEC-0016__lateral.png"
+    },
+    {
+      "source_file": "mole_angle_1.png",
+      "target_file": "SPEC-0016__oblique.png"
+    },
+    {
+      "source_file": "mole_frontal_1.png",
+      "target_file": "SPEC-0016__frontal.png"
+    },
+    {
+      "source_file": "mole_dorsal_1.png",
+      "target_file": "SPEC-0016__dorsal.png"
+    },
+    {
+      "source_file": "mole_ventral_1.png",
+      "target_file": "SPEC-0016__ventral.png"
+    },
+    {
+      "source_file": "mole_mandible_1.png",
+      "target_file": "SPEC-0016__mandible-dorsal.png"
+    },
+    {
+      "source_file": "lomvie_lateral_1.png",
+      "target_file": "SPEC-0017__lateral.png"
+    },
+    {
+      "source_file": "lomvie_angle_1.png",
+      "target_file": "SPEC-0017__oblique.png"
+    },
+    {
+      "source_file": "lomvie_dorsal_1.png",
+      "target_file": "SPEC-0017__dorsal.png"
+    },
+    {
+      "source_file": "lomvie_ventral_1.png",
+      "target_file": "SPEC-0017__ventral.png"
+    },
+    {
+      "source_file": "lomvie_mandible_1.png",
+      "target_file": "SPEC-0017__mandible-dorsal.png"
+    },
+    {
+      "source_file": "vulpes_lateral_5.png",
+      "target_file": "SPEC-0018__lateral.png"
+    },
+    {
+      "source_file": "vulpes_angle_5.png",
+      "target_file": "SPEC-0018__oblique.png"
+    },
+    {
+      "source_file": "vulpes_frontal_5.png",
+      "target_file": "SPEC-0018__frontal.png"
+    },
+    {
+      "source_file": "vulpes_dorsal_5.png",
+      "target_file": "SPEC-0018__dorsal.png"
+    },
+    {
+      "source_file": "vulpes_ventral_5.png",
+      "target_file": "SPEC-0018__ventral.png"
+    },
+    {
+      "source_file": "vulpes_mandible_5.png",
+      "target_file": "SPEC-0018__mandible-dorsal.png"
+    }
+  ]
+}

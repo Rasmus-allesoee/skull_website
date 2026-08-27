@@ -1,14 +1,14 @@
 # Content and data model
 
-**Status:** Approved contract; executable schema version 3 and Phase 2.3 representative display rules implemented
+**Status:** Approved contract; schema version 4, class-aware measurements, and generated search projection implemented
 
-**Last reviewed:** 2026-08-17
+**Last reviewed:** 2026-08-22
 
 ## 1. Purpose
 
 This document defines how taxonomic identities, physical specimens, measurements, provenance, preparation, editorial profiles, citations, and media relate. It is the contract between human-maintained content and the application.
 
-The current `agent_context/skulls_meta.csv` is an incomplete illustrative working sheet. It is not a production input and must not dictate this schema. Phase 2 used only the user-selected row with source `ID = 1` as evidence for a manually curated representative record; Phase 6 ingests a reviewed replacement export after stable IDs, public notes, and image filenames are complete.
+The current `agent_context/skulls_meta.csv` is an incomplete illustrative working sheet. The partial `agent_context/metadata_csv/*.csv` exports include useful bird-measurement evidence but also legacy row IDs, helper columns, incomplete taxonomy, and unreviewed publication fields. None is a production input or may dictate identity. Phase 2 used only the user-selected row with source `ID = 1` as evidence for a manually curated representative record; Phase 6 ingests reviewed normalized exports after stable IDs, public notes, rights, and image filenames are complete.
 
 ## 2. Sources of truth
 
@@ -38,7 +38,7 @@ Compiled JSON, search indexes, and GeoJSON are generated views. They are never e
 - Rows have stable explicit IDs; row position is never identity.
 - Unknown extra columns fail validation so misspelled headers are not silently ignored.
 
-Phase 2 fixed the committed header order in `src/domain/content/schemas.ts` and added strict executable validation. Phase 2.1 deliberately extended that order and advanced generated `CompiledCollection.schemaVersion` from 1 to 2. Phase 2.2 advances the compiled contract to version 3 for lateral orientation and comparison-reference records without changing either CSV header. Schema/header changes now require the change-management process in section 18; do not create ad-hoc production CSV variants.
+Phase 2 fixed the committed header order in `src/domain/content/schemas.ts` and added strict executable validation. Phase 2.1 deliberately extended that order and advanced generated `CompiledCollection.schemaVersion` from 1 to 2. Phase 2.2 advanced the compiled contract to version 3 for lateral orientation and comparison-reference records without changing either CSV header. Phase 3 advances it to version 4 and expands only the canonical `specimens.csv` header with reviewed mammal/bird measurement value-status pairs. Schema/header changes require the change-management process in section 18; do not create ad-hoc production CSV variants or parallel class-specific specimen tables.
 
 ## 4. Identity, slugs, and references
 
@@ -171,26 +171,42 @@ Coordinates are published only from explicit reviewed fields. The compiler never
 | `photographed_on` | partial date | No | Capture date/precision preserved |
 | `uploaded_on` | ISO date | Conditional | Public site record creation date after launch |
 
-### Skull measurements
+### Skull measurements and class profiles
 
-All numeric values are non-negative decimal numbers in canonical units. Each supports a companion status where needed.
+All numeric values are non-negative decimal numbers in canonical units. Every field has an adjacent `_status` field. The compiler derives a specimen's `mammal`, `bird`, or fallback `other` profile from its linked taxon's canonical class rather than trusting a duplicate class column on the specimen row.
 
-| Field | Unit | Meaning |
-|---|---|---|
-| `skull_length_mm` | mm | Approved total skull-length landmark pair |
-| `condylobasal_length_mm` | mm | Anterior premaxilla to posterior occipital-condyle landmark pair |
-| `skull_width_mm` | mm | Approved maximum skull-width landmark pair |
-| `skull_height_mm` | mm | Approved height landmark pair |
-| `skull_mass_g` | g | Prepared skull/mandible configuration defined in methodology |
-| `cranium_width_mm` | mm | Approved cranium-width landmark pair |
-| `mandible_length_mm` | mm | Approved mandible-length landmark pair |
-| `mandibular_tooth_row_length_mm` | mm | Recorded mandibular tooth-row length |
-| `mandible_ramus_height_mm` | mm | Straight-line ramus height |
-| `mandible_body_height_mm` | mm | Mandibular body height at the final molar |
-| `maxillary_canine_length_mm` | mm | Exposed/defined upper canine measurement |
-| `mandibular_canine_length_mm` | mm | Exposed/defined lower canine measurement |
+| Field | Unit | Profiles | Meaning |
+|---|---|---|---|
+| `skull_length_mm` | mm | All | Approved total skull-length landmark pair |
+| `skull_mass_g` | g | All | Prepared skull/mandible configuration defined in methodology |
+| `cranium_width_mm` | mm | All | Approved cranium-width landmark pair |
+| `mandible_length_mm` | mm | All | Approved maximum mandible-length landmark pair |
+| `condylobasal_length_mm` | mm | Mammal | Anterior premaxilla to posterior occipital-condyle landmark pair |
+| `skull_width_mm` | mm | Mammal | Approved maximum skull-width landmark pair |
+| `skull_height_mm` | mm | Mammal | Approved skull-height landmark pair |
+| `rostrum_width_mm` | mm | Mammal | Recorded transverse rostrum width |
+| `maxillary_tooth_row_length_mm` | mm | Mammal | Recorded upper-jaw tooth-row length |
+| `mandibular_tooth_row_length_mm` | mm | Mammal | Recorded lower-jaw tooth-row length |
+| `mandible_ramus_height_mm` | mm | Mammal | Straight-line ramus height |
+| `mandible_body_height_mm` | mm | Mammal | Mandibular body height at the final molar |
+| `maxillary_canine_length_mm` | mm | Mammal | Exposed/defined upper-canine measurement |
+| `mandibular_canine_length_mm` | mm | Mammal | Exposed/defined lower-canine measurement |
+| `cranium_height_mm` | mm | Bird | Approved vertical cranium-height record |
+| `interorbital_width_mm` | mm | Bird | Recorded minimum width between the orbits |
+| `orbital_width_mm` | mm | Bird | Recorded transverse orbit width |
+| `bill_length_mm` | mm | Bird | Approved bill-length landmark pair |
+| `bill_width_mm` | mm | Bird | Approved transverse bill-width record |
+| `bill_height_mm` | mm | Bird | Approved vertical bill-height record |
 
-These landmark names were tested against the Phase 2 representative record before the headers became executable. Every measurement/duration/concentration column has an adjacent `_status` column using section 8 semantics. The former generic diagram is not part of the measurement contract: exact landmark illustrations and reproducible measurement instructions require owner-supplied real-skull imagery plus cited methodology review.
+Profile rules:
+
+- `Mammalia` (including approved slugs `mammal`, `mammals`, or `mammalia`) resolves to `mammal`; `Aves` (including `bird`, `birds`, or `aves`) resolves to `bird`; every other class resolves to the conservative shared-field `other` profile until reviewed.
+- An applicable field may be `measured`, `approximate`, or `not_recorded`; it must not use `not_applicable` merely because no value was entered.
+- A field outside the resolved profile must have a blank value and `not_applicable` status. This makes accidental mammal fields on birds—and bird fields on mammals—blocking diagnostics.
+- Mammal primary presentation uses maximum length/width/height, cranium width, maximum mandible length, and prepared mass. Bird primary presentation uses maximum length, bill length/width/height, cranium width/height, orbital width, maximum mandible length, and prepared mass. Less central applicable values remain progressively disclosed.
+- `body_mass_g` remains biological context shared by all profiles and is not confused with prepared skull mass.
+
+These landmark names are executable field labels, not a complete anatomical protocol. Exact landmark illustrations and reproducible measurement instructions still require owner-supplied real-skull imagery plus cited methodology review.
 
 ### Rights, credit, and notes
 
@@ -211,6 +227,8 @@ The concrete TypeScript types in `src/domain/content/types.ts` express, without 
 
 ```ts
 type PublicationStatus = "draft" | "review" | "published" | "archived";
+
+type MeasurementProfile = "mammal" | "bird" | "other";
 
 type Measurement =
   | { status: "measured"; value: number; unit: "mm" | "g" | "days" | "hours" | "percent" }
@@ -269,6 +287,7 @@ interface ComparisonReferenceRecord {
   isDefault: boolean;
   aliases: string[];
   note: string;
+  measurementProfile: MeasurementProfile;
   measurements: Record<ComparisonMeasurementKey, Measurement>;
   media: {
     width: number;
@@ -302,6 +321,7 @@ Rules:
 - Unknown records are excluded only while a corresponding numeric filter is active.
 - A wholly empty optional section may be hidden; an unknown field inside a meaningful group remains visible.
 - Approximation is data, not visual styling alone; assistive text must expose it.
+- `not_applicable` is validated against the linked taxon's measurement profile; it is not a generic synonym for blank.
 - “Unknown” and “not recorded” can differ in controlled vocabularies when the distinction is scientifically useful, but must not proliferate inconsistently.
 
 ## 9. Partial dates
@@ -320,6 +340,17 @@ Rules:
 - Common names are curated display terms. Search aliases can include historic names, alternate spellings, and language variants but are not all displayed as accepted names.
 - Danish diacritics are preserved. A normalized search field may additionally match ASCII input.
 - Taxonomy refresh records evidence; a human accepts any scientific-name or hierarchy change.
+
+### Generated catalog-search projection
+
+`pnpm content:build` projects published canonical records into a versioned artifact; it never accepts search-only source rows.
+
+- `rank` documents contain the canonical class/order/family/genus name, slug, descendant taxon IDs, stable rank URL, and a deterministic published representative lateral image when one exists.
+- `taxon` documents contain curated English/scientific/Danish display values, taxon ID, aliases/previous slugs, hierarchy text, stable taxon URL, default lateral asset, and reviewed profile text only when such prose exists.
+- `specimen` documents contain the immutable specimen ID, linked taxon names/aliases/hierarchy, exact nested URL, and that specimen's canonical lateral asset.
+- Matching-only values use NFKD/diacritic, case, punctuation, and whitespace normalization. Display labels and URLs remain untouched.
+- Draft/archived taxa, specimens, and profiles are absent. The artifact cannot assign identity, change taxonomy, or make a record publishable.
+- `.generated/search-documents.json` and `public/generated/catalog-search-v1.json` are ignored replaceable copies of the same deterministic document set. They are validated by schema/version at load and never hand-edited.
 
 ## 11. Editorial profiles and citations
 
@@ -392,6 +423,8 @@ Guide MDX uses explicit title, slug, summary, review date, safety-review status,
 - Lateral is mandatory. Missing optional views generate authoring warnings; unexpected view tokens are errors.
 - Every asset resolves to a specimen and has alt text, credit, rights, dimensions, and deterministic sort order.
 
+Phase 3.2 corrected the committed lateral/oblique pixels for SPEC-0003, SPEC-0013, and SPEC-0018 by rebuilding exactly those six changed derivatives from the already right-facing clean masters through the 104-entry staging map and ordinary processor. No display-time filename/flip exception or manual WebP edit was introduced. The regenerated manifest recomputes subject bounds, so galleries, cards, suggestions, and comparisons share the corrected framing wherever each canonical asset is used.
+
 Alt text describes the useful view and visible specimen condition without repeating the nearby name mechanically. Decorative duplicates use empty alt only when the same information is already adjacent and the image adds no independent function.
 
 ### Comparison references and calibrated eligibility
@@ -399,12 +432,23 @@ Alt text describes the useful view and visible specimen condition without repeat
 - Comparison references have stable ASCII IDs, declaration filenames that match those IDs, and public paths derived from those IDs under `public/media/references/`.
 - Exactly one reference has `is_default = true`. Phase 2.2 uses `adult-human-skull` as that default.
 - The adult-human reference stores fixed approximate values: maximum length 182 mm, maximum width 124 mm, height 133 mm, prepared mass 800 g, cranium width 138 mm, and maximum mandible length 117 mm. Its note explicitly says these are representative approximate dimensions, not a universal human average.
-- Every reference requires all six comparison measurements, explicit lateral orientation, alt text, credit, rights, and a validated transparent WebP with compiled subject bounds.
+- Reference declaration schema version 2 records `measurement_profile`. It requires that profile's complete comparison suite—six mammal, nine bird, or four shared fallback measurements—plus explicit lateral orientation, alt text, credit, rights, and a validated transparent WebP with compiled subject bounds. Fields outside the profile compile to `not_applicable`.
 - An eligible specimen comparison record is the published default specimen for its taxon and has a validated lateral asset, explicit orientation, and measured maximum skull length. A missing/approximate/unusable scaling value excludes it rather than fabricating scale.
-- Reference records sort before specimen records in the scoped selector; the current specimen is excluded. Search matches the reference label/aliases or the eligible specimen's English/scientific names and specimen ID without creating the Phase 4 global index.
+- Reference records sort before specimen records in the scoped comparison selector; the current specimen is excluded. That selector matches its eligible reference/specimen labels, names, aliases, and IDs within its own route-specific record set rather than querying the global catalog index.
 - Calibrated rendering maps `subjectBounds.width` to the record's maximum skull length and applies one shared pixels-per-millimetre factor to the pair. Canvas margins never contribute to anatomical length; source aspect ratio and all anatomical endpoints remain intact.
 - Approximate reference measurements retain `status = approximate` in the compiled record and display approximation markers. Ratios and differences are derived values, never source measurements.
 - `note` belongs to each comparison record and renders only while that record is selected; specimen records do not inherit the adult-human wording. The difference-level approximation explanation renders only when at least one available displayed difference has an approximate source status.
+
+Comparison difference matrices:
+
+| Pair | Rows |
+|---|---|
+| Mammal ↔ mammal | Maximum length, maximum width, maximum height, cranium width, maximum mandible length, prepared skull mass |
+| Bird ↔ bird | Maximum length, bill length, bill width, bill height, cranium width, cranium height, orbital width, maximum mandible length, prepared skull mass |
+| Bird ↔ mammal | Maximum length; orbital width ↔ maximum width; cranium height ↔ skull height; cranium width; maximum mandible length; prepared skull mass |
+| Any pair involving `other` | The four shared fields only |
+
+Bird/mammal width and height compare different named landmarks for a practical descriptive contrast. The UI states that limitation; the mapping must never be described as homologous or silently relabelled as the same anatomical measurement.
 
 ## 14. Public location policy
 
@@ -441,12 +485,14 @@ The owner approved exact public coordinates when known. Therefore:
 - Rights and credits are explicit.
 - Coordinates and precision agree; numbers are in range.
 - Measurements are finite, non-negative, and use canonical semantics.
+- Class-profile applicability and each measurement's value/status pairing agree.
 - `pathology_status = yes` and `trauma_status = yes` each require a public description; `no` or `not_recorded` forbid a description so status and prose cannot contradict.
 - Notes and provenance fields are marked public-safe.
 
 ### Cross-record
 
 - Every published default points back to the same taxon.
+- Repeated class/order/family/genus name, slug, and parent relationships are consistent across all canonical taxon rows.
 - A published specimen cannot link to a draft/archived taxon.
 - Previous slugs do not collide with current or previous slugs.
 - Media names contain only linked specimen IDs and canonical views.
@@ -476,13 +522,31 @@ The user-provided context establishes private ownership and original photography
 
 Phase 2.2 adds only a separate visual comparison reference; it does not identify a second collection specimen. Its ignored PNG source was processed through the reference-media command, and the committed declaration/derivative preserve explicit approximate-measurement, credit, rights, orientation, bounds, and metadata-stripping semantics.
 
+### Phase 3 class-aware schema decision
+
+The supplied `specimens_birds_measurements_raw.csv` demonstrated that mammal-only columns do not describe bird skulls adequately. Phase 3 therefore incorporated its nine requested bird fields into the one canonical specimen schema and added the missing mammal rostrum/maxillary-tooth-row fields seen in the broader export. Phase 3.0 did not copy any raw row value into public records. The raccoon-dog row explicitly marks bird-only fields `not_applicable` and retains unrecorded applicable mammal fields as `not_recorded`.
+
+### Phase 3.1 review-slice migration
+
+Phase 3.1 deliberately normalized a bounded subset of the same ignored exports after matching them to the owner's cleaned image sets. The result is 15 published taxon identities (13 species-level and two explicit genus-level `sp.` records) linked to 18 published specimens and 104 validated media assets. This is an auditable review expansion, not a declaration that all source rows are complete.
+
+- The accepted `TAX-0002`–`TAX-0015` and `SPEC-0002`–`SPEC-0018` IDs now participate in public URLs and must not be reassigned from row order during Phase 6.
+- `Gavia` and `Larus` are canonical genus names; the separate qualifier renders them as *Gavia* sp. and *Larus* sp. without changing the external taxonomy match.
+- Applicable values copied from a source measurement remain `measured`. Blank applicable fields remain `not_recorded`; out-of-profile fields are `not_applicable`.
+- Ambiguous body-mass units, incompatible raw tooth counts, private-style distinguishing text, and unreviewed preparation durations were not normalized into public facts.
+- Explicit coordinates were retained with their supplied uncertainty semantics; no locality or EXIF geocoding occurred.
+- All accepted rows use the repository's reserved rights value and the supplied owner/photographer credit. Phase 6 must still re-audit final rights and public-note decisions.
+- Four published records legitimately lack an optional frontal view. The compiler reports them as warnings while lateral media remains blocking.
+
+The complete accepted/blocked record matrix and transformation rationale are in [phase_3_1_migration_audit.md](phase_3_1_migration_audit.md).
+
 ## 17. Migration from the current draft
 
-The draft metadata and staged images are input evidence, not production sources. Migration in Phase 6 will:
+The draft metadata, partial `metadata_csv` exports, and staged images are input evidence, not production sources. Phase 3.1 converted only the audited review slice above. Complete migration in Phase 6 will:
 
 1. preserve a private backup of the original working sheet and image masters;
-2. assign immutable taxon and specimen IDs outside image/common-name guesses;
-3. map legacy columns to reviewed schema fields;
+2. reconcile every row against the Phase 3.1 accepted/blocked ledger, preserve its public IDs/URLs, and assign immutable IDs only to genuinely unmapped physical records;
+3. map spreadsheet helper columns and the separate bird-measurement export into the unified reviewed schema without duplicating specimen tables;
 4. convert `X`, blanks, and `N/A` without losing semantics;
 5. separate private notes from curated public notes;
 6. validate dates, units, coordinates, methods, rights, and credits;

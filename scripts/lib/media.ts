@@ -12,15 +12,19 @@ import {
   specimenHeaders,
 } from "../../src/domain/content/schemas";
 import type {
+  ComparisonMeasurementKey,
   ComparisonReferenceRecord,
   Diagnostic,
+  Measurement,
   LateralOrientation,
   MediaAsset,
   SubjectBounds,
 } from "../../src/domain/content/types";
 import {
   canonicalViews,
+  comparisonMeasurementKeys,
   formatDiagnostics,
+  isMeasurementApplicable,
   ValidationError,
 } from "../../src/domain/content/types";
 import { fromRepositoryRoot } from "./paths";
@@ -359,28 +363,45 @@ async function validateComparisonReferences(
     });
     if (!inspected) continue;
 
-    const approximate = (value: number, unit: "mm" | "g") => ({
-      status: "approximate" as const,
-      value,
-      unit,
-    });
+    const sourceFields: Record<
+      ComparisonMeasurementKey,
+      keyof typeof source.measurements
+    > = {
+      skullLength: "skull_length_mm",
+      skullWidth: "skull_width_mm",
+      skullHeight: "skull_height_mm",
+      billLength: "bill_length_mm",
+      billWidth: "bill_width_mm",
+      billHeight: "bill_height_mm",
+      skullMass: "skull_mass_g",
+      craniumWidth: "cranium_width_mm",
+      craniumHeight: "cranium_height_mm",
+      orbitalWidth: "orbital_width_mm",
+      mandibleLength: "mandible_length_mm",
+    };
+    const measurements = Object.fromEntries(
+      comparisonMeasurementKeys.map((key) => {
+        const unit = key === "skullMass" ? "g" : "mm";
+        const value = source.measurements[sourceFields[key]];
+        let measurement: Measurement;
+        if (!isMeasurementApplicable(key, source.measurement_profile)) {
+          measurement = { status: "not_applicable", value: null, unit };
+        } else if (value === undefined) {
+          measurement = { status: "not_recorded", value: null, unit };
+        } else {
+          measurement = { status: "approximate", value, unit };
+        }
+        return [key, measurement];
+      }),
+    ) as ComparisonReferenceRecord["measurements"];
     records.push({
       referenceId: source.reference_id,
       label: source.label,
       isDefault: source.is_default,
       aliases: source.aliases,
       note: source.note,
-      measurements: {
-        skullLength: approximate(source.measurements.skull_length_mm, "mm"),
-        skullWidth: approximate(source.measurements.skull_width_mm, "mm"),
-        skullHeight: approximate(source.measurements.skull_height_mm, "mm"),
-        skullMass: approximate(source.measurements.skull_mass_g, "g"),
-        craniumWidth: approximate(source.measurements.cranium_width_mm, "mm"),
-        mandibleLength: approximate(
-          source.measurements.mandible_length_mm,
-          "mm",
-        ),
-      },
+      measurementProfile: source.measurement_profile,
+      measurements,
       media: {
         ...inspected,
         orientation: source.asset.orientation,

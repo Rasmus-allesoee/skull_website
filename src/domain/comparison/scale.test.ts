@@ -2,13 +2,22 @@ import { describe, expect, it } from "vitest";
 
 import type { Measurement } from "@/domain/content/types";
 
-import { calculateMeasurementDifference, getScalePresentation } from "./scale";
+import {
+  calculateMeasurementDifference,
+  getComparisonDifferenceRows,
+  getScalePresentation,
+} from "./scale";
 import type { SkullComparisonRecord } from "./types";
 
 const measured = (value: number, unit: "mm" | "g" = "mm"): Measurement => ({
   status: "measured",
   value,
   unit,
+});
+const notApplicable = (): Measurement => ({
+  status: "not_applicable",
+  value: null,
+  unit: "mm",
 });
 
 const record = (
@@ -24,8 +33,10 @@ const record = (
   isDefault: false,
   scientificName: null,
   specimenId: id,
+  href: null,
   aliases: [],
   note: null,
+  measurementProfile: "mammal",
   measurements: {
     skullLength: measured(length),
     skullWidth: measured(1),
@@ -33,6 +44,11 @@ const record = (
     skullMass: measured(1, "g"),
     craniumWidth: measured(1),
     mandibleLength: measured(1),
+    billLength: notApplicable(),
+    billWidth: notApplicable(),
+    billHeight: notApplicable(),
+    craniumHeight: notApplicable(),
+    orbitalWidth: notApplicable(),
   },
   image: {
     publicPath: `/${id}.webp`,
@@ -114,6 +130,40 @@ describe("true-scale comparison", () => {
         direction: "unavailable",
         text: "Not recorded",
         ratio: null,
+      }),
+    );
+  });
+
+  it("resolves mammal, bird, and cross-class difference suites", () => {
+    const mammalRows = getComparisonDifferenceRows("mammal", "mammal");
+    const birdRows = getComparisonDifferenceRows("bird", "bird");
+    const birdToMammal = getComparisonDifferenceRows("bird", "mammal");
+    const mammalToBird = getComparisonDifferenceRows("mammal", "bird");
+
+    expect(mammalRows).toHaveLength(6);
+    expect(mammalRows.map((item) => item.label)).toEqual([
+      "Max length",
+      "Max width",
+      "Max height",
+      "Cranium width",
+      "Max mandible length",
+      "Prepared skull mass",
+    ]);
+    expect(birdRows).toHaveLength(9);
+    expect(birdRows.map((item) => item.label)).toContain("Bill height");
+    expect(birdToMammal).toHaveLength(6);
+    expect(birdToMammal[1]).toEqual(
+      expect.objectContaining({
+        label: "Width (orbital ↔ max)",
+        primaryKey: "orbitalWidth",
+        comparisonKey: "skullWidth",
+      }),
+    );
+    expect(mammalToBird[2]).toEqual(
+      expect.objectContaining({
+        label: "Height (cranium ↔ skull)",
+        primaryKey: "skullHeight",
+        comparisonKey: "craniumHeight",
       }),
     );
   });
