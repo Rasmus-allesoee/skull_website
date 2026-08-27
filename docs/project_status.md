@@ -1,6 +1,6 @@
 # Project status
 
-**Snapshot date:** 2026-08-26
+**Snapshot date:** 2026-08-27
 
 **Current phase:** Combined Phase 3.2 Species-catalog redesign and Phase 4 search/faceted discovery — complete local technical/visual gate pass; owner review pending
 
@@ -48,6 +48,13 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 - Consolidated the narrow control region into a search row, two compact control rows, and one non-wrapping active-state row. Applied chips scroll horizontally instead of increasing the sticky region's height, and the compact reset action remains directly available.
 - At the 390 × 844 review viewport the complete control region measures 200.8 px, or 23.8% of the viewport, leaving 76.2% for the published displays. Controls retain 44 px touch targets and the page has no horizontal overflow. The region remains sticky at short narrow viewports so the control bar and listbox retain their intended stacking behavior.
 - Added Playwright coverage for the height budget, narrow-mode controls, icon/dropdown tooltips, URL-backed mode/class changes, compact active state, sticky behavior at short heights, listbox stacking, two-column alignment, and horizontal overflow. The final repository-wide check/build and browser-suite results are recorded in the checkpoint evidence below.
+
+### Owner-directed specimen and comparison refinements (2026-08-27)
+
+- Matched the multi-specimen catalog count trigger to the brass uppercase overline style used by single-specimen cards, while retaining its labelled chooser behavior.
+- Made `Physical specimen` route transitions preserve the current scroll position, so selecting another specimen does not unexpectedly return the visitor to the top of the page.
+- Removed the public incomplete-media warning banner. Optional view availability remains represented by the actual gallery controls and the existing authoring/validation rules; missing optional views are not presented as a visitor-facing error.
+- Made a selected collection specimen in `A sense of scale` a semantic exact-record link that opens on double-click (and remains keyboard accessible). Non-collection references such as the adult-human skull remain non-navigable.
 
 ### Catalog-first information architecture
 
@@ -254,15 +261,15 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 
 | Gate | Most recent evidence | Status |
 |---|---|---|
-| Exact toolchain/install | Node `v24.18.0`; pnpm `11.21.0`; `CI=true pnpm install --frozen-lockfile` passes from the exact lockfile with pinned Orama 3.1.18 | Pass |
+| Exact toolchain/install | Node `v24.18.0`; pnpm `11.21.0`; `pnpm install --frozen-lockfile` passes from the exact lockfile with pinned Orama 3.1.18 | Pass |
 | Content/search build | `pnpm content:build`: 15 taxa, 18 specimens, 104 specimen assets, 67 search documents, 1 comparison reference, 0 reviewed profiles (1 profile source); only four expected optional-frontal warnings | Pass |
 | Media | Full restage/process plus `pnpm validate:media`: 104 specimen assets plus 1 reference, 24.83 MiB, sRGB/alpha/bounds valid, no EXIF/IPTC/XMP; Git shows only the six requested right-facing derivative changes | Pass |
 | Invalid fixtures | `pnpm test:fixtures`: 6 expected failures detected, including class-profile mismatch | Pass |
-| Types/lint/tests | Final `CI=true pnpm check` passes formatting, lint, content/media validation, TypeScript, 11 Vitest files / 55 tests, and 6 actionable invalid fixtures. Search ranking, artifact determinism, URL state, bidirectional sorting, largest-specimen selection, filtering/missing semantics, taxonomy/cards, compact-control behavior, class-aware measurements, and retained behavior are covered | Pass |
-| Production build | Final `CI=true pnpm build`: 75 static outputs; Home, not-found, guide, robots, sitemap, catalog, 15 taxon paths, 18 exact specimen paths, and 34 rank paths prerender | Pass |
-| Browser/accessibility | Final full `PLAYWRIGHT_PORT=3102 CI=true pnpm test:e2e`: 31/31 Chromium journeys. Coverage includes the complete catalog/search behavior, gallery/comparison regressions, accessibility smoke tests, and the compact narrow-screen control height, interactions, URL state, sticky behavior, listbox stacking, medium-width alignment, and overflow contract | Pass |
-| Post-fix focused checks | Prettier, focused catalog Playwright suite (15 journeys), complete `CI=true pnpm check` (55 unit tests), fresh 75-route `CI=true pnpm build`, and full 31-test Chromium suite all pass | Pass |
-| Manual visual/responsive | Production Playwright review covers the default grouped catalog, Species skull-length ordering and exact-linked representative labels, honest missing-measurement fallback wording, direction control semantics, specimen family sections, prior desktop/mobile catalog states, and corrected SPEC-0003/0013/0018 gallery framing. At 390 × 844 the compact control region is 200.8 px (23.8%), leaving 76.2% for results; touch targets remain 44 px and horizontal overflow is `0`. Desktop retains its segmented controls | Pass |
+| Types/lint/tests | Sequential formatting, lint, content/media validation, TypeScript, 11 Vitest files / 55 tests, and 6 actionable invalid fixtures pass. Search ranking, artifact determinism, URL state, bidirectional sorting, largest-specimen selection, filtering/missing semantics, taxonomy/cards, compact-control behavior, class-aware measurements, specimen navigation, optional-media presentation, and comparison-link behavior are covered | Pass |
+| Production build | `next build --webpack` completes successfully with 75 static outputs; Home, not-found, guide, robots, sitemap, catalog, 15 taxon paths, 18 exact specimen paths, and 34 rank paths prerender | Pass |
+| Browser/accessibility | Full `PLAYWRIGHT_PORT=3102 node_modules/.bin/playwright test`: 33/33 Chromium journeys. Coverage includes catalog/search behavior, gallery/comparison regressions, accessibility smoke tests, compact-control behavior, scroll-preserving specimen switching, and exact compared-specimen navigation | Pass |
+| Post-fix focused checks | Focused catalog/exhibit/domain tests (15 tests), dedicated scroll/comparison browser checks, complete 55-test Vitest suite, fresh production build, and full 33-test Chromium suite all pass | Pass |
+| Manual visual/responsive | Production Playwright screenshots and browser checks cover the desktop catalog, narrow specimen comparison, multi-specimen card context, existing mobile/desktop catalog states, optional-view galleries, and exact comparison-link presentation. Existing 390 × 844 control-region budget remains 200.8 px (23.8%), leaving 76.2% for results; touch targets remain 44 px and horizontal overflow is `0` | Pass |
 | Git/base/scope audit | Phase 3.1 base is `ce7dbc3`; the separate checkpoint contains only owner specification, catalog/search/media/test/docs/dependency changes. Raw metadata/PNG masters, supplied before-state screenshot, generated artifacts, dependency state, and browser/test output remain ignored | Pass |
 | Remote Phase 3.2/4 CI | No push, PR, or remote CI was authorized | Not run; not a local implementation blocker |
 | Complete local gate | The final sequential formatting/lint/type/unit/content/media/fixture/build/browser gate passes. No remote operation was authorized | Pass locally |
@@ -370,5 +377,12 @@ No new content is required for the current visual/product review. Phase 5 will r
 
 - Owner review identified that the narrow-screen sticky controls left too little room for the primary published displays and that the prior compact fallback broke stickiness and listbox stacking. Mobile now uses compact labelled mode/class selects, familiar action icons, the full sort selector, and a single scrollable active-state row; medium widths use a compact class select and keep all actions on one row; wide controls use the same icon language.
 - At 390 × 844 the controls occupy 23.8% of the viewport and leave 76.2% for results. The control region remains sticky at short heights, the listbox stays above published content, and the complete local check, 75-route production build, and 31/31 Chromium journeys pass; the coherent fix remains local with no push or PR authorized.
+
+### 2026-08-27 — specimen navigation and comparison refinements verified locally
+
+- Matched the clickable multi-specimen card count to the existing uppercase, bold brass overline treatment.
+- Made same-taxonomy specimen-selector links preserve scroll position, removed the visitor-facing optional-media warning, and retained the underlying authoring/validation warnings for genuinely incomplete staging records.
+- Added exact routes to collection comparison records. The selected comparison specimen is now a keyboard-accessible link whose pointer navigation is activated by double-click; reference records, including the adult-human skull, remain non-navigable.
+- The focused and full local checks pass: 55/55 Vitest tests, strict TypeScript/lint/format/content/media/fixture validation, the 75-route production build, dedicated scroll/comparison browser checks, and 33/33 Chromium journeys. The checkpoint remains local with no push or PR authorized.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.

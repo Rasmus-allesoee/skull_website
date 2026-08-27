@@ -13,6 +13,7 @@ export interface SkullComparisonRecord {
   isDefault: boolean;
   scientificName: string | null;
   specimenId: string | null;
+  href: string | null;
   aliases: string[];
   note: string | null;
   measurementProfile: MeasurementProfile;

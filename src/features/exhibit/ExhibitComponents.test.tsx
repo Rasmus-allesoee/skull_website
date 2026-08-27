@@ -76,15 +76,11 @@ describe("exhibit components", () => {
     expect(inspectButton).toHaveFocus();
   });
 
-  it("shows an explicit incomplete-media state", () => {
+  it("does not show an incomplete-media warning for a partial media set", () => {
     render(
       <Gallery assets={exhibit.media.slice(0, 2)} commonName="Raccoon dog" />,
     );
-    expect(
-      screen.getByText(
-        "Incomplete media set: 2 of 6 canonical views are available.",
-      ),
-    ).toBeInTheDocument();
+    expect(screen.queryByText(/Incomplete media set:/)).not.toBeInTheDocument();
   });
 
   it("renders multiple physical specimen links without losing taxon context", () => {
@@ -268,6 +264,7 @@ describe("exhibit components", () => {
       label: "Red fox",
       scientificName: "Vulpes vulpes",
       specimenId: "SPEC-0014",
+      href: "/species/red-fox/specimens/SPEC-0014",
       aliases: ["Rød ræv"],
       measurements: {
         ...comparisonPrimary.measurements,
@@ -331,6 +328,11 @@ describe("exhibit components", () => {
     expect(
       document.querySelector('[data-comparison-id="specimen:SPEC-0014"]'),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", {
+        name: "Open Red fox specimen SPEC-0014",
+      }),
+    ).toHaveAttribute("href", "/species/red-fox/specimens/SPEC-0014");
     expect(screen.getByText("26 mm shorter")).toBeInTheDocument();
     expect(screen.getByText("(0.82×)")).toBeInTheDocument();
     expect(

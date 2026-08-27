@@ -19,6 +19,7 @@ export function getEligibleSkullComparisons(
       isDefault: reference.isDefault,
       scientificName: null,
       specimenId: null,
+      href: null,
       aliases: reference.aliases,
       note: reference.note,
       measurementProfile: reference.measurementProfile,
@@ -61,6 +62,7 @@ export function getEligibleSkullComparisons(
       isDefault: false,
       scientificName: formatScientificIdentification(taxon),
       specimenId: specimen.specimenId,
+      href: `/species/${taxon.slug}/specimens/${specimen.specimenId}`,
       aliases: [
         taxon.names.danish,
         ...taxon.names.aliases,

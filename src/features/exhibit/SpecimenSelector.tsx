@@ -29,6 +29,7 @@ export function SpecimenSelector({
             <li key={specimen.specimenId}>
               <Link
                 href={`/species/${taxon.slug}/specimens/${specimen.specimenId}`}
+                scroll={false}
                 aria-current={isSelected && exactSpecimen ? "page" : undefined}
               >
                 <span>{specimen.specimenId}</span>

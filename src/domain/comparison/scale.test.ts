@@ -33,6 +33,7 @@ const record = (
   isDefault: false,
   scientificName: null,
   specimenId: id,
+  href: null,
   aliases: [],
   note: null,
   measurementProfile: "mammal",

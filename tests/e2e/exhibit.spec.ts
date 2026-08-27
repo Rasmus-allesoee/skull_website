@@ -56,6 +56,27 @@ test("taxon/default and exact specimen deep links are static, distinct, and acce
   expect(consoleErrors).toEqual([]);
 });
 
+test("switching physical specimens preserves the current scroll position", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/species/harbour-seal");
+
+  const selector = page.getByRole("navigation", {
+    name: "Specimen selector",
+  });
+  await selector.scrollIntoViewIfNeeded();
+  const scrollBefore = await page.evaluate(() => window.scrollY);
+  expect(scrollBefore).toBeGreaterThan(0);
+
+  await selector.getByRole("link", { name: /SPEC-0013/ }).click();
+  await expect(page).toHaveURL("/species/harbour-seal/specimens/SPEC-0013");
+  await expect
+    .poll(() => page.evaluate(() => window.scrollY))
+    .toBeGreaterThanOrEqual(scrollBefore - 8);
+  await expect(page.getByText("Exact specimen record")).toBeVisible();
+});
+
 test("desktop gallery provides high-quality selection and smooth high-resolution inspection", async ({
   page,
 }) => {
@@ -447,6 +468,31 @@ test("measurement, age, condition, and additional-record guides disclose the new
       .locator("..")
       .getByText("Not recorded"),
   ).toBeVisible();
+});
+
+test("double-clicking a compared specimen opens its exact record", async ({
+  page,
+}) => {
+  await page.goto(specimenPath);
+  await expect(page.locator("a.scaled-skull-link")).toHaveCount(0);
+  await page.getByRole("button", { name: "Compare" }).click();
+
+  const comparisonDialog = page.getByRole("dialog", {
+    name: "Compare with…",
+  });
+  const search = comparisonDialog.getByRole("combobox", {
+    name: "Search skulls",
+  });
+  await search.fill("harbour seal");
+  await comparisonDialog.getByRole("option", { name: /Harbour seal/ }).click();
+
+  const comparedSpecimen = page.locator("a.scaled-skull-link");
+  await expect(comparedSpecimen).toHaveAttribute(
+    "href",
+    "/species/harbour-seal/specimens/SPEC-0014",
+  );
+  await comparedSpecimen.dblclick();
+  await expect(page).toHaveURL("/species/harbour-seal/specimens/SPEC-0014");
 });
 
 test.describe("mobile touch behavior", () => {

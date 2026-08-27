@@ -148,7 +148,7 @@ Turn the approved conversational plan into durable sources of truth and create a
 - [x] Add static taxon and nested specimen routes with correct default selection and metadata.
 - [x] Build the responsive six-view gallery with keyboard, swipe, zoom/fullscreen, and reduced-motion support.
 - [x] Build taxonomic breadcrumb, identification/confidence labels, specimen selector, measurement/record/preparation panels, review-gated profile/citation infrastructure, and concise rights/credit presentation.
-- [x] Implement missing/unknown/not-applicable and incomplete-media states.
+- [x] Implement missing/unknown/not-applicable semantics and optional-media presentation without treating missing optional views as a visitor-facing error.
 - [x] Self-host Newsreader and IBM Plex Sans with licence files.
 - [x] Validate real-image performance and responsive treatment.
 

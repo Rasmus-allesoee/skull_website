@@ -28,7 +28,7 @@ export function SpecimenQuickView({
         onClick={() => dialogRef.current?.showModal()}
       >
         <InteractionHint />
-        <span>{specimens.length} skulls</span>
+        <span className="specimen-quick-count">{specimens.length} skulls</span>
       </button>
       <dialog
         className="specimen-quick-dialog"

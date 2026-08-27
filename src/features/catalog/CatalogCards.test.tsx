@@ -80,7 +80,7 @@ describe("catalog cards", () => {
     expect(
       screen.getByRole("button", { name: "Choose from 3 specimens" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("3 skulls")).toBeInTheDocument();
+    expect(screen.getByText("3 skulls")).toHaveClass("specimen-quick-count");
     expect(screen.queryByText(/Largest recorded/)).not.toBeInTheDocument();
 
     const tooltipIds = screen

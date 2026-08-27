@@ -264,6 +264,7 @@ The specimen-page comparison is a route-independent feature under `src/features/
 - The same scale factor applies at every responsive size; morphology, aspect ratio, and anatomical endpoints are preserved.
 - Difference rows are selected from typed measurement profiles, never display literals: mammal/mammal has six rows, bird/bird nine, and bird/mammal six explicitly labelled functional mappings. Absolute wording and the primary/comparison ratio remain readable without semantic color. Cross-class width/height rows state that their landmarks differ and are not homologous claims.
 - Human-reference values are explicitly approximate. A selected record's descriptive note is rendered from that record, not a component literal, and the difference-level approximation explanation appears only when at least one available result uses an approximate source. Fully measured specimen pairs do not inherit human-reference wording. The comparison is physically proportional between subjects, not a monitor calibration or universal human average.
+- A selected collection specimen carries its exact nested specimen route into the comparison view and is exposed as a double-clickable, keyboard-accessible link; reference records carry no route and remain non-navigable.
 
 The future public comparison route may compose the same records, scaling engine, image primitive, selector, and difference renderer with both sides independently selectable. It must not duplicate these calculations.
 

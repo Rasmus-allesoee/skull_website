@@ -10,11 +10,7 @@ import {
   useState,
 } from "react";
 
-import {
-  canonicalViewLabels,
-  canonicalViews,
-  type MediaAsset,
-} from "@/domain/content/types";
+import { canonicalViewLabels, type MediaAsset } from "@/domain/content/types";
 
 const minimumZoom = 1;
 const maximumZoom = 5;
@@ -631,13 +627,6 @@ export function Gallery({
           ))}
         </div>
       </div>
-
-      {assets.length < canonicalViews.length ? (
-        <p className="gallery-incomplete" role="status">
-          Incomplete media set: {assets.length} of {canonicalViews.length}{" "}
-          canonical views are available.
-        </p>
-      ) : null}
 
       <noscript>
         <div className="no-script-gallery">

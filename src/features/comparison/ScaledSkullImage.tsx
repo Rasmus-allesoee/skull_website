@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { CSSProperties } from "react";
 
 import { getScalePresentation } from "@/domain/comparison/scale";
@@ -39,7 +40,11 @@ export function ScaledSkullImage({
     "--canvas-top": `${presentation.canvasTopPercent}%`,
   };
 
-  return (
+  const specimenHref =
+    position === "comparison" && record.kind === "specimen"
+      ? record.href
+      : null;
+  const figure = (
     <figure className={`scaled-skull scaled-skull-${position}`}>
       <figcaption>
         <span>
@@ -68,5 +73,21 @@ export function ScaledSkullImage({
         </div>
       </div>
     </figure>
+  );
+
+  if (!specimenHref) return figure;
+
+  return (
+    <Link
+      href={specimenHref}
+      className="scaled-skull-link"
+      aria-label={`Open ${record.label} specimen ${record.specimenId}`}
+      title="Double-click to open this specimen page"
+      onClick={(event) => {
+        if (event.detail > 0 && event.detail < 2) event.preventDefault();
+      }}
+    >
+      {figure}
+    </Link>
   );
 }
