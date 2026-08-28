@@ -61,6 +61,21 @@ test("higher-rank search scopes physical specimens without duplicates", async ({
     .toBe("Carnivora");
 });
 
+test("submitting a search closes the autocomplete surface", async ({
+  page,
+}) => {
+  await page.goto("/map");
+  const search = page.getByRole("combobox", { name: searchLabel });
+  await search.fill("mårhund");
+  const listbox = page.getByRole("listbox", { name: "Search suggestions" });
+  await expect(listbox).toBeVisible();
+  await search.press("Enter");
+  await expect(listbox).not.toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 2, name: "1 matching specimen" }),
+  ).toBeVisible();
+});
+
 test("exact specimen deep links synchronize popup, list, URL, and uncertainty semantics", async ({
   page,
 }) => {
@@ -88,15 +103,36 @@ test("exact specimen deep links synchronize popup, list, URL, and uncertainty se
     .toBe(false);
 });
 
+test("individual map popups use a centered subject crop", async ({ page }) => {
+  await page.goto("/map?specimen=SPEC-0018");
+  const popup = page.locator(".map-popup-card");
+  await expect(popup).toBeVisible();
+  const subject = popup.locator(".map-thumbnail-subject-svg");
+  await expect(subject).toBeVisible();
+  await expect(subject.locator("image")).toHaveAttribute(
+    "preserveAspectRatio",
+    "xMidYMid meet",
+  );
+  const viewBox = await subject.getAttribute("viewBox");
+  expect(viewBox).toMatch(
+    /^\d+(?:\.\d+)? \d+(?:\.\d+)? \d+(?:\.\d+)? \d+(?:\.\d+)?$/,
+  );
+});
+
 test("cluster inspection opens a complete anchored scrollable specimen panel", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/map");
+  await expect(page.locator(".map-canvas-frame")).toHaveAttribute(
+    "data-map-ready",
+    "true",
+    { timeout: 15_000 },
+  );
   const clusterButton = page
     .getByRole("button", { name: /Inspect cluster of \d+ specimens/ })
     .first();
-  await expect(clusterButton).toBeVisible();
+  await expect(clusterButton).toBeVisible({ timeout: 15_000 });
   await clusterButton.focus();
   await expect(clusterButton).toBeFocused();
   await clusterButton.press("Enter");
@@ -123,6 +159,32 @@ test("cluster inspection opens a complete anchored scrollable specimen panel", a
   await expect(cluster.locator("ul")).toHaveCSS("overflow-y", "auto");
   await cluster.getByRole("button", { name: "Close map popup" }).click();
   await expect(clusterButton).toBeFocused();
+});
+
+test("wheel input over an accessible cluster zooms the map", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/map");
+  const frame = page.locator(".map-canvas-frame");
+  await expect(frame).toHaveAttribute("data-map-ready", "true", {
+    timeout: 15_000,
+  });
+  await expect(frame).toHaveAttribute("data-cluster-radius", "24");
+  const clusterButton = page
+    .getByRole("button", { name: /Inspect cluster of \d+ specimens/ })
+    .first();
+  await expect(clusterButton).toBeVisible({ timeout: 15_000 });
+  const beforeZoom = Number(await frame.getAttribute("data-map-zoom"));
+  const beforeScroll = await page.evaluate(() => window.scrollY);
+  const box = await clusterButton.boundingBox();
+  expect(box).not.toBeNull();
+  await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
+  await page.mouse.wheel(0, -480);
+  await expect
+    .poll(async () => Number(await frame.getAttribute("data-map-zoom")))
+    .toBeGreaterThan(beforeZoom);
+  expect(await page.evaluate(() => window.scrollY)).toBe(beforeScroll);
 });
 
 test("style and uncertainty controls preserve the collection state", async ({
@@ -160,6 +222,76 @@ test("style and uncertainty controls preserve the collection state", async ({
     .poll(() => new URL(page.url()).searchParams.get("uncertainty"))
     .toBe("1");
   expect(pageErrors).toEqual([]);
+});
+
+test("switching basemap styles preserves the current camera", async ({
+  page,
+}) => {
+  await page.goto("/map");
+  const frame = page.locator(".map-canvas-frame");
+  await expect(frame).toHaveAttribute("data-map-ready", "true");
+  await page.locator(".maplibregl-ctrl-zoom-in").click();
+  await page.waitForTimeout(600);
+  const beforeCenter = await frame.getAttribute("data-map-center");
+  const beforeZoom = Number(await frame.getAttribute("data-map-zoom"));
+  await page.getByLabel("Base map style").selectOption("dark");
+  await expect(frame).toHaveAttribute("data-map-style", "dark");
+  await expect(frame).toHaveAttribute("data-map-ready", "true");
+  await expect
+    .poll(() => frame.getAttribute("data-map-center"))
+    .toBe(beforeCenter);
+  await expect
+    .poll(async () => Number(await frame.getAttribute("data-map-zoom")))
+    .toBeCloseTo(beforeZoom, 3);
+});
+
+test("closing an unfiltered popup preserves the manually explored camera", async ({
+  page,
+}) => {
+  await page.goto("/map");
+  const frame = page.locator(".map-canvas-frame");
+  const result = page.getByRole("button", { name: /Show .* on map/ }).first();
+  await result.click();
+  const popup = page.locator(".map-popup-card");
+  await expect(popup).toBeVisible();
+  const beforeCenter = await frame.getAttribute("data-map-center");
+  const beforeZoom = await frame.getAttribute("data-map-zoom");
+  await popup.getByRole("button", { name: "Close map popup" }).click();
+  await expect(popup).not.toBeVisible();
+  expect(await frame.getAttribute("data-map-center")).toBe(beforeCenter);
+  expect(await frame.getAttribute("data-map-zoom")).toBe(beforeZoom);
+});
+
+test("closing a filtered popup returns to the filtered collection view", async ({
+  page,
+}) => {
+  await page.goto("/map?q=fox");
+  const frame = page.locator(".map-canvas-frame");
+  await expect(
+    page.getByRole("heading", { level: 2, name: "1 matching specimen" }),
+  ).toBeVisible();
+  const result = page.getByRole("button", { name: /Show .* on map/ }).first();
+  await result.click();
+  const popup = page.locator(".map-popup-card");
+  await expect(popup).toBeVisible();
+  const selectedZoom = Number(await frame.getAttribute("data-map-zoom"));
+  await popup.getByRole("button", { name: "Close map popup" }).click();
+  await expect(popup).not.toBeVisible();
+  await expect
+    .poll(async () => Number(await frame.getAttribute("data-map-zoom")))
+    .toBeLessThan(selectedZoom);
+});
+
+test("wheel input over an individual popup does not scroll the page", async ({
+  page,
+}) => {
+  await page.goto("/map?specimen=SPEC-0018");
+  const popup = page.locator(".map-popup-card");
+  await expect(popup).toBeVisible();
+  await popup.hover();
+  const beforeScroll = await page.evaluate(() => window.scrollY);
+  await page.mouse.wheel(0, 480);
+  expect(await page.evaluate(() => window.scrollY)).toBe(beforeScroll);
 });
 
 test("specimen records expose exact map deep links", async ({ page }) => {

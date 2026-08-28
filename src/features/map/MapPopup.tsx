@@ -18,7 +18,7 @@ export function IndividualMapPopup({
       aria-label={`${record.commonName} map record`}
     >
       <PopupHeader title={record.commonName} onClose={onClose} />
-      <MapThumbnail record={record} sizes="240px" />
+      <MapThumbnail record={record} sizes="240px" cropToSubject />
       <div className="map-popup-copy">
         <i>{record.scientificName}</i>
         <strong>{record.specimenId}</strong>

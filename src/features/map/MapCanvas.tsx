@@ -1,6 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type TouchEvent,
+  type WheelEvent,
+} from "react";
+import { createPortal } from "react-dom";
 import maplibregl, {
   type FilterSpecification,
   type GeoJSONSource,
@@ -28,6 +37,7 @@ export interface MapCanvasProps {
   styleKey: MapStyleKey;
   showUncertainty: boolean;
   resetToken: number;
+  fitOnPopupClose: boolean;
   onSelect: (specimenId: string) => void;
   onClearSelection: () => void;
   onStatus: (message: string) => void;
@@ -52,6 +62,13 @@ interface AccessibleCluster {
   y: number;
 }
 
+interface CameraView {
+  center: [number, number];
+  zoom: number;
+  bearing: number;
+  pitch: number;
+}
+
 const pointSourceId = "specimen-points";
 const uncertaintySourceId = "specimen-uncertainty";
 const clusterLayerId = "specimen-clusters";
@@ -61,6 +78,10 @@ const birdLayerId = "specimen-birds";
 const otherLayerId = "specimen-other";
 const approximateLayerId = "specimen-approximate";
 const selectedLayerId = "specimen-selected";
+// MapLibre measures this in screen pixels; keep it close to the marker footprint.
+const mapClusterRadius = 24;
+const defaultMapCenter: [number, number] = [9.2, 56.05];
+const defaultMapZoom = 6.1;
 const pointLayerIds = [
   mammalLayerId,
   birdLayerId,
@@ -74,12 +95,16 @@ export function MapCanvas({
   styleKey,
   showUncertainty,
   resetToken,
+  fitOnPopupClose,
   onSelect,
   onClearSelection,
   onStatus,
 }: MapCanvasProps) {
+  const frameRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const popupAnchorRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
+  const cameraRef = useRef<CameraView | null>(null);
   const recordsRef = useRef(records);
   const onSelectRef = useRef(onSelect);
   const onStatusRef = useRef(onStatus);
@@ -87,6 +112,7 @@ export function MapCanvas({
   const popupRef = useRef<PopupState>(null);
   const popupOpenerRef = useRef<HTMLElement | null>(null);
   const accessibleClusterSignatureRef = useRef("");
+  const appliedRecordSignatureRef = useRef("");
   const [ready, setReady] = useState(false);
   const [providerError, setProviderError] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
@@ -94,11 +120,13 @@ export function MapCanvas({
   const [popupPixel, setPopupPixel] = useState({
     x: 0,
     y: 0,
-    containerWidth: 0,
   });
   const [accessibleClusters, setAccessibleClusters] = useState<
     AccessibleCluster[]
   >([]);
+  const [canvasContainer, setCanvasContainer] = useState<HTMLElement | null>(
+    null,
+  );
 
   useEffect(() => {
     recordsRef.current = records;
@@ -113,6 +141,35 @@ export function MapCanvas({
     popupRef.current = popup;
   }, [popup]);
 
+  useEffect(() => {
+    const frame = frameRef.current;
+    if (!frame) return;
+    const containPopupWheel = (event: globalThis.WheelEvent) => {
+      if (!isPopupInteractionTarget(event.target)) return;
+      if (isClusterListTarget(event.target)) return;
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    const containPopupTouch = (event: globalThis.TouchEvent) => {
+      if (!isPopupInteractionTarget(event.target)) return;
+      if (isClusterListTarget(event.target)) return;
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    frame.addEventListener("wheel", containPopupWheel, {
+      capture: true,
+      passive: false,
+    });
+    frame.addEventListener("touchmove", containPopupTouch, {
+      capture: true,
+      passive: false,
+    });
+    return () => {
+      frame.removeEventListener("wheel", containPopupWheel, true);
+      frame.removeEventListener("touchmove", containPopupTouch, true);
+    };
+  }, []);
+
   const mappedRecords = useMemo(
     () => records.filter(isMappedRecord),
     [records],
@@ -121,6 +178,23 @@ export function MapCanvas({
     () => new Map(records.map((record) => [record.specimenId, record])),
     [records],
   );
+  const recordSignature = useMemo(
+    () =>
+      [...records]
+        .sort((first, second) =>
+          first.specimenId.localeCompare(second.specimenId, "en"),
+        )
+        .map(
+          (record) =>
+            `${record.specimenId}:${record.longitude ?? ""}:${record.latitude ?? ""}:${record.coordinatePrecision}`,
+        )
+        .join("|"),
+    [records],
+  );
+  const recordSignatureRef = useRef(recordSignature);
+  useEffect(() => {
+    recordSignatureRef.current = recordSignature;
+  }, [recordSignature]);
   const visibleUncertaintyCount = records.filter(
     (record) =>
       record.coordinatePrecision === "approximate" &&
@@ -136,9 +210,26 @@ export function MapCanvas({
     setPopupPixel({
       x: point.x,
       y: point.y,
-      containerWidth: map.getContainer().clientWidth,
     });
   }, []);
+
+  const updateMapView = useCallback(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const center = map.getCenter();
+    cameraRef.current = {
+      center: [center.lng, center.lat],
+      zoom: map.getZoom(),
+      bearing: map.getBearing(),
+      pitch: map.getPitch(),
+    };
+    const frame = frameRef.current;
+    if (frame) {
+      frame.dataset.mapCenter = `${center.lng.toFixed(6)},${center.lat.toFixed(6)}`;
+      frame.dataset.mapZoom = map.getZoom().toFixed(4);
+    }
+    updatePopupPosition();
+  }, [updatePopupPosition]);
 
   const rememberPopupOpener = useCallback((element?: HTMLElement | null) => {
     const candidate = element ?? document.activeElement;
@@ -157,6 +248,29 @@ export function MapCanvas({
     if (!opener?.isConnected) return;
     window.requestAnimationFrame(() => opener.focus({ preventScroll: true }));
   }, []);
+
+  const closeRecordPopup = useCallback(() => {
+    const map = mapRef.current;
+    setPopup(null);
+    onClearSelection();
+    if (fitOnPopupClose && map) {
+      fitRecords(map, recordsRef.current, prefersReducedMotion());
+    }
+    restorePopupFocus();
+  }, [fitOnPopupClose, onClearSelection, restorePopupFocus]);
+
+  const handlePopupWheel = useCallback((event: WheelEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    if (!isClusterListTarget(event.target)) event.preventDefault();
+  }, []);
+
+  const handlePopupTouchMove = useCallback(
+    (event: TouchEvent<HTMLDivElement>) => {
+      event.stopPropagation();
+      if (!isClusterListTarget(event.target)) event.preventDefault();
+    },
+    [],
+  );
 
   const openCluster = useCallback(
     (
@@ -193,14 +307,18 @@ export function MapCanvas({
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+    const savedCamera = cameraRef.current;
     let loaded = false;
     setReady(false);
     setProviderError(null);
+    setCanvasContainer(null);
     const map = new maplibregl.Map({
       container,
       style: getMapStyle(styleKey).styleUrl,
-      center: [9.2, 56.05],
-      zoom: 6.1,
+      center: savedCamera?.center ?? defaultMapCenter,
+      zoom: savedCamera?.zoom ?? defaultMapZoom,
+      bearing: savedCamera?.bearing ?? 0,
+      pitch: savedCamera?.pitch ?? 0,
       attributionControl: false,
       maxPitch: 0,
       pitchWithRotate: false,
@@ -209,6 +327,7 @@ export function MapCanvas({
       cooperativeGestures: false,
     });
     mapRef.current = map;
+    setCanvasContainer(map.getCanvasContainer());
     map.on("styleimagemissing", (event) => {
       if (!map.hasImage(event.id)) {
         map.addImage(event.id, transparentImage());
@@ -246,8 +365,10 @@ export function MapCanvas({
         emptyPolygons(),
       );
       attachMapInteractions(map, openCluster, onSelectRef);
+      appliedRecordSignatureRef.current = recordSignatureRef.current;
       setReady(true);
-      fitRecords(map, recordsRef.current, false);
+      if (!savedCamera) fitRecords(map, recordsRef.current, false);
+      updateMapView();
     });
     map.on("error", () => {
       if (!loaded) {
@@ -257,8 +378,8 @@ export function MapCanvas({
         );
       }
     });
-    map.on("move", updatePopupPosition);
-    map.on("resize", updatePopupPosition);
+    map.on("move", updateMapView);
+    map.on("resize", updateMapView);
     const updateClusters = () => {
       const clusters = renderedClusters(map);
       const signature = clusters
@@ -277,26 +398,37 @@ export function MapCanvas({
     };
     map.on("idle", updateClusters);
     map.on("render", updateClusters);
+    map.on("sourcedata", updateClusters);
     map.on("movestart", clearClusters);
     map.on("moveend", updateClusters);
+    const clusterRefreshTimer = window.setInterval(updateClusters, 250);
 
     return () => {
       window.clearTimeout(failTimer);
+      window.clearInterval(clusterRefreshTimer);
       map.remove();
       mapRef.current = null;
+      setCanvasContainer(null);
       accessibleClusterSignatureRef.current = "";
       setAccessibleClusters([]);
       setReady(false);
     };
-  }, [openCluster, retryKey, styleKey, updatePopupPosition]);
+  }, [openCluster, retryKey, styleKey, updateMapView]);
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !ready || !map.getLayer(selectedLayerId)) return;
+    if (
+      !map ||
+      !ready ||
+      !map.getLayer(selectedLayerId) ||
+      appliedRecordSignatureRef.current === recordSignature
+    )
+      return;
     const source = map.getSource(pointSourceId) as GeoJSONSource | undefined;
     source?.setData(buildPointCollection(records));
     fitRecords(map, records, prefersReducedMotion());
-  }, [ready, records]);
+    appliedRecordSignatureRef.current = recordSignature;
+  }, [ready, recordSignature, records]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -357,16 +489,45 @@ export function MapCanvas({
   useEffect(() => updatePopupPosition(), [popup, updatePopupPosition]);
 
   useEffect(() => {
+    const anchor = popupAnchorRef.current;
+    const frame = frameRef.current;
+    if (!popup || !anchor || !frame) return;
+    const frameBox = frame.getBoundingClientRect();
+    const popupBox = anchor.getBoundingClientRect();
+    const edgePadding = 8;
+    let shiftX = 0;
+    let shiftY = 0;
+    if (popupBox.left < frameBox.left + edgePadding) {
+      shiftX = frameBox.left + edgePadding - popupBox.left;
+    } else if (popupBox.right > frameBox.right - edgePadding) {
+      shiftX = frameBox.right - edgePadding - popupBox.right;
+    }
+    if (popupBox.top < frameBox.top + edgePadding) {
+      shiftY = frameBox.top + edgePadding - popupBox.top;
+    } else if (popupBox.bottom > frameBox.bottom - edgePadding) {
+      shiftY = frameBox.bottom - edgePadding - popupBox.bottom;
+    }
+    if (shiftX === 0 && shiftY === 0) return;
+    setPopupPixel((current) => ({
+      x: current.x + shiftX,
+      y: current.y + shiftY,
+    }));
+  }, [popup, popupPixel.x, popupPixel.y]);
+
+  useEffect(() => {
     if (!popup) return;
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
-      setPopup(null);
-      if (popup.kind === "record") onClearSelection();
-      restorePopupFocus();
+      if (popup.kind === "record") {
+        closeRecordPopup();
+      } else {
+        setPopup(null);
+        restorePopupFocus();
+      }
     };
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [onClearSelection, popup, restorePopupFocus]);
+  }, [closeRecordPopup, popup, restorePopupFocus]);
 
   if (providerError) {
     return (
@@ -381,38 +542,47 @@ export function MapCanvas({
     );
   }
 
-  const side = popupPixel.x > popupPixel.containerWidth / 2 ? "left" : "right";
+  const side = "left" as const;
+  const clusterAccessibilityControls = (
+    <div
+      className="map-cluster-accessibility"
+      role="group"
+      aria-label="Visible map clusters"
+    >
+      {accessibleClusters.map((cluster) => (
+        <button
+          key={cluster.id}
+          type="button"
+          style={{ left: cluster.x, top: cluster.y }}
+          aria-label={`Inspect cluster of ${cluster.count} specimens`}
+          onClick={(event) => {
+            event.stopPropagation();
+            rememberPopupOpener(event.currentTarget);
+            openCluster(
+              cluster.id,
+              cluster.count,
+              cluster.longitude,
+              cluster.latitude,
+            );
+          }}
+        />
+      ))}
+    </div>
+  );
+
   return (
     <div
+      ref={frameRef}
       className="map-canvas-frame"
       data-map-style={styleKey}
       data-map-ready={ready}
       data-uncertainty-count={visibleUncertaintyCount}
+      data-cluster-radius={mapClusterRadius}
     >
       <div ref={containerRef} className="map-canvas" />
-      <div
-        className="map-cluster-accessibility"
-        role="group"
-        aria-label="Visible map clusters"
-      >
-        {accessibleClusters.map((cluster) => (
-          <button
-            key={cluster.id}
-            type="button"
-            style={{ left: cluster.x, top: cluster.y }}
-            aria-label={`Inspect cluster of ${cluster.count} specimens`}
-            onClick={(event) => {
-              rememberPopupOpener(event.currentTarget);
-              openCluster(
-                cluster.id,
-                cluster.count,
-                cluster.longitude,
-                cluster.latitude,
-              );
-            }}
-          />
-        ))}
-      </div>
+      {canvasContainer?.isConnected
+        ? createPortal(clusterAccessibilityControls, canvasContainer)
+        : null}
       {mappedRecords.length === 0 ? (
         <div className="map-empty-overlay" role="status">
           <strong>No matching public coordinates</strong>
@@ -424,17 +594,16 @@ export function MapCanvas({
       ) : null}
       {popup ? (
         <div
+          ref={popupAnchorRef}
           className={`map-popup-anchor is-${side}`}
           style={{ left: popupPixel.x, top: popupPixel.y }}
+          onWheel={handlePopupWheel}
+          onTouchMove={handlePopupTouchMove}
         >
           {popup.kind === "record" ? (
             <IndividualMapPopup
               record={popup.record}
-              onClose={() => {
-                setPopup(null);
-                onClearSelection();
-                restorePopupFocus();
-              }}
+              onClose={closeRecordPopup}
             />
           ) : (
             <ClusterMapPopup
@@ -496,7 +665,7 @@ function addCollectionLayers(
     data: points,
     cluster: true,
     clusterMaxZoom: 11,
-    clusterRadius: 58,
+    clusterRadius: mapClusterRadius,
   });
   addClassMarkerImages(map);
   map.addLayer({
@@ -683,11 +852,14 @@ function attachMapInteractions(
 
 function renderedClusters(map: MapLibreMap): AccessibleCluster[] {
   if (!map.isStyleLoaded() || !map.getLayer(clusterLayerId)) return [];
+  const rendered = map.queryRenderedFeatures({ layers: [clusterLayerId] });
+  const features = rendered.length
+    ? rendered
+    : map.querySourceFeatures(pointSourceId);
   const clusters = new Map<number, AccessibleCluster>();
-  for (const feature of map.queryRenderedFeatures({
-    layers: [clusterLayerId],
-  })) {
+  for (const feature of features) {
     if (feature.geometry.type !== "Point") continue;
+    if (feature.properties?.point_count === undefined) continue;
     const id = Number(feature.properties?.cluster_id);
     const count = Number(feature.properties?.point_count);
     const [longitude, latitude] = feature.geometry.coordinates;
@@ -699,6 +871,14 @@ function renderedClusters(map: MapLibreMap): AccessibleCluster[] {
     )
       continue;
     const point = map.project([longitude, latitude]);
+    const { clientWidth, clientHeight } = map.getContainer();
+    if (
+      point.x < -40 ||
+      point.x > clientWidth + 40 ||
+      point.y < -40 ||
+      point.y > clientHeight + 40
+    )
+      continue;
     clusters.set(id, {
       id,
       count,
@@ -751,6 +931,19 @@ function emptyPolygons(): MapPolygonFeatureCollection {
   return { type: "FeatureCollection", features: [] };
 }
 
+function isClusterListTarget(target: EventTarget | null): boolean {
+  return (
+    target instanceof Element &&
+    Boolean(target.closest(".map-cluster-popup > ul"))
+  );
+}
+
+function isPopupInteractionTarget(target: EventTarget | null): boolean {
+  return (
+    target instanceof Element && Boolean(target.closest(".map-popup-card"))
+  );
+}
+
 function fitRecords(
   map: MapLibreMap,
   records: MapRecord[],
@@ -759,8 +952,8 @@ function fitRecords(
   const mapped = records.filter(isMappedRecord);
   if (mapped.length === 0) {
     map.easeTo({
-      center: [9.2, 56.05],
-      zoom: 6.1,
+      center: defaultMapCenter,
+      zoom: defaultMapZoom,
       duration: immediate ? 0 : 350,
     });
     return;

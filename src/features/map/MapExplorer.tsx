@@ -436,6 +436,7 @@ export function MapExplorer({
             styleKey={state.style}
             showUncertainty={state.showUncertainty}
             resetToken={resetToken}
+            fitOnPopupClose={Boolean(activeCollectionState)}
             onSelect={selectSpecimen}
             onClearSelection={() =>
               commitState({ ...state, selectedSpecimenId: null })

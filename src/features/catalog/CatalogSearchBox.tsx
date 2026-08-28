@@ -240,10 +240,11 @@ export function CatalogSearchBox({
                 return next;
               });
             }
-            if (event.key === "Enter" && activeDocument) {
+            if (event.key === "Enter") {
               event.preventDefault();
               setOpen(false);
-              onSelect(activeDocument);
+              setActiveIndex(-1);
+              if (activeDocument) onSelect(activeDocument);
             }
             if (event.key === "Escape") {
               event.preventDefault();

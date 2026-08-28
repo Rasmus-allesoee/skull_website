@@ -349,6 +349,7 @@ The owner deliberately narrowed this milestone to the geographic collection expe
 - [x] Generate a deterministic schema-v1 map projection from every published specimen and point GeoJSON only from valid canonical coordinates.
 - [x] Add route-only MapLibre dynamic import and an OpenFreeMap adapter with the supported Fiord, Dark, Positron, Liberty, and Bright vector styles.
 - [x] Add class-specific exact/approximate markers, selected state, geodesic uncertainty areas, complete clustering, anchored specimen/cluster popups, attribution, key, and fit/reset behavior.
+- [x] Keep marker-scale clustering near physical point contact, lock desktop popup placement to the left with viewport clamping, contain popup page scrolling, and preserve the camera across style changes and popup close according to filtered/unfiltered state.
 - [x] Synchronize specimen-based search, higher-rank scope, class/facets/ranges, map selection, URL state, and the complete semantic result list.
 - [x] Implement `/map?specimen={id}` focus and honest recovery for unavailable IDs.
 - [x] Add a nearby `View on map` action to specimen Collection records with valid public points while retaining the textual location/precision record as the non-map equivalent.

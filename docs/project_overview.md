@@ -220,6 +220,7 @@ The combined Phase 3.2/4 implementation makes `/species` the operational collect
 - Load MapLibre and OpenFreeMap only on this route. Offer the supported Museum dark, Dark, Light, Standard, and Bright vector styles; do not imply satellite, hybrid, or terrain support.
 - Reuse canonical multilingual search, taxonomy scopes, class, specimen facets, and length/mass ranges. Every result is a physical specimen; no duplicate species/specimen mode is needed.
 - Fit current mapped results with a Denmark-first empty fallback. Cluster overlaps, expose every cluster leaf in an anchored scrollable popup, and provide equivalent keyboard cluster controls.
+- Keep clustering close to marker-scale physical contact, preserve the current camera when the basemap changes, and retain the current exploratory camera when an unfiltered popup closes. Filtered popup close may refit the active filtered collection.
 - Distinguish Mammalia/Aves/fallback markers and exact/approximate precision without relying on color. Render positive curator-supplied uncertainty radii as geographic areas, automatically for a selected approximate specimen and globally through an explicit toggle.
 - Synchronize map selection, compact popup, URL, live status, and the complete semantic result list. Preserve filtered published records without points in a `Not mapped` group.
 - Support `/map?specimen={id}` deep links and exact `View on map` links from specimen Collection records. Unknown/unavailable IDs recover honestly without inventing coordinates.

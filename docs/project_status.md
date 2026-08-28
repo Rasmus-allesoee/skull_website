@@ -4,7 +4,7 @@
 
 **Current phase:** Focused map-only Phase 5 — implementation complete locally; owner review pending
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`. The complete focused map milestone is verified on `agent/phase-5-map`; no Phase 5 push, pull request, merge, or remote CI is authorized.
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`. The complete focused map milestone and the first owner-feedback refinement batch are verified on `agent/phase-5-map`; no Phase 5 push, pull request, merge, or remote CI is authorized.
 
 **Next phase:** Not authorized. First obtain owner product review of `/map`; supporting editorial pages, the optional Phase 3.3 comprehensive tree, and Phase 6 remain separately gated.
 
@@ -36,9 +36,17 @@ Present the verified map-first `/map` workspace for owner inspection. Keep the c
 - Added no-WebGL, MapLibre-load, and provider-style failure states that preserve search, filters, location meaning, and every exact list link. Reduced-motion, forced-color, keyboard, no-JavaScript, mobile portrait/landscape, and effective reflow behavior are covered.
 - Added `View on map` beside valid specimen locations without embedding MapLibre on specimen routes. Home's lightweight geographic preview now links to the functioning central map.
 
+### Owner-directed map interaction refinement (2026-08-28)
+
+- Individual map popups now display the lateral subject from its compiled alpha bounds with preserved aspect ratio, centering the skull in the bounded image stage instead of allowing transparent margins to push it below the metadata.
+- Search submission closes the autocomplete surface on Enter, including the mobile keyboard action; an active highlighted suggestion is still selected before the surface closes.
+- Clustering uses a marker-scale screen-space radius so points remain separate until they are close to physical contact. Keyboard cluster controls are mounted inside MapLibre's interactive canvas container, so wheel input over a marker or cluster continues to zoom the map.
+- Desktop popups remain on the left side of their marker and are clamped to the map viewport when a marker is near an edge. Popup wheel/touch handling prevents page scrolling while preserving scrolling inside a cluster's specimen list; narrow layouts retain the centered mobile fit.
+- Basemap style changes preserve the current camera. Closing an unfiltered popup preserves manual exploration and closing a filtered popup returns to the current filtered collection fit; semantic result-list selection follows the same rule.
+
 ### Scope result
 
-- The focused map-only acceptance gate passes locally. Supporting/editorial pages were deliberately removed from this milestone and remain unstarted; Phase 3.3, complete migration, uploads, tracking, and unrelated changes were not implemented.
+- The focused map-only acceptance gate and the first owner-feedback refinement batch pass locally. Supporting/editorial pages were deliberately removed from this milestone and remain unstarted; Phase 3.3, complete migration, uploads, tracking, and unrelated changes were not implemented.
 
 ## 3. Combined Phase 3.2 catalog redesign and Phase 4 discovery
 
@@ -295,11 +303,11 @@ Present the verified map-first `/map` workspace for owner inspection. Keep the c
 | Invalid fixtures | `pnpm test:fixtures`: 6 expected failures detected, including class-profile mismatch | Pass |
 | Types/lint/tests | Sequential formatting, lint, content/media validation, TypeScript, 14 Vitest files / 62 tests, and 6 actionable invalid fixtures pass. Phase 5 adds deterministic projection/uncertainty, URL-state, and specimen filter coverage without regressing the catalog, measurement, media, or exhibit suites | Pass |
 | Production build | `next build --webpack` completes successfully with 76 static outputs; `/map` and the existing Home, guide, sitemap, catalog, 15 taxon, 18 exact-specimen, and 34 rank outputs prerender | Pass |
-| Browser/accessibility | Full `PLAYWRIGHT_PORT=3102 node_modules/.bin/playwright test`: 45/45 Chromium journeys. The 12 map journeys cover provider rendering, rank/specimen search, deep links, uncertainty, complete clusters, all supported styles, route-bundle isolation, responsive/reflow/accessibility media states, no JavaScript, no WebGL/provider failure, and zero axe violations | Pass |
-| Manual visual/responsive | Production-browser inspection covers `/map` at 1440 × 900, 1024 × 900, 768 × 900, 390 × 844, 360 × 800, narrow landscape, effective 200% reflow, reduced motion, and forced colors. Map/list hierarchy, bounded sheets/popups, sticky controls, marker/key meaning, and horizontal overflow remain correct; browser console is clean under every supported style | Pass |
+| Browser/accessibility | Full `PLAYWRIGHT_PORT=3113 node_modules/.bin/playwright test`: 52/52 Chromium journeys. The 19 map journeys cover provider rendering, Enter-dismissed search, rank/specimen search, centered popup subject crops, deep links, uncertainty, marker-scale clusters, cluster wheel zoom, left-locked/clamped popups, popup gesture containment, camera-preserving styles and close behavior, all supported styles, route-bundle isolation, responsive/reflow/accessibility media states, no JavaScript, no WebGL/provider failure, and zero axe violations | Pass |
+| Manual visual/responsive | Production-browser inspection covers `/map` at 1440 × 900, 1024 × 900, 768 × 900, 390 × 844, 360 × 800, narrow landscape, effective 200% reflow, reduced motion, and forced colors. The updated desktop/mobile individual popup shows a centered uncropped subject; left-locked cluster placement remains within the map viewport; map/list hierarchy, bounded sheets/popups, marker/key meaning, camera preservation, and horizontal overflow remain correct; browser console is clean under every supported style | Pass |
 | Git/base/scope audit | Branch `agent/phase-5-map` is based on merged `main` checkpoint `9a0e1d0`. The intended diff is limited to the approved map plan, dependency/lockfile, projection/provider/map UI, exact map links, focused tests, and matching canonical documentation; unrelated owner context files remain unstaged | Pass |
 | Remote Phase 5 CI | No push, pull request, merge, or remote CI was authorized | Not run; not a local implementation blocker |
-| Complete local map gate | The final sequential check/build/browser gate, resilience checks, visual matrix, route-bundle audit, and explicit staging audit pass. Remote publication remains a separate owner action | Pass locally |
+| Complete local map gate | The final sequential check/build/browser gate, owner-feedback regression suite, resilience checks, visual matrix, route-bundle audit, and explicit staging audit pass. Remote publication remains a separate owner action | Pass locally |
 
 Package-manager gates must run sequentially with `CI=true` in non-interactive environments; concurrent pnpm commands can reconcile `node_modules` against different lifecycle states and are not a valid speed optimization.
 
@@ -419,5 +427,10 @@ No new content or owner decision is required for the current map review. Phase 6
 - The owner explicitly replaced the earlier combined map/editorial milestone with the binding map-only specification in `agent_context/phase_5_map_feature_plan.md`.
 - `/map` now combines the deterministic 18-record projection, route-lazy MapLibre/OpenFreeMap canvas, specimen-based discovery, exact/approximate/unknown semantics, geodesic uncertainty, complete clusters and anchored popups, synchronized semantic records, deep links, responsive layouts, and resilient non-map fallbacks.
 - The complete sequential quality/build/browser gate, responsive/forced-color/reduced-motion visual matrix, bundle-isolation audit, and staging/scope review pass. The implementation is committed locally on `agent/phase-5-map`; no push, pull request, merge, remote CI, supporting-content work, or next phase is authorized.
+
+### 2026-08-28 — first owner-feedback map refinement verified locally
+
+- Implemented centered subject-bounds popup imagery, Enter/mobile-keyboard autocomplete dismissal, marker-scale clustering, reliable keyboard cluster controls inside MapLibre's interactive layer, map zoom over marker/cluster targets, left-locked and viewport-clamped desktop popups, contained popup gestures, and filtered/unfiltered camera-preservation rules for styles, popup close, and result-list selection.
+- The final exact-head check/build passed with 62/62 unit tests and 6 expected invalid-fixture failures; the full Chromium suite passed 52/52, including 19 map journeys and the repeated 9/9 cluster/popup gesture stress run. Desktop/mobile production screenshots show the centered uncropped popup subject; no push, pull request, merge, or remote CI was performed.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.
