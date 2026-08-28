@@ -2320,6 +2320,18 @@ h3 {
   font-size: 1.1rem;
 }
 
+.map-key-marker {
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: 0 0 1.5rem;
+  object-fit: contain;
+}
+
+.map-key-marker-bird {
+  transform: scale(1.2);
+}
+
 .map-key-mammal {
   color: #c6a45f;
 }

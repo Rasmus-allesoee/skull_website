@@ -1,6 +1,6 @@
 # Project status
 
-**Snapshot date:** 2026-08-28
+**Snapshot date:** 2026-08-29
 
 **Current phase:** Focused map-only Phase 5 — implementation complete locally; owner review pending
 
@@ -43,6 +43,13 @@ Present the verified map-first `/map` workspace for owner inspection. Keep the c
 - Clustering uses a marker-scale screen-space radius so points remain separate until they are close to physical contact. Keyboard cluster controls are mounted inside MapLibre's interactive canvas container, so wheel input over a marker or cluster continues to zoom the map.
 - Desktop popups remain on the left side of their marker and are clamped to the map viewport when a marker is near an edge. Popup wheel/touch handling prevents page scrolling while preserving scrolling inside a cluster's specimen list; narrow layouts retain the centered mobile fit.
 - Basemap style changes preserve the current camera. Closing an unfiltered popup preserves manual exploration and closing a filtered popup returns to the current filtered collection fit; semantic result-list selection follows the same rule.
+
+### Owner-directed marker icon refinement (2026-08-29)
+
+- Added generated transparent `128 × 128` WebP marker assets at `public/media/map/mammal-marker.webp` and `public/media/map/bird-marker.webp`. The mammal is a front-facing head with ears, eye sockets, muzzle, and nose; the bird is a right-facing head with crest, eye, and pointed beak.
+- MapLibre loads the reviewed local icons before creating the specimen layers, with the previous procedural shapes retained as per-icon fallbacks. The map key reuses the same assets rather than approximating them with a circle and diamond.
+- Measured visible alpha bounds are `110 × 112` for the mammal and `106 × 93` for the bird. The bird layer uses a `0.675` optical icon scale against the mammal's `0.56`, equalizing visible marker height without distorting the generated profile; the key applies the same `1.2×` correction.
+- `CI=true corepack pnpm check` passes. The rebuilt `CI=true PLAYWRIGHT_PORT=3102 corepack pnpm test:e2e tests/e2e/map.spec.ts` run passes `19/19`; headed desktop and `390 × 844` visual checks show equal marker scale, and both local marker assets return HTTP 200.
 
 ### Scope result
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 
 import type { CatalogModel } from "@/domain/catalog/queries";
 import type { MapProjectionArtifact } from "@/domain/map/types";
@@ -402,10 +403,24 @@ export function MapExplorer({
             <summary>Map key</summary>
             <div>
               <span>
-                <b className="map-key-mammal">●</b> Mammal
+                <Image
+                  className="map-key-marker"
+                  src="/media/map/mammal-marker.webp"
+                  alt=""
+                  width="24"
+                  height="24"
+                />
+                Mammal
               </span>
               <span>
-                <b className="map-key-bird">◆</b> Bird
+                <Image
+                  className="map-key-marker map-key-marker-bird"
+                  src="/media/map/bird-marker.webp"
+                  alt=""
+                  width="24"
+                  height="24"
+                />
+                Bird
               </span>
               <span>
                 <b className="map-key-exact">●</b> Exact location

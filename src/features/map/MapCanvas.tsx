@@ -82,6 +82,10 @@ const selectedLayerId = "specimen-selected";
 const mapClusterRadius = 24;
 const defaultMapCenter: [number, number] = [9.2, 56.05];
 const defaultMapZoom = 6.1;
+// Normalize the visible alpha bounds of the reviewed assets; the bird profile
+// is shorter inside its transparent square than the front-facing mammal head.
+const mammalIconSize = 0.56;
+const birdIconSize = 0.675;
 const pointLayerIds = [
   mammalLayerId,
   birdLayerId,
@@ -359,16 +363,25 @@ export function MapCanvas({
     map.on("load", () => {
       loaded = true;
       window.clearTimeout(failTimer);
-      addCollectionLayers(
+      void addCollectionLayers(
         map,
         buildPointCollection(recordsRef.current),
         emptyPolygons(),
-      );
-      attachMapInteractions(map, openCluster, onSelectRef);
-      appliedRecordSignatureRef.current = recordSignatureRef.current;
-      setReady(true);
-      if (!savedCamera) fitRecords(map, recordsRef.current, false);
-      updateMapView();
+      )
+        .then(() => {
+          if (mapRef.current !== map) return;
+          attachMapInteractions(map, openCluster, onSelectRef);
+          appliedRecordSignatureRef.current = recordSignatureRef.current;
+          setReady(true);
+          if (!savedCamera) fitRecords(map, recordsRef.current, false);
+          updateMapView();
+        })
+        .catch(() => {
+          if (mapRef.current !== map) return;
+          setProviderError(
+            "The collection map could not render its specimen layer. Search, filters, and every exact specimen link remain available.",
+          );
+        });
     });
     map.on("error", () => {
       if (!loaded) {
@@ -634,7 +647,7 @@ export function MapCanvas({
   );
 }
 
-function addCollectionLayers(
+async function addCollectionLayers(
   map: MapLibreMap,
   points: MapFeatureCollection,
   uncertainty: MapPolygonFeatureCollection,
@@ -667,7 +680,7 @@ function addCollectionLayers(
     clusterMaxZoom: 11,
     clusterRadius: mapClusterRadius,
   });
-  addClassMarkerImages(map);
+  await addClassMarkerImages(map);
   map.addLayer({
     id: clusterLayerId,
     type: "circle",
@@ -713,8 +726,18 @@ function addCollectionLayers(
       "circle-stroke-opacity": 0.95,
     },
   });
-  map.addLayer(pointLayer(mammalLayerId, "mammals", "mammal-marker"));
-  map.addLayer(pointLayer(birdLayerId, "birds", "bird-marker"));
+  map.addLayer(
+    pointLayer(
+      mammalLayerId,
+      "mammals",
+      "mammal-marker",
+      false,
+      mammalIconSize,
+    ),
+  );
+  map.addLayer(
+    pointLayer(birdLayerId, "birds", "bird-marker", false, birdIconSize),
+  );
   map.addLayer(pointLayer(otherLayerId, "__other__", "other-marker", true));
   map.addLayer({
     id: selectedLayerId,
@@ -735,6 +758,7 @@ function pointLayer(
   classSlug: string,
   icon: string,
   fallback = false,
+  iconSize = mammalIconSize,
 ): SymbolLayerSpecification {
   const filter = (
     fallback
@@ -756,20 +780,44 @@ function pointLayer(
     filter,
     layout: {
       "icon-image": icon,
-      "icon-size": 0.56,
+      "icon-size": iconSize,
       "icon-allow-overlap": true,
       "icon-ignore-placement": true,
     },
   };
 }
 
-function addClassMarkerImages(map: MapLibreMap) {
-  for (const [id, image] of [
-    ["mammal-marker", markerImage("mammal")],
-    ["bird-marker", markerImage("bird")],
-    ["other-marker", markerImage("other")],
-  ] as const) {
-    if (!map.hasImage(id)) map.addImage(id, image, { pixelRatio: 2 });
+async function addClassMarkerImages(map: MapLibreMap) {
+  await Promise.all(
+    (
+      [
+        {
+          id: "mammal-marker",
+          path: "/media/map/mammal-marker.webp",
+          fallback: "mammal",
+        },
+        {
+          id: "bird-marker",
+          path: "/media/map/bird-marker.webp",
+          fallback: "bird",
+        },
+      ] as const
+    ).map(async ({ id, path, fallback }) => {
+      if (map.hasImage(id)) return;
+      try {
+        const response = await map.loadImage(path);
+        if (!map.hasImage(id)) {
+          map.addImage(id, response.data, { pixelRatio: 4 });
+        }
+      } catch {
+        if (!map.hasImage(id)) {
+          map.addImage(id, markerImage(fallback), { pixelRatio: 2 });
+        }
+      }
+    }),
+  );
+  if (!map.hasImage("other-marker")) {
+    map.addImage("other-marker", markerImage("other"), { pixelRatio: 2 });
   }
 }
 
