@@ -8,6 +8,10 @@ export default defineConfig({
   // six-view image journeys serially keeps that acceptance signal deterministic on
   // low-resource CI runners instead of turning CPU contention into false failures.
   fullyParallel: false,
+  // MapLibre adds real WebGL/provider work to the same gate as high-resolution
+  // gallery geometry. Keep the acceptance suite sequential so GPU/decoder and
+  // provider contention cannot create false layout or interaction failures.
+  workers: 1,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? "github" : "list",

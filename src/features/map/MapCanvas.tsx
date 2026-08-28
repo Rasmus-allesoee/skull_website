@@ -1,0 +1,796 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import maplibregl, {
+  type FilterSpecification,
+  type GeoJSONSource,
+  type LngLatLike,
+  type Map as MapLibreMap,
+  type SymbolLayerSpecification,
+} from "maplibre-gl";
+
+import {
+  createUncertaintyPolygon,
+  isMappedRecord,
+} from "@/domain/map/projection";
+import type {
+  MapFeatureCollection,
+  MapPolygonFeatureCollection,
+  MapRecord,
+} from "@/domain/map/types";
+
+import { ClusterMapPopup, IndividualMapPopup } from "./MapPopup";
+import { getMapStyle, type MapStyleKey } from "./provider";
+
+export interface MapCanvasProps {
+  records: MapRecord[];
+  selectedSpecimenId: string | null;
+  styleKey: MapStyleKey;
+  showUncertainty: boolean;
+  resetToken: number;
+  onSelect: (specimenId: string) => void;
+  onClearSelection: () => void;
+  onStatus: (message: string) => void;
+}
+
+type PopupState =
+  | { kind: "record"; record: MapRecord; longitude: number; latitude: number }
+  | {
+      kind: "cluster";
+      records: MapRecord[];
+      longitude: number;
+      latitude: number;
+    }
+  | null;
+
+interface AccessibleCluster {
+  id: number;
+  count: number;
+  longitude: number;
+  latitude: number;
+  x: number;
+  y: number;
+}
+
+const pointSourceId = "specimen-points";
+const uncertaintySourceId = "specimen-uncertainty";
+const clusterLayerId = "specimen-clusters";
+const clusterCountLayerId = "specimen-cluster-count";
+const mammalLayerId = "specimen-mammals";
+const birdLayerId = "specimen-birds";
+const otherLayerId = "specimen-other";
+const approximateLayerId = "specimen-approximate";
+const selectedLayerId = "specimen-selected";
+const pointLayerIds = [
+  mammalLayerId,
+  birdLayerId,
+  otherLayerId,
+  approximateLayerId,
+];
+
+export function MapCanvas({
+  records,
+  selectedSpecimenId,
+  styleKey,
+  showUncertainty,
+  resetToken,
+  onSelect,
+  onClearSelection,
+  onStatus,
+}: MapCanvasProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<MapLibreMap | null>(null);
+  const recordsRef = useRef(records);
+  const onSelectRef = useRef(onSelect);
+  const onStatusRef = useRef(onStatus);
+  const lastFocusedSpecimenRef = useRef<string | null>(null);
+  const popupRef = useRef<PopupState>(null);
+  const popupOpenerRef = useRef<HTMLElement | null>(null);
+  const accessibleClusterSignatureRef = useRef("");
+  const [ready, setReady] = useState(false);
+  const [providerError, setProviderError] = useState<string | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
+  const [popup, setPopup] = useState<PopupState>(null);
+  const [popupPixel, setPopupPixel] = useState({
+    x: 0,
+    y: 0,
+    containerWidth: 0,
+  });
+  const [accessibleClusters, setAccessibleClusters] = useState<
+    AccessibleCluster[]
+  >([]);
+
+  useEffect(() => {
+    recordsRef.current = records;
+  }, [records]);
+  useEffect(() => {
+    onSelectRef.current = onSelect;
+  }, [onSelect]);
+  useEffect(() => {
+    onStatusRef.current = onStatus;
+  }, [onStatus]);
+  useEffect(() => {
+    popupRef.current = popup;
+  }, [popup]);
+
+  const mappedRecords = useMemo(
+    () => records.filter(isMappedRecord),
+    [records],
+  );
+  const recordsById = useMemo(
+    () => new Map(records.map((record) => [record.specimenId, record])),
+    [records],
+  );
+  const visibleUncertaintyCount = records.filter(
+    (record) =>
+      record.coordinatePrecision === "approximate" &&
+      (record.coordinateUncertaintyM ?? 0) > 0 &&
+      (showUncertainty || record.specimenId === selectedSpecimenId),
+  ).length;
+
+  const updatePopupPosition = useCallback(() => {
+    const map = mapRef.current;
+    const currentPopup = popupRef.current;
+    if (!map || !currentPopup) return;
+    const point = map.project([currentPopup.longitude, currentPopup.latitude]);
+    setPopupPixel({
+      x: point.x,
+      y: point.y,
+      containerWidth: map.getContainer().clientWidth,
+    });
+  }, []);
+
+  const rememberPopupOpener = useCallback((element?: HTMLElement | null) => {
+    const candidate = element ?? document.activeElement;
+    if (
+      candidate instanceof HTMLElement &&
+      candidate !== document.body &&
+      candidate.isConnected
+    ) {
+      popupOpenerRef.current = candidate;
+    }
+  }, []);
+
+  const restorePopupFocus = useCallback(() => {
+    const opener = popupOpenerRef.current;
+    popupOpenerRef.current = null;
+    if (!opener?.isConnected) return;
+    window.requestAnimationFrame(() => opener.focus({ preventScroll: true }));
+  }, []);
+
+  const openCluster = useCallback(
+    (
+      clusterId: number,
+      pointCount: number,
+      longitude: number,
+      latitude: number,
+    ) => {
+      const map = mapRef.current;
+      const source = map?.getSource(pointSourceId) as GeoJSONSource | undefined;
+      if (!source) return;
+      void source.getClusterLeaves(clusterId, pointCount, 0).then((leaves) => {
+        const ids = leaves.map((leaf) => String(leaf.properties?.specimenId));
+        const clusterRecords = ids.flatMap((id) => {
+          const record = recordsRef.current.find(
+            (candidate) => candidate.specimenId === id,
+          );
+          return record ? [record] : [];
+        });
+        setPopup({
+          kind: "cluster",
+          records: clusterRecords,
+          longitude,
+          latitude,
+        });
+        onStatusRef.current(
+          `${clusterRecords.length} specimens are available in the selected map cluster.`,
+        );
+      });
+    },
+    [],
+  );
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    let loaded = false;
+    setReady(false);
+    setProviderError(null);
+    const map = new maplibregl.Map({
+      container,
+      style: getMapStyle(styleKey).styleUrl,
+      center: [9.2, 56.05],
+      zoom: 6.1,
+      attributionControl: false,
+      maxPitch: 0,
+      pitchWithRotate: false,
+      dragRotate: false,
+      touchPitch: false,
+      cooperativeGestures: false,
+    });
+    mapRef.current = map;
+    map.on("styleimagemissing", (event) => {
+      if (!map.hasImage(event.id)) {
+        map.addImage(event.id, transparentImage());
+      }
+    });
+    map.addControl(
+      new maplibregl.NavigationControl({ showCompass: false }),
+      "top-left",
+    );
+    map.addControl(
+      new maplibregl.AttributionControl({ compact: false }),
+      "bottom-left",
+    );
+    map
+      .getCanvas()
+      .setAttribute(
+        "aria-label",
+        "Interactive specimen map. Use the adjacent specimen list for complete keyboard access.",
+      );
+
+    const failTimer = window.setTimeout(() => {
+      if (!loaded) {
+        setProviderError(
+          "The basemap provider did not respond. Search, filters, and every exact specimen link remain available.",
+        );
+      }
+    }, 12_000);
+
+    map.on("load", () => {
+      loaded = true;
+      window.clearTimeout(failTimer);
+      addCollectionLayers(
+        map,
+        buildPointCollection(recordsRef.current),
+        emptyPolygons(),
+      );
+      attachMapInteractions(map, openCluster, onSelectRef);
+      setReady(true);
+      fitRecords(map, recordsRef.current, false);
+    });
+    map.on("error", () => {
+      if (!loaded) {
+        window.clearTimeout(failTimer);
+        setProviderError(
+          "The selected basemap style could not be loaded. Search, filters, and every exact specimen link remain available.",
+        );
+      }
+    });
+    map.on("move", updatePopupPosition);
+    map.on("resize", updatePopupPosition);
+    const updateClusters = () => {
+      const clusters = renderedClusters(map);
+      const signature = clusters
+        .map(
+          (cluster) =>
+            `${cluster.id}:${cluster.count}:${cluster.x}:${cluster.y}`,
+        )
+        .join("|");
+      if (signature === accessibleClusterSignatureRef.current) return;
+      accessibleClusterSignatureRef.current = signature;
+      setAccessibleClusters(clusters);
+    };
+    const clearClusters = () => {
+      accessibleClusterSignatureRef.current = "";
+      setAccessibleClusters([]);
+    };
+    map.on("idle", updateClusters);
+    map.on("render", updateClusters);
+    map.on("movestart", clearClusters);
+    map.on("moveend", updateClusters);
+
+    return () => {
+      window.clearTimeout(failTimer);
+      map.remove();
+      mapRef.current = null;
+      accessibleClusterSignatureRef.current = "";
+      setAccessibleClusters([]);
+      setReady(false);
+    };
+  }, [openCluster, retryKey, styleKey, updatePopupPosition]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || !map.getLayer(selectedLayerId)) return;
+    const source = map.getSource(pointSourceId) as GeoJSONSource | undefined;
+    source?.setData(buildPointCollection(records));
+    fitRecords(map, records, prefersReducedMotion());
+  }, [ready, records]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || !map.getLayer(selectedLayerId)) return;
+    const polygons = buildUncertaintyCollection(
+      records,
+      selectedSpecimenId,
+      showUncertainty,
+    );
+    const source = map.getSource(uncertaintySourceId) as
+      GeoJSONSource | undefined;
+    source?.setData(polygons);
+    map.setFilter(selectedLayerId, [
+      "==",
+      ["get", "specimenId"],
+      selectedSpecimenId ?? "",
+    ]);
+  }, [ready, records, selectedSpecimenId, showUncertainty]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const synchronize = window.setTimeout(() => {
+      if (!selectedSpecimenId) {
+        lastFocusedSpecimenRef.current = null;
+        setPopup((current) => (current?.kind === "record" ? null : current));
+        return;
+      }
+      const record = recordsById.get(selectedSpecimenId);
+      if (!record || !isMappedRecord(record)) return;
+      if (!popupRef.current) rememberPopupOpener();
+      setPopup({
+        kind: "record",
+        record,
+        longitude: record.longitude,
+        latitude: record.latitude,
+      });
+      if (lastFocusedSpecimenRef.current !== selectedSpecimenId) {
+        lastFocusedSpecimenRef.current = selectedSpecimenId;
+        map.easeTo({
+          center: [record.longitude, record.latitude],
+          zoom: Math.max(map.getZoom(), 12.25),
+          duration: prefersReducedMotion() ? 0 : 550,
+          padding: popupCameraPadding(containerRef.current),
+        });
+      }
+    }, 0);
+    return () => window.clearTimeout(synchronize);
+  }, [ready, recordsById, rememberPopupOpener, selectedSpecimenId]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || resetToken === 0) return;
+    fitRecords(map, recordsRef.current, prefersReducedMotion());
+    onStatusRef.current("Map view reset to the current mapped results.");
+  }, [ready, resetToken]);
+
+  useEffect(() => updatePopupPosition(), [popup, updatePopupPosition]);
+
+  useEffect(() => {
+    if (!popup) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setPopup(null);
+      if (popup.kind === "record") onClearSelection();
+      restorePopupFocus();
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [onClearSelection, popup, restorePopupFocus]);
+
+  if (providerError) {
+    return (
+      <div className="map-unavailable" role="alert">
+        <p className="card-overline">Basemap unavailable</p>
+        <h2>The collection list is still available.</h2>
+        <p>{providerError}</p>
+        <button type="button" onClick={() => setRetryKey((value) => value + 1)}>
+          Retry map
+        </button>
+      </div>
+    );
+  }
+
+  const side = popupPixel.x > popupPixel.containerWidth / 2 ? "left" : "right";
+  return (
+    <div
+      className="map-canvas-frame"
+      data-map-style={styleKey}
+      data-map-ready={ready}
+      data-uncertainty-count={visibleUncertaintyCount}
+    >
+      <div ref={containerRef} className="map-canvas" />
+      <div
+        className="map-cluster-accessibility"
+        role="group"
+        aria-label="Visible map clusters"
+      >
+        {accessibleClusters.map((cluster) => (
+          <button
+            key={cluster.id}
+            type="button"
+            style={{ left: cluster.x, top: cluster.y }}
+            aria-label={`Inspect cluster of ${cluster.count} specimens`}
+            onClick={(event) => {
+              rememberPopupOpener(event.currentTarget);
+              openCluster(
+                cluster.id,
+                cluster.count,
+                cluster.longitude,
+                cluster.latitude,
+              );
+            }}
+          />
+        ))}
+      </div>
+      {mappedRecords.length === 0 ? (
+        <div className="map-empty-overlay" role="status">
+          <strong>No matching public coordinates</strong>
+          <span>
+            Adjust the search or filters; matching unplotted records remain in
+            the list.
+          </span>
+        </div>
+      ) : null}
+      {popup ? (
+        <div
+          className={`map-popup-anchor is-${side}`}
+          style={{ left: popupPixel.x, top: popupPixel.y }}
+        >
+          {popup.kind === "record" ? (
+            <IndividualMapPopup
+              record={popup.record}
+              onClose={() => {
+                setPopup(null);
+                onClearSelection();
+                restorePopupFocus();
+              }}
+            />
+          ) : (
+            <ClusterMapPopup
+              records={popup.records}
+              onSelect={(specimenId) => {
+                onSelectRef.current(specimenId);
+                const record = recordsRef.current.find(
+                  (candidate) => candidate.specimenId === specimenId,
+                );
+                if (record && isMappedRecord(record)) {
+                  setPopup({
+                    kind: "record",
+                    record,
+                    longitude: record.longitude,
+                    latitude: record.latitude,
+                  });
+                }
+              }}
+              onClose={() => {
+                setPopup(null);
+                restorePopupFocus();
+              }}
+            />
+          )}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function addCollectionLayers(
+  map: MapLibreMap,
+  points: MapFeatureCollection,
+  uncertainty: MapPolygonFeatureCollection,
+) {
+  map.addSource(uncertaintySourceId, { type: "geojson", data: uncertainty });
+  map.addLayer({
+    id: "specimen-uncertainty-fill",
+    type: "fill",
+    source: uncertaintySourceId,
+    paint: {
+      "fill-color": ["case", ["get", "selected"], "#d8b76f", "#7aa89a"],
+      "fill-opacity": ["case", ["get", "selected"], 0.2, 0.11],
+    },
+  });
+  map.addLayer({
+    id: "specimen-uncertainty-line",
+    type: "line",
+    source: uncertaintySourceId,
+    paint: {
+      "line-color": ["case", ["get", "selected"], "#f2d18b", "#8fbdaf"],
+      "line-width": ["case", ["get", "selected"], 2.5, 1.25],
+      "line-opacity": 0.85,
+      "line-dasharray": [2, 2],
+    },
+  });
+  map.addSource(pointSourceId, {
+    type: "geojson",
+    data: points,
+    cluster: true,
+    clusterMaxZoom: 11,
+    clusterRadius: 58,
+  });
+  addClassMarkerImages(map);
+  map.addLayer({
+    id: clusterLayerId,
+    type: "circle",
+    source: pointSourceId,
+    filter: ["has", "point_count"],
+    paint: {
+      "circle-color": "#d0ad67",
+      "circle-radius": ["step", ["get", "point_count"], 18, 5, 23, 12, 29],
+      "circle-stroke-color": "#101311",
+      "circle-stroke-width": 3,
+    },
+  });
+  map.addLayer({
+    id: clusterCountLayerId,
+    type: "symbol",
+    source: pointSourceId,
+    filter: ["has", "point_count"],
+    layout: {
+      "text-field": ["get", "point_count_abbreviated"],
+      "text-size": 13,
+      "text-font": ["Noto Sans Regular"],
+    },
+    paint: {
+      "text-color": "#101311",
+      "text-halo-color": "#f4ead6",
+      "text-halo-width": 0.5,
+    },
+  });
+  map.addLayer({
+    id: approximateLayerId,
+    type: "circle",
+    source: pointSourceId,
+    filter: [
+      "all",
+      ["!", ["has", "point_count"]],
+      ["==", ["get", "coordinatePrecision"], "approximate"],
+    ],
+    paint: {
+      "circle-radius": 14,
+      "circle-color": "rgba(0,0,0,0)",
+      "circle-stroke-color": "#f4ead6",
+      "circle-stroke-width": 2,
+      "circle-stroke-opacity": 0.95,
+    },
+  });
+  map.addLayer(pointLayer(mammalLayerId, "mammals", "mammal-marker"));
+  map.addLayer(pointLayer(birdLayerId, "birds", "bird-marker"));
+  map.addLayer(pointLayer(otherLayerId, "__other__", "other-marker", true));
+  map.addLayer({
+    id: selectedLayerId,
+    type: "circle",
+    source: pointSourceId,
+    filter: ["==", ["get", "specimenId"], ""],
+    paint: {
+      "circle-radius": 18,
+      "circle-color": "rgba(0,0,0,0)",
+      "circle-stroke-color": "#ffffff",
+      "circle-stroke-width": 4,
+    },
+  });
+}
+
+function pointLayer(
+  id: string,
+  classSlug: string,
+  icon: string,
+  fallback = false,
+): SymbolLayerSpecification {
+  const filter = (
+    fallback
+      ? [
+          "all",
+          ["!", ["has", "point_count"]],
+          ["!in", ["get", "classSlug"], ["literal", ["mammals", "birds"]]],
+        ]
+      : [
+          "all",
+          ["!", ["has", "point_count"]],
+          ["==", ["get", "classSlug"], classSlug],
+        ]
+  ) as FilterSpecification;
+  return {
+    id,
+    type: "symbol" as const,
+    source: pointSourceId,
+    filter,
+    layout: {
+      "icon-image": icon,
+      "icon-size": 0.56,
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
+    },
+  };
+}
+
+function addClassMarkerImages(map: MapLibreMap) {
+  for (const [id, image] of [
+    ["mammal-marker", markerImage("mammal")],
+    ["bird-marker", markerImage("bird")],
+    ["other-marker", markerImage("other")],
+  ] as const) {
+    if (!map.hasImage(id)) map.addImage(id, image, { pixelRatio: 2 });
+  }
+}
+
+function markerImage(kind: "mammal" | "bird" | "other"): ImageData {
+  const size = 64;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const context = canvas.getContext("2d")!;
+  context.lineJoin = "round";
+  context.lineCap = "round";
+  context.strokeStyle = "#111411";
+  context.lineWidth = 5;
+  context.fillStyle =
+    kind === "mammal" ? "#c6a45f" : kind === "bird" ? "#77a99b" : "#d8d0c1";
+  context.beginPath();
+  if (kind === "mammal") {
+    context.moveTo(15, 25);
+    context.lineTo(18, 11);
+    context.lineTo(28, 20);
+    context.quadraticCurveTo(32, 17, 36, 20);
+    context.lineTo(46, 11);
+    context.lineTo(49, 25);
+    context.quadraticCurveTo(54, 32, 49, 43);
+    context.quadraticCurveTo(42, 54, 32, 54);
+    context.quadraticCurveTo(22, 54, 15, 43);
+    context.quadraticCurveTo(10, 32, 15, 25);
+  } else if (kind === "bird") {
+    context.moveTo(10, 31);
+    context.lineTo(26, 22);
+    context.quadraticCurveTo(42, 13, 52, 28);
+    context.quadraticCurveTo(58, 38, 48, 46);
+    context.quadraticCurveTo(34, 56, 21, 45);
+    context.closePath();
+  } else {
+    context.rect(15, 15, 34, 34);
+  }
+  context.closePath();
+  context.fill();
+  context.stroke();
+  return context.getImageData(0, 0, size, size);
+}
+
+function transparentImage(): ImageData {
+  return new ImageData(new Uint8ClampedArray(4), 1, 1);
+}
+
+function attachMapInteractions(
+  map: MapLibreMap,
+  openCluster: (
+    clusterId: number,
+    pointCount: number,
+    longitude: number,
+    latitude: number,
+  ) => void,
+  onSelectRef: React.MutableRefObject<(specimenId: string) => void>,
+) {
+  map.on("click", clusterLayerId, (event) => {
+    const feature = event.features?.[0];
+    const clusterId = Number(feature?.properties?.cluster_id);
+    const pointCount = Number(feature?.properties?.point_count);
+    if (!Number.isFinite(clusterId) || !Number.isFinite(pointCount)) return;
+    openCluster(clusterId, pointCount, event.lngLat.lng, event.lngLat.lat);
+  });
+  for (const layerId of pointLayerIds) {
+    map.on("click", layerId, (event) => {
+      const id = String(event.features?.[0]?.properties?.specimenId ?? "");
+      if (id) onSelectRef.current(id);
+    });
+  }
+  for (const layerId of [clusterLayerId, ...pointLayerIds]) {
+    map.on("mouseenter", layerId, () => {
+      map.getCanvas().style.cursor = "pointer";
+    });
+    map.on("mouseleave", layerId, () => {
+      map.getCanvas().style.cursor = "";
+    });
+  }
+}
+
+function renderedClusters(map: MapLibreMap): AccessibleCluster[] {
+  if (!map.isStyleLoaded() || !map.getLayer(clusterLayerId)) return [];
+  const clusters = new Map<number, AccessibleCluster>();
+  for (const feature of map.queryRenderedFeatures({
+    layers: [clusterLayerId],
+  })) {
+    if (feature.geometry.type !== "Point") continue;
+    const id = Number(feature.properties?.cluster_id);
+    const count = Number(feature.properties?.point_count);
+    const [longitude, latitude] = feature.geometry.coordinates;
+    if (
+      !Number.isFinite(id) ||
+      !Number.isFinite(count) ||
+      longitude === undefined ||
+      latitude === undefined
+    )
+      continue;
+    const point = map.project([longitude, latitude]);
+    clusters.set(id, {
+      id,
+      count,
+      longitude,
+      latitude,
+      x: point.x,
+      y: point.y,
+    });
+  }
+  return [...clusters.values()].sort((first, second) => first.id - second.id);
+}
+
+function buildPointCollection(records: MapRecord[]): MapFeatureCollection {
+  return {
+    type: "FeatureCollection",
+    features: records.filter(isMappedRecord).map((record) => ({
+      type: "Feature",
+      id: record.specimenId,
+      geometry: {
+        type: "Point",
+        coordinates: [record.longitude, record.latitude],
+      },
+      properties: {
+        specimenId: record.specimenId,
+        taxonId: record.taxonId,
+        classSlug: record.classSlug,
+        coordinatePrecision: record.coordinatePrecision,
+      },
+    })),
+  };
+}
+
+function buildUncertaintyCollection(
+  records: MapRecord[],
+  selectedSpecimenId: string | null,
+  showAll: boolean,
+): MapPolygonFeatureCollection {
+  return {
+    type: "FeatureCollection",
+    features: records.flatMap((record) => {
+      const selected = record.specimenId === selectedSpecimenId;
+      if (!showAll && !selected) return [];
+      const polygon = createUncertaintyPolygon(record, selected);
+      return polygon ? [polygon] : [];
+    }),
+  };
+}
+
+function emptyPolygons(): MapPolygonFeatureCollection {
+  return { type: "FeatureCollection", features: [] };
+}
+
+function fitRecords(
+  map: MapLibreMap,
+  records: MapRecord[],
+  immediate: boolean,
+) {
+  const mapped = records.filter(isMappedRecord);
+  if (mapped.length === 0) {
+    map.easeTo({
+      center: [9.2, 56.05],
+      zoom: 6.1,
+      duration: immediate ? 0 : 350,
+    });
+    return;
+  }
+  if (mapped.length === 1) {
+    map.easeTo({
+      center: [mapped[0]!.longitude, mapped[0]!.latitude],
+      zoom: 10.5,
+      duration: immediate ? 0 : 350,
+      padding: popupCameraPadding(map.getContainer()),
+    });
+    return;
+  }
+  const bounds = new maplibregl.LngLatBounds();
+  for (const record of mapped)
+    bounds.extend([record.longitude, record.latitude] as LngLatLike);
+  map.fitBounds(bounds, {
+    padding: popupCameraPadding(map.getContainer()),
+    maxZoom: 10.5,
+    duration: immediate ? 0 : 450,
+  });
+}
+
+function popupCameraPadding(container: HTMLElement | null) {
+  const narrow = (container?.clientWidth ?? 0) < 700;
+  return narrow
+    ? { top: 64, right: 42, bottom: 170, left: 42 }
+    : { top: 72, right: 84, bottom: 72, left: 84 };
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}

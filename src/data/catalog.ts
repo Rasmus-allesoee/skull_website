@@ -47,6 +47,7 @@ export function getPublicRoutePaths(): string[] {
   return [
     "/",
     "/species",
+    "/map",
     "/guides/skull-preparation",
     ...catalog.taxonomyNodes.map((node) => taxonomyHref(node.rank, node.slug)),
     ...catalog.taxa.map(({ href }) => href),

@@ -386,7 +386,7 @@ Activating an unclustered specimen marker opens an individual popup or equivalen
 7. uncertainty radius text when applicable; and
 8. a clear `View specimen` link to the exact nested specimen route.
 
-The popup may include a compact taxon link as a secondary action, but the exact specimen link is primary. Do not fill missing data with guesses. Use the existing `Not recorded`, `Not applicable`, and `Approximate location` semantics.
+The popup may include a compact taxon link as a secondary action, but the exact specimen link is primary. Do not fill missing data with guesses. Use the existing `Not recorded`, `Not applicable`, `N/A` (for space efficiency!), and `Approximate location` semantics.
 
 Selecting a marker from the semantic list and selecting it from the map must produce the same popup/card state. A pointer selection should not unexpectedly move the document to the top of the page.
 

@@ -1,18 +1,46 @@
 # Project status
 
-**Snapshot date:** 2026-08-27
+**Snapshot date:** 2026-08-28
 
-**Current phase:** Combined Phase 3.2 Species-catalog redesign and Phase 4 search/faceted discovery — complete local technical/visual gate pass; owner review pending
+**Current phase:** Focused map-only Phase 5 — implementation complete locally; owner review pending
 
-**Overall state:** The owner approved Phase 3.1 at `ce7dbc3`; the combined Phase 3.2/4 implementation is preserved as a separate verified local checkpoint on `agent/phase-3-museum-shell-catalog`, with no push/PR or remote CI authorized
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`. The complete focused map milestone is verified on `agent/phase-5-map`; no Phase 5 push, pull request, merge, or remote CI is authorized.
 
-**Next phase:** Not authorized. First obtain owner review of the combined catalog/discovery checkpoint. The comprehensive interactive tree is reclassified as optional Phase 3.3; Phase 5 remains the next critical-path milestone unless the owner separately prioritizes Phase 3.3.
+**Next phase:** Not authorized. First obtain owner product review of `/map`; supporting editorial pages, the optional Phase 3.3 comprehensive tree, and Phase 6 remain separately gated.
 
 ## 1. Current objective
 
-Present the verified catalog-first `/species` redesign, complete Phase 4 discovery behavior, right-facing SPEC-0003/0013/0018 media correction, and reconciled documentation for owner inspection. Keep the checkpoint local and do not begin Phase 3.3 or Phase 5.
+Present the verified map-first `/map` workspace for owner inspection. Keep the checkpoint local; do not push, open a pull request, merge, or begin supporting editorial pages, Phase 3.3, Phase 6, or another task without explicit authorization.
 
-## 2. Combined Phase 3.2 catalog redesign and Phase 4 discovery
+## 2. Focused Phase 5 collection map
+
+### Canonical projection and route isolation
+
+- Added a deterministic schema-v1 map projection generated from the same compiled published collection as routes and search. It retains all 18 published specimens as semantic map records and emits 18 valid point features; unknown-coordinate records remain supported as list-only records and are never geocoded.
+- Added a statically generated `/map` shell. MapLibre GL JS and its CSS load only below the map route, while the complete semantic result list and exact specimen links remain useful without JavaScript.
+- Added a replaceable OpenFreeMap provider adapter with only the supported Fiord, Dark, Positron, Liberty, and Bright vector styles. Unsupported satellite, hybrid, and terrain options were not fabricated.
+- Added a route-specific content-security policy limited to same-origin assets, blob workers/images, and the selected OpenFreeMap origin; no analytics, cookies, tracking, runtime database, or other provider was introduced.
+
+### Discovery, location semantics, and synchronization
+
+- Reused the established specimen search, higher-rank scopes, class filter, controlled facets, numeric ranges, and missing-data semantics. Map results are specimen-based even when a higher taxon such as Carnivora supplies the scope.
+- URL state preserves query, taxonomic scope, class/facets/ranges, selected specimen, supported style, and the explicit uncertainty toggle. Camera position remains transient; invalid or unavailable IDs recover with an honest status and the full filtered list.
+- Exact and approximate coordinates use distinct marker treatment and text. Approximate specimens can display geodesic uncertainty areas from canonical metre radii; zero uncertainty produces no circle, and missing coordinates never become inferred points.
+- Added class-specific mammal, bird, and fallback marker shapes generated locally. Marker, precision, selected, uncertainty, and cluster states never depend on color alone.
+
+### Clustering, popups, list, and responsive behavior
+
+- Added deterministic clustering with count-scaled markers and synchronized keyboard-operable DOM controls. Activating a cluster opens one anchored, viewport-aware, internally scrollable popup containing every physical specimen in the cluster exactly once.
+- Added individual specimen popups with lateral image, names, immutable ID, location/date, explicit precision/uncertainty, and an exact record link. `/map?specimen={id}` selects, focuses, and exposes the same specimen in the semantic list.
+- Desktop uses a viewport-dominant map beside an independently scrolling result rail. Narrow screens retain the map as the primary surface and expose the complete results in a bounded drawer/sheet without horizontal overflow.
+- Added no-WebGL, MapLibre-load, and provider-style failure states that preserve search, filters, location meaning, and every exact list link. Reduced-motion, forced-color, keyboard, no-JavaScript, mobile portrait/landscape, and effective reflow behavior are covered.
+- Added `View on map` beside valid specimen locations without embedding MapLibre on specimen routes. Home's lightweight geographic preview now links to the functioning central map.
+
+### Scope result
+
+- The focused map-only acceptance gate passes locally. Supporting/editorial pages were deliberately removed from this milestone and remain unstarted; Phase 3.3, complete migration, uploads, tracking, and unrelated changes were not implemented.
+
+## 3. Combined Phase 3.2 catalog redesign and Phase 4 discovery
 
 ### Owner-review taxonomy drawer correction (2026-08-25)
 
@@ -83,7 +111,7 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 - Reconciled the six left-facing committed derivatives for SPEC-0003, SPEC-0013, and SPEC-0018 with their already right-facing reviewed clean masters. Restaging all 104 approved PNGs and running the ordinary processor changed only each named specimen's lateral and oblique WebPs.
 - The pipeline—not a manual public-file edit or display-time CSS exception—recomputed alpha subject bounds, converted to sRGB, stripped metadata, and validated the complete 104-asset collection plus comparison reference. Cards, suggestions, specimen galleries, and calibrated presentation therefore share the corrected assets and framing.
 
-## 3. Phase 3.1 refinement
+## 4. Phase 3.1 refinement
 
 ### Review-quality collection expansion
 
@@ -110,7 +138,7 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 - Added `interactive_taxonomic_tree.md`; the owner later reclassified its comprehensive visualization from Phase 3.2 to Phase 3.3. It owns richer branching, keyboard/pan/zoom/reset, optional group previews, tree/list parity, and any sourced characteristics/divergence content.
 - Phase 3.1 remains the original compact linked foundation. The combined Phase 3.2/4 work now supplies the complete genus/taxon semantic drawer/list required before any optional Phase 3.3 visual enhancement.
 
-## 4. Phase 3.0 implementation
+## 5. Phase 3.0 implementation
 
 ### Repository and phase boundary
 
@@ -152,7 +180,7 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 
 **Gate conclusion:** Phase 3.0's complete local technical/visual gate passed and the owner review opened Phase 3.1. Phase 3.0 is preserved separately; Phase 4 did not begin.
 
-## 5. Phase 2.3 implementation
+## 6. Phase 2.3 implementation
 
 ### Comparison copy and uncertainty
 
@@ -171,7 +199,7 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 
 - Kept MapLibre out of Phase 2. Phase 5 now explicitly adds a `View on map` action near Collection record location data, targeting `/map?specimen={id}` so the central map route owns marker/list selection and the textual record remains the accessible equivalent.
 
-## 6. Phase 2.2 implementation
+## 7. Phase 2.2 implementation
 
 ### Photography, inspection, and real-device behavior
 
@@ -197,7 +225,7 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 - Changed the collection kicker from `Provenance` to `Metadata`.
 - Left-aligned age/condition guide notes and headings. The desktop `Specimen-condition guide` title remains on one line; narrow layouts may wrap naturally.
 
-## 7. Phase 2.1 implementation (retained foundation)
+## 8. Phase 2.1 implementation (retained foundation)
 
 ### Photography and navigation
 
@@ -225,7 +253,7 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 - Specified Phase 3 discovery sections as at most three same-family cards plus three deterministic collection-wide cards, excluding the current taxon and duplicates and omitting empty groups. They are not rendered with only one taxon.
 - Kept all section kickers for now, including the explicitly preferred `Mammalia · Carnivora` and `Physical specimen`; canonical design guidance marks the remaining kickers for reconsideration after the stable release.
 
-## 8. Phase 2 acceptance gate
+## 9. Phase 2 acceptance gate
 
 | Requirement | State | Evidence |
 |---|---|---|
@@ -238,7 +266,7 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 
 **Gate conclusion:** The complete Phase 2 technical, visual, and owner-approval gate passed. Phase 2 closed before the separately authorized Phase 3 work recorded above.
 
-## 9. Representative record decisions
+## 10. Representative record decisions
 
 | Decision | Current answer | Reason/evidence |
 |---|---|---|
@@ -257,30 +285,31 @@ Present the verified catalog-first `/species` redesign, complete Phase 4 discove
 | Rendering | static App Router/RSC plus gallery, comparison, selector, and guide-dialog client islands | Preserves useful static/no-JavaScript content while isolating genuine interaction |
 | Production compiler | `next build --webpack` | Pinned Turbopack production build did not terminate reliably in Phase 2; webpack remains deterministic and verified |
 
-## 10. Verification evidence
+## 11. Verification evidence
 
 | Gate | Most recent evidence | Status |
 |---|---|---|
 | Exact toolchain/install | Node `v24.18.0`; pnpm `11.21.0`; `pnpm install --frozen-lockfile` passes from the exact lockfile with pinned Orama 3.1.18 | Pass |
-| Content/search build | `pnpm content:build`: 15 taxa, 18 specimens, 104 specimen assets, 67 search documents, 1 comparison reference, 0 reviewed profiles (1 profile source); only four expected optional-frontal warnings | Pass |
+| Content/search/map build | `pnpm content:build`: 15 taxa, 18 specimens, 104 specimen assets, 67 search documents, 18 map records / 18 valid points, 1 comparison reference, 0 reviewed profiles (1 profile source); only four expected optional-frontal warnings | Pass |
 | Media | Full restage/process plus `pnpm validate:media`: 104 specimen assets plus 1 reference, 24.83 MiB, sRGB/alpha/bounds valid, no EXIF/IPTC/XMP; Git shows only the six requested right-facing derivative changes | Pass |
 | Invalid fixtures | `pnpm test:fixtures`: 6 expected failures detected, including class-profile mismatch | Pass |
-| Types/lint/tests | Sequential formatting, lint, content/media validation, TypeScript, 11 Vitest files / 55 tests, and 6 actionable invalid fixtures pass. Search ranking, artifact determinism, URL state, bidirectional sorting, largest-specimen selection, filtering/missing semantics, taxonomy/cards, compact-control behavior, class-aware measurements, specimen navigation, optional-media presentation, and comparison-link behavior are covered | Pass |
-| Production build | `next build --webpack` completes successfully with 75 static outputs; Home, not-found, guide, robots, sitemap, catalog, 15 taxon paths, 18 exact specimen paths, and 34 rank paths prerender | Pass |
-| Browser/accessibility | Full `PLAYWRIGHT_PORT=3102 node_modules/.bin/playwright test`: 33/33 Chromium journeys. Coverage includes catalog/search behavior, gallery/comparison regressions, accessibility smoke tests, compact-control behavior, scroll-preserving specimen switching, and exact compared-specimen navigation | Pass |
-| Post-fix focused checks | Focused catalog/exhibit/domain tests (15 tests), dedicated scroll/comparison browser checks, complete 55-test Vitest suite, fresh production build, and full 33-test Chromium suite all pass | Pass |
-| Manual visual/responsive | Production Playwright screenshots and browser checks cover the desktop catalog, narrow specimen comparison, multi-specimen card context, existing mobile/desktop catalog states, optional-view galleries, and exact comparison-link presentation. Existing 390 × 844 control-region budget remains 200.8 px (23.8%), leaving 76.2% for results; touch targets remain 44 px and horizontal overflow is `0` | Pass |
-| Git/base/scope audit | Phase 3.1 base is `ce7dbc3`; the separate checkpoint contains only owner specification, catalog/search/media/test/docs/dependency changes. Raw metadata/PNG masters, supplied before-state screenshot, generated artifacts, dependency state, and browser/test output remain ignored | Pass |
-| Remote Phase 3.2/4 CI | No push, PR, or remote CI was authorized | Not run; not a local implementation blocker |
-| Complete local gate | The final sequential formatting/lint/type/unit/content/media/fixture/build/browser gate passes. No remote operation was authorized | Pass locally |
+| Types/lint/tests | Sequential formatting, lint, content/media validation, TypeScript, 14 Vitest files / 62 tests, and 6 actionable invalid fixtures pass. Phase 5 adds deterministic projection/uncertainty, URL-state, and specimen filter coverage without regressing the catalog, measurement, media, or exhibit suites | Pass |
+| Production build | `next build --webpack` completes successfully with 76 static outputs; `/map` and the existing Home, guide, sitemap, catalog, 15 taxon, 18 exact-specimen, and 34 rank outputs prerender | Pass |
+| Browser/accessibility | Full `PLAYWRIGHT_PORT=3102 node_modules/.bin/playwright test`: 45/45 Chromium journeys. The 12 map journeys cover provider rendering, rank/specimen search, deep links, uncertainty, complete clusters, all supported styles, route-bundle isolation, responsive/reflow/accessibility media states, no JavaScript, no WebGL/provider failure, and zero axe violations | Pass |
+| Manual visual/responsive | Production-browser inspection covers `/map` at 1440 × 900, 1024 × 900, 768 × 900, 390 × 844, 360 × 800, narrow landscape, effective 200% reflow, reduced motion, and forced colors. Map/list hierarchy, bounded sheets/popups, sticky controls, marker/key meaning, and horizontal overflow remain correct; browser console is clean under every supported style | Pass |
+| Git/base/scope audit | Branch `agent/phase-5-map` is based on merged `main` checkpoint `9a0e1d0`. The intended diff is limited to the approved map plan, dependency/lockfile, projection/provider/map UI, exact map links, focused tests, and matching canonical documentation; unrelated owner context files remain unstaged | Pass |
+| Remote Phase 5 CI | No push, pull request, merge, or remote CI was authorized | Not run; not a local implementation blocker |
+| Complete local map gate | The final sequential check/build/browser gate, resilience checks, visual matrix, route-bundle audit, and explicit staging audit pass. Remote publication remains a separate owner action | Pass locally |
 
 Package-manager gates must run sequentially with `CI=true` in non-interactive environments; concurrent pnpm commands can reconcile `node_modules` against different lifecycle states and are not a valid speed optimization.
 
-## 11. Known limitations and controls
+## 12. Known limitations and controls
 
 - The 15/18 Phase 3.1 review slice is public and inspectable, but 33 raw specimen rows remain blocked migration candidates. Phase 6 still owns the complete audited migration, not a blind append of the remaining rows.
-- The comprehensive interactive tree (Phase 3.3), interactive map/editorial routes (Phase 5), complete migration (Phase 6), deployment/release checks (Phase 7), analytics, 360°, 3D, uploads, and AI overlays have not started. The current semantic taxonomy drawer/list is complete for the combined catalog scope.
-- Home links directly to the functioning Species search control but does not duplicate the index/combobox on Home. Its geographic preview is explicitly non-interactive and non-cartographic; the specimen `View on map` action remains deferred until `/map?specimen={id}` exists.
+- The focused interactive map is complete. The comprehensive tree (Phase 3.3), supporting/editorial routes removed from Phase 5, complete migration (Phase 6), deployment/release checks (Phase 7), analytics, 360°, 3D, uploads, and AI overlays remain unstarted.
+- Home keeps a lightweight non-cartographic geographic preview and links to `/map`; it deliberately does not duplicate MapLibre or the map control surface. Coordinate-bearing specimen records expose `View on map` deep links.
+- OpenFreeMap is a public vector-style dependency without a project-owned uptime guarantee. Provider or WebGL failure therefore preserves the full semantic list and all exact record links. Satellite, Hybrid, and Terrain are absent because the selected provider integration does not support them under the approved contract.
+- All 18 records in the current public slice have valid points. The list-only `Not mapped` path is projection- and browser-tested with fixtures so future unknown-coordinate records remain publishable without fabricated coordinates.
 - Search is intentionally client-side and catalog-scoped. The 67-document artifact is adequate for the current 15/18 collection; pagination, virtualization, a hosted search service, and a global-header search remain unjustified until measured scale/use requires them.
 - The partial `metadata_csv` exports and PNG masters remain ignored migration evidence and are not runtime/public files. Only the transformations explicitly recorded in the Phase 3.1 migration audit became canonical records; no raw row-number identity was accepted.
 - The calibrated card is a true relative comparison between visible skull subjects; it does not calibrate the visitor's monitor so displayed CSS pixels are not literal real-world millimetres.
@@ -293,24 +322,24 @@ Package-manager gates must run sequentially with `CI=true` in non-interactive en
 - Footer copyright starts at 2026 because no repository evidence supports a 2023 publication start; the start year can change only with owner-supplied evidence/preference.
 - Chrome/Chromium is the current phase browser target. Effective 200% reflow, reduced motion, forced colors, keyboard, and automated axe checks pass; Firefox/WebKit and a manual screen-reader release audit remain Phase 7 gates.
 - `NEXT_PUBLIC_SITE_URL` still defaults to `http://localhost:3000`; the final domain is a Phase 7 decision. Canonical/Open Graph/sitemap URLs are structurally complete but intentionally use that default locally.
-- Phase 3.0, Phase 3.1 (`ce7dbc3`), and the separately gated combined Phase 3.2/4 checkpoint are local. No Phase 3 branch push, PR, or remote CI is authorized.
+- Combined Phase 3.2/4 is merged into `main` at `9a0e1d0`. Phase 5 is local on `agent/phase-5-map`; no Phase 5 push, pull request, merge, or remote CI is authorized.
 
-## 12. Exact next action
+## 13. Exact next action
 
-1. The owner inspects `/species` at desktop and mobile widths: multilingual suggestions, class/taxonomy scopes, Filters, both result modes, name/numeric sorts, active chips/clear, reload/back/forward, no-result recovery, and the compact multi-specimen chooser. Also inspect SPEC-0003, SPEC-0013, and SPEC-0018 lateral/oblique galleries for right-facing orientation and comfortable framing.
-2. The owner either supplies one bounded catalog feedback task or explicitly approves the combined Phase 3.2/4 checkpoint.
-3. After approval, the recommended critical-path next task is Phase 5 map plus required editorial/supporting pages. The owner may instead separately authorize optional Phase 3.3 comprehensive tree work, but must then decide its sourced-content/clade/preview boundaries. Remote publishing remains a separate authorization.
+1. The owner runs the local site and inspects `/map` at desktop and mobile widths: specimen/higher-rank search, facets, style changes, uncertainty toggle, exact and clustered popups, semantic results, `/map?specimen=SPEC-0013`, and one specimen-page `View on map` action.
+2. The owner either supplies one bounded map-feedback task or explicitly approves the focused Phase 5 map checkpoint.
+3. After approval, remote push/PR/merge is still a separate authorization. The next product milestone must also be chosen explicitly; supporting editorial pages, optional Phase 3.3, and Phase 6 remain independent scopes.
 
-No new content is required for the current visual/product review. Phase 5 will require an owner decision on map tile/style/provider configuration and reviewed content/contact details for the supporting pages identified in the plan. If Phase 3.3 is selected first, the outstanding inputs are listed in `interactive_taxonomic_tree.md`. Phase 6 still needs completed/corrected metadata, missing accepted image sets, and final rights/public-note/publication decisions for blocked rows.
+No new content or owner decision is required for the current map review. Phase 6 still requires completed/corrected metadata, missing accepted image sets, and final rights/public-note/publication decisions for blocked rows. Supporting editorial content requires its own source/contact review if later authorized.
 
-## 13. Decision/blocker protocol
+## 14. Decision/blocker protocol
 
 - A failing test or lint rule is implementation work, not automatically a blocker.
 - A decision that changes public identity, rights, data publication, scope, or external account state is surfaced to the owner.
 - Blockers record what was tried, exact evidence, safe work completed, and the smallest required owner action.
 - When resolved, retain a short resolution in the checkpoint log rather than deleting history.
 
-## 14. Checkpoint log
+## 15. Checkpoint log
 
 ### 2026-08-12 — Phase 0/1 completed
 
@@ -384,5 +413,11 @@ No new content is required for the current visual/product review. Phase 5 will r
 - Made same-taxonomy specimen-selector links preserve scroll position, removed the visitor-facing optional-media warning, and retained the underlying authoring/validation warnings for genuinely incomplete staging records.
 - Added exact routes to collection comparison records. The selected comparison specimen is now a keyboard-accessible link whose pointer navigation is activated by double-click; reference records, including the adult-human skull, remain non-navigable.
 - The focused and full local checks pass: 55/55 Vitest tests, strict TypeScript/lint/format/content/media/fixture validation, the 75-route production build, dedicated scroll/comparison browser checks, and 33/33 Chromium journeys. The checkpoint remains local with no push or PR authorized.
+
+### 2026-08-28 — focused Phase 5 collection map verified locally
+
+- The owner explicitly replaced the earlier combined map/editorial milestone with the binding map-only specification in `agent_context/phase_5_map_feature_plan.md`.
+- `/map` now combines the deterministic 18-record projection, route-lazy MapLibre/OpenFreeMap canvas, specimen-based discovery, exact/approximate/unknown semantics, geodesic uncertainty, complete clusters and anchored popups, synchronized semantic records, deep links, responsive layouts, and resilient non-map fallbacks.
+- The complete sequential quality/build/browser gate, responsive/forced-color/reduced-motion visual matrix, bundle-isolation audit, and staging/scope review pass. The implementation is committed locally on `agent/phase-5-map`; no push, pull request, merge, remote CI, supporting-content work, or next phase is authorized.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.

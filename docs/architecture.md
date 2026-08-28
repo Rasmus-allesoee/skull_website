@@ -119,7 +119,7 @@ src/components/       reusable museum UI and route-specific interactive islands
 src/config/           public site/runtime configuration
 src/domain/           pure types, executable schemas, compiler, normalization, invariants
 src/data/             generated-data loading and read-only queries
-src/features/         exhibit/catalog/search islands now; map features later
+src/features/         exhibit, catalog/search, and route-isolated map islands
 src/styles/           optional token/component layers if globals grow
 content/taxa/          canonical taxon CSV
 content/specimens/     canonical specimen CSV
@@ -215,18 +215,18 @@ Search never creates a second classification model. Filters and suggestions use 
 
 ## 11. Map architecture
 
-Phase 5 generates GeoJSON from published specimens with valid coordinates. Location labels, coordinate precision, and record URLs remain canonical specimen fields.
+Phase 5 emits `.generated/map-records-v1.json` deterministically from the compiled published collection. It contains one sorted semantic record per published specimen plus point GeoJSON only for valid exact/approximate coordinates. Location labels, coordinate precision, uncertainty radii, lateral `MediaAsset` references, and exact record URLs remain canonical specimen-derived fields; unknown coordinates stay list-only and are never geocoded.
 
-- A route-level client component dynamically imports MapLibre only on `/map`.
-- A small provider adapter owns style URL, attribution, and permitted asset origins.
-- OpenFreeMap is the initial basemap candidate; changing providers does not change specimen rows.
-- Exact and approximate points have distinct marker shape/label semantics.
-- Unknown points are absent rather than geocoded or fabricated.
-- Clusters expose counts; selecting a point synchronizes a semantic result item.
-- The complete result list remains navigable without canvas/WebGL.
-- A specimen with public coordinates gains a Collection-record `View on map` link in Phase 5. The link targets `/map?specimen={id}` so the route owns marker/list selection; Phase 3 adds only an honest, non-cartographic Home preview and does not add MapLibre, an embedded modal, or a second map state model.
+- The statically generated `/map` route server-renders the operational shell and complete specimen list. A client loader capability-checks WebGL and dynamically imports the MapLibre canvas chunk only on this route.
+- `provider.ts` is the replaceable OpenFreeMap adapter for Fiord, Dark, Positron, Liberty, and Bright style URLs. The provider owns only basemap presentation; collection state and identity never leave the application model.
+- URL-backed map state reuses catalog query/scope/facet/range vocabulary and adds exact `specimen`, supported `style`, and explicit `uncertainty` state. Camera center/zoom remain transient.
+- MapLibre clusters the filtered point projection. Every rendered cluster also has a synchronized DOM button with an accessible count; complete membership comes from `getClusterLeaves`, with no top-N truncation.
+- Mammal, bird, and fallback marker icons are local generated images. Approximate points gain a separate outline, selection gains a high-contrast ring, and text in the list/popup always carries precision meaning.
+- Positive uncertainty radii become deterministic geodesic polygons. The selected approximate record's polygon is automatic; the global toggle controls all other eligible areas.
+- Desktop keeps an independently scrollable result rail beside the map. Medium/mobile layouts use a bounded result drawer/sheet. The same complete links survive no JavaScript, no WebGL, provider failure, and MapLibre worker/style failure.
+- Specimen Collection records link to `/map?specimen={id}` when a public point exists. Home remains a lightweight non-cartographic preview but now links to the functioning central map.
 
-Security headers must explicitly support the chosen MapLibre worker and provider hosts without broad wildcards.
+The `/map/:path*` security header permits only same-origin application assets, blob workers/images, and `https://tiles.openfreemap.org`; it does not add wildcard providers, analytics, cookies, or tracking.
 
 ## 12. Media architecture
 
@@ -274,7 +274,7 @@ Tailwind utilities operate on semantic CSS variables defined in the global token
 
 Server components own the museum shell, Home, taxonomy landings, default catalog model/cards, static record content, and route metadata. Client components are placed at the lowest practical interactive boundary. The combined catalog island receives serialized published records and owns only discovery/view state; it keeps real links and prerendered default content. Native dialog controls own filters, measurement/age/condition guidance, and compact multi-specimen selection; the taxonomy drawer uses one responsive semantic nested-list component with a mobile focus trap; the comparison card remains a separate client island. Accessibility state—names, expanded/selected/current semantics, live result/search changes, Escape, and focus restoration—is part of component APIs, not a post-release patch.
 
-The Phase 2.1 `/guides/skull-preparation` route is a statically rendered, explicitly labelled outline shell. It provides a real destination from the specimen record without publishing uncited chemical or biological instructions. Full MDX guide content and safety review remain Phase 5 work.
+The Phase 2.1 `/guides/skull-preparation` route is a statically rendered, explicitly labelled outline shell. It provides a real destination from the specimen record without publishing uncited chemical or biological instructions. Full MDX guide content and safety review remain a separately authorized supporting-content milestone; they were explicitly excluded from the focused Phase 5 map scope.
 
 See [design_system.md](design_system.md).
 

@@ -21,12 +21,15 @@ import {
   ValidationError,
 } from "../../src/domain/content/types";
 import { buildCatalogSearchArtifact } from "../../src/domain/search/documents";
+import { buildMapProjection } from "../../src/domain/map/projection";
 import { validatePublicMedia } from "./media";
 import { fromRepositoryRoot } from "./paths";
 
 export interface ContentBuildResult {
   collection: CompiledCollection;
   searchDocumentCount: number;
+  mapRecordCount: number;
+  mappedRecordCount: number;
   warnings: Diagnostic[];
 }
 
@@ -73,6 +76,7 @@ export async function buildContent(options?: {
     taxonomySnapshots,
   });
   const searchArtifact = buildCatalogSearchArtifact(result.collection);
+  const mapProjection = buildMapProjection(result.collection);
 
   if (options?.writeArtifact) {
     const generatedDirectory = fromRepositoryRoot(".generated");
@@ -95,11 +99,18 @@ export async function buildContent(options?: {
       serializedSearchArtifact,
       "utf8",
     );
+    await writeFile(
+      path.join(generatedDirectory, "map-records-v1.json"),
+      `${JSON.stringify(mapProjection, null, 2)}\n`,
+      "utf8",
+    );
   }
 
   return {
     ...result,
     searchDocumentCount: searchArtifact.documents.length,
+    mapRecordCount: mapProjection.records.length,
+    mappedRecordCount: mapProjection.geoJson.features.length,
   };
 }
 

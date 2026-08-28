@@ -20,7 +20,7 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **the combined Phase 3.2 Species-catalog redesign and Phase 4 search/faceted-discovery scope is implemented locally and passes its complete technical/visual gate; owner review is pending**. Phase 3.1 remains preserved at `ce7dbc3`; the combined checkpoint is local only with no push/PR. Consult `docs/project_status.md` for exact evidence and the next action. Do not begin Phase 3.3 comprehensive-tree or Phase 5 work until the owner reviews this checkpoint and explicitly authorizes the next bounded task.
+Current phase: **the focused, map-only Phase 5 implementation is complete locally on `agent/phase-5-map` and passes its technical, browser, resilience, and visual acceptance gate; owner review is pending**. The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`. Supporting/editorial pages and the optional Phase 3.3 comprehensive tree remain deferred. Consult `docs/project_status.md` for exact evidence and the next action. Do not push, open a pull request, merge, or begin another phase until the owner reviews this checkpoint and explicitly authorizes that bounded action.
 
 Use the neutral working title **Skull Collection** from central site configuration until the final name is selected.
 
