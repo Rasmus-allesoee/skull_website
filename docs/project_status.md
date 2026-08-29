@@ -2,15 +2,15 @@
 
 **Snapshot date:** 2026-08-29
 
-**Current phase:** Focused map-only Phase 5 — implementation complete locally; owner review pending
+**Current phase:** Focused map-only Phase 5 — complete and merged; next milestone selection pending
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`. The complete focused map milestone and the first two owner-feedback refinement batches are verified locally on `agent/phase-5-map`; no Phase 5 push, pull request, merge, or remote CI is authorized.
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`. The complete focused map milestone and its two owner-feedback refinement batches were pushed, passed remote CI, and were merged through PR #10 into `main` at `f098caf`; its seven coherent commits remain visible in the graph. The next product milestone has not yet been selected or authorized.
 
-**Next phase:** Not authorized. First obtain owner product review of `/map`; supporting editorial pages, the optional Phase 3.3 comprehensive tree, and Phase 6 remain separately gated.
+**Next phase:** Not selected or authorized. Choose a bounded next milestone before implementation; supporting editorial pages, the optional Phase 3.3 comprehensive tree, and Phase 6 remain separately gated.
 
 ## 1. Current objective
 
-Present the verified map-first `/map` workspace for owner inspection. Keep the checkpoint local; do not push, open a pull request, merge, or begin supporting editorial pages, Phase 3.3, Phase 6, or another task without explicit authorization.
+Record the completed and published map checkpoint. Do not begin supporting editorial pages, Phase 3.3, Phase 6, or another task until the owner selects and explicitly authorizes that bounded scope.
 
 ## 2. Focused Phase 5 collection map
 
@@ -322,9 +322,9 @@ Present the verified map-first `/map` workspace for owner inspection. Keep the c
 | Production build | `next build --webpack` completes successfully with 76 static outputs; `/map` and the existing Home, guide, sitemap, catalog, 15 taxon, 18 exact-specimen, and 34 rank outputs prerender | Pass |
 | Browser/accessibility | Full `PLAYWRIGHT_PORT=3113 node_modules/.bin/playwright test`: 52/52 Chromium journeys. The 19 map journeys cover provider rendering, Enter-dismissed search, rank/specimen search, centered popup subject crops, deep links, uncertainty, marker-scale clusters, cluster wheel zoom, left-locked/clamped popups, popup gesture containment, camera-preserving styles and close behavior, all supported styles, route-bundle isolation, responsive/reflow/accessibility media states, no JavaScript, no WebGL/provider failure, and zero axe violations | Pass |
 | Manual visual/responsive | Production-browser inspection covers `/map` at 1440 × 900, 1024 × 900, 768 × 900, 390 × 844, 360 × 800, narrow landscape, effective 200% reflow, reduced motion, and forced colors. The updated desktop/mobile individual popup shows a centered uncropped subject; left-locked cluster placement remains within the map viewport; map/list hierarchy, bounded sheets/popups, marker/key meaning, camera preservation, and horizontal overflow remain correct; browser console is clean under every supported style | Pass |
-| Git/base/scope audit | Branch `agent/phase-5-map` is based on merged `main` checkpoint `9a0e1d0`. The intended diff is limited to the approved map plan, dependency/lockfile, projection/provider/map UI, exact map links, focused tests, and matching canonical documentation; unrelated owner context files remain unstaged | Pass |
-| Remote Phase 5 CI | No push, pull request, merge, or remote CI was authorized | Not run; not a local implementation blocker |
-| Complete local map gate | The final sequential check/build/browser gate, owner-feedback regression suite, resilience checks, visual matrix, route-bundle audit, and explicit staging audit pass. Remote publication remains a separate owner action | Pass locally |
+| Git/base/scope audit | `main` is at normal merge commit `f098caf` for PR #10, with the seven coherent Phase 5 commits preserved; the intended diff is limited to the approved map plan, dependency/lockfile, projection/provider/map UI, exact map links, focused tests, and matching canonical documentation; unrelated owner context files remain unstaged | Pass |
+| Remote Phase 5 CI | GitHub Actions run `33275504203` passed the quality/build/browser workflow before merge; the post-merge rerun of run `33275866571` also passed after one flaky browser retry | Pass |
+| Complete map gate | The final sequential check/build/browser gate, owner-feedback regression suite, resilience checks, visual matrix, route-bundle audit, explicit staging audit, remote CI, and normal merge pass | Complete and merged |
 
 Package-manager gates must run sequentially with `CI=true` in non-interactive environments; concurrent pnpm commands can reconcile `node_modules` against different lifecycle states and are not a valid speed optimization.
 
@@ -347,13 +347,13 @@ Package-manager gates must run sequentially with `CI=true` in non-interactive en
 - Footer copyright starts at 2026 because no repository evidence supports a 2023 publication start; the start year can change only with owner-supplied evidence/preference.
 - Chrome/Chromium is the current phase browser target. Effective 200% reflow, reduced motion, forced colors, keyboard, and automated axe checks pass; Firefox/WebKit and a manual screen-reader release audit remain Phase 7 gates.
 - `NEXT_PUBLIC_SITE_URL` still defaults to `http://localhost:3000`; the final domain is a Phase 7 decision. Canonical/Open Graph/sitemap URLs are structurally complete but intentionally use that default locally.
-- Combined Phase 3.2/4 is merged into `main` at `9a0e1d0`. Phase 5 is local on `agent/phase-5-map`; no Phase 5 push, pull request, merge, or remote CI is authorized.
+- Combined Phase 3.2/4 is merged into `main` at `9a0e1d0`. Phase 5 is merged into `main` at `f098caf` through PR #10 after passing remote CI; its feature branch has been intentionally preserved. The next milestone remains unselected.
 
 ## 13. Exact next action
 
-1. The owner runs the local site and inspects `/map` at desktop and mobile widths: specimen/higher-rank search, facets, style changes, uncertainty toggle, exact and clustered popups, semantic results, `/map?specimen=SPEC-0013`, and one specimen-page `View on map` action.
-2. The owner either supplies one bounded map-feedback task or explicitly approves the focused Phase 5 map checkpoint.
-3. After approval, remote push/PR/merge is still a separate authorization. The next product milestone must also be chosen explicitly; supporting editorial pages, optional Phase 3.3, and Phase 6 remain independent scopes.
+1. Choose the next bounded product milestone: supporting/editorial pages, optional Phase 3.3 comprehensive tree, Phase 6 audited migration, or another explicitly scoped task.
+2. Explicitly authorize that scope, then create `agent/<short-description>` from the updated `main` branch.
+3. Keep the completed map checkpoint as the stable fallback; no new map content or owner decision is required unless a bounded map refinement is selected.
 
 No new content or owner decision is required for the current map review. Phase 6 still requires completed/corrected metadata, missing accepted image sets, and final rights/public-note/publication decisions for blocked rows. Supporting editorial content requires its own source/contact review if later authorized.
 
@@ -448,6 +448,12 @@ No new content or owner decision is required for the current map review. Phase 6
 ### 2026-08-28 — first owner-feedback map refinement verified locally
 
 - Implemented centered subject-bounds popup imagery, Enter/mobile-keyboard autocomplete dismissal, marker-scale clustering, reliable keyboard cluster controls inside MapLibre's interactive layer, map zoom over marker/cluster targets, left-locked and viewport-clamped desktop popups, contained popup gestures, and filtered/unfiltered camera-preservation rules for styles, popup close, and result-list selection.
-- The final exact-head check/build passed with 62/62 unit tests and 6 expected invalid-fixture failures; the full Chromium suite passed 52/52, including 19 map journeys and the repeated 9/9 cluster/popup gesture stress run. Desktop/mobile production screenshots show the centered uncropped popup subject; no push, pull request, merge, or remote CI was performed.
+- The final exact-head check/build passed with 62/62 unit tests and 6 expected invalid-fixture failures; the full Chromium suite passed 52/52, including 19 map journeys and the repeated 9/9 cluster/popup gesture stress run. Desktop/mobile production screenshots show the centered uncropped popup subject; no push, pull request, merge, or remote CI was performed at that checkpoint.
+
+### 2026-08-29 — Phase 5 published and merged
+
+- The owner authorized publication and a normal non-squash merge. `agent/phase-5-map` was pushed, PR #10 passed the pre-merge quality/build/browser workflow, and the pull request was merged into `main` at `f098caf`.
+- The seven coherent Phase 5 commits remain visible in the graph. The post-merge `main` workflow initially reported timing-sensitive browser failures; rerunning the failed job completed successfully with 54 passing tests and one retried/flaky map interaction annotation.
+- The Phase 5 branch was restored and intentionally preserved locally and on GitHub after an accidental deletion during merge handling. The next product milestone remains unselected and separately authorized.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.

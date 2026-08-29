@@ -20,7 +20,7 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **the focused, map-only Phase 5 implementation is complete locally on `agent/phase-5-map` and passes its technical, browser, resilience, and visual acceptance gate; owner review is pending**. The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`. Supporting/editorial pages and the optional Phase 3.3 comprehensive tree remain deferred. Consult `docs/project_status.md` for exact evidence and the next action. Do not push, open a pull request, merge, or begin another phase until the owner reviews this checkpoint and explicitly authorizes that bounded action.
+Current phase: **the focused, map-only Phase 5 implementation is complete and merged into `main` at `f098caf` after its technical, browser, resilience, visual, and remote CI gates passed**. The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`. Supporting/editorial pages, the optional Phase 3.3 comprehensive tree, and Phase 6 remain deferred. Consult `docs/project_status.md` for exact evidence and the next action. Do not begin another phase until the owner selects and explicitly authorizes a bounded next scope.
 
 Use the neutral working title **Skull Collection** from central site configuration until the final name is selected.
 
@@ -150,7 +150,7 @@ Before a checkpoint:
 - One coherent verified checkpoint closes each phase; do not mark status complete on code presence alone.
 - Stage and commit each coherent implementation or fix as its own checkpoint; do not accumulate unrelated changes into one giant commit.
 - Preserve meaningful commit history. Merge completed pull requests with GitHub's `Create a merge commit` / a normal non-squash merge so individual coherent commits remain visible; do not squash or rewrite them unless the owner explicitly requests it.
-- After a merge, update local `main`, delete the merged feature branch locally and remotely, and create the next task branch from the updated `main` rather than from a stale feature branch. Avoid rebasing or force-pushing branches that have been published for review.
+- After a merge, update local `main` and create the next task branch from the updated `main` rather than from a stale feature branch. Preserve merged feature branches locally and remotely by default; delete one only when the owner explicitly requests deletion. Avoid rebasing or force-pushing branches that have been published for review.
 - GitHub issues/milestones are the active implementation tracker. Do not add a second competing tracker.
 - Production later deploys only from `main`; no production/Vercel configuration belongs to Phase 3.
 

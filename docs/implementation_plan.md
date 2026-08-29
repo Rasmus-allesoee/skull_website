@@ -2,9 +2,9 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Combined Phase 3.2 catalog redesign and Phase 4 discovery complete locally; owner product review pending
+**Current phase:** Focused Phase 5 collection map complete and merged into `main`; next milestone selection pending
 
-**Last reviewed:** 2026-08-22
+**Last reviewed:** 2026-08-29
 
 ## 1. How to use this plan
 
@@ -377,7 +377,7 @@ These items were explicitly removed from the focused map milestone. They require
 - [x] WebGL/provider failures retain the complete semantic experience.
 - [x] No upload backend, cookie, tracking behavior, unsupported imagery style, or unrelated editorial scope has been introduced.
 
-**Gate result:** Passed locally on 2026-08-28 on `agent/phase-5-map`. Owner product review and any remote publication action remain separate explicit gates.
+**Gate result:** Passed locally on 2026-08-28 on `agent/phase-5-map` and was published through PR #10 with passing remote CI, then merged into `main` with normal merge commit `f098caf` on 2026-08-29. The next milestone remains a separate owner-authorized scope.
 
 ## 9. Phase 6 — complete audited collection migration
 
