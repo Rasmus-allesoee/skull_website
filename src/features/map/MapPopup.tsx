@@ -12,6 +12,12 @@ export function IndividualMapPopup({
   record: MapRecord;
   onClose: () => void;
 }) {
+  const uncertaintyRadius =
+    typeof record.coordinateUncertaintyM === "number" &&
+    record.coordinateUncertaintyM > 0
+      ? record.coordinateUncertaintyM
+      : null;
+
   return (
     <section
       className="map-popup-card"
@@ -22,16 +28,18 @@ export function IndividualMapPopup({
       <div className="map-popup-copy">
         <i>{record.scientificName}</i>
         <strong>{record.specimenId}</strong>
-        <dl>
-          <div>
+        <dl
+          className={uncertaintyRadius !== null ? "has-uncertainty" : undefined}
+        >
+          <div className="map-popup-location">
             <dt>Location</dt>
             <dd>{record.locationLabel ?? "N/A"}</dd>
           </div>
-          <div>
+          <div className="map-popup-date">
             <dt>Date</dt>
             <dd>{compactDate(record)}</dd>
           </div>
-          <div>
+          <div className="map-popup-precision">
             <dt>Precision</dt>
             <dd>
               {record.coordinatePrecision === "exact"
@@ -39,11 +47,10 @@ export function IndividualMapPopup({
                 : "Approximate location"}
             </dd>
           </div>
-          {record.coordinateUncertaintyM &&
-          record.coordinateUncertaintyM > 0 ? (
-            <div>
+          {uncertaintyRadius !== null ? (
+            <div className="map-popup-uncertainty">
               <dt>Uncertainty radius</dt>
-              <dd>{formatDistance(record.coordinateUncertaintyM)}</dd>
+              <dd>{formatDistance(uncertaintyRadius)}</dd>
             </div>
           ) : null}
         </dl>

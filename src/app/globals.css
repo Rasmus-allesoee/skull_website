@@ -3247,6 +3247,15 @@ h3 {
   .map-popup-copy dl {
     grid-template-columns: 1fr;
   }
+
+  .map-popup-copy dl.has-uncertainty {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .map-popup-copy dl.has-uncertainty > .map-popup-location,
+  .map-popup-copy dl.has-uncertainty > .map-popup-date {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-height: 36rem) and (orientation: landscape) {
