@@ -11,7 +11,7 @@ let mapProjectionCache: MapProjectionArtifact | undefined;
 export function getMapProjection(): MapProjectionArtifact {
   mapProjectionCache ??= JSON.parse(
     readFileSync(
-      path.join(process.cwd(), ".generated", "map-records-v1.json"),
+      path.join(process.cwd(), ".generated", "map-records-v2.json"),
       "utf8",
     ),
   ) as MapProjectionArtifact;

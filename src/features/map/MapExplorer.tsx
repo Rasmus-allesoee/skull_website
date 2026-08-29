@@ -55,7 +55,11 @@ export function MapExplorer({
   >([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
-  const [resultsOpen, setResultsOpen] = useState(false);
+  const [mobileResultsOpen, setMobileResultsOpen] = useState(false);
+  const [desktopResultsOpen, setDesktopResultsOpen] = useState(true);
+  const [isNarrowViewport, setIsNarrowViewport] = useState<boolean | null>(
+    null,
+  );
   const [resetToken, setResetToken] = useState(0);
   const [status, setStatus] = useState("Map and specimen list are ready.");
   const searchEngineRef = useRef<Promise<CatalogSearchEngine> | null>(null);
@@ -81,6 +85,14 @@ export function MapExplorer({
       window.clearTimeout(initialize);
       window.removeEventListener("popstate", restore);
     };
+  }, []);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 64rem)");
+    const synchronize = () => setIsNarrowViewport(media.matches);
+    synchronize();
+    media.addEventListener("change", synchronize);
+    return () => media.removeEventListener("change", synchronize);
   }, []);
 
   const loadSearchEngine = useCallback(async () => {
@@ -225,6 +237,27 @@ export function MapExplorer({
     state.lengthMax !== null ||
     state.massMin !== null ||
     state.massMax !== null;
+  const resultsVisible =
+    isNarrowViewport === null
+      ? undefined
+      : isNarrowViewport
+        ? mobileResultsOpen
+        : desktopResultsOpen;
+  const toggleResults = () => {
+    if (window.matchMedia("(max-width: 64rem)").matches) {
+      setMobileResultsOpen((open) => !open);
+    } else {
+      setDesktopResultsOpen((open) => !open);
+    }
+  };
+  const closeResults = () => {
+    if (window.matchMedia("(max-width: 64rem)").matches) {
+      setMobileResultsOpen(false);
+    } else {
+      setDesktopResultsOpen(false);
+    }
+  };
+  const resultsButtonLabel = resultsVisible === false ? "View" : "Hide";
 
   return (
     <section className="map-explorer" aria-label="Collection map explorer">
@@ -367,12 +400,12 @@ export function MapExplorer({
             <button
               type="button"
               className="catalog-icon-button map-icon-control map-results-trigger"
-              aria-label={`View ${filtered.records.length} specimen records`}
-              aria-expanded={resultsOpen}
+              aria-label={`${resultsButtonLabel} ${filtered.records.length} specimen records`}
+              aria-expanded={resultsVisible}
               aria-controls="map-results"
-              data-tooltip="View specimen records"
-              title="View specimen records"
-              onClick={() => setResultsOpen(true)}
+              data-tooltip={`${resultsButtonLabel} specimen records`}
+              title={`${resultsButtonLabel} specimen records`}
+              onClick={toggleResults}
             >
               <ResultsIcon />
               <b>{filtered.records.length}</b>
@@ -380,25 +413,27 @@ export function MapExplorer({
           </div>
         </div>
         <div className="map-active-state">
-          <span>
-            {activeCollectionState
-              ? "Filtered collection"
-              : "All published specimens"}
-          </span>
-          {state.scope ? (
+          <div className="map-active-state-scroll">
             <span>
-              {state.scope.rank}: {state.scope.slug.replaceAll("-", " ")}
+              {activeCollectionState
+                ? "Filtered collection"
+                : "All published specimens"}
             </span>
-          ) : null}
-          {selectionMessage ? <strong>{selectionMessage}</strong> : null}
-          {activeCollectionState ? (
-            <button
-              type="button"
-              onClick={() => commitState(clearMapCollectionState(state))}
-            >
-              Clear search and filters
-            </button>
-          ) : null}
+            {state.scope ? (
+              <span>
+                {state.scope.rank}: {state.scope.slug.replaceAll("-", " ")}
+              </span>
+            ) : null}
+            {selectionMessage ? <strong>{selectionMessage}</strong> : null}
+            {activeCollectionState ? (
+              <button
+                type="button"
+                onClick={() => commitState(clearMapCollectionState(state))}
+              >
+                Clear search and filters
+              </button>
+            ) : null}
+          </div>
           <details className="map-key">
             <summary>Map key</summary>
             <div>
@@ -423,10 +458,7 @@ export function MapExplorer({
                 Bird
               </span>
               <span>
-                <b className="map-key-exact">●</b> Exact location
-              </span>
-              <span>
-                <b className="map-key-approximate">●</b> Approximate location
+                <MapKeyLocationMarker /> Approximate location
               </span>
               <span>
                 <b className="map-key-area" /> Uncertainty area
@@ -439,7 +471,9 @@ export function MapExplorer({
         </div>
       </div>
 
-      <div className="map-workspace">
+      <div
+        className={`map-workspace ${desktopResultsOpen ? "" : "is-results-hidden"}`}
+      >
         <div
           className="map-region"
           role="region"
@@ -467,17 +501,18 @@ export function MapExplorer({
         </div>
         <button
           type="button"
-          className={`map-results-scrim ${resultsOpen ? "is-open" : ""}`}
+          className={`map-results-scrim ${mobileResultsOpen ? "is-open" : ""}`}
           aria-label="Close specimen records"
-          onClick={() => setResultsOpen(false)}
+          onClick={() => setMobileResultsOpen(false)}
         />
         <MapResultList
           mapped={filtered.mapped}
           notMapped={filtered.notMapped}
           selectedSpecimenId={state.selectedSpecimenId}
           onSelect={selectSpecimen}
-          onClose={() => setResultsOpen(false)}
-          mobileOpen={resultsOpen}
+          onClose={closeResults}
+          mobileOpen={mobileResultsOpen}
+          desktopOpen={desktopResultsOpen}
         />
       </div>
       <p className="visually-hidden" role="status" aria-live="polite">
@@ -485,6 +520,10 @@ export function MapExplorer({
       </p>
     </section>
   );
+}
+
+function MapKeyLocationMarker() {
+  return <span className="map-key-location-marker" aria-hidden="true" />;
 }
 
 function buildFilterOptions(catalog: CatalogModel): CatalogFilterOptions {

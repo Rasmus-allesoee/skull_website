@@ -1,6 +1,6 @@
 import type { PartialDate } from "@/domain/content/types";
 
-export const mapProjectionVersion = 1 as const;
+export const mapProjectionVersion = 2 as const;
 
 export type CoordinatePrecision = "exact" | "approximate" | "unknown";
 
@@ -18,6 +18,13 @@ export interface MapRecord {
   genusName: string;
   latitude: number | null;
   longitude: number | null;
+  /**
+   * Visible map coordinates. These normally equal latitude/longitude, but
+   * coincident approximate records may receive a deterministic presentation
+   * offset so each published point remains selectable at high zoom.
+   */
+  plotLatitude: number | null;
+  plotLongitude: number | null;
   coordinatePrecision: CoordinatePrecision;
   coordinateUncertaintyM: number | null;
   locationLabel: string | null;

@@ -57,6 +57,58 @@ describe("map projection", () => {
     ).toBe(false);
   });
 
+  it("disambiguates coincident approximate points without changing canonical coordinates", () => {
+    const projection = buildMapProjection(collection());
+    const coincident = projection.records.filter(
+      (record) => record.latitude === 55.39687 && record.longitude === 8.391478,
+    );
+    const plotCoordinates = coincident.map(
+      (record) => record.plotLatitude! + "," + record.plotLongitude!,
+    );
+    const geoJsonCoordinates = coincident.map(
+      (record) => record.plotLongitude! + "," + record.plotLatitude!,
+    );
+
+    expect(coincident.map((record) => record.specimenId)).toEqual([
+      "SPEC-0004",
+      "SPEC-0006",
+      "SPEC-0011",
+      "SPEC-0017",
+    ]);
+    expect(new Set(plotCoordinates).size).toBe(coincident.length);
+    expect(
+      coincident.every(
+        (record) =>
+          record.coordinatePrecision === "approximate" &&
+          Math.hypot(
+            record.plotLatitude! - record.latitude!,
+            record.plotLongitude! - record.longitude!,
+          ) > 0,
+      ),
+    ).toBe(true);
+    expect(
+      coincident.every((record) => {
+        const latitudeDeltaM =
+          ((record.plotLatitude! - record.latitude!) * Math.PI * earthRadiusM) /
+          180;
+        const longitudeDeltaM =
+          ((record.plotLongitude! - record.longitude!) *
+            Math.PI *
+            earthRadiusM *
+            Math.cos((record.latitude! * Math.PI) / 180)) /
+          180;
+        return Math.hypot(latitudeDeltaM, longitudeDeltaM) <= 50;
+      }),
+    ).toBe(true);
+    expect(
+      projection.geoJson.features
+        .filter((feature) =>
+          coincident.some((record) => record.specimenId === feature.id),
+        )
+        .map((feature) => feature.geometry.coordinates.join(",")),
+    ).toEqual(geoJsonCoordinates);
+  });
+
   it("creates a closed geographic uncertainty polygon only for positive approximate radii", () => {
     const projection = buildMapProjection(collection());
     const approximate = projection.records.find(
@@ -78,3 +130,5 @@ describe("map projection", () => {
     expect(createUncertaintyPolygon(exact, true)).toBeNull();
   });
 });
+
+const earthRadiusM = 6_371_008.8;

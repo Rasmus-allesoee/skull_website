@@ -12,6 +12,7 @@ export function MapResultList({
   onSelect,
   onClose,
   mobileOpen,
+  desktopOpen,
 }: {
   mapped: MapRecord[];
   notMapped: MapRecord[];
@@ -19,12 +20,13 @@ export function MapResultList({
   onSelect: (specimenId: string) => void;
   onClose: () => void;
   mobileOpen: boolean;
+  desktopOpen: boolean;
 }) {
   const total = mapped.length + notMapped.length;
   return (
     <aside
       id="map-results"
-      className={`map-results ${mobileOpen ? "is-open" : ""}`}
+      className={`map-results ${mobileOpen ? "is-open" : ""} ${desktopOpen ? "" : "is-desktop-hidden"}`}
       aria-label="Map specimen records"
     >
       <header>
@@ -117,23 +119,28 @@ function ResultGroup({
                 >
                   <span className="map-result-identity">
                     <strong>{record.commonName}</strong>
-                    <i>{record.scientificName}</i>
+                    <span className="map-result-scientific">
+                      <i>{record.scientificName}</i>
+                      {record.danishName ? (
+                        <span className="map-result-danish-name">
+                          {" · "}
+                          {record.danishName}
+                        </span>
+                      ) : null}
+                    </span>
                     <span>{record.specimenId}</span>
                   </span>
                   <MapThumbnail record={record} />
                 </button>
-                <div className="map-result-meta">
-                  <span>{record.locationLabel ?? "Location not recorded"}</span>
-                  <span>
-                    {mapped
-                      ? record.coordinatePrecision === "exact"
-                        ? "Exact location"
-                        : "Approximate location"
-                      : "No public coordinates"}
-                  </span>
-                  <span>{formatPartialDate(record.acquisitionDate)}</span>
+                <div className="map-result-footer">
+                  <div className="map-result-meta">
+                    <span>
+                      {record.locationLabel ?? "Location not recorded"}
+                    </span>
+                    <time>{formatPartialDate(record.acquisitionDate)}</time>
+                  </div>
+                  <Link href={record.specimenHref}>View specimen</Link>
                 </div>
-                <Link href={record.specimenHref}>View specimen</Link>
               </article>
             </li>
           );

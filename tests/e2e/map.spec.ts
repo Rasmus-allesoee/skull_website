@@ -32,6 +32,76 @@ test("map-first desktop layout renders the provider map and complete synchronize
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 
+test("desktop result rail can be hidden and restored", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/map");
+  const results = page.locator(".map-results");
+  const workspace = page.locator(".map-workspace");
+  const trigger = page.locator(".map-results-trigger");
+
+  await expect(results).toBeVisible();
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+  await trigger.click();
+  await expect(results).not.toBeVisible();
+  await expect(workspace).toHaveClass(/is-results-hidden/);
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+
+  await trigger.click();
+  await expect(results).toBeVisible();
+  await expect(workspace).not.toHaveClass(/is-results-hidden/);
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+});
+
+test("published record rows use the compact bilingual layout", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/map");
+  const first = page.locator(".map-result-group li").first();
+  const footer = first.locator(".map-result-footer");
+
+  await expect(first.getByText("Mårhund", { exact: false })).toBeVisible();
+  await expect(
+    first.getByText("Approximate location", { exact: true }),
+  ).toHaveCount(0);
+  await expect(footer.locator("time")).toHaveText("November 2025");
+  await expect(
+    footer.getByRole("link", { name: "View specimen" }),
+  ).toBeVisible();
+  await expect(first.locator(".map-thumbnail")).toHaveCSS("width", "96px");
+});
+
+test("the map key remains visible and interactive on mobile", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/map");
+  const key = page.locator("details.map-key");
+  await key.locator("summary").click();
+  const panel = key.locator(":scope > div");
+  await expect(panel).toBeVisible();
+
+  const panelBox = await panel.boundingBox();
+  expect(panelBox).not.toBeNull();
+  expect(panelBox!.x).toBeGreaterThanOrEqual(0);
+  expect(panelBox!.x + panelBox!.width).toBeLessThanOrEqual(390);
+  await expect(key.locator(".map-key-marker").first()).toHaveAttribute(
+    "src",
+    /mammal-marker/,
+  );
+  await expect(key.locator(".map-key-marker-bird")).toHaveAttribute(
+    "src",
+    /bird-marker/,
+  );
+  await expect(key.getByText("Exact location", { exact: true })).toHaveCount(0);
+  await expect(key.locator(".map-key-location-marker img")).toHaveCount(0);
+  await expect(key.locator(".map-key-location-marker")).toHaveCSS(
+    "border-radius",
+    "50%",
+  );
+  await expect(key.locator(".map-key-area")).toHaveCSS("border-radius", "50%");
+});
+
 test("higher-rank search scopes physical specimens without duplicates", async ({
   page,
 }) => {
@@ -80,6 +150,11 @@ test("exact specimen deep links synchronize popup, list, URL, and uncertainty se
   page,
 }) => {
   await page.goto("/map?specimen=SPEC-0013");
+  await expect(page.locator(".map-canvas-frame")).toHaveAttribute(
+    "data-map-ready",
+    "true",
+    { timeout: 15_000 },
+  );
   const popup = page.getByRole("region", { name: "Harbour seal map record" });
   await expect(popup).toBeVisible();
   await expect(popup.getByText("SPEC-0013")).toBeVisible();
@@ -171,6 +246,7 @@ test("wheel input over an accessible cluster zooms the map", async ({
     timeout: 15_000,
   });
   await expect(frame).toHaveAttribute("data-cluster-radius", "24");
+  await expect(frame).toHaveAttribute("data-cluster-max-zoom", "16");
   const clusterButton = page
     .getByRole("button", { name: /Inspect cluster of \d+ specimens/ })
     .first();

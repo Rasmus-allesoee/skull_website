@@ -100,7 +100,7 @@ export async function buildContent(options?: {
       "utf8",
     );
     await writeFile(
-      path.join(generatedDirectory, "map-records-v1.json"),
+      path.join(generatedDirectory, "map-records-v2.json"),
       `${JSON.stringify(mapProjection, null, 2)}\n`,
       "utf8",
     );

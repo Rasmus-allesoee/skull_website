@@ -4,7 +4,7 @@
 
 **Current phase:** Focused map-only Phase 5 — implementation complete locally; owner review pending
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`. The complete focused map milestone and the first owner-feedback refinement batch are verified on `agent/phase-5-map`; no Phase 5 push, pull request, merge, or remote CI is authorized.
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`. The complete focused map milestone and the first two owner-feedback refinement batches are verified locally on `agent/phase-5-map`; no Phase 5 push, pull request, merge, or remote CI is authorized.
 
 **Next phase:** Not authorized. First obtain owner product review of `/map`; supporting editorial pages, the optional Phase 3.3 comprehensive tree, and Phase 6 remain separately gated.
 
@@ -16,7 +16,7 @@ Present the verified map-first `/map` workspace for owner inspection. Keep the c
 
 ### Canonical projection and route isolation
 
-- Added a deterministic schema-v1 map projection generated from the same compiled published collection as routes and search. It retains all 18 published specimens as semantic map records and emits 18 valid point features; unknown-coordinate records remain supported as list-only records and are never geocoded.
+- Added a deterministic schema-v2 map projection generated from the same compiled published collection as routes and search. It retains all 18 published specimens as semantic map records and emits 18 valid point features; unknown-coordinate records remain supported as list-only records and are never geocoded. Canonical coordinates remain unchanged, while coincident approximate records receive deterministic 40 m presentation offsets for high-zoom selection.
 - Added a statically generated `/map` shell. MapLibre GL JS and its CSS load only below the map route, while the complete semantic result list and exact specimen links remain useful without JavaScript.
 - Added a replaceable OpenFreeMap provider adapter with only the supported Fiord, Dark, Positron, Liberty, and Bright vector styles. Unsupported satellite, hybrid, and terrain options were not fabricated.
 - Added a route-specific content-security policy limited to same-origin assets, blob workers/images, and the selected OpenFreeMap origin; no analytics, cookies, tracking, runtime database, or other provider was introduced.
@@ -51,9 +51,17 @@ Present the verified map-first `/map` workspace for owner inspection. Keep the c
 - Measured visible alpha bounds are `110 × 112` for the mammal and `106 × 93` for the bird. The bird layer uses a `0.675` optical icon scale against the mammal's `0.56`, equalizing visible marker height without distorting the generated profile; the key applies the same `1.2×` correction.
 - `CI=true corepack pnpm check` passes. The rebuilt `CI=true PLAYWRIGHT_PORT=3102 corepack pnpm test:e2e tests/e2e/map.spec.ts` run passes `19/19`; headed desktop and `390 × 844` visual checks show equal marker scale, and both local marker assets return HTTP 200.
 
+### Owner-directed map records/list/key refinement (2026-08-29)
+
+- Added a schema-v2 display projection with deterministic 40 m offsets only for groups of coincident approximate coordinates. Canonical coordinates and geodesic uncertainty areas remain centered on the supplied source location, while high-zoom map points remain individually selectable.
+- Made the desktop published-record rail open by default and hideable/restorable through the result-count control. Mobile retains the closed-by-default result sheet and existing open/close interaction.
+- Reworked result rows around the owner mockup: removed repeated exact/approximate location wording, added Danish names, enlarged lateral thumbnails, and placed the date before the exact `View specimen` action in the compact footer.
+- Rebuilt the map key from the actual local marker assets, the approximate marker-ring treatment, and the circular dashed uncertainty-area glyph. Moved the key outside the mobile active-state scroller so its disclosure remains visible and usable.
+- The production build generated 76 static routes, the focused production map suite passed 22/22 journeys, and final TypeScript, formatting, and lint checks passed. The ordinary full check also completed its format/lint/media/content/typecheck stages; its default 5-second unit timeout caught one unrelated existing axe test under local load, while a direct Vitest run with a 15-second timeout passed all 63 tests. No map test failed, and no push, pull request, merge, or remote CI action is included.
+
 ### Scope result
 
-- The focused map-only acceptance gate and the first owner-feedback refinement batch pass locally. Supporting/editorial pages were deliberately removed from this milestone and remain unstarted; Phase 3.3, complete migration, uploads, tracking, and unrelated changes were not implemented.
+- The focused map-only acceptance gate and the first owner-feedback refinement batch pass locally. The second owner-feedback refinement batch is the current local verification checkpoint. Supporting/editorial pages were deliberately removed from this milestone and remain unstarted; Phase 3.3, complete migration, uploads, tracking, and unrelated changes were not implemented.
 
 ## 3. Combined Phase 3.2 catalog redesign and Phase 4 discovery
 

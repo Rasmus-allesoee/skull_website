@@ -80,6 +80,9 @@ const approximateLayerId = "specimen-approximate";
 const selectedLayerId = "specimen-selected";
 // MapLibre measures this in screen pixels; keep it close to the marker footprint.
 const mapClusterRadius = 24;
+// Keep coincident approximate points clustered until their deterministic
+// presentation offsets have enough screen distance to be individually usable.
+const mapClusterMaxZoom = 16;
 const defaultMapCenter: [number, number] = [9.2, 56.05];
 const defaultMapZoom = 6.1;
 // Normalize the visible alpha bounds of the reviewed assets; the bird profile
@@ -476,13 +479,13 @@ export function MapCanvas({
       setPopup({
         kind: "record",
         record,
-        longitude: record.longitude,
-        latitude: record.latitude,
+        longitude: record.plotLongitude,
+        latitude: record.plotLatitude,
       });
       if (lastFocusedSpecimenRef.current !== selectedSpecimenId) {
         lastFocusedSpecimenRef.current = selectedSpecimenId;
         map.easeTo({
-          center: [record.longitude, record.latitude],
+          center: [record.plotLongitude, record.plotLatitude],
           zoom: Math.max(map.getZoom(), 12.25),
           duration: prefersReducedMotion() ? 0 : 550,
           padding: popupCameraPadding(containerRef.current),
@@ -591,6 +594,7 @@ export function MapCanvas({
       data-map-ready={ready}
       data-uncertainty-count={visibleUncertaintyCount}
       data-cluster-radius={mapClusterRadius}
+      data-cluster-max-zoom={mapClusterMaxZoom}
     >
       <div ref={containerRef} className="map-canvas" />
       {canvasContainer?.isConnected
@@ -630,8 +634,8 @@ export function MapCanvas({
                   setPopup({
                     kind: "record",
                     record,
-                    longitude: record.longitude,
-                    latitude: record.latitude,
+                    longitude: record.plotLongitude,
+                    latitude: record.plotLatitude,
                   });
                 }
               }}
@@ -677,7 +681,7 @@ async function addCollectionLayers(
     type: "geojson",
     data: points,
     cluster: true,
-    clusterMaxZoom: 11,
+    clusterMaxZoom: mapClusterMaxZoom,
     clusterRadius: mapClusterRadius,
   });
   await addClassMarkerImages(map);
@@ -947,7 +951,7 @@ function buildPointCollection(records: MapRecord[]): MapFeatureCollection {
       id: record.specimenId,
       geometry: {
         type: "Point",
-        coordinates: [record.longitude, record.latitude],
+        coordinates: [record.plotLongitude, record.plotLatitude],
       },
       properties: {
         specimenId: record.specimenId,
@@ -1008,7 +1012,7 @@ function fitRecords(
   }
   if (mapped.length === 1) {
     map.easeTo({
-      center: [mapped[0]!.longitude, mapped[0]!.latitude],
+      center: [mapped[0]!.plotLongitude, mapped[0]!.plotLatitude],
       zoom: 10.5,
       duration: immediate ? 0 : 350,
       padding: popupCameraPadding(map.getContainer()),
@@ -1017,7 +1021,7 @@ function fitRecords(
   }
   const bounds = new maplibregl.LngLatBounds();
   for (const record of mapped)
-    bounds.extend([record.longitude, record.latitude] as LngLatLike);
+    bounds.extend([record.plotLongitude, record.plotLatitude] as LngLatLike);
   map.fitBounds(bounds, {
     padding: popupCameraPadding(map.getContainer()),
     maxZoom: 10.5,

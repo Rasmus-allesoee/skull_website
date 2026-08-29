@@ -10,6 +10,7 @@ import {
 } from "./types";
 
 const earthRadiusM = 6_371_008.8;
+const coincidentPointJitterM = 40;
 
 export function buildMapProjection(
   collection: CompiledCollection,
@@ -34,6 +35,8 @@ export function buildMapProjection(
         genusName: taxon.hierarchy.genusName,
         latitude: hasCoordinates ? specimen.location.latitude : null,
         longitude: hasCoordinates ? specimen.location.longitude : null,
+        plotLatitude: hasCoordinates ? specimen.location.latitude : null,
+        plotLongitude: hasCoordinates ? specimen.location.longitude : null,
         coordinatePrecision: hasCoordinates
           ? specimen.location.precision
           : "unknown",
@@ -65,14 +68,15 @@ export function buildMapProjection(
     .sort((first, second) =>
       first.specimenId.localeCompare(second.specimenId, "en"),
     );
+  const disambiguatedRecords = disambiguateCoincidentApproximatePoints(records);
 
   return {
     schemaVersion: mapProjectionVersion,
     collectionSchemaVersion: collection.schemaVersion,
-    records,
+    records: disambiguatedRecords,
     geoJson: {
       type: "FeatureCollection",
-      features: records.flatMap((record) => {
+      features: disambiguatedRecords.flatMap((record) => {
         if (!isMappedRecord(record)) return [];
         return [
           {
@@ -80,7 +84,7 @@ export function buildMapProjection(
             id: record.specimenId,
             geometry: {
               type: "Point",
-              coordinates: [record.longitude, record.latitude],
+              coordinates: [record.plotLongitude, record.plotLatitude],
             },
             properties: {
               specimenId: record.specimenId,
@@ -98,13 +102,68 @@ export function buildMapProjection(
 export function isMappedRecord(record: MapRecord): record is MapRecord & {
   latitude: number;
   longitude: number;
+  plotLatitude: number;
+  plotLongitude: number;
   coordinatePrecision: "exact" | "approximate";
 } {
   return (
     record.latitude !== null &&
     record.longitude !== null &&
+    record.plotLatitude !== null &&
+    record.plotLongitude !== null &&
     record.coordinatePrecision !== "unknown"
   );
+}
+
+function disambiguateCoincidentApproximatePoints(
+  records: MapRecord[],
+): MapRecord[] {
+  const groups = new Map<string, MapRecord[]>();
+  for (const record of records) {
+    if (
+      record.coordinatePrecision !== "approximate" ||
+      record.latitude === null ||
+      record.longitude === null
+    )
+      continue;
+    const key = `${record.latitude},${record.longitude}`;
+    const group = groups.get(key) ?? [];
+    group.push(record);
+    groups.set(key, group);
+  }
+
+  return records.map((record) => {
+    if (
+      record.coordinatePrecision !== "approximate" ||
+      record.latitude === null ||
+      record.longitude === null
+    )
+      return record;
+    const group = groups.get(`${record.latitude},${record.longitude}`);
+    if (!group || group.length < 2) return record;
+    const index = group.findIndex(
+      (candidate) => candidate.specimenId === record.specimenId,
+    );
+    if (index < 0) return record;
+
+    const bearing = (index / group.length) * Math.PI * 2;
+    const latitudeOffset =
+      ((coincidentPointJitterM * Math.cos(bearing)) / earthRadiusM) *
+      (180 / Math.PI);
+    const longitudeOffset =
+      ((coincidentPointJitterM * Math.sin(bearing)) /
+        (earthRadiusM *
+          Math.max(
+            Math.abs(Math.cos(degreesToRadians(record.latitude))),
+            1e-6,
+          ))) *
+      (180 / Math.PI);
+    return {
+      ...record,
+      plotLatitude: record.latitude + latitudeOffset,
+      plotLongitude: normalizeLongitude(record.longitude + longitudeOffset),
+    };
+  });
 }
 
 export function createUncertaintyPolygon(
