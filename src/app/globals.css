@@ -2342,24 +2342,13 @@ h3 {
 
 .map-key-location-marker {
   position: relative;
-  display: grid;
+  display: block;
   width: 1.5rem;
   height: 1.5rem;
   flex: 0 0 1.5rem;
-  place-items: center;
-}
-
-.map-key-location-marker {
   border: 2px solid #f4ead6;
   border-radius: 50%;
-}
-
-.map-key-location-marker::after {
-  width: 0.65rem;
-  height: 0.65rem;
-  border-radius: 50%;
-  background: var(--color-data);
-  content: "";
+  background: transparent;
 }
 
 .map-key-mammal {
@@ -2368,16 +2357,6 @@ h3 {
 
 .map-key-bird {
   color: #77a99b;
-}
-
-.map-key-exact {
-  color: var(--color-accent);
-}
-
-.map-key-approximate {
-  border: 2px solid currentcolor;
-  border-radius: 50%;
-  color: var(--color-data);
 }
 
 .map-key-area {
@@ -3209,11 +3188,14 @@ h3 {
 
   .map-popup-anchor {
     width: min(18rem, calc(100% - 1rem));
+    top: 0.5rem !important;
+    left: 0.5rem !important;
+    transform: none !important;
   }
 
   .map-popup-anchor.is-left,
   .map-popup-anchor.is-right {
-    transform: translate(-50%, -50%);
+    transform: none !important;
   }
 
   .map-popup-card {
@@ -3332,11 +3314,6 @@ h3 {
 
   .map-key-mammal,
   .map-key-bird,
-  .map-key-exact,
-  .map-key-approximate {
-    color: CanvasText;
-  }
-
   .map-key-location-marker {
     border-color: CanvasText;
   }

@@ -99,6 +99,10 @@ test("the map key remains visible and interactive on mobile", async ({
     "border-radius",
     "50%",
   );
+  await expect(key.locator(".map-key-location-marker")).toHaveCSS(
+    "background-color",
+    "rgba(0, 0, 0, 0)",
+  );
   await expect(key.locator(".map-key-area")).toHaveCSS("border-radius", "50%");
 });
 

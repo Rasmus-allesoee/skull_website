@@ -14,7 +14,10 @@ import maplibregl, {
   type FilterSpecification,
   type GeoJSONSource,
   type LngLatLike,
+  type MapLayerMouseEvent,
+  type MapLayerTouchEvent,
   type Map as MapLibreMap,
+  type MapTouchEvent,
   type SymbolLayerSpecification,
 } from "maplibre-gl";
 
@@ -258,6 +261,7 @@ export function MapCanvas({
 
   const closeRecordPopup = useCallback(() => {
     const map = mapRef.current;
+    map?.stop();
     setPopup(null);
     onClearSelection();
     if (fitOnPopupClose && map) {
@@ -879,17 +883,87 @@ function attachMapInteractions(
   ) => void,
   onSelectRef: React.MutableRefObject<(specimenId: string) => void>,
 ) {
-  map.on("click", clusterLayerId, (event) => {
+  let touchStart: { x: number; y: number } | null = null;
+  let touchMoved = false;
+  let touchCount = 0;
+  let lastTouchActivation = Number.NEGATIVE_INFINITY;
+  const touchMoveThreshold = 10;
+  const touchClickSuppressionMs = 500;
+
+  const activateCluster = (event: MapLayerMouseEvent | MapLayerTouchEvent) => {
     const feature = event.features?.[0];
     const clusterId = Number(feature?.properties?.cluster_id);
     const pointCount = Number(feature?.properties?.point_count);
     if (!Number.isFinite(clusterId) || !Number.isFinite(pointCount)) return;
     openCluster(clusterId, pointCount, event.lngLat.lng, event.lngLat.lat);
+  };
+  const activatePoint = (event: MapLayerMouseEvent | MapLayerTouchEvent) => {
+    const id = String(event.features?.[0]?.properties?.specimenId ?? "");
+    if (id) onSelectRef.current(id);
+  };
+  const isTouchTap = (event: MapTouchEvent) => {
+    if (
+      !touchStart ||
+      touchMoved ||
+      touchCount !== 1 ||
+      event.points.length !== 1
+    ) {
+      return false;
+    }
+    return performance.now() - lastTouchActivation >= touchClickSuppressionMs;
+  };
+  const rememberTouchActivation = () => {
+    lastTouchActivation = performance.now();
+    touchStart = null;
+    touchMoved = true;
+    touchCount = 0;
+  };
+  const handleTouchStart = (event: MapTouchEvent) => {
+    touchCount = event.points.length;
+    touchMoved = touchCount !== 1;
+    touchStart = touchMoved ? null : { x: event.point.x, y: event.point.y };
+  };
+  const handleTouchMove = (event: MapTouchEvent) => {
+    if (!touchStart || event.points.length !== 1) {
+      touchMoved = true;
+      return;
+    }
+    const distance = Math.hypot(
+      event.point.x - touchStart.x,
+      event.point.y - touchStart.y,
+    );
+    if (distance > touchMoveThreshold) touchMoved = true;
+  };
+  const handleTouchCancel = () => {
+    touchStart = null;
+    touchMoved = true;
+    touchCount = 0;
+  };
+
+  map.on("touchstart", handleTouchStart);
+  map.on("touchmove", handleTouchMove);
+  map.on("touchcancel", handleTouchCancel);
+
+  map.on("click", clusterLayerId, (event) => {
+    if (performance.now() - lastTouchActivation < touchClickSuppressionMs)
+      return;
+    activateCluster(event);
+  });
+  map.on("touchend", clusterLayerId, (event) => {
+    if (!isTouchTap(event)) return;
+    rememberTouchActivation();
+    activateCluster(event);
   });
   for (const layerId of pointLayerIds) {
     map.on("click", layerId, (event) => {
-      const id = String(event.features?.[0]?.properties?.specimenId ?? "");
-      if (id) onSelectRef.current(id);
+      if (performance.now() - lastTouchActivation < touchClickSuppressionMs)
+        return;
+      activatePoint(event);
+    });
+    map.on("touchend", layerId, (event) => {
+      if (!isTouchTap(event)) return;
+      rememberTouchActivation();
+      activatePoint(event);
     });
   }
   for (const layerId of [clusterLayerId, ...pointLayerIds]) {
