@@ -34,6 +34,7 @@ export function CatalogSearchBox({
   taxonMeta,
   loading,
   error,
+  rankActionLabel = "Filter catalog",
   onQueryChange,
   onSelect,
 }: {
@@ -44,6 +45,7 @@ export function CatalogSearchBox({
   taxonMeta: CatalogSearchTaxonMeta[];
   loading: boolean;
   error: string | null;
+  rankActionLabel?: string;
   onQueryChange: (query: string) => void;
   onSelect: (document: CatalogSearchDocument) => void;
 }) {
@@ -238,10 +240,11 @@ export function CatalogSearchBox({
                 return next;
               });
             }
-            if (event.key === "Enter" && activeDocument) {
+            if (event.key === "Enter") {
               event.preventDefault();
               setOpen(false);
-              onSelect(activeDocument);
+              setActiveIndex(-1);
+              if (activeDocument) onSelect(activeDocument);
             }
             if (event.key === "Escape") {
               event.preventDefault();
@@ -306,6 +309,7 @@ export function CatalogSearchBox({
                   entries={suggestionEntries}
                   activeIndex={activeIndex}
                   listboxId={listboxId}
+                  rankActionLabel={rankActionLabel}
                   onSelect={(document) => {
                     setOpen(false);
                     onSelect(document);
@@ -381,6 +385,7 @@ function SuggestionGroup({
   entries,
   activeIndex,
   listboxId,
+  rankActionLabel,
   onSelect,
   onHover,
 }: {
@@ -389,6 +394,7 @@ function SuggestionGroup({
   entries: CatalogSuggestionEntry[];
   activeIndex: number;
   listboxId: string;
+  rankActionLabel?: string;
   onSelect: (document: CatalogSearchDocument) => void;
   onHover: (index: number) => void;
 }) {
@@ -404,6 +410,7 @@ function SuggestionGroup({
             entries={entries}
             activeIndex={activeIndex}
             listboxId={listboxId}
+            rankActionLabel={rankActionLabel}
             onSelect={onSelect}
             onHover={onHover}
           />
@@ -492,6 +499,7 @@ function SuggestionOption({
   entries,
   activeIndex,
   listboxId,
+  rankActionLabel,
   onSelect,
   onHover,
 }: {
@@ -501,6 +509,7 @@ function SuggestionOption({
   entries: CatalogSuggestionEntry[];
   activeIndex: number;
   listboxId: string;
+  rankActionLabel?: string;
   onSelect: (document: CatalogSearchDocument) => void;
   onHover: (index: number) => void;
 }) {
@@ -525,6 +534,7 @@ function SuggestionOption({
         document={document}
         kind={kind}
         defaultSpecimenId={defaultSpecimenId}
+        rankActionLabel={rankActionLabel}
       />
       <div className="catalog-suggestion-image" aria-hidden="true">
         {document.image ? (
@@ -541,14 +551,16 @@ function SuggestionCopy({
   document,
   kind,
   defaultSpecimenId,
+  rankActionLabel,
 }: {
   document: CatalogSearchDocument;
   kind: CatalogSuggestionEntry["kind"];
   defaultSpecimenId?: string;
+  rankActionLabel?: string;
 }) {
   const state =
     kind === "rank"
-      ? `${document.rank} · Filter catalog`
+      ? `${document.rank} · ${rankActionLabel ?? "Filter catalog"}`
       : kind === "specimen"
         ? `${document.specimenId} · Physical specimen`
         : defaultSpecimenId

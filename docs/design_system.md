@@ -180,9 +180,11 @@ Responsive checkpoints are content-derived, with explicit QA at:
 
 ### Map and editorial
 
-- **Map canvas:** labelled region with instructions and controls.
-- **Map result list:** complete semantic equivalent; selection synchronized without stealing focus.
-- **Map popup/card:** image, names, ID, locality/precision, exact link.
+- **Map toolbar:** compact operational heading/summary, primary collection combobox, class/facet controls, supported-style select, uncertainty toggle, fit/reset, results control, and disclosed key. At narrow widths it remains two deliberate control rows rather than a tall hero or arbitrary wrapping.
+- **Map canvas:** viewport-dominant labelled region with class icons, exact/approximate treatment, geodesic uncertainty areas, clusters, zoom, provider attribution, and no horizontal overflow. Map movement is restrained or immediate under reduced motion.
+- **Map result list:** complete semantic equivalent with enlarged lateral thumbnail, scientific/Danish names, immutable ID, location/date, exact link, selected state, and separate mapped/not-mapped groups. Precision remains explicit through the approximate key treatment and specimen popup rather than as repeated row prose. The rail is open by default and hideable on desktop; constrained layouts use a bounded internally scrolling drawer/sheet.
+- **Map popup/card:** anchored viewport-aware panel with lateral image, names, ID, locality, concise date, precision/uncertainty text, exact specimen link, Escape/close behavior, and no document-scroll jump. Cluster panels list every physical member once and scroll internally.
+- **Map key/control semantics:** local mammal/bird shapes plus text labels; approximate/selection/uncertainty and cluster count never rely on color alone. Canvas clusters receive synchronized count-labelled DOM buttons for keyboard inspection.
 - **Article shell:** breadcrumb, title/summary, metadata, table of contents, prose, figures, citations.
 - **Callout:** information, caution, or safety state with explicit heading/icon/text.
 

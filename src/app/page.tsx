@@ -153,8 +153,8 @@ export default function Home() {
           <p className="section-kicker">Geographic records</p>
           <h2 id="map-preview-title">A collection rooted in place.</h2>
           <p>
-            A future interactive map will use only reviewed public coordinates.
-            For now, this is a lightweight, non-interactive summary.
+            Explore reviewed public specimen locations, geographic uncertainty,
+            and every corresponding physical record on the collection map.
           </p>
         </div>
         <div className="map-preview-card">
@@ -176,8 +176,8 @@ export default function Home() {
           </ul>
           <p>
             Previewing {geographicPreview.length} of{" "}
-            {geographicSpecimens.length} georeferenced specimens · Interactive
-            map not available yet.
+            {geographicSpecimens.length} georeferenced specimens ·{" "}
+            <Link href="/map">Open collection map</Link>
           </p>
         </div>
       </section>

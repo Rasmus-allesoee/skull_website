@@ -23,11 +23,13 @@ export function CatalogFilters({
   state,
   options,
   triggerRef,
+  context = "catalog",
   onApply,
 }: {
   state: CatalogState;
   options: CatalogFilterOptions;
   triggerRef: React.RefObject<HTMLButtonElement | null>;
+  context?: "catalog" | "map";
   onApply: (state: CatalogState) => void;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -66,9 +68,11 @@ export function CatalogFilters({
               <p className="card-overline">Catalog facets</p>
               <h2 id={titleId}>Filter physical skulls</h2>
               <p>
-                Species mode keeps a taxon when at least one linked specimen
-                matches. Measurement ranges exclude unrecorded and
-                non-applicable values; they are never treated as zero.
+                {context === "catalog"
+                  ? "Species mode keeps a taxon when at least one linked specimen matches. "
+                  : "Every map result represents one physical specimen. "}
+                Measurement ranges exclude unrecorded and non-applicable values;
+                they are never treated as zero.
               </p>
             </div>
             <button

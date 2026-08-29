@@ -2,9 +2,9 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**The combined Phase 3.2 catalog redesign and Phase 4 discovery scope is implemented locally and ready for owner review:** `/species` is now a compact catalog-first surface with multilingual/fuzzy search, typed suggestions, species/specimen modes, taxonomy/class/feature/measurement facets, sorting, URL-backed state, a responsive taxonomy drawer, no-JavaScript fallbacks, and the 15-taxon/18-specimen review collection. Six SPEC-0003/0013/0018 lateral/oblique derivatives were also rebuilt from their right-facing clean masters through the canonical media pipeline. Phase 3.1 remains at local commit `ce7dbc3`; no Phase 3.2 push or PR was authorized.
+**The focused Phase 5 collection map is implemented locally and ready for owner review:** `/map` now provides a map-first OpenFreeMap/MapLibre workspace, canonical specimen search and facets, class/precision markers, complete clustering, geographic uncertainty areas, five supported vector styles, synchronized semantic records, deep links, and no-JavaScript/no-WebGL/provider-failure fallbacks. The current projection contains 18 published map records and 18 valid points. Supporting editorial pages remain deferred; no Phase 5 push or PR is authorized.
 
-Start at `/`, browse the catalog at `/species`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
+Start at `/`, browse the catalog at `/species`, explore public specimen locations at `/map`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
 
 ## Project principles
 
@@ -27,6 +27,7 @@ The approved scope and experience are specified in [docs/project_overview.md](do
 - React `19.2.8`
 - strict TypeScript
 - Orama `3.1.18` for the build-generated, browser-side catalog index
+- MapLibre GL JS `5.7.3` with OpenFreeMap vector styles, loaded only on `/map`
 - Tailwind CSS 4 with semantic CSS variables
 - Zod, csv-parse, gray-matter, and Sharp for the build-time content/media pipeline
 - self-hosted Newsreader and IBM Plex Sans
@@ -115,7 +116,7 @@ docs/                canonical product, design, architecture, and status docs
 agent_context/        planning context and local-only source/staging material
 ```
 
-Generated `.generated/` and `public/generated/` search output, local `.staging/`, browser artifacts, dependencies, and private source material are ignored and replaceable.
+Generated `.generated/` collection/search/map output and `public/generated/` search output, local `.staging/`, browser artifacts, dependencies, and private source material are ignored and replaceable.
 
 ## Documentation reading order
 
@@ -145,7 +146,7 @@ Phase 2 established:
 - review-gated MDX for future cited editorial profiles and guides; and
 - `public/media/specimens/` for validated derivatives named `{specimen-id}__{view}.webp`, plus `public/media/references/` for validated comparison assets.
 
-The first canonical records (`TAX-0001`, `SPEC-0001`) were curated from only the explicitly selected staging row `ID = 1` and six matching raccoon-dog PNGs. Phase 2.2 added a processed adult-human-skull reference and fixed approximate dimensions for the calibrated specimen-page comparison. Phase 3.0 advanced the compiled contract to schema version 4 and expanded the single specimen CSV with explicit mammal/bird measurement applicability. Phase 3.1 then normalized only the 15-taxon/18-specimen subset that could be matched to 104 cleaned images and satisfy the current publication contract; the raw exports/PNG masters remain ignored and the complete Phase 6 audit remains mandatory. Phase 3.2/4 compiles those published records into an ignored 67-document rank/taxon/specimen search artifact; search never reads the raw exports or masters. See the [migration audit](docs/phase_3_1_migration_audit.md). The current raccoon-dog profile remains deliberately `draft` and omitted from the public page until useful, cited prose is curated.
+The first canonical records (`TAX-0001`, `SPEC-0001`) were curated from only the explicitly selected staging row `ID = 1` and six matching raccoon-dog PNGs. Phase 2.2 added a processed adult-human-skull reference and fixed approximate dimensions for the calibrated specimen-page comparison. Phase 3.0 advanced the compiled contract to schema version 4 and expanded the single specimen CSV with explicit mammal/bird measurement applicability. Phase 3.1 then normalized only the 15-taxon/18-specimen subset that could be matched to 104 cleaned images and satisfy the current publication contract; the raw exports/PNG masters remain ignored and the complete Phase 6 audit remains mandatory. Phase 3.2/4 compiles those published records into an ignored 67-document rank/taxon/specimen search artifact. Phase 5 compiles the same published records into an ignored deterministic map projection; neither search nor map reads raw exports or masters. See the [migration audit](docs/phase_3_1_migration_audit.md). The current raccoon-dog profile remains deliberately `draft` and omitted from the public page until useful, cited prose is curated.
 
 See [docs/content_data_model.md](docs/content_data_model.md) before editing any future content source.
 
@@ -157,7 +158,7 @@ Do not commit secrets, raw workbooks, archival Affinity/PSD files, private notes
 
 ## Deployment
 
-Vercel is the planned hosting target, connected to GitHub after the release-hardening phase. Pull requests will later receive preview deployments and `main` will become the only production source. No production project, domain, analytics, or runtime service is configured through the current combined Phase 3.2/4 checkpoint.
+Vercel is the planned hosting target, connected to GitHub after the release-hardening phase. Pull requests will later receive preview deployments and `main` will become the only production source. No production project, domain, analytics, or runtime service is configured through the current local Phase 5 checkpoint.
 
 ## Rights and licence
 

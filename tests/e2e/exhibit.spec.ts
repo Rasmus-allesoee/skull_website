@@ -848,6 +848,11 @@ test.describe("without JavaScript", () => {
 });
 
 async function expectGalleryImageInsideStage(page: Page) {
+  await page.locator(".gallery-image").evaluate(async (image) => {
+    await Promise.all(
+      image.getAnimations().map((animation) => animation.finished),
+    );
+  });
   const geometry = await page.locator(".gallery-stage").evaluate((stage) => {
     const stageBox = stage.getBoundingClientRect();
     const imageBox = stage

@@ -20,7 +20,7 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **the combined Phase 3.2 Species-catalog redesign and Phase 4 search/faceted-discovery scope is implemented locally and passes its complete technical/visual gate; owner review is pending**. Phase 3.1 remains preserved at `ce7dbc3`; the combined checkpoint is local only with no push/PR. Consult `docs/project_status.md` for exact evidence and the next action. Do not begin Phase 3.3 comprehensive-tree or Phase 5 work until the owner reviews this checkpoint and explicitly authorizes the next bounded task.
+Current phase: **the focused, map-only Phase 5 implementation is complete locally on `agent/phase-5-map` and passes its technical, browser, resilience, and visual acceptance gate; owner review is pending**. The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`. Supporting/editorial pages and the optional Phase 3.3 comprehensive tree remain deferred. Consult `docs/project_status.md` for exact evidence and the next action. Do not push, open a pull request, merge, or begin another phase until the owner reviews this checkpoint and explicitly authorizes that bounded action.
 
 Use the neutral working title **Skull Collection** from central site configuration until the final name is selected.
 
@@ -89,6 +89,7 @@ Local context paths:
 - `agent_context/interactive_tree_sketch.png` and the Phase 3.1 reference-site screenshots — local visual context only, never runtime assets.
 - `agent_context/metadata_csv/` — ignored partial spreadsheet exports supplied during Phase 3; migration evidence only, never runtime or canonical input.
 - `agent_context/prompt_species_page_redesign_suggestions.md` and `agent_context/species_page_redesign_phase_3_2.md` — owner-approved input and binding Phase 3.2/Phase 4 catalog specification; canonical implemented behavior lives in `docs/`.
+- `agent_context/phase_5_map_feature_plan.md` — owner-authored map-only Phase 5 implementation brief; supporting/editorial pages remain deferred.
 - `agent_context/website_screenshots/localhost_3000_species.png` — ignored before-state visual evidence only, never a runtime asset.
 
 Phase 2 uses only staging metadata row `ID = 1` and the six `mårhund_*_1.png` files as migration evidence for `TAX-0001` / `SPEC-0001`. The reviewed canonical values live in `content/`; never make a normal build depend on the ignored staging sources. Owner feedback supersedes the initial slice's display wording and condition classification, but it does not authorize inventing unrecorded pathology, trauma, teeth-set, skeleton, age-evidence, or reuse facts. The Phase 2.2 adult-human comparison source is also ignored staging input; only its reviewed declaration and processed public WebP derivative belong in Git.

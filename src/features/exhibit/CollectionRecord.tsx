@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import {
   formatCoordinate,
   formatPartialDate,
@@ -12,6 +14,7 @@ export function CollectionRecord({ specimen }: { specimen: SpecimenRecord }) {
     specimen.location.latitude !== null && specimen.location.longitude !== null
       ? `${formatCoordinate(specimen.location.latitude, "latitude")}, ${formatCoordinate(specimen.location.longitude, "longitude")}`
       : null;
+  const isMappable = coordinates && specimen.location.precision !== "unknown";
 
   return (
     <section className="record-panel" aria-labelledby="collection-record-title">
@@ -44,9 +47,22 @@ export function CollectionRecord({ specimen }: { specimen: SpecimenRecord }) {
             {coordinates ?? "Not recorded"}
             {coordinates ? (
               <small>
-                Approximate · uncertainty radius{" "}
-                {specimen.location.uncertaintyM?.toLocaleString("en")} m
+                {specimen.location.precision === "exact"
+                  ? "Exact location"
+                  : "Approximate location"}
+                {specimen.location.precision === "approximate" &&
+                specimen.location.uncertaintyM
+                  ? ` · uncertainty radius ${specimen.location.uncertaintyM.toLocaleString("en")} m`
+                  : ""}
               </small>
+            ) : null}
+            {isMappable ? (
+              <Link
+                className="record-map-link"
+                href={`/map?specimen=${specimen.specimenId}`}
+              >
+                View on map
+              </Link>
             ) : null}
           </dd>
         </div>

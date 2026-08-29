@@ -14,7 +14,7 @@ Skull Collection will be a fast, visually led online natural-history museum buil
 
 The site begins with the collector's own Danish specimens but is designed for a larger, carefully curated reference collection. It must be credible enough for identification and comparison, accessible enough for curious non-specialists, and structured enough to remain maintainable as specimens, contributors, countries, and media types grow.
 
-The shared museum shell, Home, class/order/family/genus routes, and review-quality 15-taxon/18-specimen collection are implemented. The combined Phase 3.2/Phase 4 checkpoint adds the catalog-first `/species` redesign, multilingual/fuzzy indexed search, suggestions, facets, sorting, species/specimen modes, URL-backed state, and one responsive semantic taxonomy drawer/list. The comprehensive interactive tree is now Phase 3.3; the interactive map, supporting editorial routes, complete audited collection migration, and production remain later work.
+The shared museum shell, Home, class/order/family/genus routes, review-quality 15-taxon/18-specimen collection, and combined Phase 3.2/Phase 4 catalog discovery are implemented. The focused Phase 5 checkpoint adds the complete `/map` workspace, specimen-based discovery, public-location uncertainty, clustering, synchronized semantic records, deep links, and resilient non-map fallbacks. The comprehensive interactive tree (Phase 3.3), supporting editorial routes, complete audited collection migration, and production remain later work.
 
 ## 2. Product principles
 
@@ -163,7 +163,7 @@ The home page should establish the collection as a museum, not a generic applica
 - Representative cards for available classes with live taxon/specimen counts.
 - Six concise live statistics derived from published records: species-level taxa, physical specimens, represented classes, orders, families, and genera. Genus-level identifications remain visible in catalog totals/copy rather than being miscounted as species.
 - A compact class → order → family hierarchy using the same stable routes as the catalog; the comprehensive interactive tree is deferred to Phase 3.3.
-- Compact geographic preview using only reviewed public coordinate records and never loading MapLibre. It remains non-interactive until `/map` exists in Phase 5, avoiding a dead link.
+- Compact non-cartographic geographic preview using only reviewed public coordinate records and never loading MapLibre. It links to the functioning central `/map` workspace without adding map code to Home.
 - Teasers only for real destinations; Phase 3 links the preparation outline and labels later methodology honestly instead of linking unpublished Contribution/About routes.
 - No invented statistics; empty counts are hidden or explicitly marked as pending.
 
@@ -207,7 +207,7 @@ The combined Phase 3.2/4 implementation makes `/species` the operational collect
 - The scale card compares canonical lateral views using recorded maximum length, compiled alpha subject bounds, explicit orientation, and one responsive pixels-per-millimetre factor shared by both skulls. Default to the reviewed adult-human reference, allow selection only from eligible default specimens/references, align both skulls to the primary orientation without rewriting assets, and label approximate reference values honestly. Descriptive notes belong to the selected comparison record and disappear when that record has no note. This is a mathematically true relative-size comparison inside the card, not a claim that CSS pixels equal physical millimetres on the visitor's monitor.
 - Include a searchable keyboard-operable comparison selector and a class-aware difference table. Mammal/mammal uses six rows; bird/bird uses nine; bird/mammal uses six explicitly labelled functional mappings, including orbital width ↔ maximum width and cranium height ↔ skull height. Cross-class mappings are descriptive comparisons between different landmarks, not claims of anatomical homology. Difference wording and ratio always describe the current page specimen relative to the selected comparison; wording, not color alone, communicates direction. Show the approximation explanation only when at least one displayed difference is actually derived from an approximate source value.
 - Put owner, sex, age class, condition, source, date, location, and coordinate precision in the collection record under the `Metadata` kicker. Age and five-level condition definitions open in accessible dialogs; pathology, trauma, teeth-set completeness, and skeleton completeness live under `Show additional recorded data`.
-- In Phase 5, place a `View on map` action near the Collection record for specimens with public coordinates. It focuses the specimen through `/map?specimen={id}`; do not embed MapLibre in the specimen page during Phase 2.
+- Place a `View on map` action near the Collection record for specimens with public coordinates. It focuses the exact specimen through `/map?specimen={id}` while keeping MapLibre isolated to the map route.
 - Describe preparation as `Skull preparation` and link to the permanent guide route. The guide stays an explicit outline—not procedural or safety advice—until cited content review.
 - Keep photography credit concise as `Photo: {name}`. Reserve collection/media/data reuse through the global `© {year} Rasmus. All rights reserved.` footer rather than a large rights panel; detailed legal scope remains in `RIGHTS.md` and the later Rights page.
 - Hide an entirely empty optional section. Within a populated group, render missing values as “Not recorded” and non-applicable values as “Not applicable.”
@@ -216,13 +216,18 @@ The combined Phase 3.2/4 implementation makes `/species` the operational collect
 
 ### Map
 
-- Load MapLibre only on this route.
-- Fit available coordinates with a sensible Denmark-first default.
-- Cluster overlapping points and distinguish exact from approximate markers without relying on color alone.
-- Include navigation, zoom, keyboard instructions, attribution, and a reset-view control.
-- Synchronize selection between markers and a searchable/filterable result list.
-- Support `/map?specimen={id}` deep links.
-- Do not plot unknown coordinates or infer coordinates from a text locality.
+- Open immediately as a compact map-first workspace, with a wide map plus result rail on desktop and a map-first bounded result sheet on narrow screens.
+- Load MapLibre and OpenFreeMap only on this route. Offer the supported Museum dark, Dark, Light, Standard, and Bright vector styles; do not imply satellite, hybrid, or terrain support.
+- Reuse canonical multilingual search, taxonomy scopes, class, specimen facets, and length/mass ranges. Every result is a physical specimen; no duplicate species/specimen mode is needed.
+- Fit current mapped results with a Denmark-first empty fallback. Cluster overlaps, expose every cluster leaf in an anchored scrollable popup, and provide equivalent keyboard cluster controls.
+- Keep coincident approximate records individually selectable at high zoom with deterministic small presentation offsets while preserving their canonical coordinates and uncertainty area.
+- Keep clustering close to marker-scale physical contact, preserve the current camera when the basemap changes, and retain the current exploratory camera when an unfiltered popup closes. Filtered popup close may refit the active filtered collection.
+- Distinguish Mammalia/Aves/fallback markers and exact/approximate precision without relying on color. Render positive curator-supplied uncertainty radii as geographic areas, automatically for a selected approximate specimen and globally through an explicit toggle.
+- Synchronize map selection, compact popup, URL, live status, and the complete semantic result list. Preserve filtered published records without points in a `Not mapped` group.
+- Keep the desktop published-record rail open by default but hideable; use compact rows with scientific/Danish names, immutable ID, locality/date, enlarged lateral thumbnail, and the exact specimen link without redundant precision wording. Narrow screens retain the bounded drawer/sheet behavior.
+- Keep the map key aligned with the actual local marker assets, approximate marker ring, and circular dashed uncertainty-area rendering, including a usable mobile disclosure.
+- Support `/map?specimen={id}` deep links and exact `View on map` links from specimen Collection records. Unknown/unavailable IDs recover honestly without inventing coordinates.
+- Keep every exact specimen link usable without JavaScript, WebGL, or provider tiles. Include navigation, zoom, reset, attribution, responsive/touch behavior, reduced motion, and accessible failure/retry states.
 
 ### Guides and preparation guide
 

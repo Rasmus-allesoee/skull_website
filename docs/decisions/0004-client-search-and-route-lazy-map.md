@@ -18,7 +18,7 @@ Neither search nor map owns canonical record data or URLs.
 
 ## Implementation status
 
-The search half was implemented in the combined Phase 3.2/4 checkpoint on 2026-08-22 with pinned Orama 3.1.18, a deterministic 67-document artifact, query-triggered dynamic import/fetch, canonical rank/taxon/specimen URLs and media, pure filtering/sorting modules, and complete URL/history restoration. Map/GeoJSON work remains Phase 5. This implementation does not change the accepted decision.
+The search half was implemented in the combined Phase 3.2/4 checkpoint on 2026-08-22 with pinned Orama 3.1.18, a deterministic 67-document artifact, query-triggered dynamic import/fetch, canonical rank/taxon/specimen URLs and media, pure filtering/sorting modules, and complete URL/history restoration. The focused Phase 5 checkpoint implemented the map half on 2026-08-28 with a deterministic 18-record projection, valid-point GeoJSON, route-only MapLibre 5.7.3, a replaceable OpenFreeMap adapter, synchronized specimen discovery/list/deep-link state, and resilient no-WebGL/provider fallbacks. The implementation completes rather than changes the accepted decision.
 
 ## Consequences
 

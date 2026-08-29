@@ -44,12 +44,14 @@ Phase 3.1 review-quality catalog expansion and refinement
         ↓
 Phase 3.2 catalog-first redesign + Phase 4 search/faceted discovery
         ↓
-Phase 5 map and required editorial/supporting pages
+Phase 5 focused collection map
         ↓
 Phase 6 complete audited collection migration
         ↓
 Phase 7 release hardening, production, and v1.0.0
 ```
+
+Supporting/editorial content remains required before release but is now a separately authorized milestone whose exact placement after the focused map gate is an owner scheduling decision.
 
 Phase 2 is deliberately the strongest early gate: it tests data, media, URL, design, accessibility, and build decisions with one real specimen before repetition makes change costly.
 
@@ -333,25 +335,31 @@ Automated and manual scenarios pass for:
 
 **Gate result:** Passed locally on 2026-08-22 as part of the combined Phase 3.2 milestone. The 67-document artifact contains 34 rank, 15 taxon, and 18 specimen documents compiled from published canonical records. Owner visual/product review remains open; no push/PR or remote CI was authorized.
 
-## 8. Phase 5 — map and editorial/supporting pages
+## 8. Phase 5 — focused collection map
+
+The owner deliberately narrowed this milestone to the geographic collection experience. The supporting/editorial routes previously grouped here remain a separately authorized future milestone and do not block the Phase 5 map gate.
 
 ### Dependencies
 
 - Canonical specimen query/filter state is stable.
-- Public location/precision data exists for representative exact, approximate, and unknown cases.
-- Required editorial claims have sources or explicit draft states.
+- Public location/precision data exists for representative exact and approximate cases; the retained list-only path covers unknown coordinates without inventing points.
 
 ### Map
 
-- [ ] Generate deterministic GeoJSON from valid published specimen coordinates.
-- [ ] Add route-only MapLibre dynamic import and provider configuration adapter.
-- [ ] Add clustered exact/approximate markers, selected state, popups, controls, attribution, and fit/reset behavior.
-- [ ] Synchronize map and complete searchable/filterable result list.
-- [ ] Implement `/map?specimen={id}` focus and recovery for unavailable IDs.
-- [ ] Add a nearby `View on map` action to specimen Collection records when coordinates are available; focus that specimen through `/map?specimen={id}` and retain the textual location/precision record as the non-map equivalent.
-- [ ] Test no-WebGL, keyboard, mobile, reduced-motion, provider failure, and unknown-coordinate behavior.
+- [x] Generate a deterministic schema-v2 map projection from every published specimen and point GeoJSON only from valid canonical coordinates, with display-only disambiguation for coincident approximate points.
+- [x] Add route-only MapLibre dynamic import and an OpenFreeMap adapter with the supported Fiord, Dark, Positron, Liberty, and Bright vector styles.
+- [x] Add class-specific exact/approximate markers, selected state, geodesic uncertainty areas, complete clustering, anchored specimen/cluster popups, attribution, key, and fit/reset behavior.
+- [x] Keep marker-scale clustering near physical point contact, lock desktop popup placement to the left with viewport clamping, contain popup page scrolling, and preserve the camera across style changes and popup close according to filtered/unfiltered state.
+- [x] Keep the desktop published-record rail open by default with an explicit hide/show control; use compact bilingual rows with enlarged lateral thumbnails, date/link footer ordering, and no redundant exact/approximate row labels.
+- [x] Reuse the actual class marker assets in the map key, represent approximate markers and uncertainty areas with their rendered circular forms, and keep the key disclosure usable on mobile.
+- [x] Synchronize specimen-based search, higher-rank scope, class/facets/ranges, map selection, URL state, and the complete semantic result list.
+- [x] Implement `/map?specimen={id}` focus and honest recovery for unavailable IDs.
+- [x] Add a nearby `View on map` action to specimen Collection records with valid public points while retaining the textual location/precision record as the non-map equivalent.
+- [x] Verify no-JavaScript, no-WebGL, provider failure, keyboard clusters, mobile/landscape/reflow, reduced-motion, forced-color, route-bundle isolation, and unknown-coordinate fixture behavior.
 
-### Editorial/supporting routes
+### Deferred editorial/supporting routes
+
+These items were explicitly removed from the focused map milestone. They require a separate owner authorization and their own content/citation review.
 
 - [ ] Promote the existing preparation route shell into the Guides hub and complete cited/safety-reviewed preparation content.
 - [ ] Add dedicated illustrated measurement methodology, age-estimation, and specimen-condition content using owner-supplied/reviewed real-skull imagery and appropriate citations/species caveats.
@@ -360,13 +368,16 @@ Automated and manual scenarios pass for:
 - [ ] Add accurate Rights, Privacy, and Accessibility statements.
 - [ ] Add article table of contents, figures, citations, callouts, and responsive prose components.
 
-### Acceptance gate
+### Map acceptance gate
 
-- Every mapped record has equivalent list access and an exact specimen link.
-- Exact/approximate/unknown precision is understandable without color.
-- MapLibre is absent from non-map route bundles.
-- Editorial pages have reviewed structure, links, citations/safety states, and mobile/keyboard behavior.
-- No upload backend, cookie, or tracking behavior has been introduced.
+- [x] Every mapped record has equivalent list access and an exact specimen link.
+- [x] Exact/approximate/unknown precision is understandable without color.
+- [x] MapLibre is absent from non-map route bundles.
+- [x] Search/filter/list/map/deep-link state remains synchronized and recoverable.
+- [x] WebGL/provider failures retain the complete semantic experience.
+- [x] No upload backend, cookie, tracking behavior, unsupported imagery style, or unrelated editorial scope has been introduced.
+
+**Gate result:** Passed locally on 2026-08-28 on `agent/phase-5-map`. Owner product review and any remote publication action remain separate explicit gates.
 
 ## 9. Phase 6 — complete audited collection migration
 
@@ -489,7 +500,7 @@ Phase 2.2 completed the reusable calibrated foundation on the specimen page: exp
 
 ### Specimen-location map action
 
-Phase 5 should place a concise `View on map` action beside the Collection record's location/coordinates when a public point exists. It should open the accessible `/map?specimen={id}` route with the corresponding marker and list row selected. An embedded specimen-page modal remains optional later, but it must not duplicate map state or violate the route-only MapLibre bundle boundary without a deliberate architecture revision.
+Phase 5 completed the concise `View on map` action beside Collection record location data when a valid public point exists. It opens the accessible `/map?specimen={id}` route with the corresponding marker, popup, and list row selected. An embedded specimen-page modal remains deliberately deferred; it must not duplicate map state or violate the route-only MapLibre bundle boundary without an explicit architecture revision.
 
 ### 360° rotation
 
