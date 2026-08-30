@@ -1,8 +1,8 @@
 # Architecture
 
-**Status:** Accepted baseline; combined Phase 3.2 catalog redesign and Phase 4 client discovery architecture implemented
+**Status:** Accepted baseline; measurement-reference compilation and route-scoped interaction architecture implemented
 
-**Last reviewed:** 2026-08-22
+**Last reviewed:** 2026-08-30
 
 ## 1. Architectural goals
 
@@ -69,6 +69,7 @@ Implemented/planned client boundaries are:
 - gallery thumbnail, swipe, high-resolution inspection, zoom/pan, and guidance-dialog controls;
 - calibrated skull comparison, responsive scaling, difference display, and its scoped searchable selector;
 - compact multi-specimen chooser dialogs; and
+- the `/methodology` annotation/preview/detail surface over a complete static diagram-and-table rendering;
 - a future Phase 3.3 comprehensive tree enhancement over the current semantic taxonomy drawer/list; and
 - the MapLibre map synchronized with a server-renderable result list.
 
@@ -87,14 +88,17 @@ content/profiles/*.mdx
 content/guides/*.mdx
 content/media/*.json
 content/references/*.json
+content/methodology/measurement-definitions.csv
+content/methodology/measurement-reference.json
 staged, normalized specimen images
 staged, reviewed comparison-reference images
+staged, reviewed raw/annotated measurement reference pairs
                   │
                   ▼
 scripts: parse → validate → link → enrich from reviewed snapshots → process media
                   │
                   ▼
-.generated/ (ignored): typed JSON, media manifest, search documents, map GeoJSON
+.generated/ (ignored): typed JSON, media manifests, measurement reference, search documents, map GeoJSON
 public/generated/ (ignored): versioned browser-fetchable search artifact
                   │
                   ▼
@@ -109,7 +113,7 @@ Rules:
 - Draft rows may be incomplete but must parse safely and remain excluded from public output.
 - Generated paths are ignored and regenerated in CI.
 
-Phase 2 implements this pipeline with `content:build`, `validate:content`, `validate:media`, and committed invalid fixtures. `.generated/collection.json`, `.generated/media-manifest.json`, and `.generated/comparison-reference-manifest.json` are deterministic ignored outputs regenerated before application builds and relevant tests. Phase 2.1 advanced the compiled collection contract to schema version 2 for condition, pathology, trauma, teeth-set, and skeleton fields. Phase 2.2 advanced it to schema version 3 for explicit lateral orientation and typed comparison-reference records. Phase 3 advances it to schema version 4 for unified class-aware measurement fields, profile applicability validation, and hierarchy-name/slug consistency. The Phase 3.2/4 content build also writes the same versioned 67-document search artifact to `.generated/search-documents.json` and `public/generated/catalog-search-v1.json`; both copies are ignored and replaceable. Generated artifacts are never migrated in place.
+Phase 2 implements this pipeline with `content:build`, `validate:content`, `validate:media`, and committed invalid fixtures. `.generated/collection.json`, `.generated/media-manifest.json`, and `.generated/comparison-reference-manifest.json` are deterministic ignored outputs regenerated before application builds and relevant tests. Phase 2.1 advanced the compiled collection contract to schema version 2 for condition, pathology, trauma, teeth-set, and skeleton fields. Phase 2.2 advanced it to schema version 3 for explicit lateral orientation and typed comparison-reference records. Phase 3 advances it to schema version 4 for unified class-aware measurement fields, profile applicability validation, and hierarchy-name/slug consistency. The Phase 3.2/4 content build also writes the same versioned 67-document search artifact to `.generated/search-documents.json` and `public/generated/catalog-search-v1.json`; both copies are ignored and replaceable. The Measurements milestone adds `.generated/measurement-reference-v1.json`, compiled from the reviewed 21-row definition CSV and five-view coordinate manifest; a normal build never reads the ignored annotated/raw staging sources. Generated artifacts are never migrated in place.
 
 ## 6. Repository boundaries
 
@@ -127,6 +131,7 @@ content/profiles/      cited taxon-profile MDX
 content/guides/        editorial guide MDX
 content/media/         specimen-media declarations
 content/references/    calibrated comparison-reference declarations
+content/methodology/   measurement definitions plus registered view/overlay declarations
 public/media/          curated public web derivatives only
 public/generated/      ignored browser-fetchable build artifacts only
 scripts/               build-time content, taxonomy, and image tooling
@@ -254,6 +259,8 @@ The gallery client island owns selection, direct controls, keyboard navigation, 
 
 Comparison-reference sources use stable IDs under `content/references/`, are processed from ignored local staging through `pnpm media:process:reference`, and are committed only as reviewed WebP derivatives under `public/media/references/`. They pass the same sRGB, alpha, dimensions, subject-bounds, and metadata-stripping checks as specimen assets. Exactly one reference is the default.
 
+Measurement methodology sources remain ignored under `agent_context/measurement_page/`. `pnpm media:verify:methodology-sources` proves exact annotated/raw dimensions, identity canvas registration, and correspondence between each encoded primary line/label and the annotation pixels. `pnpm media:process:methodology` publishes only the five unannotated, transparent, sRGB, metadata-stripped WebPs under `public/media/methodology/`. The canonical overlay manifest retains the original 6000×4000 or 6200×4133 coordinate system, so each responsive image and SVG share one aspect-ratio-preserving view box even though the public raster is reduced to at most 3200 px.
+
 Page code consumes `MediaAsset` records rather than constructing filenames. That interface permits a later object-store/CDN migration when public media approaches approximately 500 MB.
 
 ## 12.1 Calibrated comparison architecture
@@ -275,7 +282,7 @@ The future public comparison route may compose the same records, scaling engine,
 
 Tailwind utilities operate on semantic CSS variables defined in the global token layer. Components use domain-oriented names and small variants rather than a generic theme library. Native HTML is preferred; accessible Radix primitives are permitted only where native elements cannot provide robust dialog/popover behavior.
 
-Server components own the museum shell, Home, taxonomy landings, default catalog model/cards, static record content, and route metadata. Client components are placed at the lowest practical interactive boundary. The combined catalog island receives serialized published records and owns only discovery/view state; it keeps real links and prerendered default content. Native dialog controls own filters, measurement/age/condition guidance, and compact multi-specimen selection; the taxonomy drawer uses one responsive semantic nested-list component with a mobile focus trap; the comparison card remains a separate client island. Accessibility state—names, expanded/selected/current semantics, live result/search changes, Escape, and focus restoration—is part of component APIs, not a post-release patch.
+Server components own the museum shell, Home, taxonomy landings, default catalog model/cards, static record content, methodology source loading, and route metadata. Client components are placed at the lowest practical interactive boundary. The combined catalog island receives serialized published records and owns only discovery/view state; it keeps real links and prerendered default content. Native dialog controls own filters, measurement/age/condition guidance, methodology details, and compact multi-specimen selection; the taxonomy drawer uses one responsive semantic nested-list component with a mobile focus trap; the comparison card remains a separate client island. The measurement island receives a serialized validated reference model and adds hover/focus names, touch previews, synchronized selection, and detail dialogs over static figures and the complete semantic table. Accessibility state—names, expanded/selected/current semantics, live result/search changes, Escape, and focus restoration—is part of component APIs, not a post-release patch.
 
 The Phase 2.1 `/guides/skull-preparation` route is a statically rendered, explicitly labelled outline shell. It provides a real destination from the specimen record without publishing uncited chemical or biological instructions. Full MDX guide content and safety review remain a separately authorized supporting-content milestone; they were explicitly excluded from the focused Phase 5 map scope.
 

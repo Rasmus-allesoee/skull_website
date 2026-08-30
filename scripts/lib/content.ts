@@ -22,7 +22,9 @@ import {
 } from "../../src/domain/content/types";
 import { buildCatalogSearchArtifact } from "../../src/domain/search/documents";
 import { buildMapProjection } from "../../src/domain/map/projection";
+import type { MeasurementReference } from "../../src/domain/methodology/types";
 import { validatePublicMedia } from "./media";
+import { loadMeasurementReference } from "./measurements";
 import { fromRepositoryRoot } from "./paths";
 
 export interface ContentBuildResult {
@@ -30,6 +32,8 @@ export interface ContentBuildResult {
   searchDocumentCount: number;
   mapRecordCount: number;
   mappedRecordCount: number;
+  measurementReference: MeasurementReference;
+  measurementMediaBytes: number;
   warnings: Diagnostic[];
 }
 
@@ -66,6 +70,10 @@ export async function buildContent(options?: {
   const { assets, comparisonReferences } = await validatePublicMedia({
     writeManifest: true,
   });
+  const {
+    reference: measurementReference,
+    publicMediaBytes: measurementMediaBytes,
+  } = await loadMeasurementReference();
   const result = compileCollection({
     taxa,
     specimens,
@@ -104,6 +112,11 @@ export async function buildContent(options?: {
       `${JSON.stringify(mapProjection, null, 2)}\n`,
       "utf8",
     );
+    await writeFile(
+      path.join(generatedDirectory, "measurement-reference-v1.json"),
+      `${JSON.stringify(measurementReference, null, 2)}\n`,
+      "utf8",
+    );
   }
 
   return {
@@ -111,6 +124,8 @@ export async function buildContent(options?: {
     searchDocumentCount: searchArtifact.documents.length,
     mapRecordCount: mapProjection.records.length,
     mappedRecordCount: mapProjection.geoJson.features.length,
+    measurementReference,
+    measurementMediaBytes,
   };
 }
 

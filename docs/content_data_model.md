@@ -400,6 +400,16 @@ Rules:
 
 Guide MDX uses explicit title, slug, summary, review date, safety-review status, and citations. Preparation guidance must distinguish documented practice from established safety guidance. Chemical concentrations, animal handling, disease, legal collection rules, and disposal claims require current authoritative review before publication. The Phase 2.1 static `/guides/skull-preparation` outline is intentionally not guide MDX and cannot be mistaken for reviewed procedural content.
 
+### Measurement methodology reference
+
+- `content/methodology/measurement-definitions.csv` is the canonical 21-row definition source for `/methodology`, with the exact ordered headers `Number`, `Measurement`, and `Exact landmarks / method`.
+- `content/methodology/measurement-reference.json` owns five stable diagram IDs, public media declarations, original canvas dimensions, and 24 independently addressable SVG occurrences. Definition numbers are unique; occurrences may repeat a number across distinct views.
+- Build validation requires definitions 1–21 exactly once, at least one occurrence for every definition, one definition for every occurrence, unique per-view numbers, non-zero in-bounds geometry, explicit credit/rights, and five declared WebP derivatives.
+- This reference model defines terminology and illustrated landmarks; it does not add or migrate specimen measurement values and never changes the unified `specimens.csv` profile contract.
+- The profile-specific specimen guide remains the concise index of stored fields. A shared label does not by itself prove that a legacy stored value followed every more detailed landmark shown on `/methodology`; value-level reconciliation remains part of the audited migration when source evidence requires it.
+- Parenthetical source notes supplied in the CSV remain owner-provided context, not formal citation records. Do not invent URLs, authors, or stronger protocol claims without reviewed sources.
+- Raw and annotated source PNGs remain ignored under `agent_context/measurement_page/`. Only unannotated processed derivatives are public; the annotated images are positional evidence and must never be displayed or committed as production media.
+
 ## 13. Media contract
 
 ### Canonical views
@@ -422,6 +432,8 @@ Guide MDX uses explicit title, slug, summary, review date, safety-review status,
 - The processing command converts to sRGB, normalizes orientation, strips metadata, validates transparency and dimensions, calculates subject bounds, and writes a maximum 3200 px transparent WebP at quality 90/alpha 100.
 - Lateral is mandatory. Missing optional views generate authoring warnings; unexpected view tokens are errors.
 - Every asset resolves to a specimen and has alt text, credit, rights, dimensions, and deterministic sort order.
+
+Methodology reference derivatives use stable diagram IDs under `public/media/methodology/`. They preserve the registered source aspect ratio, transparency, and sRGB pixels; strip EXIF/IPTC/XMP; stay within the 1200–3200 px longest-edge contract and 5 MB per-file budget; and are validated against the canonical methodology declaration. Their coordinate system remains the original raw/annotated canvas rather than the smaller public pixel dimensions.
 
 Phase 3.2 corrected the committed lateral/oblique pixels for SPEC-0003, SPEC-0013, and SPEC-0018 by rebuilding exactly those six changed derivatives from the already right-facing clean masters through the 104-entry staging map and ordinary processor. No display-time filename/flip exception or manual WebP edit was introduced. The regenerated manifest recomputes subject bounds, so galleries, cards, suggestions, and comparisons share the corrected framing wherever each canonical asset is used.
 

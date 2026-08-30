@@ -131,7 +131,7 @@ Responsive checkpoints are content-derived, with explicit QA at:
 
 - Use one simple line-icon family or custom SVGs with consistent 1.5–2 px optical stroke.
 - Icons never replace unfamiliar labels.
-- Measurement guidance uses text definitions until the owner supplies real-skull landmark imagery for a cited methodology page. Do not ship a generic outline that is too ambiguous to teach the landmarks.
+- Measurement methodology uses the five owner-supplied real-skull reference views with registered programmatic SVG dimensions. Preserve anatomical endpoints and canvas geometry; annotated staging PNGs are positional evidence only and generic outline substitutes remain prohibited.
 - Taxonomy diagrams prioritize readable hierarchy over decorative branching.
 - Map marker differences combine shape/icon, label, and text—not color alone.
 
@@ -179,6 +179,11 @@ Responsive checkpoints are content-derived, with explicit QA at:
 - **Related taxa:** up to three same-family cards and three deterministic collection-wide cards; current/duplicate taxa excluded and empty groups omitted. With one published taxon the component deliberately renders nothing.
 
 ### Map and editorial
+
+- **Measurement reference board:** five semantic figures using unannotated transparent WebPs and one shared intrinsic coordinate system per image/SVG pair. Lateral and mandible views retain wide priority; dorsal/ventral compare directly; canine lengths remain a balanced final figure. All annotations are visible by default and retain readable full-image composition at narrow widths without page overflow.
+- **Measurement annotation:** independent keyboard-focusable SVG group with stable diagram/number hooks, two-ended dimension line, dashed landmark extensions, registered numeric label, non-color selected/focus treatment, and a generous painted hit line. Repeated numbers share selected state across views.
+- **Measurement preview/detail:** hover and focus expose a compact name tooltip. First touch selects and shows the same name plus a visible `View details` action; second activation or the action opens one native dialog containing the complete canonical method. Escape/close restores focus and selection has a visible reset.
+- **Measurement reference table:** semantic three-column table of all 21 definitions below the board. Narrow layouts render readable stacked rows without changing table associations; each number opens the same detail surface. The table is the complete no-JavaScript and non-visual equivalent, not a filter result.
 
 - **Map toolbar:** compact operational heading/summary, primary collection combobox, class/facet controls, supported-style select, uncertainty toggle, fit/reset, results control, and disclosed key. At narrow widths it remains two deliberate control rows rather than a tall hero or arbitrary wrapping.
 - **Map canvas:** viewport-dominant labelled region with class icons, exact/approximate treatment, geodesic uncertainty areas, clusters, zoom, provider attribution, and no horizontal overflow. Map movement is restrained or immediate under reduced motion.

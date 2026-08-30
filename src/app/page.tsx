@@ -204,14 +204,14 @@ export default function Home() {
           </article>
           <article>
             <p className="card-overline">Methodology</p>
-            <h3>Evidence before publication</h3>
+            <h3>Measurement reference</h3>
             <p>
-              Taxonomy, measurements, locations, rights, and missing values are
-              validated before a record becomes public.
+              Match 21 collection definitions to their exact landmarks across
+              five annotated skull views.
             </p>
-            <span className="availability-note">
-              Full methodology is planned for a later editorial release
-            </span>
+            <Link className="text-link" href="/methodology">
+              Open measurement reference →
+            </Link>
           </article>
         </div>
       </section>

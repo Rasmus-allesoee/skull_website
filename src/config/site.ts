@@ -10,6 +10,7 @@ export const siteConfig = {
     { label: "Home", href: "/" },
     { label: "Species", href: "/species" },
     { label: "Map", href: "/map" },
+    { label: "Measurements", href: "/methodology" },
     { label: "Preparation guide", href: "/guides/skull-preparation" },
   ],
   copyright: "© 2026 Rasmus. All rights reserved.",

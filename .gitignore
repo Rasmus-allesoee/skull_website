@@ -43,6 +43,7 @@ Thumbs.db
 # Private/raw collection sources and working exports
 agent_context/skulls_meta.csv
 agent_context/metadata_csv/
+agent_context/measurement_page/
 agent_context/skull_images_clean/
 agent_context/interactive_tree_sketch.png
 agent_context/website_screenshots/skullbase_web_species_gallery.png

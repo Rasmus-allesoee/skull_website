@@ -20,7 +20,7 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **the focused, map-only Phase 5 implementation is complete and merged into `main` at `f098caf` after its technical, browser, resilience, visual, and remote CI gates passed**. The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`. Supporting/editorial pages, the optional Phase 3.3 comprehensive tree, and Phase 6 remain deferred. Consult `docs/project_status.md` for exact evidence and the next action. Do not begin another phase until the owner selects and explicitly authorizes a bounded next scope.
+Current phase: **the owner-authorized Measurements supporting-page milestone is implemented and verified locally on `agent/next-additions`; `/methodology` is ready for owner review, but it has not been pushed or published**. The focused map-only Phase 5 implementation remains merged into `main` at `f098caf`, and the combined Phase 3.2/4 work remains merged at `9a0e1d0`. Age/condition methodology, other supporting/editorial pages, the optional Phase 3.3 comprehensive tree, and Phase 6 remain deferred. Consult `docs/project_status.md` for exact evidence and the next action. Do not publish this milestone or begin another scope without explicit owner authorization.
 
 Use the neutral working title **Skull Collection** from central site configuration until the final name is selected.
 
@@ -62,6 +62,7 @@ The historical approved master plan is `agent_context/website_plan_from_planmode
 - Taxonomy refresh is explicit, reviewed, snapshotted, and never silently rewrites identifications.
 - Generated JSON/search/GeoJSON is replaceable, ignored build output—not hand-edited source.
 - MapLibre loads only on `/map`; every map record has an equivalent semantic list path.
+- The `/methodology` measurement reference compiles 21 reviewed definitions and 24 registered SVG occurrences across five curated raw-image derivatives. Annotated positional sources remain ignored evidence; the production page uses only metadata-stripped WebPs plus programmatic SVG geometry and a complete semantic table.
 - Page code consumes typed records and `MediaAsset` interfaces, not constructed filenames or raw CSV rows.
 - True-to-scale comparison uses a canonical lateral-view maximum length, compiled transparent subject bounds, and explicit lateral orientation. Approximate reference measurements must remain labelled as approximate.
 - The schema-version-4 measurement model stays unified in `specimens.csv`: mammal, bird, and fallback profiles control applicability and presentation without parallel specimen tables. Class-specific fields require explicit `not_applicable` status outside their profile.
@@ -90,6 +91,8 @@ Local context paths:
 - `agent_context/metadata_csv/` — ignored partial spreadsheet exports supplied during Phase 3; migration evidence only, never runtime or canonical input.
 - `agent_context/prompt_species_page_redesign_suggestions.md` and `agent_context/species_page_redesign_phase_3_2.md` — owner-approved input and binding Phase 3.2/Phase 4 catalog specification; canonical implemented behavior lives in `docs/`.
 - `agent_context/phase_5_map_feature_plan.md` — owner-authored map-only Phase 5 implementation brief; supporting/editorial pages remain deferred.
+- `agent_context/measurement_page_plan.md` — owner-authored measurement-page product specification covering the `/methodology` reference page, programmatic SVG overlays, supplied measurement definitions, interaction, and acceptance criteria.
+- `agent_context/measurement_page/` — local measurement-page staging context: annotated positional references, the supplied measurement-description CSV, and the source prompt; these inputs are not runtime assets until explicitly promoted through the canonical content/media pipeline.
 - `agent_context/website_screenshots/localhost_3000_species.png` — ignored before-state visual evidence only, never a runtime asset.
 
 Phase 2 uses only staging metadata row `ID = 1` and the six `mårhund_*_1.png` files as migration evidence for `TAX-0001` / `SPEC-0001`. The reviewed canonical values live in `content/`; never make a normal build depend on the ignored staging sources. Owner feedback supersedes the initial slice's display wording and condition classification, but it does not authorize inventing unrecorded pathology, trauma, teeth-set, skeleton, age-evidence, or reuse facts. The Phase 2.2 adult-human comparison source is also ignored staging input; only its reviewed declaration and processed public WebP derivative belong in Git.

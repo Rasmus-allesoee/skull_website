@@ -1,16 +1,37 @@
 # Project status
 
-**Snapshot date:** 2026-08-29
+**Snapshot date:** 2026-08-30
 
-**Current phase:** Focused map-only Phase 5 — complete and merged; next milestone selection pending
+**Current phase:** Owner-authorized Measurements supporting-page milestone — complete locally; owner review pending
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`. The complete focused map milestone and its two owner-feedback refinement batches were pushed, passed remote CI, and were merged through PR #10 into `main` at `f098caf`; its seven coherent commits remain visible in the graph. The next product milestone has not yet been selected or authorized.
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, and focused Phase 5 is merged at `f098caf`. The owner separately authorized the bounded Measurements milestone on `agent/next-additions`; `/methodology`, its canonical definition/overlay model, five public derivatives, specimen-guide link, tests, and documentation now pass the local acceptance gate. No push, pull request, merge, remote CI, or later supporting-page/phase work is authorized.
 
-**Next phase:** Not selected or authorized. Choose a bounded next milestone before implementation; supporting editorial pages, the optional Phase 3.3 comprehensive tree, and Phase 6 remain separately gated.
+**Next phase:** None authorized. The exact next action is owner review of `/methodology`; publication requires a separate explicit instruction. Age/condition methodology, remaining supporting pages, Phase 3.3, and Phase 6 remain separately gated.
 
 ## 1. Current objective
 
-Record the completed and published map checkpoint. Do not begin supporting editorial pages, Phase 3.3, Phase 6, or another task until the owner selects and explicitly authorizes that bounded scope.
+Stop at the locally verified Measurements acceptance gate and present it for owner review. Preserve the merged map checkpoint and do not publish this branch or begin age/condition methodology, another supporting page, Phase 3.3, Phase 6, or any other scope without explicit authorization.
+
+## 1.1 Owner-authorized Measurements milestone
+
+### Canonical content, media, and geometry
+
+- Added `content/methodology/measurement-definitions.csv` with the owner-supplied 21 numbered names and exact landmark/method descriptions, plus `measurement-reference.json` with five stable diagram/media records and 24 independent SVG occurrences. Definitions and occurrences cross-validate in both directions; numbers 1 and 2 intentionally repeat across views.
+- Verified every annotated/raw pair before encoding overlays. Lateral, dorsal, ventral, and canine pairs are exactly `6000 × 4000`; mandible is `6200 × 4133`. Pixel comparisons retain 97.875–99.364% identical canvas pixels outside the added annotation layer, and the verification command confirms each encoded primary line and label against the corresponding white/red annotation pixels. All five mappings therefore use an identity transform.
+- Added a dedicated Sharp processor and validator. Only the unannotated raw sources produce the five committed transparent sRGB WebPs under `public/media/methodology/`; the 1.0 MiB public set has no EXIF/IPTC/XMP, preserves aspect ratio, and stays below the 3200 px/5 MB limits. Raw/annotated PNGs and the migration CSV remain ignored staging evidence.
+- The normal content build compiles `.generated/measurement-reference-v1.json` without reading `agent_context`. It preserves the original high-resolution coordinate systems for image/SVG registration while the browser receives smaller curated rasters.
+
+### Page, interaction, and integration
+
+- Added a statically generated `/methodology` route titled `Measurements`, with canonical metadata, breadcrumb, compact use guidance, five-figure responsive reference board, complete 21-row semantic table, and honest collection-reference scope rather than a universal-standard claim.
+- Each numbered occurrence is an independent keyboard-focusable SVG group containing its dimension line, arrowheads, dashed extensions, and registered label. Hover/focus shows the measurement name; pointer/keyboard activation opens one native detail dialog; first touch shows a name preview with explicit details action; second touch opens details; Escape/close restores focus; a visible reset clears selection; and every repeated occurrence highlights together.
+- Desktop uses a wide lateral lead, paired dorsal/ventral row, wide mandible, and centered canine figure. At 720 px/effective 200% and 390/360 px, figures stack, preserve the complete anatomy/overlay composition, and create no page overflow. The table changes to semantic stacked rows on narrow screens.
+- The complete figures and table render before client JavaScript and remain useful with JavaScript disabled. Image failure retains the figure title and an explicit table fallback. Forced colors, reduced motion, keyboard state, accessible names, native dialog semantics, axe, and the repository shell are covered.
+- Added `/methodology` to header/footer navigation, Home, sitemap, metadata, and the existing specimen Measurement guide. The specimen dialog remains a concise profile-specific stored-field guide and explicitly distinguishes the broader illustrated vocabulary so it does not silently redefine legacy values.
+
+### Scope result
+
+The bounded Measurements milestone is complete locally and ready for owner product review. No specimen-schema/value migration, formal citation fabrication, age/condition methodology, other editorial page, push, pull request, merge, or remote CI was performed.
 
 ## 2. Focused Phase 5 collection map
 
@@ -315,14 +336,15 @@ Record the completed and published map checkpoint. Do not begin supporting edito
 | Gate | Most recent evidence | Status |
 |---|---|---|
 | Exact toolchain/install | Node `v24.18.0`; pnpm `11.21.0`; `pnpm install --frozen-lockfile` passes from the exact lockfile with pinned Orama 3.1.18 | Pass |
-| Content/search/map build | `pnpm content:build`: 15 taxa, 18 specimens, 104 specimen assets, 67 search documents, 18 map records / 18 valid points, 1 comparison reference, 0 reviewed profiles (1 profile source); only four expected optional-frontal warnings | Pass |
-| Media | Full restage/process plus `pnpm validate:media`: 104 specimen assets plus 1 reference, 24.83 MiB, sRGB/alpha/bounds valid, no EXIF/IPTC/XMP; Git shows only the six requested right-facing derivative changes | Pass |
+| Content/search/map/methodology build | `pnpm content:build`: 15 taxa, 18 specimens, 104 specimen assets, 67 search documents, 18 map records / 18 valid points, 1 comparison reference, 21 measurement definitions / 24 SVG occurrences, 0 reviewed profiles (1 profile source); only four expected optional-frontal warnings | Pass |
+| Media and measurement-source registration | `pnpm validate:media` covers 104 specimen assets, 1 comparison reference, and 5 methodology derivatives with sRGB/alpha/aspect/metadata contracts. `pnpm media:verify:methodology-sources` confirms five exact-dimension identity pairs, 97.875–99.364% unchanged non-annotation pixels, and 24 registered primary-line/label overlays | Pass |
 | Invalid fixtures | `pnpm test:fixtures`: 6 expected failures detected, including class-profile mismatch | Pass |
-| Types/lint/tests | Sequential formatting, lint, content/media validation, TypeScript, 14 Vitest files / 62 tests, and 6 actionable invalid fixtures pass. Phase 5 adds deterministic projection/uncertainty, URL-state, and specimen filter coverage without regressing the catalog, measurement, media, or exhibit suites | Pass |
-| Production build | `next build --webpack` completes successfully with 76 static outputs; `/map` and the existing Home, guide, sitemap, catalog, 15 taxon, 18 exact-specimen, and 34 rank outputs prerender | Pass |
-| Browser/accessibility | Full `PLAYWRIGHT_PORT=3113 node_modules/.bin/playwright test`: 52/52 Chromium journeys. The 19 map journeys cover provider rendering, Enter-dismissed search, rank/specimen search, centered popup subject crops, deep links, uncertainty, marker-scale clusters, cluster wheel zoom, left-locked/clamped popups, popup gesture containment, camera-preserving styles and close behavior, all supported styles, route-bundle isolation, responsive/reflow/accessibility media states, no JavaScript, no WebGL/provider failure, and zero axe violations | Pass |
-| Manual visual/responsive | Production-browser inspection covers `/map` at 1440 × 900, 1024 × 900, 768 × 900, 390 × 844, 360 × 800, narrow landscape, effective 200% reflow, reduced motion, and forced colors. The updated desktop/mobile individual popup shows a centered uncropped subject; left-locked cluster placement remains within the map viewport; map/list hierarchy, bounded sheets/popups, marker/key meaning, camera preservation, and horizontal overflow remain correct; browser console is clean under every supported style | Pass |
-| Git/base/scope audit | `main` is at normal merge commit `f098caf` for PR #10, with the seven coherent Phase 5 commits preserved; the intended diff is limited to the approved map plan, dependency/lockfile, projection/provider/map UI, exact map links, focused tests, and matching canonical documentation; unrelated owner context files remain unstaged | Pass |
+| Types/lint/tests | Sequential formatting, lint, content/media validation, strict TypeScript, 15 Vitest files / 64 tests, and 6 actionable invalid fixtures pass. Measurement compiler coverage verifies 21/5/24 counts and intentional repeated-number links without regressing the existing catalog, map, comparison, media, or exhibit suites | Pass |
+| Production build | `next build --webpack` completes successfully with 77 static outputs; `/methodology`, `/map`, Home, guide, sitemap, catalog, 15 taxon, 18 exact-specimen, and 34 rank outputs prerender | Pass |
+| Focused browser/accessibility | `PLAYWRIGHT_PORT=3102 pnpm test:e2e tests/e2e/methodology.spec.ts`: 4/4 Chromium journeys cover canonical counts/media, hover/focus/keyboard dialog behavior, repeated highlighting, table activation, touch preview/second activation, 390 px containment, effective 200% reflow, forced colors, reduced motion, static/no-JavaScript content, focus restoration, zero console errors, and zero axe violations | Pass |
+| Full browser regression | Final sequential `PLAYWRIGHT_PORT=3102 pnpm test:e2e`: 59/59 Chromium journeys pass across catalog, specimen, map, Home/taxonomy, and methodology. The final focused rerun also passes 4/4 after adding explicit 360 px containment to the existing 390 px check | Pass |
+| Manual visual/responsive | Production Playwright inspection covers the complete `/methodology` board/table at 1440 × 900 plus focused mandible/canine captures, full-fit 390 px dorsal/mobile composition, and forced-color/reflow screenshots. Anatomy and annotations remain registered and uncropped, image/text hierarchy matches the museum system, lower lazy images load when approached, mobile has no horizontal page overflow, and the browser console has zero errors | Pass |
+| Git/base/scope audit | Branch `agent/next-additions` starts from the post-merge Phase 5 base. The intended measurement diff is limited to the owner plan/context index, canonical methodology data, five processed WebPs, compiler/media tooling, route/island/integration, focused tests, and matching canonical documentation; supplied raw/annotated staging and unrelated owner screenshots remain unstaged/ignored | Pass |
 | Remote Phase 5 CI | GitHub Actions run `33275504203` passed the quality/build/browser workflow before merge; the post-merge rerun of run `33275866571` also passed after one flaky browser retry | Pass |
 | Complete map gate | The final sequential check/build/browser gate, owner-feedback regression suite, resilience checks, visual matrix, route-bundle audit, explicit staging audit, remote CI, and normal merge pass | Complete and merged |
 
@@ -331,7 +353,7 @@ Package-manager gates must run sequentially with `CI=true` in non-interactive en
 ## 12. Known limitations and controls
 
 - The 15/18 Phase 3.1 review slice is public and inspectable, but 33 raw specimen rows remain blocked migration candidates. Phase 6 still owns the complete audited migration, not a blind append of the remaining rows.
-- The focused interactive map is complete. The comprehensive tree (Phase 3.3), supporting/editorial routes removed from Phase 5, complete migration (Phase 6), deployment/release checks (Phase 7), analytics, 360°, 3D, uploads, and AI overlays remain unstarted.
+- The focused interactive map and bounded Measurements page are complete. The comprehensive tree (Phase 3.3), age/condition methodology, other supporting/editorial routes removed from Phase 5, complete migration (Phase 6), deployment/release checks (Phase 7), analytics, 360°, 3D, uploads, and AI overlays remain unstarted.
 - Home keeps a lightweight non-cartographic geographic preview and links to `/map`; it deliberately does not duplicate MapLibre or the map control surface. Coordinate-bearing specimen records expose `View on map` deep links.
 - OpenFreeMap is a public vector-style dependency without a project-owned uptime guarantee. Provider or WebGL failure therefore preserves the full semantic list and all exact record links. Satellite, Hybrid, and Terrain are absent because the selected provider integration does not support them under the approved contract.
 - All 18 records in the current public slice have valid points. The list-only `Not mapped` path is projection- and browser-tested with fixtures so future unknown-coordinate records remain publishable without fabricated coordinates.
@@ -340,22 +362,22 @@ Package-manager gates must run sequentially with `CI=true` in non-interactive en
 - The calibrated card is a true relative comparison between visible skull subjects; it does not calibrate the visitor's monitor so displayed CSS pixels are not literal real-world millimetres.
 - The calibrated comparison selector now has real mammal and bird defaults but still excludes published specimens without a usable default lateral/maximum-length combination. `SPEC-0016` has no recorded maximum length and is correctly ineligible.
 - The adult-human dimensions are explicitly approximate representative values and not a universal adult average. A future source-methodology review may refine the reference without changing the comparison architecture.
-- Measurement definitions are a quick field guide, not a reproducible anatomical protocol. Dedicated illustrated methodology remains future content.
+- `/methodology` is the implemented illustrated collection reference, not a universal osteometric standard. Its parenthetical source notes remain supplied context rather than formal citation records, and it does not retroactively prove that every legacy specimen value used each detailed landmark; Phase 6 owns value-level source reconciliation.
 - The age and condition dialogs are general collection criteria. Future methodology must cite them, explain species variation, and add reviewed real-skull examples.
 - The preparation route is a labelled shell, not actionable chemical, biological, legal, or safety guidance.
 - The current editorial profile is intentionally absent from the public page; GBIF taxonomy evidence remains available in structured data but is not expanded into low-value prose.
 - Footer copyright starts at 2026 because no repository evidence supports a 2023 publication start; the start year can change only with owner-supplied evidence/preference.
 - Chrome/Chromium is the current phase browser target. Effective 200% reflow, reduced motion, forced colors, keyboard, and automated axe checks pass; Firefox/WebKit and a manual screen-reader release audit remain Phase 7 gates.
 - `NEXT_PUBLIC_SITE_URL` still defaults to `http://localhost:3000`; the final domain is a Phase 7 decision. Canonical/Open Graph/sitemap URLs are structurally complete but intentionally use that default locally.
-- Combined Phase 3.2/4 is merged into `main` at `9a0e1d0`. Phase 5 is merged into `main` at `f098caf` through PR #10 after passing remote CI; its feature branch has been intentionally preserved. The next milestone remains unselected.
+- Combined Phase 3.2/4 is merged into `main` at `9a0e1d0`. Phase 5 is merged into `main` at `f098caf` through PR #10 after passing remote CI; its feature branch has been intentionally preserved. Measurements is verified only on the local `agent/next-additions` branch; owner review and any publication remain separate.
 
 ## 13. Exact next action
 
-1. Choose the next bounded product milestone: supporting/editorial pages, optional Phase 3.3 comprehensive tree, Phase 6 audited migration, or another explicitly scoped task.
-2. Explicitly authorize that scope, then create `agent/<short-description>` from the updated `main` branch.
-3. Keep the completed map checkpoint as the stable fallback; no new map content or owner decision is required unless a bounded map refinement is selected.
+1. Owner reviews `/methodology` at desktop and mobile widths, including diagram geometry, wording, touch preview/detail behavior, and the 21-row table.
+2. If changes are wanted, authorize only that bounded refinement; otherwise explicitly authorize publication before any push or pull request.
+3. Keep merged Phase 5 and the local Measurements checkpoint as stable fallbacks. Do not begin age/condition methodology or another phase from this branch.
 
-No new content or owner decision is required for the current map review. Phase 6 still requires completed/corrected metadata, missing accepted image sets, and final rights/public-note/publication decisions for blocked rows. Supporting editorial content requires its own source/contact review if later authorized.
+No unresolved content, rights, or publication blocker prevents local Measurements review. Formal source/citation expansion would require reviewed citation records; Phase 6 still requires completed/corrected metadata, missing accepted image sets, and final rights/public-note/publication decisions for blocked rows.
 
 ## 14. Decision/blocker protocol
 
@@ -455,5 +477,11 @@ No new content or owner decision is required for the current map review. Phase 6
 - The owner authorized publication and a normal non-squash merge. `agent/phase-5-map` was pushed, PR #10 passed the pre-merge quality/build/browser workflow, and the pull request was merged into `main` at `f098caf`.
 - The seven coherent Phase 5 commits remain visible in the graph. The post-merge `main` workflow initially reported timing-sensitive browser failures; rerunning the failed job completed successfully with 54 passing tests and one retried/flaky map interaction annotation.
 - The Phase 5 branch was restored and intentionally preserved locally and on GitHub after an accidental deletion during merge handling. The next product milestone remains unselected and separately authorized.
+
+### 2026-08-30 — Measurements milestone verified locally
+
+- The owner authorized the bounded `/methodology` Measurements milestone from `agent_context/measurement_page_plan.md`, with five annotated/raw source pairs and 21 supplied definitions.
+- Added the canonical definition/geometry/media model, five metadata-stripped unannotated WebPs, programmatic SVG board, desktop/touch/keyboard detail behavior, semantic responsive table, static fallback, specimen-guide/site integration, and canonical documentation.
+- Source registration, sequential quality/build tests, the full 59/59 Chromium regression, final focused 4/4 Chromium/axe/no-JavaScript/360–390 px suite, and manual production visual checks pass. The work stops at owner review; no push, pull request, merge, remote CI, or next supporting scope is authorized.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.
