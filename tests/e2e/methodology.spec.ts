@@ -25,6 +25,13 @@ test("measurement reference renders canonical content, geometry, and accessible 
     page.locator(".measurement-reference-table tbody tr"),
   ).toHaveCount(21);
   await expect(page.locator(".measurement-diagram-stage > img")).toHaveCount(5);
+  for (const sourceLabel of [
+    "ResearchGate",
+    "Wiley Online Library",
+    "Società Italiana di Scienze Naturali",
+  ]) {
+    await expect(page.getByText(sourceLabel, { exact: false })).toHaveCount(0);
+  }
 
   const firstOccurrence = page
     .locator('[data-diagram-id="lateral-skull"][data-measurement-number="1"]')
@@ -52,6 +59,36 @@ test("measurement reference renders canonical content, geometry, and accessible 
   await page.keyboard.press("Escape");
   await expect(detailPanel).not.toBeVisible();
   await expect(firstOccurrence).toBeFocused();
+
+  const dorsalTwelve = page.locator(
+    '[data-diagram-id="dorsal-skull"][data-measurement-number="12"]',
+  );
+  const dorsalRing = dorsalTwelve.locator(".measurement-number-backdrop");
+  await dorsalRing.hover();
+  const dorsalTooltip = page.locator("#measurement-tooltip-dorsal-skull-12");
+  await expect(dorsalTooltip).toBeVisible();
+  const tooltipGeometry = await dorsalTooltip.evaluate((element) => {
+    const tooltip = element.getBoundingClientRect();
+    const anchor = document
+      .querySelector(
+        '[data-diagram-id="dorsal-skull"][data-measurement-number="12"] .measurement-number-backdrop',
+      )!
+      .getBoundingClientRect();
+    return {
+      placement: element.getAttribute("data-placement"),
+      aboveOrBeside:
+        tooltip.bottom <= anchor.top || tooltip.left >= anchor.right,
+      withinViewport:
+        tooltip.top >= 0 &&
+        tooltip.left >= 0 &&
+        tooltip.right <= innerWidth &&
+        tooltip.bottom <= innerHeight,
+    };
+  });
+  expect(tooltipGeometry.placement).not.toBe("below");
+  expect(tooltipGeometry.aboveOrBeside).toBe(true);
+  expect(tooltipGeometry.withinViewport).toBe(true);
+  await expect(dorsalRing).toHaveAttribute("r", "112");
 
   await page
     .getByRole("button", {
@@ -152,6 +189,29 @@ test("touch uses preview before details and narrow layouts contain scrolling dia
     page.getByRole("button", { name: "View details" }),
   ).toBeVisible();
   await expect(page.getByRole("dialog")).not.toBeVisible();
+  await page.evaluate(() => {
+    document.body.dispatchEvent(
+      new PointerEvent("pointerdown", {
+        bubbles: true,
+        pointerId: 40,
+        isPrimary: true,
+        pointerType: "touch",
+        clientX: 24,
+        clientY: 300,
+      }),
+    );
+    document.body.dispatchEvent(
+      new PointerEvent("pointerup", {
+        bubbles: true,
+        pointerId: 40,
+        isPrimary: true,
+        pointerType: "touch",
+        clientX: 24,
+        clientY: 430,
+      }),
+    );
+  });
+  await expect(page.locator(".measurement-tooltip--touch")).toBeVisible();
   await firstOccurrence.locator(".measurement-number-backdrop").tap();
   await expect(
     page.getByRole("dialog", { name: "Skull length" }),
@@ -167,15 +227,62 @@ test("touch uses preview before details and narrow layouts contain scrolling dia
         borderColor: style.borderTopColor,
         nameBeforeAction: name.right <= action.left,
         leftPadding: Number.parseFloat(style.paddingLeft),
+        withinViewport:
+          element.getBoundingClientRect().top >= 0 &&
+          element.getBoundingClientRect().bottom <= innerHeight,
       };
     });
-  expect(previewLayout.position).toBe("static");
+  expect(previewLayout.position).toBe("absolute");
   expect(previewLayout.nameBeforeAction).toBe(true);
   expect(previewLayout.leftPadding).toBeGreaterThanOrEqual(12);
+  expect(previewLayout.withinViewport).toBe(true);
+  await page.evaluate(() => {
+    document.body.dispatchEvent(
+      new PointerEvent("pointerdown", {
+        bubbles: true,
+        pointerId: 41,
+        isPrimary: true,
+        pointerType: "touch",
+        clientX: 24,
+        clientY: 300,
+      }),
+    );
+    document.body.dispatchEvent(
+      new PointerEvent("pointerup", {
+        bubbles: true,
+        pointerId: 41,
+        isPrimary: true,
+        pointerType: "touch",
+        clientX: 24,
+        clientY: 430,
+      }),
+    );
+  });
+  await expect(firstOccurrence).toHaveAttribute("data-selected", "true");
+  await expect(
+    page.getByRole("dialog", { name: "Skull length" }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Close measurement details" }).tap();
   await expect(page.locator(".measurement-tooltip--touch")).toBeVisible();
   await expect(page.locator(".measurement-tooltip--hover:visible")).toHaveCount(
     0,
+  );
+
+  await page.reload();
+  const dorsalTwelve = page.locator(
+    '[data-diagram-id="dorsal-skull"][data-measurement-number="12"]',
+  );
+  await dorsalTwelve.locator(".measurement-number-backdrop").tap();
+  await expect(page.getByRole("tooltip")).toContainText("Zygomatic width");
+  const dorsalPreviewBounds = await page
+    .locator(".measurement-tooltip--touch")
+    .evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      return { top: box.top, bottom: box.bottom, viewport: innerHeight };
+    });
+  expect(dorsalPreviewBounds.top).toBeGreaterThanOrEqual(0);
+  expect(dorsalPreviewBounds.bottom).toBeLessThanOrEqual(
+    dorsalPreviewBounds.viewport,
   );
 
   const geometry = await page.locator("body").evaluate(() => ({
@@ -264,7 +371,82 @@ test("measurement reference reflows at effective 200% width and respects reduced
   expect(zoomedPanel.panelLeft).toBeGreaterThanOrEqual(
     zoomedPanel.viewportLeft,
   );
-  expect(zoomedPanel.panelRight).toBeLessThanOrEqual(zoomedPanel.viewportRight);
+  await expect
+    .poll(async () => {
+      const panel = await page
+        .locator(".measurement-detail-panel")
+        .evaluate((element) => {
+          const viewport = window.visualViewport!;
+          const box = element.getBoundingClientRect();
+          return box.right - (viewport.offsetLeft + viewport.width);
+        });
+      return panel;
+    })
+    .toBeLessThanOrEqual(0.5);
+});
+
+test("measurement board keeps paired figures until the narrow layout breakpoint", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 900, height: 800 });
+  await page.goto("/methodology");
+  const pairedLayout = await page
+    .locator(".measurement-board")
+    .evaluate((board) => {
+      const styles = getComputedStyle(board);
+      const dorsal = document
+        .querySelector(".measurement-figure--dorsal-skull")!
+        .getBoundingClientRect();
+      const ventral = document
+        .querySelector(".measurement-figure--ventral-skull")!
+        .getBoundingClientRect();
+      return {
+        columns: styles.gridTemplateColumns.trim().split(/\s+/).length,
+        paired: Math.abs(dorsal.top - ventral.top) < 2,
+      };
+    });
+  expect(pairedLayout.columns).toBe(12);
+  expect(pairedLayout.paired).toBe(true);
+
+  await page.setViewportSize({ width: 819, height: 800 });
+  await page.reload();
+  const narrowLayout = await page
+    .locator(".measurement-board")
+    .evaluate((board) => ({
+      columns: getComputedStyle(board).gridTemplateColumns.trim().split(/\s+/)
+        .length,
+      overflow: document.documentElement.scrollWidth - innerWidth,
+    }));
+  expect(narrowLayout.columns).toBe(1);
+  expect(narrowLayout.overflow).toBeLessThanOrEqual(0);
+});
+
+test("dismissing a table-isolated measurement returns the viewport to the table", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/methodology");
+
+  await page
+    .getByRole("button", {
+      name: "Show measurement 21: Mandibular canine length on its reference diagram",
+    })
+    .click();
+  await expect(
+    page.locator(
+      '[data-diagram-id="canine-lengths"][data-measurement-number="21"]',
+    ),
+  ).toBeFocused();
+  await page.locator(".measurement-board-heading").click();
+  await expect
+    .poll(() =>
+      page
+        .locator(".measurement-table-section")
+        .evaluate((element) => element.getBoundingClientRect().top),
+    )
+    .toBeLessThan(3);
+  await expect(page.locator('[data-selected="true"]')).toHaveCount(0);
 });
 
 test("measurement definitions and figures remain useful without JavaScript", async ({

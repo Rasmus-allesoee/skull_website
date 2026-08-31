@@ -2,15 +2,15 @@
 
 **Snapshot date:** 2026-08-31
 
-**Current phase:** Owner-authorized Measurements supporting-page milestone plus bounded feedback v1 refinement — complete locally; renewed owner review pending
+**Current phase:** Owner-authorized Measurements supporting-page milestone plus bounded feedback v1/v2 refinements — complete locally; renewed owner review pending
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, and focused Phase 5 is merged at `f098caf`. The owner separately authorized the bounded Measurements milestone on `agent/next-additions`, then supplied a first bounded review. `/methodology`, its corrected geometry, registered crop viewports, compact non-modal detail behavior, table-to-diagram actions, responsive/mobile states, tests, and documentation now pass the renewed local acceptance gate. No push, pull request, merge, remote CI, or later supporting-page/phase work is authorized.
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, and focused Phase 5 is merged at `f098caf`. The owner separately authorized the bounded Measurements milestone on `agent/next-additions`, then supplied two bounded reviews. `/methodology`, its corrected geometry, registered crop viewports, compact non-modal detail behavior, table-to-diagram actions, movement-aware outside dismissal, viewport-aware desktop/mobile previews, responsive states, tests, and documentation now pass the local acceptance gate. No push, pull request, merge, remote CI, or later supporting-page/phase work is authorized.
 
 **Next phase:** None authorized. The exact next action is owner review of `/methodology`; publication requires a separate explicit instruction. Age/condition methodology, remaining supporting pages, Phase 3.3, and Phase 6 remain separately gated.
 
 ## 1. Current objective
 
-Stop at the locally verified Measurements feedback-v1 acceptance gate and present it for renewed owner review. Preserve the merged map checkpoint and do not publish this branch or begin age/condition methodology, another supporting page, Phase 3.3, Phase 6, or any other scope without explicit authorization.
+Stop at the locally verified Measurements feedback-v2 acceptance gate and present it for renewed owner review. Preserve the merged map checkpoint and do not publish this branch or begin age/condition methodology, another supporting page, Phase 3.3, Phase 6, or any other scope without explicit authorization.
 
 ## 1.1 Owner-authorized Measurements milestone
 
@@ -41,6 +41,15 @@ The bounded Measurements milestone is complete locally and ready for owner produ
 - Added validated non-destructive presentation viewports. Dorsal and ventral lead at equal size, lateral follows full width, and mandible/canine share a wide row; the original WebPs and high-resolution registration coordinates are unchanged.
 - Replaced the large blocking native modal with a compact fixed non-modal name/number/description panel. There is no backdrop or blur; the board remains interactive, and Visual Viewport tracking plus inverse scale keeps the panel in the visible corner while the page is zoomed and horizontally panned.
 - Restyled the one-tap mobile preview as a full-width dark/brass row with left-aligned name and right-aligned action. Its state persists through mobile detail close, while the desktop hover tooltip is suppressed. Table number actions now isolate and move focus to the preferred existing diagram instead of repeating the table description; measurements 1 and 2 deliberately target lateral skull.
+
+## 1.3 Owner-directed Measurements feedback v2 refinement
+
+- Made outside dismissal movement-aware: only a primary pointer tap that travels no more than 10 CSS pixels clears the active measurement. Pointer cancellation and multi-touch are ignored, so vertical/horizontal scrolling preserves the selected annotation, touch preview, or open detail surface.
+- Replaced the static desktop tooltip position with an anchored, placement-aware tooltip that prefers the space above the active number and falls back to below/left/right while remaining inside the diagram and visible visual viewport. Mobile touch previews retain the below-diagram default but move above or beside the active annotation when the viewport would clip them.
+- Kept table-origin selection context through dismissal: clearing a selection activated from the definitions table returns the view to the table and restores the table action focus without changing diagram-origin behavior.
+- Removed source-only parentheticals from the canonical descriptions (including the five feedback-listed labels and the matching #8 note); no formal citation records were invented.
+- Tightened the dorsal/ventral presentation viewports to `[1450,0,3650,4000]`, reduced the dorsal #12 ring radius to keep its lower edge in-bounds, and moved the paired-to-stacked board breakpoint to `51.25rem` (~820 px). Source dimensions, identity registration, and measurement coordinates remain unchanged.
+- Added regression coverage for swipe preservation, dynamic desktop/mobile tooltip containment, table return, source-note removal, dorsal #12 clearance, and the 900/819 px layout switch.
 
 ## 2. Focused Phase 5 collection map
 
@@ -350,10 +359,10 @@ The bounded Measurements milestone is complete locally and ready for owner produ
 | Invalid fixtures | `pnpm test:fixtures`: 6 expected failures detected, including class-profile mismatch | Pass |
 | Types/lint/tests | Sequential formatting, lint, content/media validation, strict TypeScript, 15 Vitest files / 64 tests, and 6 actionable invalid fixtures pass. Measurement compiler coverage verifies 21/5/24 counts and intentional repeated-number links without regressing the existing catalog, map, comparison, media, or exhibit suites | Pass |
 | Production build | `next build --webpack` completes successfully with 77 static outputs; `/methodology`, `/map`, Home, guide, sitemap, catalog, 15 taxon, 18 exact-specimen, and 34 rank outputs prerender | Pass |
-| Focused browser/accessibility | `PLAYWRIGHT_PORT=3102 pnpm test:e2e tests/e2e/methodology.spec.ts`: 4/4 Chromium journeys cover canonical counts/media, corrected layout/marker/ring behavior, hover/focus/keyboard non-modal details, outside clearing, repeated highlighting, table-to-diagram isolation, persistent touch preview, 360/390 px containment, effective 200% reflow, emulated 200% visual-viewport anchoring, forced colors, reduced motion, static/no-JavaScript content, focus restoration, zero console errors, and zero axe violations | Pass |
-| Full browser regression | Final sequential `PLAYWRIGHT_PORT=3102 pnpm test:e2e` completed with 58/59 direct passes, including all four methodology journeys. The sole failure was the unchanged timing-sensitive map camera-close assertion; its isolated CI-policy run passed on retry and Playwright classified it as flaky. No map source/test file changed in this refinement | Pass with known existing flake |
+| Focused browser/accessibility | `CI=true PLAYWRIGHT_PORT=3103 pnpm test:e2e tests/e2e/methodology.spec.ts`: 6/6 Chromium journeys cover canonical counts/media, corrected layout/marker/ring behavior, hover/focus/keyboard non-modal details, movement-aware outside clearing, repeated highlighting, table-to-diagram isolation and return, dynamic desktop/mobile preview containment, 360/390 px containment, effective 200% reflow, emulated 200% visual-viewport anchoring, forced colors, reduced motion, static/no-JavaScript content, focus restoration, zero console errors, and zero axe violations | Pass |
+| Full browser regression | `CI=true PLAYWRIGHT_PORT=3104 pnpm test:e2e` completed with 61/61 Chromium journeys, including all six methodology journeys, in 2.5 minutes. No existing map flake reproduced and no map source/test file changed in this refinement | Pass |
 | Manual visual/responsive | Production Playwright inspection covers the revised dorsal/ventral lead at 1440 × 900, cropped lateral geometry, the paired mandible/canine row, compact fixed details, persistent 390 px touch preview/details, and 200% visual-viewport behavior. Anatomy and annotations remain registered and uncropped, arrowheads/numbers remain legible, mobile and desktop have no horizontal page overflow, and the browser console has zero errors | Pass |
-| Git/base/scope audit | Branch `agent/next-additions` starts from the post-merge Phase 5 base. The intended refinement diff is limited to the owner feedback/context index, canonical methodology geometry/viewports, source verifier, route/island/styles, focused tests, and matching canonical documentation; supplied raw/annotated staging, review screenshots, and unrelated owner files remain unstaged/ignored | Pass |
+| Git/base/scope audit | Branch `agent/next-additions` starts from the post-merge Phase 5 base. The intended refinement diff is limited to canonical methodology definitions/geometry, route/island/styles, focused tests, and matching canonical documentation; supplied raw/annotated staging, review screenshots, and unrelated owner files remain unstaged/ignored | Pass |
 | Remote Phase 5 CI | GitHub Actions run `33275504203` passed the quality/build/browser workflow before merge; the post-merge rerun of run `33275866571` also passed after one flaky browser retry | Pass |
 | Complete map gate | The final sequential check/build/browser gate, owner-feedback regression suite, resilience checks, visual matrix, route-bundle audit, explicit staging audit, remote CI, and normal merge pass | Complete and merged |
 
@@ -379,7 +388,7 @@ Package-manager gates must run sequentially with `CI=true` in non-interactive en
 - Chrome/Chromium is the current phase browser target. Effective 200% reflow, reduced motion, forced colors, keyboard, and automated axe checks pass; Firefox/WebKit and a manual screen-reader release audit remain Phase 7 gates.
 - `NEXT_PUBLIC_SITE_URL` still defaults to `http://localhost:3000`; the final domain is a Phase 7 decision. Canonical/Open Graph/sitemap URLs are structurally complete but intentionally use that default locally.
 - Combined Phase 3.2/4 is merged into `main` at `9a0e1d0`. Phase 5 is merged into `main` at `f098caf` through PR #10 after passing remote CI; its feature branch has been intentionally preserved. Measurements is verified only on the local `agent/next-additions` branch; owner review and any publication remain separate.
-- The unchanged map test `closing an unfiltered popup preserves the manually explored camera` remains timing-sensitive: the feedback-v1 full run passed 58 other journeys and the isolated CI-policy rerun recovered on retry, where Playwright labelled it flaky. The Measurements refinement does not touch map code or tests; any stabilization belongs in a separately authorized map fix.
+- The unchanged map test `closing an unfiltered popup preserves the manually explored camera` was timing-sensitive in the feedback-v1 run (58/59 direct, isolated retry recovered), but the v2 full run passed 61/61 directly. The Measurements refinement does not touch map code or tests; any future stabilization remains a separately authorized map fix.
 
 ## 13. Exact next action
 
@@ -499,5 +508,10 @@ No unresolved content, rights, or publication blocker prevents local Measurement
 - The owner supplied `agent_context/measurement_page_feedback_v1.md` after desktop/mobile review. The bounded refinement corrects shared/extended guides, arrowhead and number treatment, zoom/pan behavior, compact non-modal details, the mobile preview lifecycle, crop/layout priority, and table-to-diagram activation.
 - Canonical presentation viewports crop only empty layout canvas; no source/public raster, rights, definition, specimen value, or publication boundary changed. The corrected source pairs remain identity-registered and ignored.
 - The sequential check, 77-output production build, focused 4/4 Chromium/axe/no-JavaScript/360–390 px/visual-zoom suite, and manual desktop/mobile production screenshots pass. The full browser run passed 58/59 directly; its sole unchanged map camera assertion passed on isolated CI retry and was classified flaky. The refinement remains local for renewed owner review; no push, pull request, merge, remote CI, or next phase is authorized.
+
+### 2026-08-31 — Measurements feedback v2 refinement verified locally
+
+- The owner supplied `agent_context/prompt_measurement_page_feedback_v2.md`. The bounded refinement adds movement-aware primary-tap dismissal (swipes, pointer cancellation, and multi-touch preserve state), adaptive diagram/visual-viewport tooltip placement on desktop and mobile, table-origin return-to-table behavior, source-only parenthetical cleanup, dorsal/ventral crop tightening, dorsal #12 ring clearance, and the approximately 820 px layout breakpoint.
+- Source verification, `CI=true pnpm check`, the 77-output production build, focused 6/6 Chromium/axe/no-JavaScript/360–390 px/visual-zoom suite, full 61/61 Chromium regression, and manual production visual checks pass. The refinement remains local for renewed owner review; no push, pull request, merge, remote CI, or next phase is authorized.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.

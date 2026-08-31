@@ -2,7 +2,7 @@
 
 **Status:** Combined Phase 3.2 catalog-first and Phase 4 discovery system implemented; owner review pending
 
-**Last reviewed:** 2026-08-22
+**Last reviewed:** 2026-08-31
 
 ## 1. Design intent
 
@@ -182,7 +182,7 @@ Responsive checkpoints are content-derived, with explicit QA at:
 
 - **Measurement reference board:** five semantic figures using unannotated transparent WebPs and one shared intrinsic coordinate system per image/SVG pair. Dorsal/ventral lead and compare at equal size; lateral follows at full width; mandible and cropped canine share the next wide row. Canonical presentation viewports crop empty canvas without cropping anatomy or changing registration; figures stack without page overflow at constrained widths.
 - **Measurement annotation:** independent keyboard-focusable SVG group with stable diagram/number hooks, two-ended dimension line, shared dashed landmark extensions where anatomically appropriate, registered numeric label with generous ring clearance, non-color selected/focus treatment, and a generous painted hit line. Arrowheads remain optically stable with line thickness across responsive sizes, and repeated numbers share selected state across views.
-- **Measurement preview/detail:** hover and focus expose a compact name tooltip. First touch selects and shows a full-width dark preview row with brass border, left-aligned name, and right-aligned `View details`; second activation or the action opens one compact non-modal name/number/description panel. The panel has no backdrop, stays fixed to the visible zoomed viewport, permits simultaneous diagram inspection, closes with its control or Escape, and restores keyboard focus. Clicking/tapping outside the active measurement and its detail surfaces clears selection; there is no remote reset control.
+- **Measurement preview/detail:** hover and focus expose a compact name tooltip anchored to the active number, preferring the space above it and adapting to diagram/viewport edges. First touch selects and shows a full-width dark preview row with brass border, left-aligned name, and right-aligned `View details`; the preview repositions when the default below-diagram location would be clipped. Second activation or the action opens one compact non-modal name/number/description panel. The panel has no backdrop, stays fixed to the visible zoomed viewport, permits simultaneous diagram inspection, closes with its control or Escape, and restores keyboard focus. Outside dismissal is a primary tap only (movement beyond 10 CSS pixels, pointer cancellation, and multi-touch do not clear selection), and table-origin dismissal returns to the table. There is no remote reset control.
 - **Measurement reference table:** semantic three-column table of all 21 definitions below the board. Narrow layouts render readable stacked rows without changing table associations. A number action does not repeat the visible description: it isolates the matching annotation and moves to its preferred existing diagram, using lateral skull for repeated numbers 1 and 2. The table is the complete no-JavaScript and non-visual equivalent, not a filter result.
 
 - **Map toolbar:** compact operational heading/summary, primary collection combobox, class/facet controls, supported-style select, uncertainty toggle, fit/reset, results control, and disclosed key. At narrow widths it remains two deliberate control rows rather than a tall hero or arbitrary wrapping.

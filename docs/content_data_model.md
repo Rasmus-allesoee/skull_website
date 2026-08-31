@@ -2,7 +2,7 @@
 
 **Status:** Approved contract; schema version 4, class-aware measurements, and generated search projection implemented
 
-**Last reviewed:** 2026-08-22
+**Last reviewed:** 2026-08-31
 
 ## 1. Purpose
 
@@ -407,7 +407,7 @@ Guide MDX uses explicit title, slug, summary, review date, safety-review status,
 - Build validation requires definitions 1–21 exactly once, at least one occurrence for every definition, one definition for every occurrence, unique per-view numbers, non-zero in-bounds geometry and viewports, explicit credit/rights, and five declared WebP derivatives. Source verification additionally covers the owner-corrected lateral and mandible dashed guides.
 - This reference model defines terminology and illustrated landmarks; it does not add or migrate specimen measurement values and never changes the unified `specimens.csv` profile contract.
 - The profile-specific specimen guide remains the concise index of stored fields. A shared label does not by itself prove that a legacy stored value followed every more detailed landmark shown on `/methodology`; value-level reconciliation remains part of the audited migration when source evidence requires it.
-- Parenthetical source notes supplied in the CSV remain owner-provided context, not formal citation records. Do not invent URLs, authors, or stronger protocol claims without reviewed sources.
+- Source-only parentheticals have been removed from the published definition descriptions; any future source attribution remains owner-provided context until it is promoted to a reviewed citation record. Do not invent URLs, authors, or stronger protocol claims without reviewed sources.
 - Raw and annotated source PNGs remain ignored under `agent_context/measurement_page/`. Only unannotated processed derivatives are public; the annotated images are positional evidence and must never be displayed or committed as production media.
 
 ## 13. Media contract

@@ -4,7 +4,7 @@
 
 **Current phase:** Focused Phase 5 collection map complete and merged into `main`; next milestone selection pending
 
-**Last reviewed:** 2026-08-29
+**Last reviewed:** 2026-08-31
 
 ## 1. How to use this plan
 
@@ -362,7 +362,7 @@ The owner deliberately narrowed this milestone to the geographic collection expe
 These items were explicitly removed from the focused map milestone. They require a separate owner authorization and their own content/citation review.
 
 - [ ] Promote the existing preparation route shell into the Guides hub and complete cited/safety-reviewed preparation content.
-- [x] Add the separately owner-authorized illustrated Measurements page at `/methodology` using five reviewed real-skull reference pairs, 21 canonical definitions, 24 registered SVG occurrences, a semantic table, responsive interaction, accessibility, and static fallback. Completed on 2026-08-30; the bounded owner-feedback geometry/layout/detail/table refinement was completed locally on 2026-08-31. Publication remains separate.
+- [x] Add the separately owner-authorized illustrated Measurements page at `/methodology` using five reviewed real-skull reference pairs, 21 canonical definitions, 24 registered SVG occurrences, a semantic table, responsive interaction, accessibility, and static fallback. Completed on 2026-08-30; the bounded owner-feedback v1/v2 geometry/layout/detail/table/tooltip refinements were completed locally on 2026-08-31. Publication remains separate.
 - [ ] Add age-estimation and specimen-condition methodology using owner-supplied/reviewed real-skull imagery and appropriate citations/species caveats.
 - [ ] Add Contribution photography/metadata/rights protocol and reviewed contact link.
 - [ ] Add About and Methodology.

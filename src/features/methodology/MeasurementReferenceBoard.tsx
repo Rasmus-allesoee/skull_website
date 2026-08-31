@@ -5,9 +5,12 @@ import {
   type CSSProperties,
   type FocusEvent,
   type KeyboardEvent,
+  type MouseEvent,
   type PointerEvent,
+  useCallback,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -49,6 +52,12 @@ export function MeasurementReferenceBoard({
   const returnFocusRef = useRef<FocusTarget | null>(null);
   const detailCloseRef = useRef<HTMLButtonElement>(null);
   const detailPanelRef = useRef<HTMLElement>(null);
+  const tableSectionRef = useRef<HTMLElement>(null);
+  const pointerStartRef = useRef<{
+    pointerId: number;
+    clientX: number;
+    clientY: number;
+  } | null>(null);
   const detailTitleId = useId();
   const detailDescriptionId = useId();
   const definitions = new Map(
@@ -95,16 +104,33 @@ export function MeasurementReferenceBoard({
       requestAnimationFrame(() => returnFocusRef.current?.focus());
   }
 
-  function clearSelection({ restoreFocus = false } = {}) {
-    const returnTarget = returnFocusRef.current;
-    setSelectedNumber(null);
-    setSelectionOrigin(null);
-    setTouchPreview(null);
-    setHovered(null);
-    setFocused(null);
-    setDetailNumber(null);
-    if (restoreFocus) requestAnimationFrame(() => returnTarget?.focus());
-  }
+  const clearSelection = useCallback(
+    ({ restoreFocus = false } = {}) => {
+      const returnTarget = returnFocusRef.current;
+      const returnToTable = selectionOrigin === "table";
+      setSelectedNumber(null);
+      setSelectionOrigin(null);
+      setTouchPreview(null);
+      setHovered(null);
+      setFocused(null);
+      setDetailNumber(null);
+      if (returnToTable || restoreFocus) {
+        requestAnimationFrame(() => {
+          if (returnToTable) {
+            tableSectionRef.current?.scrollIntoView({
+              block: "start",
+              behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
+                .matches
+                ? "auto"
+                : "smooth",
+            });
+          }
+          if (restoreFocus) returnTarget?.focus({ preventScroll: true });
+        });
+      }
+    },
+    [selectionOrigin],
+  );
 
   function showMeasurementFromTable(
     definition: MeasurementDefinition,
@@ -141,6 +167,28 @@ export function MeasurementReferenceBoard({
   useEffect(() => {
     function handlePointerDown(event: globalThis.PointerEvent) {
       if (selectedNumber === null && detailNumber === null) return;
+      if (!event.isPrimary) {
+        pointerStartRef.current = null;
+        return;
+      }
+      pointerStartRef.current = {
+        pointerId: event.pointerId,
+        clientX: event.clientX,
+        clientY: event.clientY,
+      };
+    }
+
+    function handlePointerUp(event: globalThis.PointerEvent) {
+      const start = pointerStartRef.current;
+      pointerStartRef.current = null;
+      if (!start || start.pointerId !== event.pointerId) return;
+      if (
+        Math.hypot(
+          event.clientX - start.clientX,
+          event.clientY - start.clientY,
+        ) > 10
+      )
+        return;
       const target = event.target;
       if (!(target instanceof Element)) return;
       if (
@@ -149,12 +197,12 @@ export function MeasurementReferenceBoard({
         )
       )
         return;
-      setSelectedNumber(null);
-      setSelectionOrigin(null);
-      setTouchPreview(null);
-      setHovered(null);
-      setFocused(null);
-      setDetailNumber(null);
+      clearSelection({ restoreFocus: selectionOrigin === "table" });
+    }
+
+    function handlePointerCancel(event: globalThis.PointerEvent) {
+      if (pointerStartRef.current?.pointerId === event.pointerId)
+        pointerStartRef.current = null;
     }
 
     function handleKeyDown(event: globalThis.KeyboardEvent) {
@@ -168,12 +216,16 @@ export function MeasurementReferenceBoard({
     }
 
     document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("pointerup", handlePointerUp);
+    document.addEventListener("pointercancel", handlePointerCancel);
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("pointerup", handlePointerUp);
+      document.removeEventListener("pointercancel", handlePointerCancel);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [detailNumber, selectedNumber]);
+  }, [clearSelection, detailNumber, selectedNumber, selectionOrigin]);
 
   useEffect(() => {
     if (detailNumber === null) return;
@@ -379,29 +431,17 @@ export function MeasurementReferenceBoard({
                   </div>
                 </div>
                 {preview ? (
-                  <div
-                    className={`measurement-tooltip measurement-tooltip--${preview.touch ? "touch" : "hover"}`}
-                    role="tooltip"
-                    id={`measurement-tooltip-${diagram.id}-${preview.definition.number}`}
-                  >
-                    <span>
-                      {preview.definition.number}. {preview.definition.name}
-                    </span>
-                    {preview.touch ? (
-                      <button
-                        type="button"
-                        onClick={(event) =>
-                          openDetails({
-                            number: preview.definition.number,
-                            trigger: event.currentTarget,
-                            preserveTouchPreview: true,
-                          })
-                        }
-                      >
-                        View details
-                      </button>
-                    ) : null}
-                  </div>
+                  <MeasurementTooltip
+                    diagram={diagram}
+                    preview={preview}
+                    onViewDetails={(event) =>
+                      openDetails({
+                        number: preview.definition.number,
+                        trigger: event.currentTarget,
+                        preserveTouchPreview: true,
+                      })
+                    }
+                  />
                 ) : null}
               </figure>
             );
@@ -410,6 +450,7 @@ export function MeasurementReferenceBoard({
       </section>
 
       <section
+        ref={tableSectionRef}
         className="measurement-table-section"
         aria-labelledby="measurement-table-title"
       >
@@ -553,6 +594,8 @@ function MeasurementOverlay({
         const selected = selectedNumber === occurrence.number;
         const subdued = selectedNumber !== null && !selected;
         const [labelX, labelY] = occurrence.label;
+        const compactRing =
+          diagram.id === "dorsal-skull" && occurrence.number === 12;
         return (
           <g
             key={occurrence.number}
@@ -609,13 +652,13 @@ function MeasurementOverlay({
               className="measurement-number-backdrop"
               cx={labelX}
               cy={labelY}
-              r="135"
+              r={compactRing ? "112" : "135"}
             />
             <circle
               className="measurement-focus-ring"
               cx={labelX}
               cy={labelY}
-              r="155"
+              r={compactRing ? "130" : "155"}
               vectorEffect="non-scaling-stroke"
             />
             <text
@@ -668,8 +711,211 @@ function resolveDiagramPreview(options: {
   if (!definition) return null;
   return {
     definition,
+    occurrence,
     touch:
       touchPreview?.diagramId === diagram.id &&
       touchPreview.number === active.number,
   };
+}
+
+function MeasurementTooltip({
+  diagram,
+  preview,
+  onViewDetails,
+}: {
+  diagram: MeasurementDiagram;
+  preview: {
+    definition: MeasurementDefinition;
+    occurrence: MeasurementOccurrence;
+    touch: boolean;
+  };
+  onViewDetails: (event: MouseEvent<HTMLButtonElement>) => void;
+}) {
+  const tooltipRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const tooltip = tooltipRef.current;
+    const figure = tooltip?.closest<HTMLElement>(".measurement-figure");
+    const diagramScroll = figure?.querySelector<HTMLElement>(
+      ".measurement-diagram-scroll",
+    );
+    const stage = figure?.querySelector<HTMLElement>(
+      ".measurement-diagram-stage",
+    );
+    const anchor = figure?.querySelector<SVGCircleElement>(
+      `[data-measurement-number="${preview.occurrence.number}"] .measurement-number-backdrop`,
+    );
+    if (!tooltip || !figure || !diagramScroll || !stage || !anchor) return;
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const figureRect = figure.getBoundingClientRect();
+      const scrollRect = diagramScroll.getBoundingClientRect();
+      const stageRect = stage.getBoundingClientRect();
+      const anchorRect = anchor.getBoundingClientRect();
+      const tooltipRect = tooltip.getBoundingClientRect();
+      const visualViewport = window.visualViewport;
+      const viewportLeft = visualViewport?.offsetLeft ?? 0;
+      const viewportTop = visualViewport?.offsetTop ?? 0;
+      const viewportRight =
+        viewportLeft + (visualViewport?.width ?? window.innerWidth);
+      const viewportBottom =
+        viewportTop + (visualViewport?.height ?? window.innerHeight);
+      const safe = preview.touch ? 8 : 10;
+      const horizontalSafe = preview.touch ? 1 : safe;
+      const area = {
+        left: Math.max(
+          figureRect.left + horizontalSafe,
+          scrollRect.left + horizontalSafe,
+          viewportLeft + horizontalSafe,
+        ),
+        right: Math.min(
+          figureRect.right - horizontalSafe,
+          scrollRect.right - horizontalSafe,
+          viewportRight - horizontalSafe,
+        ),
+        top: Math.max(scrollRect.top + safe, viewportTop + safe),
+        bottom: Math.min(scrollRect.bottom - safe, viewportBottom - safe),
+      };
+      const width = tooltipRect.width;
+      const height = tooltipRect.height;
+      const clamp = (value: number, min: number, max: number) =>
+        Math.min(Math.max(value, min), Math.max(min, max));
+      const fits = (left: number, top: number) =>
+        left >= area.left &&
+        left + width <= area.right &&
+        top >= area.top &&
+        top + height <= area.bottom;
+      let left = figureRect.left + safe;
+      let top = stageRect.bottom + safe;
+      let placement = "below";
+
+      if (!preview.touch) {
+        const centerX = anchorRect.left + anchorRect.width / 2;
+        const centerY = anchorRect.top + anchorRect.height / 2;
+        const candidates = [
+          {
+            placement: "top",
+            left: centerX - width / 2,
+            top: anchorRect.top - height - safe,
+          },
+          {
+            placement: "bottom",
+            left: centerX - width / 2,
+            top: anchorRect.bottom + safe,
+          },
+          {
+            placement: "left",
+            left: anchorRect.left - width - safe,
+            top: centerY - height / 2,
+          },
+          {
+            placement: "right",
+            left: anchorRect.right + safe,
+            top: centerY - height / 2,
+          },
+        ];
+        const candidate = candidates.find((item) => fits(item.left, item.top));
+        if (candidate) {
+          ({ left, top, placement } = candidate);
+        } else {
+          const preferred = candidates[0]!;
+          left = clamp(preferred.left, area.left, area.right - width);
+          top = clamp(preferred.top, area.top, area.bottom - height);
+          placement = "clamped";
+        }
+      } else {
+        const belowLeft = clamp(
+          figureRect.left + 1,
+          area.left,
+          area.right - width,
+        );
+        const belowTop = stageRect.bottom;
+        const aboveTop = stageRect.top - height;
+        if (fits(belowLeft, belowTop)) {
+          left = belowLeft;
+          top = belowTop;
+        } else if (fits(belowLeft, aboveTop)) {
+          left = belowLeft;
+          top = aboveTop;
+          placement = "above";
+        } else {
+          const centerY = anchorRect.top + anchorRect.height / 2;
+          const anchorBelowTop = anchorRect.bottom + safe;
+          const anchorAboveTop = anchorRect.top - height - safe;
+          if (fits(belowLeft, anchorBelowTop)) {
+            left = belowLeft;
+            top = anchorBelowTop;
+            placement = "anchored-below";
+          } else if (fits(belowLeft, anchorAboveTop)) {
+            left = belowLeft;
+            top = anchorAboveTop;
+            placement = "anchored-above";
+          } else {
+            left = belowLeft;
+            top = clamp(centerY - height / 2, area.top, area.bottom - height);
+            if (top < anchorRect.top - height - safe) {
+              placement = "anchored-above";
+            } else if (top > anchorRect.bottom + safe) {
+              placement = "anchored-below";
+            } else {
+              placement = "anchored";
+            }
+          }
+        }
+      }
+
+      tooltip.style.setProperty(
+        "--measurement-tooltip-left",
+        `${Math.round(left - figureRect.left)}px`,
+      );
+      tooltip.style.setProperty(
+        "--measurement-tooltip-top",
+        `${Math.round(top - figureRect.top)}px`,
+      );
+      tooltip.dataset.placement = placement;
+      tooltip.dataset.positioned = "true";
+    };
+    const requestUpdate = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(update);
+    };
+
+    update();
+    diagramScroll.addEventListener("scroll", requestUpdate, {
+      passive: true,
+    });
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    window.visualViewport?.addEventListener("scroll", requestUpdate);
+    window.visualViewport?.addEventListener("resize", requestUpdate);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      diagramScroll.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      window.visualViewport?.removeEventListener("scroll", requestUpdate);
+      window.visualViewport?.removeEventListener("resize", requestUpdate);
+    };
+  }, [diagram.id, preview.occurrence.number, preview.touch]);
+
+  return (
+    <div
+      ref={tooltipRef}
+      className={`measurement-tooltip measurement-tooltip--${preview.touch ? "touch" : "hover"}`}
+      role="tooltip"
+      id={`measurement-tooltip-${diagram.id}-${preview.definition.number}`}
+      data-positioned="false"
+    >
+      <span>
+        {preview.definition.number}. {preview.definition.name}
+      </span>
+      {preview.touch ? (
+        <button type="button" onClick={onViewDetails}>
+          View details
+        </button>
+      ) : null}
+    </div>
+  );
 }
