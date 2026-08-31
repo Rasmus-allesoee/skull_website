@@ -186,8 +186,14 @@ test("touch uses preview before details and narrow layouts contain scrolling dia
   await firstOccurrence.locator(".measurement-number-backdrop").tap();
   await expect(page.getByRole("tooltip")).toContainText("Skull length");
   await expect(
-    page.getByRole("button", { name: "View details" }),
+    page.getByRole("button", { name: "1. Skull length", exact: true }),
   ).toBeVisible();
+  await expect(page.getByRole("button", { name: "View details" })).toHaveCount(
+    0,
+  );
+  await expect(
+    page.getByText("choose View details", { exact: false }),
+  ).toHaveCount(0);
   await expect(page.getByRole("dialog")).not.toBeVisible();
   await page.evaluate(() => {
     document.body.dispatchEvent(
@@ -219,13 +225,14 @@ test("touch uses preview before details and narrow layouts contain scrolling dia
   const previewLayout = await page
     .locator(".measurement-tooltip--touch")
     .evaluate((element) => {
-      const name = element.querySelector("span")!.getBoundingClientRect();
-      const action = element.querySelector("button")!.getBoundingClientRect();
       const style = getComputedStyle(element);
+      const figure = element
+        .closest(".measurement-figure")!
+        .getBoundingClientRect();
       return {
         position: style.position,
         borderColor: style.borderTopColor,
-        nameBeforeAction: name.right <= action.left,
+        compact: element.getBoundingClientRect().width < figure.width * 0.9,
         leftPadding: Number.parseFloat(style.paddingLeft),
         withinViewport:
           element.getBoundingClientRect().top >= 0 &&
@@ -233,7 +240,7 @@ test("touch uses preview before details and narrow layouts contain scrolling dia
       };
     });
   expect(previewLayout.position).toBe("absolute");
-  expect(previewLayout.nameBeforeAction).toBe(true);
+  expect(previewLayout.compact).toBe(true);
   expect(previewLayout.leftPadding).toBeGreaterThanOrEqual(12);
   expect(previewLayout.withinViewport).toBe(true);
   await page.evaluate(() => {
@@ -267,6 +274,14 @@ test("touch uses preview before details and narrow layouts contain scrolling dia
   await expect(page.locator(".measurement-tooltip--hover:visible")).toHaveCount(
     0,
   );
+  await page
+    .getByRole("button", { name: "1. Skull length", exact: true })
+    .tap();
+  await expect(
+    page.getByRole("dialog", { name: "Skull length" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Close measurement details" }).tap();
+  await expect(page.locator(".measurement-tooltip--touch")).toBeVisible();
 
   await page.reload();
   const dorsalTwelve = page.locator(

@@ -2338,24 +2338,39 @@ h3 {
 }
 
 .measurement-tooltip--touch {
-  width: calc(100% - 2px);
-  justify-content: space-between;
-  gap: 0.75rem;
-  max-width: none;
-  min-height: 3.25rem;
-  padding: 0.45rem 0.55rem 0.45rem 0.8rem;
+  width: fit-content;
+  max-width: min(18rem, calc(100vw - 1.5rem));
+  min-height: 0;
+  padding: 0.28rem 0.75rem;
+  background: rgb(20 24 22 / 82%);
+  box-shadow: 0 0.5rem 1.25rem rgb(0 0 0 / 24%);
   pointer-events: auto;
 }
 
-.measurement-tooltip--touch > span {
+.measurement-tooltip--touch > button {
   min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: left;
+  text-wrap: balance;
 }
 
-.measurement-tooltip button {
-  min-height: 2.75rem;
-  flex: none;
-  padding-inline: 0.75rem;
-  border-color: var(--color-accent);
+.measurement-tooltip--touch > button:hover:not(:disabled) {
+  border: 0;
+  background: transparent;
+  color: var(--color-accent);
+}
+
+.measurement-tooltip--touch > button:focus-visible {
+  border-radius: 0.125rem;
+  outline-offset: 0.15rem;
 }
 
 .measurement-image-fallback {

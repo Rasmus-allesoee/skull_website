@@ -294,8 +294,8 @@ export function MeasurementReferenceBoard({
           <p>
             <strong>How to use:</strong> Numbers match the reference table.
             Hover or focus for the name; click or press Enter for the complete
-            method. On touch, tap once for a preview and again—or choose View
-            details—to open it.
+            method. On touch, tap once for a preview and again—or tap the
+            preview name—to open it.
           </p>
         </div>
 
@@ -791,36 +791,39 @@ function MeasurementTooltip({
       let top = stageRect.bottom + safe;
       let placement = "below";
 
+      const centerX = anchorRect.left + anchorRect.width / 2;
+      const centerY = anchorRect.top + anchorRect.height / 2;
+      const anchoredCandidates = [
+        {
+          placement: "top",
+          left: centerX - width / 2,
+          top: anchorRect.top - height - safe,
+        },
+        {
+          placement: "bottom",
+          left: centerX - width / 2,
+          top: anchorRect.bottom + safe,
+        },
+        {
+          placement: "left",
+          left: anchorRect.left - width - safe,
+          top: centerY - height / 2,
+        },
+        {
+          placement: "right",
+          left: anchorRect.right + safe,
+          top: centerY - height / 2,
+        },
+      ];
+
       if (!preview.touch) {
-        const centerX = anchorRect.left + anchorRect.width / 2;
-        const centerY = anchorRect.top + anchorRect.height / 2;
-        const candidates = [
-          {
-            placement: "top",
-            left: centerX - width / 2,
-            top: anchorRect.top - height - safe,
-          },
-          {
-            placement: "bottom",
-            left: centerX - width / 2,
-            top: anchorRect.bottom + safe,
-          },
-          {
-            placement: "left",
-            left: anchorRect.left - width - safe,
-            top: centerY - height / 2,
-          },
-          {
-            placement: "right",
-            left: anchorRect.right + safe,
-            top: centerY - height / 2,
-          },
-        ];
-        const candidate = candidates.find((item) => fits(item.left, item.top));
+        const candidate = anchoredCandidates.find((item) =>
+          fits(item.left, item.top),
+        );
         if (candidate) {
           ({ left, top, placement } = candidate);
         } else {
-          const preferred = candidates[0]!;
+          const preferred = anchoredCandidates[0]!;
           left = clamp(preferred.left, area.left, area.right - width);
           top = clamp(preferred.top, area.top, area.bottom - height);
           placement = "clamped";
@@ -832,36 +835,19 @@ function MeasurementTooltip({
           area.right - width,
         );
         const belowTop = stageRect.bottom;
-        const aboveTop = stageRect.top - height;
         if (fits(belowLeft, belowTop)) {
           left = belowLeft;
           top = belowTop;
-        } else if (fits(belowLeft, aboveTop)) {
-          left = belowLeft;
-          top = aboveTop;
-          placement = "above";
         } else {
-          const centerY = anchorRect.top + anchorRect.height / 2;
-          const anchorBelowTop = anchorRect.bottom + safe;
-          const anchorAboveTop = anchorRect.top - height - safe;
-          if (fits(belowLeft, anchorBelowTop)) {
-            left = belowLeft;
-            top = anchorBelowTop;
-            placement = "anchored-below";
-          } else if (fits(belowLeft, anchorAboveTop)) {
-            left = belowLeft;
-            top = anchorAboveTop;
-            placement = "anchored-above";
+          const candidate = anchoredCandidates.find((item) =>
+            fits(item.left, item.top),
+          );
+          if (candidate) {
+            ({ left, top, placement } = candidate);
           } else {
-            left = belowLeft;
-            top = clamp(centerY - height / 2, area.top, area.bottom - height);
-            if (top < anchorRect.top - height - safe) {
-              placement = "anchored-above";
-            } else if (top > anchorRect.bottom + safe) {
-              placement = "anchored-below";
-            } else {
-              placement = "anchored";
-            }
+            left = clamp(centerX - width / 2, area.left, area.right - width);
+            top = clamp(area.bottom - height, area.top, area.bottom - height);
+            placement = "viewport-bottom";
           }
         }
       }
@@ -908,14 +894,15 @@ function MeasurementTooltip({
       id={`measurement-tooltip-${diagram.id}-${preview.definition.number}`}
       data-positioned="false"
     >
-      <span>
-        {preview.definition.number}. {preview.definition.name}
-      </span>
       {preview.touch ? (
         <button type="button" onClick={onViewDetails}>
-          View details
+          {preview.definition.number}. {preview.definition.name}
         </button>
-      ) : null}
+      ) : (
+        <span>
+          {preview.definition.number}. {preview.definition.name}
+        </span>
+      )}
     </div>
   );
 }

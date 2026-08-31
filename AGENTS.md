@@ -20,7 +20,7 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **the owner-authorized Measurements supporting-page milestone and its bounded owner-feedback refinements (v1 and v2) are implemented and verified locally on `agent/next-additions`; `/methodology` is ready for renewed owner review, but it has not been pushed or published**. The focused map-only Phase 5 implementation remains merged into `main` at `f098caf`, and the combined Phase 3.2/4 work remains merged at `9a0e1d0`. Age/condition methodology, other supporting/editorial pages, the optional Phase 3.3 comprehensive tree, and Phase 6 remain deferred. Consult `docs/project_status.md` for exact evidence and the next action. Do not publish this milestone or begin another scope without explicit owner authorization.
+Current phase: **the owner-authorized Measurements supporting-page milestone and its bounded owner-feedback refinements (v1, v2, and v3) are implemented and verified locally on `agent/next-additions`; `/methodology` is ready for renewed owner review, but it has not been pushed or published**. The focused map-only Phase 5 implementation remains merged into `main` at `f098caf`, and the combined Phase 3.2/4 work remains merged at `9a0e1d0`. Age/condition methodology, other supporting/editorial pages, the optional Phase 3.3 comprehensive tree, and Phase 6 remain deferred. Consult `docs/project_status.md` for exact evidence and the next action. Do not publish this milestone or begin another scope without explicit owner authorization.
 
 Use the neutral working title **Skull Collection** from central site configuration until the final name is selected.
 
@@ -93,6 +93,7 @@ Local context paths:
 - `agent_context/phase_5_map_feature_plan.md` — owner-authored map-only Phase 5 implementation brief; supporting/editorial pages remain deferred.
 - `agent_context/measurement_page_plan.md` — owner-authored measurement-page product specification covering the `/methodology` reference page, programmatic SVG overlays, supplied measurement definitions, interaction, and acceptance criteria.
 - `agent_context/measurement_page_feedback_v1.md` — bounded owner review of the first `/methodology` implementation; owns the refined geometry, compact detail surface, diagram order/cropping, mobile preview, and table-linking requirements.
+- `agent_context/mobile_tooltip_too_large_hide_skull.png` — owner visual evidence for the v3 mobile preview refinement; context only, never a runtime asset.
 - `agent_context/measurement_page/` — local measurement-page staging context: annotated positional references, the supplied measurement-description CSV, and the source prompt; these inputs are not runtime assets until explicitly promoted through the canonical content/media pipeline.
 - `agent_context/website_screenshots/localhost_3000_species.png` — ignored before-state visual evidence only, never a runtime asset.
 
