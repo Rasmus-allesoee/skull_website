@@ -2,15 +2,15 @@
 
 **Snapshot date:** 2026-08-31
 
-**Current phase:** Owner-authorized Measurements supporting-page milestone plus bounded feedback v1/v2/v3 refinements — complete locally; renewed owner review pending
+**Current phase:** Owner-authorized Measurements supporting-page milestone plus bounded feedback v1/v2/v3 and table/map follow-up refinements — complete locally; renewed owner review pending
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, and focused Phase 5 is merged at `f098caf`. The owner separately authorized the bounded Measurements milestone on `agent/next-additions`, then supplied three bounded reviews. `/methodology`, its corrected geometry, registered crop viewports, compact non-modal detail behavior, table-to-diagram actions, movement-aware outside dismissal, compact tappable mobile previews, viewport-aware desktop/mobile placement, responsive states, tests, and documentation now pass the local acceptance gate. No push, pull request, merge, remote CI, or later supporting-page/phase work is authorized.
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, and focused Phase 5 is merged at `f098caf`. The owner separately authorized the bounded Measurements milestone on `agent/next-additions`, then supplied three bounded reviews and a focused table/map follow-up. `/methodology`, its corrected geometry, registered crop viewports, compact non-modal detail behavior, table-to-diagram actions, movement-aware outside dismissal, compact tappable mobile previews, viewport-aware desktop/mobile placement, responsive states, tests, and documentation now pass the local acceptance gate. No push, pull request, merge, remote CI, or later supporting-page/phase work is authorized.
 
 **Next phase:** None authorized. The exact next action is owner review of `/methodology`; publication requires a separate explicit instruction. Age/condition methodology, remaining supporting pages, Phase 3.3, and Phase 6 remain separately gated.
 
 ## 1. Current objective
 
-Stop at the locally verified Measurements feedback-v3 acceptance gate and present it for renewed owner review. Preserve the merged map checkpoint and do not publish this branch or begin age/condition methodology, another supporting page, Phase 3.3, Phase 6, or any other scope without explicit authorization.
+Stop at the locally verified Measurements feedback follow-up acceptance gate and present it for renewed owner review. Preserve the merged map checkpoint and do not publish this branch or begin age/condition methodology, another supporting page, Phase 3.3, Phase 6, or any other scope without explicit authorization.
 
 ## 1.1 Owner-authorized Measurements milestone
 
@@ -56,6 +56,12 @@ The bounded Measurements milestone is complete locally and ready for owner produ
 - Replaced the full-width mobile preview row with a compact, semi-transparent brass-outlined name control. The visible `View details` action is removed; tapping the measurement name opens the same detail surface as a second tap on the annotation.
 - Mobile placement now prefers a compact extension below the diagram when it is visible, then uses the same above/below/left/right anchor candidates as desktop, and finally clamps to the visible viewport bottom. This preserves the skull and landmarks while keeping the preview reachable during page scrolling.
 - Added touch regression coverage for compact sizing, the removed action button, tappable-name details, and retained second-tap behavior.
+
+## 1.5 Owner-directed Measurements/map follow-up refinement
+
+- Table-origin dismissal now returns to the exact definitions-table row that launched the isolated diagram measurement, while preserving the originating number’s focus and reduced-motion behavior.
+- Raised the shared site-header stacking context above route-level map controls so the mobile Menu disclosure remains visible in front of the map toolbar.
+- Added focused regression coverage for the originating-row return and mobile menu layering.
 
 ## 2. Focused Phase 5 collection map
 
@@ -524,5 +530,10 @@ No unresolved content, rights, or publication blocker prevents local Measurement
 
 - The owner supplied the mobile screenshot `agent_context/mobile_tooltip_too_large_hide_skull.png`. The bounded refinement replaces the expansive mobile preview with a compact semi-transparent tappable measurement name, removes the redundant `View details` button, preserves second-tap activation, and adds hybrid diagram-bottom/anchored/viewport-bottom placement.
 - Focused and full Chromium regression, accessibility, source/content/media validation, production build, and local visual checks pass. The refinement remains local for renewed owner review; no push, pull request, merge, remote CI, or next phase is authorized.
+
+### 2026-08-31 — Measurements/map follow-up fixes verified locally
+
+- Table-origin outside dismissal now returns to the specific table row selected before diagram isolation, and the shared header now paints above the mobile map toolbar so Menu remains usable.
+- The rebuilt production output passes the focused 2/2 methodology/map browser checks; formatting, lint, typecheck, and production build also pass. The branch remains local for renewed owner review; no push, pull request, merge, remote CI, or next phase is authorized.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.

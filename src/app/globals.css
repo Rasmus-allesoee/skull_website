@@ -3961,7 +3961,8 @@ h3 {
 
 .site-header {
   position: relative;
-  z-index: 20;
+  /* Keep the mobile navigation above route-level controls such as the map toolbar. */
+  z-index: 80;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;

@@ -448,6 +448,7 @@ test("dismissing a table-isolated measurement returns the viewport to the table"
       name: "Show measurement 21: Mandibular canine length on its reference diagram",
     })
     .click();
+  const tableRow = page.locator('[data-measurement-row="21"]');
   await expect(
     page.locator(
       '[data-diagram-id="canine-lengths"][data-measurement-number="21"]',
@@ -456,11 +457,14 @@ test("dismissing a table-isolated measurement returns the viewport to the table"
   await page.locator(".measurement-board-heading").click();
   await expect
     .poll(() =>
-      page
-        .locator(".measurement-table-section")
-        .evaluate((element) => element.getBoundingClientRect().top),
+      tableRow.evaluate((element) => element.getBoundingClientRect().top),
     )
-    .toBeLessThan(3);
+    .toBeGreaterThanOrEqual(0);
+  await expect
+    .poll(() =>
+      tableRow.evaluate((element) => element.getBoundingClientRect().bottom),
+    )
+    .toBeLessThanOrEqual(900);
   await expect(page.locator('[data-selected="true"]')).toHaveCount(0);
 });
 

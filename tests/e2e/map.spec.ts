@@ -425,6 +425,47 @@ test("mobile keeps the map primary and exposes the complete result sheet", async
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 
+test("mobile menu stays above map controls", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/map");
+
+  const menu = page.locator(".mobile-navigation > summary");
+  const dropdown = page.locator(".mobile-navigation[open] > nav > ul");
+  await menu.click();
+  await expect(dropdown).toBeVisible();
+
+  const layering = await dropdown.evaluate((element) => {
+    const toolbar = document.querySelector<HTMLElement>(".map-toolbar");
+    const header = element.closest<HTMLElement>(".site-header");
+    if (!toolbar || !header) {
+      return { menuInFront: false, headerZ: "auto", toolbarZ: "auto" };
+    }
+    const dropdownBox = element.getBoundingClientRect();
+    const toolbarBox = toolbar.getBoundingClientRect();
+    const overlapTop = Math.max(dropdownBox.top, toolbarBox.top);
+    const overlapBottom = Math.min(dropdownBox.bottom, toolbarBox.bottom);
+    if (overlapBottom <= overlapTop) {
+      return {
+        menuInFront: false,
+        headerZ: getComputedStyle(header).zIndex,
+        toolbarZ: getComputedStyle(toolbar).zIndex,
+      };
+    }
+    const x = Math.max(dropdownBox.left + 8, toolbarBox.left + 8);
+    const y = overlapTop + (overlapBottom - overlapTop) / 2;
+    return {
+      menuInFront: Boolean(
+        document.elementFromPoint(x, y)?.closest(".mobile-navigation"),
+      ),
+      headerZ: getComputedStyle(header).zIndex,
+      toolbarZ: getComputedStyle(toolbar).zIndex,
+    };
+  });
+
+  expect(layering.menuInFront).toBe(true);
+  expect(Number(layering.headerZ)).toBeGreaterThan(Number(layering.toolbarZ));
+});
+
 test("no-JavaScript output retains every exact record link", async ({
   browser,
 }) => {

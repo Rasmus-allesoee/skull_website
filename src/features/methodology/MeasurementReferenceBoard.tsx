@@ -117,12 +117,17 @@ export function MeasurementReferenceBoard({
       if (returnToTable || restoreFocus) {
         requestAnimationFrame(() => {
           if (returnToTable) {
-            tableSectionRef.current?.scrollIntoView({
-              block: "start",
-              behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
-                .matches
-                ? "auto"
-                : "smooth",
+            const tableRow = returnTarget?.closest<HTMLElement>(
+              "[data-measurement-row]",
+            );
+            const behavior = window.matchMedia(
+              "(prefers-reduced-motion: reduce)",
+            ).matches
+              ? "auto"
+              : "smooth";
+            (tableRow ?? tableSectionRef.current)?.scrollIntoView({
+              block: tableRow ? "center" : "start",
+              behavior,
             });
           }
           if (restoreFocus) returnTarget?.focus({ preventScroll: true });
@@ -481,6 +486,7 @@ export function MeasurementReferenceBoard({
               {reference.definitions.map((definition) => (
                 <tr
                   key={definition.number}
+                  data-measurement-row={definition.number}
                   data-selected={selectedNumber === definition.number}
                 >
                   <td data-label="Number">

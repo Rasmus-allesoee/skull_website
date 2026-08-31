@@ -98,7 +98,7 @@ Exclusion from v1 does not mean rejection. Each feature remains in the deferred 
 | `/guides/skull-preparation` | Preparation guide | A Phase 2.1 route/outline shell; later reviewed defleshing, maceration/alternatives, degreasing, whitening, safety, and documentation |
 | `/contribute` | Contribution protocol | Required views, capture setup, files, metadata, rights, review process, contact CTA |
 | `/about` | Collector and project story | Purpose, collection, photography, preparation workflow, site method |
-| `/methodology` | Measurement reference; later broader data transparency | Implemented five-view cropped diagram board, 21 exact definition rows, compact non-blocking details, diagram-targeting table actions, and semantic static fallback; identification confidence, taxonomy, missing-data, coordinate, and update sections remain later scope |
+| `/methodology` | Measurement reference; later broader data transparency | Implemented five-view cropped diagram board, 21 exact definition rows, compact non-blocking details, diagram-targeting table actions with return-to-row behavior, and semantic static fallback; identification confidence, taxonomy, missing-data, coordinate, and update sections remain later scope |
 | `/rights` | Rights summary | Code/content/media distinctions, credits, reuse/contact route |
 | `/privacy` | Privacy statement | No-tracking baseline, hosting logs, contact-data handling |
 | `/accessibility` | Accessibility statement | Supported behavior, known issues, feedback route |
