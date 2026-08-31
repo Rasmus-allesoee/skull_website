@@ -31,16 +31,6 @@ export default function MethodologyPage() {
         </ol>
       </nav>
 
-      <header className="methodology-intro">
-        <p className="eyebrow">Reference data</p>
-        <h1>Measurements</h1>
-        <p>
-          These numbered diagrams define the collection’s current measurement
-          vocabulary. Select any number to see the matching anatomical landmarks
-          and method note.
-        </p>
-      </header>
-
       <MeasurementReferenceBoard reference={reference} />
     </MuseumShell>
   );

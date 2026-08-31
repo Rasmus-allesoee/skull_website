@@ -13,6 +13,13 @@ export type MeasurementSegment = readonly [
 
 export type MeasurementLabelPoint = readonly [x: number, y: number];
 
+export type MeasurementViewport = readonly [
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+];
+
 export interface MeasurementOccurrence {
   number: number;
   line: MeasurementSegment;
@@ -29,6 +36,7 @@ export interface MeasurementDiagram {
   rights: "all_rights_reserved";
   coordinateWidth: number;
   coordinateHeight: number;
+  viewport: MeasurementViewport;
   occurrences: MeasurementOccurrence[];
 }
 

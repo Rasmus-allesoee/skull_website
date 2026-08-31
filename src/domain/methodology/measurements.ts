@@ -30,6 +30,12 @@ export const measurementDefinitionRowSchema = z.strictObject({
 const coordinate = z.number().int().nonnegative();
 const segmentSchema = z.tuple([coordinate, coordinate, coordinate, coordinate]);
 const pointSchema = z.tuple([coordinate, coordinate]);
+const viewportSchema = z.tuple([
+  coordinate,
+  coordinate,
+  z.number().int().positive(),
+  z.number().int().positive(),
+]);
 
 export const measurementReferenceSourceSchema = z.strictObject({
   schema_version: z.literal(1),
@@ -47,6 +53,7 @@ export const measurementReferenceSourceSchema = z.strictObject({
         rights: z.literal("all_rights_reserved"),
         coordinate_width: z.number().int().positive(),
         coordinate_height: z.number().int().positive(),
+        viewport: viewportSchema,
         occurrences: z
           .array(
             z.strictObject({
@@ -119,6 +126,20 @@ export function compileMeasurementReference(options: {
 
   const occurrenceNumbers: number[] = [];
   for (const diagram of source.diagrams) {
+    if (
+      diagram.viewport[0] + diagram.viewport[2] > diagram.coordinate_width ||
+      diagram.viewport[1] + diagram.viewport[3] > diagram.coordinate_height
+    ) {
+      diagnostics.push({
+        source: "content/methodology/measurement-reference.json",
+        key: diagram.id,
+        field: "viewport",
+        value: diagram.viewport,
+        rule: "The presentation viewport must remain inside the registered source canvas",
+        suggestion:
+          "Adjust only the non-destructive crop window; retain the original image and SVG coordinate system.",
+      });
+    }
     const localNumbers = diagram.occurrences.map(
       (occurrence) => occurrence.number,
     );
@@ -189,6 +210,7 @@ export function compileMeasurementReference(options: {
     rights: diagram.rights,
     coordinateWidth: diagram.coordinate_width,
     coordinateHeight: diagram.coordinate_height,
+    viewport: diagram.viewport,
     occurrences: diagram.occurrences.map((occurrence) => ({
       number: occurrence.number,
       line: occurrence.line,

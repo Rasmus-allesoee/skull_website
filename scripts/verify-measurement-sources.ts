@@ -26,6 +26,13 @@ const reference = measurementReferenceSourceSchema.parse(
     ),
   ),
 );
+const feedbackCriticalExtensionKeys = new Set([
+  "lateral-skull:1:0",
+  "lateral-skull:1:1",
+  "lateral-skull:2:0",
+  "mandible-lateral:10:1",
+  "mandible-lateral:11:0",
+]);
 
 for (const entry of config.entries) {
   const diagram = reference.diagrams.find(
@@ -87,6 +94,22 @@ for (const entry of config.entries) {
       throw new Error(
         `${entry.diagram_id}:${occurrence.number}: primary line does not register with the annotation source (${primaryCoverage.toFixed(2)} coverage).`,
       );
+    }
+    for (const [extensionIndex, extension] of occurrence.extensions.entries()) {
+      const extensionKey = `${entry.diagram_id}:${occurrence.number}:${extensionIndex}`;
+      if (!feedbackCriticalExtensionKeys.has(extensionKey)) continue;
+      const extensionCoverage = whiteCoverage(
+        annotated.data,
+        raw.data,
+        annotated.info.width,
+        annotated.info.channels,
+        extension,
+      );
+      if (extensionCoverage < 0.25) {
+        throw new Error(
+          `${entry.diagram_id}:${occurrence.number}: extension ${extensionIndex + 1} does not register with the annotation source (${extensionCoverage.toFixed(2)} coverage).`,
+        );
+      }
     }
     const [labelX, labelY] = occurrence.label;
     if (

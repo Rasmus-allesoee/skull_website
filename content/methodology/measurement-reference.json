@@ -11,23 +11,21 @@
       "rights": "all_rights_reserved",
       "coordinate_width": 6000,
       "coordinate_height": 4000,
+      "viewport": [350, 250, 5650, 3000],
       "occurrences": [
         {
           "number": 1,
           "line": [599, 568, 5443, 568],
           "extensions": [
             [599, 568, 599, 2030],
-            [5443, 568, 5443, 984]
+            [5443, 568, 5443, 1591]
           ],
           "label": [3000, 438]
         },
         {
           "number": 2,
-          "line": [626, 848, 5216, 848],
-          "extensions": [
-            [626, 848, 626, 2048],
-            [5216, 848, 5216, 1380]
-          ],
+          "line": [599, 848, 5216, 848],
+          "extensions": [[5216, 848, 5216, 2496]],
           "label": [3015, 716]
         },
         {
@@ -50,6 +48,7 @@
       "rights": "all_rights_reserved",
       "coordinate_width": 6000,
       "coordinate_height": 4000,
+      "viewport": [1800, 0, 3300, 4000],
       "occurrences": [
         {
           "number": 1,
@@ -149,6 +148,7 @@
       "rights": "all_rights_reserved",
       "coordinate_width": 6000,
       "coordinate_height": 4000,
+      "viewport": [1800, 0, 3300, 4000],
       "occurrences": [
         {
           "number": 1,
@@ -188,6 +188,7 @@
       "rights": "all_rights_reserved",
       "coordinate_width": 6200,
       "coordinate_height": 4133,
+      "viewport": [200, 250, 6000, 3450],
       "occurrences": [
         {
           "number": 9,
@@ -209,11 +210,8 @@
         },
         {
           "number": 11,
-          "line": [1198, 1514, 3906, 1514],
-          "extensions": [
-            [1198, 1514, 1198, 2110],
-            [3906, 1514, 3906, 2120]
-          ],
+          "line": [1198, 1514, 3913, 1514],
+          "extensions": [[1198, 1514, 1198, 2110]],
           "label": [2550, 1375]
         },
         {
@@ -242,6 +240,7 @@
       "rights": "all_rights_reserved",
       "coordinate_width": 6000,
       "coordinate_height": 4000,
+      "viewport": [750, 300, 4020, 3300],
       "occurrences": [
         {
           "number": 20,

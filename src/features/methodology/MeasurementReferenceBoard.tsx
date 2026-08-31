@@ -6,6 +6,7 @@ import {
   type FocusEvent,
   type KeyboardEvent,
   type PointerEvent,
+  useEffect,
   useId,
   useRef,
   useState,
@@ -20,6 +21,15 @@ import type {
 
 type ActiveOccurrence = { diagramId: string; number: number };
 type FocusTarget = HTMLElement | SVGGElement;
+type SelectionOrigin = "diagram" | "table";
+
+const diagramDisplayOrder = [
+  "dorsal-skull",
+  "ventral-skull",
+  "lateral-skull",
+  "mandible-lateral",
+  "canine-lengths",
+] as const;
 
 export function MeasurementReferenceBoard({
   reference,
@@ -32,32 +42,185 @@ export function MeasurementReferenceBoard({
   const [touchPreview, setTouchPreview] = useState<ActiveOccurrence | null>(
     null,
   );
-  const [detailNumber, setDetailNumber] = useState<number>(1);
+  const [selectionOrigin, setSelectionOrigin] =
+    useState<SelectionOrigin | null>(null);
+  const [detailNumber, setDetailNumber] = useState<number | null>(null);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const returnFocusRef = useRef<FocusTarget | null>(null);
-  const dialogTitleId = useId();
+  const detailCloseRef = useRef<HTMLButtonElement>(null);
+  const detailPanelRef = useRef<HTMLElement>(null);
+  const detailTitleId = useId();
+  const detailDescriptionId = useId();
   const definitions = new Map(
     reference.definitions.map((definition) => [definition.number, definition]),
   );
-  const detail = definitions.get(detailNumber) ?? reference.definitions[0]!;
+  const detail =
+    detailNumber === null ? null : (definitions.get(detailNumber) ?? null);
+  const diagrams = [...reference.diagrams].sort(
+    (first, second) =>
+      diagramDisplayOrder.indexOf(
+        first.id as (typeof diagramDisplayOrder)[number],
+      ) -
+      diagramDisplayOrder.indexOf(
+        second.id as (typeof diagramDisplayOrder)[number],
+      ),
+  );
 
-  function openDetails(number: number, trigger: FocusTarget) {
+  function openDetails(options: {
+    number: number;
+    trigger: FocusTarget;
+    preserveTouchPreview?: boolean;
+    focusPanel?: boolean;
+  }) {
+    const {
+      number,
+      trigger,
+      preserveTouchPreview = false,
+      focusPanel,
+    } = options;
     setSelectedNumber(number);
-    setTouchPreview(null);
+    setSelectionOrigin("diagram");
+    setHovered(null);
+    setFocused(null);
+    if (!preserveTouchPreview) setTouchPreview(null);
     setDetailNumber(number);
     returnFocusRef.current = trigger;
-    requestAnimationFrame(() => {
-      if (!dialogRef.current?.open) dialogRef.current?.showModal();
-    });
+    if (focusPanel)
+      requestAnimationFrame(() => detailCloseRef.current?.focus());
   }
 
-  function clearSelection() {
+  function closeDetails({ restoreFocus = true } = {}) {
+    setDetailNumber(null);
+    if (restoreFocus)
+      requestAnimationFrame(() => returnFocusRef.current?.focus());
+  }
+
+  function clearSelection({ restoreFocus = false } = {}) {
+    const returnTarget = returnFocusRef.current;
     setSelectedNumber(null);
+    setSelectionOrigin(null);
     setTouchPreview(null);
     setHovered(null);
     setFocused(null);
+    setDetailNumber(null);
+    if (restoreFocus) requestAnimationFrame(() => returnTarget?.focus());
   }
+
+  function showMeasurementFromTable(
+    definition: MeasurementDefinition,
+    trigger: HTMLButtonElement,
+  ) {
+    const diagram = resolvePreferredDiagram(
+      reference.diagrams,
+      definition.number,
+    );
+    if (!diagram) return;
+    setSelectedNumber(definition.number);
+    setSelectionOrigin("table");
+    setTouchPreview(null);
+    setHovered(null);
+    setDetailNumber(null);
+    returnFocusRef.current = trigger;
+    requestAnimationFrame(() => {
+      const target = document.querySelector<SVGGElement>(
+        `[data-diagram-id="${diagram.id}"][data-measurement-number="${definition.number}"]`,
+      );
+      const figure = document.getElementById(
+        `measurement-figure-${diagram.id}`,
+      );
+      target?.focus({ preventScroll: true });
+      figure?.scrollIntoView({
+        block: "center",
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "auto"
+          : "smooth",
+      });
+    });
+  }
+
+  useEffect(() => {
+    function handlePointerDown(event: globalThis.PointerEvent) {
+      if (selectedNumber === null && detailNumber === null) return;
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (
+        target.closest(
+          ".measurement-annotation, .measurement-table-target, .measurement-detail-panel, .measurement-tooltip--touch",
+        )
+      )
+        return;
+      setSelectedNumber(null);
+      setSelectionOrigin(null);
+      setTouchPreview(null);
+      setHovered(null);
+      setFocused(null);
+      setDetailNumber(null);
+    }
+
+    function handleKeyDown(event: globalThis.KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      if (detailNumber !== null) {
+        event.preventDefault();
+        closeDetails();
+      } else if (selectedNumber !== null) {
+        clearSelection({ restoreFocus: true });
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [detailNumber, selectedNumber]);
+
+  useEffect(() => {
+    if (detailNumber === null) return;
+    const viewport = window.visualViewport;
+    let animationFrame = 0;
+    let lastPlacement = "";
+
+    function placeDetailPanel() {
+      const panel = detailPanelRef.current;
+      if (!panel) return;
+      const scale = viewport?.scale ?? 1;
+      const offsetLeft = viewport?.offsetLeft ?? 0;
+      const offsetTop = viewport?.offsetTop ?? 0;
+      const viewportWidth =
+        viewport?.width ?? document.documentElement.clientWidth;
+      const inset = 12 / scale;
+      const top = offsetTop + inset;
+      const right = Math.max(
+        0,
+        document.documentElement.clientWidth -
+          (offsetLeft + viewportWidth) +
+          inset,
+      );
+      const placement = `${scale}:${top}:${right}`;
+      if (placement === lastPlacement) return;
+      lastPlacement = placement;
+      panel.style.setProperty("--measurement-detail-scale", String(1 / scale));
+      panel.style.setProperty("--measurement-detail-top", `${top}px`);
+      panel.style.setProperty("--measurement-detail-right", `${right}px`);
+    }
+
+    function trackVisualViewport() {
+      placeDetailPanel();
+      animationFrame = requestAnimationFrame(trackVisualViewport);
+    }
+
+    trackVisualViewport();
+    viewport?.addEventListener("resize", placeDetailPanel);
+    viewport?.addEventListener("scroll", placeDetailPanel);
+    window.addEventListener("resize", placeDetailPanel);
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      viewport?.removeEventListener("resize", placeDetailPanel);
+      viewport?.removeEventListener("scroll", placeDetailPanel);
+      window.removeEventListener("resize", placeDetailPanel);
+    };
+  }, [detailNumber]);
 
   return (
     <>
@@ -68,17 +231,8 @@ export function MeasurementReferenceBoard({
         <div className="measurement-board-heading">
           <div>
             <p className="section-kicker">Illustrated reference</p>
-            <h2 id="measurement-board-title">Measurement diagrams</h2>
+            <h1 id="measurement-board-title">Measurement diagrams</h1>
           </div>
-          {selectedNumber !== null ? (
-            <button
-              type="button"
-              className="measurement-clear-selection"
-              onClick={clearSelection}
-            >
-              Clear selection {selectedNumber}
-            </button>
-          ) : null}
         </div>
 
         <div
@@ -91,14 +245,13 @@ export function MeasurementReferenceBoard({
             method. On touch, tap once for a preview and again—or choose View
             details—to open it.
           </p>
-          <p>
-            Brass and bright outlines show interaction state only; they do not
-            encode anatomical data.
-          </p>
         </div>
 
-        <div className="measurement-board">
-          {reference.diagrams.map((diagram, index) => {
+        <div
+          className="measurement-board"
+          data-isolated={selectionOrigin === "table"}
+        >
+          {diagrams.map((diagram, index) => {
             const preview = resolveDiagramPreview({
               diagram,
               definitions,
@@ -124,7 +277,11 @@ export function MeasurementReferenceBoard({
                     className="measurement-diagram-stage"
                     style={
                       {
-                        "--measurement-aspect": `${diagram.coordinateWidth} / ${diagram.coordinateHeight}`,
+                        "--measurement-aspect": `${diagram.viewport[2]} / ${diagram.viewport[3]}`,
+                        "--measurement-layer-width": `${(diagram.coordinateWidth / diagram.viewport[2]) * 100}%`,
+                        "--measurement-layer-height": `${(diagram.coordinateHeight / diagram.viewport[3]) * 100}%`,
+                        "--measurement-layer-left": `${(-diagram.viewport[0] / diagram.viewport[2]) * 100}%`,
+                        "--measurement-layer-top": `${(-diagram.viewport[1] / diagram.viewport[3]) * 100}%`,
                       } as CSSProperties
                     }
                   >
@@ -169,23 +326,32 @@ export function MeasurementReferenceBoard({
                                 touchPreview?.diagramId === diagram.id &&
                                 touchPreview.number === occurrence.number
                               ) {
-                                openDetails(
-                                  occurrence.number,
-                                  event.currentTarget,
-                                );
+                                openDetails({
+                                  number: occurrence.number,
+                                  trigger: event.currentTarget,
+                                  preserveTouchPreview: true,
+                                });
                               } else {
                                 setSelectedNumber(occurrence.number);
+                                setSelectionOrigin("diagram");
                                 setTouchPreview(active);
                               }
                               return;
                             }
-                            openDetails(occurrence.number, event.currentTarget);
+                            openDetails({
+                              number: occurrence.number,
+                              trigger: event.currentTarget,
+                            });
                           }}
                           onKeyDown={(event, occurrence) => {
                             if (event.key !== "Enter" && event.key !== " ")
                               return;
                             event.preventDefault();
-                            openDetails(occurrence.number, event.currentTarget);
+                            openDetails({
+                              number: occurrence.number,
+                              trigger: event.currentTarget,
+                              focusPanel: true,
+                            });
                           }}
                           onHover={(occurrence) =>
                             setHovered(
@@ -214,7 +380,7 @@ export function MeasurementReferenceBoard({
                 </div>
                 {preview ? (
                   <div
-                    className={`measurement-tooltip${preview.touch ? "measurement-tooltip--touch" : ""}`}
+                    className={`measurement-tooltip measurement-tooltip--${preview.touch ? "touch" : "hover"}`}
                     role="tooltip"
                     id={`measurement-tooltip-${diagram.id}-${preview.definition.number}`}
                   >
@@ -225,10 +391,11 @@ export function MeasurementReferenceBoard({
                       <button
                         type="button"
                         onClick={(event) =>
-                          openDetails(
-                            preview.definition.number,
-                            event.currentTarget,
-                          )
+                          openDetails({
+                            number: preview.definition.number,
+                            trigger: event.currentTarget,
+                            preserveTouchPreview: true,
+                          })
                         }
                       >
                         View details
@@ -236,7 +403,6 @@ export function MeasurementReferenceBoard({
                     ) : null}
                   </div>
                 ) : null}
-                <p className="measurement-credit">{diagram.credit}</p>
               </figure>
             );
           })}
@@ -279,10 +445,15 @@ export function MeasurementReferenceBoard({
                   <td data-label="Number">
                     <button
                       type="button"
-                      aria-label={`Open details for measurement ${definition.number}: ${definition.name}`}
+                      className="measurement-table-target"
+                      aria-label={`Show measurement ${definition.number}: ${definition.name} on its reference diagram`}
+                      aria-controls={`measurement-figure-${resolvePreferredDiagram(reference.diagrams, definition.number)?.id}`}
                       aria-pressed={selectedNumber === definition.number}
                       onClick={(event) =>
-                        openDetails(definition.number, event.currentTarget)
+                        showMeasurementFromTable(
+                          definition,
+                          event.currentTarget,
+                        )
                       }
                     >
                       {String(definition.number).padStart(2, "0")}
@@ -301,41 +472,32 @@ export function MeasurementReferenceBoard({
         </div>
       </section>
 
-      <dialog
-        ref={dialogRef}
-        className="measurement-detail-dialog"
-        aria-labelledby={dialogTitleId}
-        onClick={(event) => {
-          if (event.target === event.currentTarget) dialogRef.current?.close();
-        }}
-        onClose={() => returnFocusRef.current?.focus()}
-      >
-        <div className="measurement-detail-frame">
+      {detail ? (
+        <aside
+          ref={detailPanelRef}
+          className="measurement-detail-panel"
+          role="dialog"
+          aria-modal="false"
+          aria-labelledby={detailTitleId}
+          aria-describedby={detailDescriptionId}
+        >
           <header>
-            <p className="eyebrow">Measurement {detail.number}</p>
-            <h2 id={dialogTitleId}>{detail.name}</h2>
+            <span className="measurement-detail-number" aria-hidden="true">
+              {String(detail.number).padStart(2, "0")}
+            </span>
+            <h2 id={detailTitleId}>{detail.name}</h2>
             <button
+              ref={detailCloseRef}
               type="button"
               aria-label="Close measurement details"
-              onClick={() => dialogRef.current?.close()}
-              autoFocus
+              onClick={() => closeDetails()}
             >
-              Close <span aria-hidden="true">×</span>
+              <span aria-hidden="true">×</span>
             </button>
           </header>
-          <div className="measurement-detail-content">
-            <p className="measurement-detail-number" aria-hidden="true">
-              {String(detail.number).padStart(2, "0")}
-            </p>
-            <div>
-              <p className="measurement-detail-label">
-                Exact landmarks / method
-              </p>
-              <p>{detail.description}</p>
-            </div>
-          </div>
-        </div>
-      </dialog>
+          <p id={detailDescriptionId}>{detail.description}</p>
+        </aside>
+      ) : null}
     </>
   );
 }
@@ -375,15 +537,15 @@ function MeasurementOverlay({
       <defs>
         <marker
           id={markerId}
-          viewBox="0 0 44 44"
-          refX="38"
-          refY="22"
-          markerWidth="62"
-          markerHeight="62"
-          markerUnits="userSpaceOnUse"
+          viewBox="0 0 12 12"
+          refX="11"
+          refY="6"
+          markerWidth="6.5"
+          markerHeight="6.5"
+          markerUnits="strokeWidth"
           orient="auto-start-reverse"
         >
-          <path d="M 38 22 L 5 5 L 5 39 Z" />
+          <path d="M 11 6 L 1 1 L 1 11 Z" />
         </marker>
       </defs>
       {diagram.occurrences.map((occurrence) => {
@@ -447,13 +609,13 @@ function MeasurementOverlay({
               className="measurement-number-backdrop"
               cx={labelX}
               cy={labelY}
-              r="104"
+              r="135"
             />
             <circle
               className="measurement-focus-ring"
               cx={labelX}
               cy={labelY}
-              r="122"
+              r="155"
               vectorEffect="non-scaling-stroke"
             />
             <text
@@ -470,6 +632,17 @@ function MeasurementOverlay({
         );
       })}
     </svg>
+  );
+}
+
+function resolvePreferredDiagram(
+  diagrams: MeasurementDiagram[],
+  number: number,
+) {
+  if (number === 1 || number === 2)
+    return diagrams.find(({ id }) => id === "lateral-skull");
+  return diagrams.find((diagram) =>
+    diagram.occurrences.some((occurrence) => occurrence.number === number),
   );
 }
 
