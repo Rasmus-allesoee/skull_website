@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "source_root": "agent_context",
+  "entries": [
+    {
+      "asset_id": "preparation-field-skull",
+      "source_file": "IMG_20251009_154046.jpg",
+      "public_file": "public/media/home/preparation-field-skull.webp"
+    }
+  ]
+}

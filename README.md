@@ -2,7 +2,7 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**The illustrated Measurements milestone is implemented locally and ready for owner review:** `/methodology` now presents 21 canonical definitions through five real-skull reference views, 24 registered programmatic SVG occurrences, accessible detail interactions, a complete semantic table, and static/no-JavaScript fallback. The focused Phase 5 map remains merged in `main`; this measurement-page checkpoint has not been pushed, opened as a pull request, or merged.
+**The redesigned Home milestone is implemented locally and ready for owner review:** `/` now combines a static-first interactive six-specimen field, full 18-specimen coverage across three bounded arrangements, the six canonical collection statistics, and one compact five-card destination hub. The focused Phase 5 map remains merged in `main`; the local Home and Measurements checkpoints have not been pushed, opened as a pull request, or merged.
 
 Start at `/`, browse the catalog at `/species`, explore public specimen locations at `/map`, inspect the measurement reference at `/methodology`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
 
@@ -95,6 +95,7 @@ On macOS, find the computer's active LAN IPv4 address (commonly with `ipconfig g
 | `pnpm media:process:reference` | Rebuild a declared public comparison-reference WebP from its ignored local source |
 | `pnpm media:verify:methodology-sources` | Verify all five annotated/raw measurement pairs, identity registration, and encoded overlay positions |
 | `pnpm media:process:methodology` | Rebuild and validate the five metadata-stripped measurement-reference WebPs from ignored raw sources |
+| `pnpm media:process:home` | Rebuild and validate the owner-authorized metadata-stripped Home Preparation WebP from ignored staging |
 | `pnpm taxonomy:refresh -- --taxon-id TAX-0001 --dry-run` | Query GBIF explicitly without changing curated taxonomy or writing a snapshot |
 | `pnpm lint` | Run ESLint with the Next.js and repository rules |
 | `pnpm typecheck` | Run TypeScript without emitting files |
@@ -109,9 +110,9 @@ On macOS, find the computer's active LAN IPv4 address (commonly with `ipconfig g
 ## Repository map
 
 ```text
-src/                 Next.js routes, museum/catalog/exhibit/methodology UI, domain/compiler, and data loading
-content/             canonical CSV, cited MDX, media/reference/methodology declarations, taxonomy snapshots
-public/media/        curated validated WebP specimen, comparison, and methodology derivatives
+src/                 Next.js routes, museum/Home/catalog/exhibit/methodology UI, domain/compiler, and data loading
+content/             canonical CSV, cited MDX, Home/media/reference/methodology declarations, taxonomy snapshots
+public/media/        curated validated WebP specimen, Home, comparison, and methodology derivatives
 scripts/             content, taxonomy, fixture, staging, and image tooling
 tests/e2e/           browser and accessibility journeys
 docs/                canonical product, design, architecture, and status docs
@@ -139,7 +140,7 @@ The original approved plan remains in `agent_context/website_plan_from_planmode.
 
 ## Content and image safety
 
-`agent_context/skulls_meta.csv` is an incomplete illustrative draft. `agent_context/skull_images_clean/` contains local source/staging images. `agent_context/metadata_csv/` contains partial spreadsheet exports supplied while designing the class-aware measurement model. `agent_context/measurement_page/` contains raw and annotated methodology sources plus migration wording. These paths are ignored and must not be published or read by a normal application build.
+`agent_context/skulls_meta.csv` is an incomplete illustrative draft. `agent_context/skull_images_clean/` contains local source/staging images. `agent_context/metadata_csv/` contains partial spreadsheet exports supplied while designing the class-aware measurement model. `agent_context/measurement_page/` contains raw and annotated methodology sources plus migration wording. The owner-authorized Home Preparation JPEG also remains staging input. These paths and files must not be published directly or read by a normal application build.
 
 Phase 2 established:
 
@@ -147,8 +148,9 @@ Phase 2 established:
 - `content/specimens/specimens.csv` for physical specimens, provenance, measurements, condition, observation fields, preparation, and rights;
 - `content/references/*.json` for reviewed comparison-reference identity, measurements, orientation, asset metadata, and approximate-value semantics;
 - `content/methodology/measurement-definitions.csv` and `measurement-reference.json` for the 21 definition rows and registered five-view overlay/media model;
+- `content/home/home-media.json` for the owner-authorized Home-only Preparation derivative declaration;
 - review-gated MDX for future cited editorial profiles and guides; and
-- `public/media/specimens/` for validated derivatives named `{specimen-id}__{view}.webp`, `public/media/references/` for validated comparison assets, and `public/media/methodology/` for the five unannotated reference derivatives.
+- `public/media/specimens/` for validated derivatives named `{specimen-id}__{view}.webp`, `public/media/references/` for validated comparison assets, `public/media/methodology/` for the five unannotated reference derivatives, and `public/media/home/` for declared Home editorial media.
 
 The first canonical records (`TAX-0001`, `SPEC-0001`) were curated from only the explicitly selected staging row `ID = 1` and six matching raccoon-dog PNGs. Phase 2.2 added a processed adult-human-skull reference and fixed approximate dimensions for the calibrated specimen-page comparison. Phase 3.0 advanced the compiled contract to schema version 4 and expanded the single specimen CSV with explicit mammal/bird measurement applicability. Phase 3.1 then normalized only the 15-taxon/18-specimen subset that could be matched to 104 cleaned images and satisfy the current publication contract; the raw exports/PNG masters remain ignored and the complete Phase 6 audit remains mandatory. Phase 3.2/4 compiles those published records into an ignored 67-document rank/taxon/specimen search artifact. Phase 5 compiles the same published records into an ignored deterministic map projection; neither search nor map reads raw exports or masters. See the [migration audit](docs/phase_3_1_migration_audit.md). The current raccoon-dog profile remains deliberately `draft` and omitted from the public page until useful, cited prose is curated.
 

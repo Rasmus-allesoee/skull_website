@@ -16,6 +16,26 @@ test("home and catalog expose published records with metadata and no detectable 
   await expect(
     page.getByRole("link", { name: "Explore the collection" }),
   ).toHaveAttribute("href", "/species");
+  await expect(page.locator(".specimen-field-link")).toHaveCount(6);
+  await expect(
+    page.getByRole("link", { name: "Explore the Species catalog" }),
+  ).toHaveAttribute("href", "/species");
+  await expect(
+    page.getByRole("link", { name: "Open the collection map" }),
+  ).toHaveAttribute("href", "/map");
+  await expect(
+    page.getByRole("link", { name: "Open the measurement reference" }),
+  ).toHaveAttribute("href", "/methodology");
+  await expect(
+    page.getByRole("link", {
+      name: "Open the skull preparation guide outline",
+    }),
+  ).toHaveAttribute("href", "/guides/skull-preparation");
+  await expect(page.getByText("Coming soon")).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: /Skull Comparison/i }),
+  ).toHaveCount(0);
+  await expect(page.locator(".maplibregl-map")).toHaveCount(0);
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
     "content",
     "Skull Collection",
@@ -42,39 +62,122 @@ test("home and catalog expose published records with metadata and no detectable 
   expect(accessibilityScanResults.violations).toEqual([]);
 });
 
-test("mobile keyboard journey reaches class, family, taxon, and exact specimen", async ({
+test("the specimen field preserves exact keyboard navigation and cycles bounded arrangements", async ({
   page,
 }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
 
-  await activateWithKeyboard(
-    page.getByRole("link", { name: /Mammalia/i }).first(),
-    page,
+  const field = page.locator(".specimen-field");
+  const firstArrangement = await field.getAttribute("data-arrangement");
+  const firstIds = await field
+    .locator(".specimen-field-link")
+    .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  await page
+    .getByRole("button", { name: /Show another specimen arrangement/i })
+    .click();
+  await expect(field).not.toHaveAttribute(
+    "data-arrangement",
+    firstArrangement!,
   );
-  await expect(page).toHaveURL("/taxonomy/class/mammals");
-  await expect(
-    page.getByRole("heading", { level: 1, name: "Mammalia" }),
-  ).toBeVisible();
+  const secondIds = await field
+    .locator(".specimen-field-link")
+    .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  expect(secondIds).not.toEqual(firstIds);
+  expect(secondIds).toHaveLength(6);
 
-  const familyLink = page
-    .getByRole("region", { name: "Families" })
-    .getByRole("link", { name: /Canidae/i });
-  await activateWithKeyboard(familyLink, page);
-  await expect(page).toHaveURL("/taxonomy/family/canidae");
-
-  const taxonLink = page
-    .getByRole("region", { name: "Skulls in Canidae" })
-    .getByRole("link", { name: /Raccoon dog/i });
-  await activateWithKeyboard(taxonLink, page);
-  await expect(page).toHaveURL("/species/raccoon-dog");
-
-  const specimenLink = page
-    .getByRole("navigation", { name: "Specimen selector" })
-    .getByRole("link", { name: /SPEC-0001/i });
-  await activateWithKeyboard(specimenLink, page);
-  await expect(page).toHaveURL("/species/raccoon-dog/specimens/SPEC-0001");
+  const specimenLink = field.locator(".specimen-field-link").first();
+  const href = await specimenLink.getAttribute("href");
+  await specimenLink.focus();
+  await expect(specimenLink).toBeFocused();
+  await expect(specimenLink.locator(".specimen-field-identity")).toBeVisible();
+  await page.keyboard.press("Space");
+  await expect(page).toHaveURL(href!);
   await expect(page.getByText("Exact specimen record")).toBeVisible();
+});
+
+test("touch selection reveals identity before deliberate specimen navigation", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+  const specimenLink = page.locator(".specimen-field-link").first();
+  const href = await specimenLink.getAttribute("href");
+
+  await specimenLink.tap();
+  await expect(page).toHaveURL("/");
+  await expect(specimenLink).toHaveClass(/is-active/);
+  await expect(specimenLink.locator(".specimen-field-identity")).toBeVisible();
+  await specimenLink.tap();
+  await expect(page).toHaveURL(href!);
+  await context.close();
+});
+
+test("Home reflows without overflow and simplifies motion and color-dependent treatment", async ({
+  page,
+}) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 820, height: 900 },
+    { width: 390, height: 844 },
+    { width: 360, height: 800 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    const geometry = await page.evaluate(() => ({
+      overflow: document.documentElement.scrollWidth - innerWidth,
+      fieldLinks: [...document.querySelectorAll(".specimen-field-link")].map(
+        (link) => {
+          const box = link.getBoundingClientRect();
+          return { width: box.width, height: box.height };
+        },
+      ),
+    }));
+    expect(geometry.overflow).toBeLessThanOrEqual(0);
+    expect(
+      geometry.fieldLinks.every(
+        (target) => target.width >= 44 && target.height >= 44,
+      ),
+    ).toBe(true);
+  }
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const reducedTransitionSeconds = await page
+    .locator(".specimen-field-link")
+    .first()
+    .evaluate((element) => {
+      const duration = getComputedStyle(element).transitionDuration;
+      return duration === "none" ? 0 : Number.parseFloat(duration);
+    });
+  expect(reducedTransitionSeconds).toBeLessThanOrEqual(0.001);
+
+  await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
+  const specimenLink = page.locator(".specimen-field-link").first();
+  await specimenLink.focus();
+  await expect(specimenLink).toBeFocused();
+  await expect(specimenLink.locator(".specimen-field-identity")).toBeVisible();
+});
+
+test("a failed Home image does not remove the surrounding navigation", async ({
+  page,
+}) => {
+  await page.route(/preparation-field-skull/, (route) => route.abort());
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { level: 3, name: "Preparation guide" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", {
+      name: "Open the skull preparation guide outline",
+    }),
+  ).toHaveAttribute("href", "/guides/skull-preparation");
+  await expect(page.locator(".specimen-field-link")).toHaveCount(6);
 });
 
 test("family galleries form a three-column desktop grid and the compact specimen chooser opens exact records", async ({
@@ -174,11 +277,27 @@ test("mobile catalog remains single-column and the specimen chooser stays within
   await expect(dialog).not.toBeVisible();
 });
 
-test("taxonomy and exact specimen routes remain useful without JavaScript", async ({
+test("Home, taxonomy, and exact specimen routes remain useful without JavaScript", async ({
   browser,
 }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
+
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: "A visual archive of animal skulls.",
+    }),
+  ).toBeVisible();
+  await expect(page.locator(".specimen-field-link")).toHaveCount(6);
+  await expect(
+    page.getByRole("button", { name: /another specimen arrangement/i }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("link", { name: "Open the collection map" }),
+  ).toHaveAttribute("href", "/map");
+  await expect(page.getByText("Coming soon")).toBeVisible();
 
   await page.goto("/taxonomy/family/canidae");
   await expect(
@@ -222,12 +341,3 @@ test("sitemap, robots, and unknown taxonomy routes reflect the static public sur
     }),
   ).toBeVisible();
 });
-
-async function activateWithKeyboard(
-  target: import("@playwright/test").Locator,
-  page: import("@playwright/test").Page,
-) {
-  await target.focus();
-  await expect(target).toBeFocused();
-  await page.keyboard.press("Enter");
-}

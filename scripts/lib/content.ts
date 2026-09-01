@@ -23,7 +23,9 @@ import {
 import { buildCatalogSearchArtifact } from "../../src/domain/search/documents";
 import { buildMapProjection } from "../../src/domain/map/projection";
 import type { MeasurementReference } from "../../src/domain/methodology/types";
+import type { HomeMediaManifest } from "../../src/domain/home/types";
 import { validatePublicMedia } from "./media";
+import { loadHomeMedia } from "./home-media";
 import { loadMeasurementReference } from "./measurements";
 import { fromRepositoryRoot } from "./paths";
 
@@ -34,6 +36,7 @@ export interface ContentBuildResult {
   mappedRecordCount: number;
   measurementReference: MeasurementReference;
   measurementMediaBytes: number;
+  homeMedia: HomeMediaManifest;
   warnings: Diagnostic[];
 }
 
@@ -74,6 +77,7 @@ export async function buildContent(options?: {
     reference: measurementReference,
     publicMediaBytes: measurementMediaBytes,
   } = await loadMeasurementReference();
+  const homeMedia = await loadHomeMedia();
   const result = compileCollection({
     taxa,
     specimens,
@@ -117,6 +121,11 @@ export async function buildContent(options?: {
       `${JSON.stringify(measurementReference, null, 2)}\n`,
       "utf8",
     );
+    await writeFile(
+      path.join(generatedDirectory, "home-media-v1.json"),
+      `${JSON.stringify(homeMedia, null, 2)}\n`,
+      "utf8",
+    );
   }
 
   return {
@@ -126,6 +135,7 @@ export async function buildContent(options?: {
     mappedRecordCount: mapProjection.geoJson.features.length,
     measurementReference,
     measurementMediaBytes,
+    homeMedia,
   };
 }
 

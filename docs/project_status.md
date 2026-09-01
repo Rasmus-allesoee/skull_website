@@ -1,18 +1,44 @@
 # Project status
 
-**Snapshot date:** 2026-08-31
+**Snapshot date:** 2026-09-01
 
-**Current phase:** Owner-authorized Measurements supporting-page milestone plus bounded feedback v1/v2/v3 and table/map follow-up refinements — complete locally; renewed owner review pending
+**Current phase:** Owner-authorized Home redesign milestone — complete locally; owner review pending
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, and focused Phase 5 is merged at `f098caf`. The owner separately authorized the bounded Measurements milestone on `agent/next-additions`, then supplied three bounded reviews and a focused table/map follow-up. `/methodology`, its corrected geometry, registered crop viewports, compact non-modal detail behavior, table-to-diagram actions, movement-aware outside dismissal, compact tappable mobile previews, viewport-aware desktop/mobile placement, responsive states, tests, and documentation now pass the local acceptance gate. No push, pull request, merge, remote CI, or later supporting-page/phase work is authorized.
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, and focused Phase 5 is merged at `f098caf`. On `agent/next-additions`, the owner-authorized Measurements milestone and feedback refinements remain locally verified, and the newly authorized Home redesign now passes its local implementation gate. `/` server-renders a six-specimen first state, cycles all 18 published specimens through three bounded arrangements, retains canonical counts, and presents one compact Species/Map/Measurements/Preparation/Comparison hub. No push, pull request, merge, deployment, or later phase is authorized.
 
-**Next phase:** None authorized. The exact next action is owner review of `/methodology`; publication requires a separate explicit instruction. Age/condition methodology, remaining supporting pages, Phase 3.3, and Phase 6 remain separately gated.
+**Next phase:** None authorized. The exact next action is owner review of the redesigned `/` at desktop and mobile widths; publication requires a separate explicit instruction. Age/condition methodology, remaining supporting pages, Phase 3.3, and Phase 6 remain separately gated.
 
 ## 1. Current objective
 
-Stop at the locally verified Measurements feedback follow-up acceptance gate and present it for renewed owner review. Preserve the merged map checkpoint and do not publish this branch or begin age/condition methodology, another supporting page, Phase 3.3, Phase 6, or any other scope without explicit authorization.
+Stop at the locally verified Home acceptance gate and present it for owner review. Preserve the merged map and local Measurements checkpoints; do not publish this branch or begin age/condition methodology, another supporting page, Phase 3.3, Phase 6, or any other scope without explicit authorization.
 
-## 1.1 Owner-authorized Measurements milestone
+## 1.1 Owner-authorized Home redesign milestone
+
+### Static-first hero and complete specimen coverage
+
+- Replaced the old single featured skull with a compact 2D specimen field beside the concise introduction and primary Species action. One coherent six-skull arrangement is prerendered as ordinary exact specimen links; JavaScript enhances only depth response, identity disclosure, touch selection, and the optional arrangement control.
+- Deterministically distributed all 18 published physical specimens across three six-record arrangements exactly once per cycle. Only the active six images render, so the coverage strategy does not eagerly request the complete 104-image library. A privacy-neutral local visit cursor advances the next opening, and the explicit `Another arrangement` control remains secondary to the catalog action.
+- Desktop pointer motion changes only route-local CSS variables for small near/mid/far offsets. Focus provides the same compact identity and visible emphasis; Space/Enter follow the exact specimen link. On touch, the first tap selects and reveals name/scientific name/ID/action, and the second deliberate tap opens the same route. Movement-aware outside handling does not convert ordinary scrolling into selection clearing.
+- Reduced motion removes parallax and nonessential transitions. The field keeps six 64px-minimum link boxes, no horizontal overflow, stable layout, and usable links under forced colors, failed imagery, or disabled JavaScript.
+
+### Compact exploration hub and reviewed previews
+
+- Preserved the six canonical counts: 13 published species-level taxa, 18 physical specimens, 2 classes, 6 orders, 11 families, and 15 genera.
+- Replaced the old Find a skull, Browse by class, Home Collection tree, Geographic records, and Behind the collection sections with one compact two-column-to-single-column hub. Species remains the strongest route; Map, Measurements, and Preparation use full-card real links; Skull Comparison is equally designed but explicitly non-navigating and labelled `Coming soon`.
+- The Map preview is a deterministic SVG plot of the 18 reviewed canonical coordinate records and has no MapLibre, provider tile, search, control, or result-rail code. Measurements reuses the public lateral diagram and registered SVG geometry. The Comparison preview derives its two records and relative-length presentation from the existing comparison model without introducing a future route or dataset.
+- Processed the owner-authorized 2976×3968 Preparation JPEG into a 1200×1600, 300 KiB sRGB WebP. The committed public derivative contains no EXIF/GPS/ICC/IPTC/XMP; the source JPEG remains untracked staging input. `content/home/home-media.json`, `pnpm media:process:home`, normal content compilation, and `validate:media` now own and verify this boundary.
+
+### Verification result
+
+- Focused model/component tests prove exact all-record coverage, bounded states, exact URLs, counts, live destination links, non-linking Comparison state, and removal of retired sections.
+- Production build prerenders all 77 routes. The complete 65/65 production Chromium regression passes; its nine Home journeys cover axe, exact metadata/links, arrangement cycling, keyboard Space navigation, first/second-touch behavior, 1440/820/390/360 px reflow, 44px-plus targets, reduced motion, forced colors, failed Preparation media, static/no-JavaScript output, and existing catalog/taxonomy/sitemap regressions.
+- Manual production screenshots at 1440×900, 820×900, 390×844, and 360×800 show the intended desktop/tablet/mobile compositions with zero horizontal overflow. No MapLibre canvas or dead Comparison route appears on Home.
+
+### Scope result
+
+The Home milestone is complete locally and ready for owner product review. No standalone comparison page, preparation procedure content, taxonomy architecture, collection identity, remote publication, deployment, or later phase was added.
+
+## 1.2 Owner-authorized Measurements milestone
 
 ### Canonical content, media, and geometry
 
@@ -33,7 +59,7 @@ Stop at the locally verified Measurements feedback follow-up acceptance gate and
 
 The bounded Measurements milestone is complete locally and ready for owner product review. No specimen-schema/value migration, formal citation fabrication, age/condition methodology, other editorial page, push, pull request, merge, or remote CI was performed.
 
-## 1.2 Owner-directed Measurements feedback v1 refinement
+## 1.3 Owner-directed Measurements feedback v1 refinement
 
 - Removed the redundant page intro, secondary interaction-state explanation, image-credit strips, and remote clear-selection control. The page now begins directly with `Illustrated reference`; selecting outside the active measurement and its related surfaces clears state in place.
 - Corrected lateral #1/#2 and mandible #10/#11 guide geometry against the revised annotated sources. Lateral #2 now uses #1's anterior guide; the two lateral posterior guides reach their separate landmarks; mandible #11 uses #10's posterior guide. Source verification now checks these feedback-critical dashed segments as well as primary lines and labels.
@@ -42,7 +68,7 @@ The bounded Measurements milestone is complete locally and ready for owner produ
 - Replaced the large blocking native modal with a compact fixed non-modal name/number/description panel. There is no backdrop or blur; the board remains interactive, and Visual Viewport tracking plus inverse scale keeps the panel in the visible corner while the page is zoomed and horizontally panned.
 - Restyled the one-tap mobile preview as a full-width dark/brass row with left-aligned name and right-aligned action. Its state persists through mobile detail close, while the desktop hover tooltip is suppressed. Table number actions now isolate and move focus to the preferred existing diagram instead of repeating the table description; measurements 1 and 2 deliberately target lateral skull.
 
-## 1.3 Owner-directed Measurements feedback v2 refinement
+## 1.4 Owner-directed Measurements feedback v2 refinement
 
 - Made outside dismissal movement-aware: only a primary pointer tap that travels no more than 10 CSS pixels clears the active measurement. Pointer cancellation and multi-touch are ignored, so vertical/horizontal scrolling preserves the selected annotation, touch preview, or open detail surface.
 - Replaced the static desktop tooltip position with an anchored, placement-aware tooltip that prefers the space above the active number and falls back to below/left/right while remaining inside the diagram and visible visual viewport. Mobile touch previews retain the below-diagram default but move above or beside the active annotation when the viewport would clip them.
@@ -51,13 +77,13 @@ The bounded Measurements milestone is complete locally and ready for owner produ
 - Tightened the dorsal/ventral presentation viewports to `[1450,0,3650,4000]`, reduced the dorsal #12 ring radius to keep its lower edge in-bounds, and moved the paired-to-stacked board breakpoint to `51.25rem` (~820 px). Source dimensions, identity registration, and measurement coordinates remain unchanged.
 - Added regression coverage for swipe preservation, dynamic desktop/mobile tooltip containment, table return, source-note removal, dorsal #12 clearance, and the 900/819 px layout switch.
 
-## 1.4 Owner-directed Measurements feedback v3 refinement
+## 1.5 Owner-directed Measurements feedback v3 refinement
 
 - Replaced the full-width mobile preview row with a compact, semi-transparent brass-outlined name control. The visible `View details` action is removed; tapping the measurement name opens the same detail surface as a second tap on the annotation.
 - Mobile placement now prefers a compact extension below the diagram when it is visible, then uses the same above/below/left/right anchor candidates as desktop, and finally clamps to the visible viewport bottom. This preserves the skull and landmarks while keeping the preview reachable during page scrolling.
 - Added touch regression coverage for compact sizing, the removed action button, tappable-name details, and retained second-tap behavior.
 
-## 1.5 Owner-directed Measurements/map follow-up refinement
+## 1.6 Owner-directed Measurements/map follow-up refinement
 
 - Table-origin dismissal now returns to the exact definitions-table row that launched the isolated diagram measurement, while preserving the originating number’s focus and reduced-motion behavior.
 - Raised the shared site-header stacking context above route-level map controls so the mobile Menu disclosure remains visible in front of the map toolbar.
@@ -399,16 +425,16 @@ Package-manager gates must run sequentially with `CI=true` in non-interactive en
 - Footer copyright starts at 2026 because no repository evidence supports a 2023 publication start; the start year can change only with owner-supplied evidence/preference.
 - Chrome/Chromium is the current phase browser target. Effective 200% reflow, reduced motion, forced colors, keyboard, and automated axe checks pass; Firefox/WebKit and a manual screen-reader release audit remain Phase 7 gates.
 - `NEXT_PUBLIC_SITE_URL` still defaults to `http://localhost:3000`; the final domain is a Phase 7 decision. Canonical/Open Graph/sitemap URLs are structurally complete but intentionally use that default locally.
-- Combined Phase 3.2/4 is merged into `main` at `9a0e1d0`. Phase 5 is merged into `main` at `f098caf` through PR #10 after passing remote CI; its feature branch has been intentionally preserved. Measurements is verified only on the local `agent/next-additions` branch; owner review and any publication remain separate.
+- Combined Phase 3.2/4 is merged into `main` at `9a0e1d0`. Phase 5 is merged into `main` at `f098caf` through PR #10 after passing remote CI; its feature branch has been intentionally preserved. Measurements and the redesigned Home are verified only on the local `agent/next-additions` branch; owner review and any publication remain separate.
 - The unchanged map test `closing an unfiltered popup preserves the manually explored camera` was timing-sensitive in the feedback-v1 run (58/59 direct, isolated retry recovered), but the v2 and v3 full runs passed 61/61 directly. The Measurements refinement does not touch map code or tests; any future stabilization remains a separately authorized map fix.
 
 ## 13. Exact next action
 
-1. Owner performs renewed `/methodology` review at desktop and mobile widths, including corrected guide/arrow geometry, cropped layout, zoomed detail-panel anchoring, touch preview lifecycle, and table-to-diagram actions.
-2. If changes are wanted, authorize only that bounded refinement; otherwise explicitly authorize publication before any push or pull request.
-3. Keep merged Phase 5 and the local Measurements checkpoint as stable fallbacks. Do not begin age/condition methodology or another phase from this branch.
+1. Owner reviews the redesigned `/` at desktop and mobile widths, including the specimen-field composition/identity/touch behavior, six-rank strip, five hub cards, and Preparation image treatment.
+2. If changes are wanted, authorize only that bounded Home refinement; otherwise explicitly authorize publication before any push or pull request.
+3. Keep merged Phase 5 and the local Measurements/Home checkpoints as stable fallbacks. Do not begin age/condition methodology or another phase from this branch.
 
-No unresolved content, rights, or publication blocker prevents local Measurements review. Formal source/citation expansion would require reviewed citation records; Phase 6 still requires completed/corrected metadata, missing accepted image sets, and final rights/public-note/publication decisions for blocked rows.
+No unresolved content, rights, or publication blocker prevents local Home review. The owner explicitly authorized the Preparation source image; the committed derivative is metadata-stripped and reserved-rights. Formal source/citation expansion would require reviewed citation records; Phase 6 still requires completed/corrected metadata, missing accepted image sets, and final rights/public-note/publication decisions for blocked rows.
 
 ## 14. Decision/blocker protocol
 
@@ -535,5 +561,12 @@ No unresolved content, rights, or publication blocker prevents local Measurement
 
 - Table-origin outside dismissal now returns to the specific table row selected before diagram isolation, and the shared header now paints above the mobile map toolbar so Menu remains usable.
 - The rebuilt production output passes the focused 2/2 methodology/map browser checks; formatting, lint, typecheck, and production build also pass. The branch remains local for renewed owner review; no push, pull request, merge, remote CI, or next phase is authorized.
+
+### 2026-09-01 — Home redesign verified locally
+
+- The owner authorized `agent_context/home_page_plan.md` and the dedicated interactive specimen-field plan. Home now server-renders one six-specimen field state, covers all 18 physical specimens across three deterministic arrangements, preserves the six canonical statistics, and consolidates the page into one five-card exploration hub.
+- Added bounded pointer depth, keyboard/touch identity and exact specimen navigation, reduced-motion/forced-color/static fallbacks, a static canonical-coordinate preview with no MapLibre, real methodology/comparison previews, and the complete non-linking `Coming soon` Comparison state.
+- Processed the owner-authorized Preparation JPEG into one declared, metadata-stripped public WebP through a reproducible Home-media command; the original remains untracked staging input.
+- Model/component tests, formatting/lint/type/media/content checks, the 77-route production build, complete 65/65 Chromium regression, and manual 1440/820/390/360 px production review pass. The coherent milestone is committed locally for owner review; no push, pull request, merge, deployment, or next phase is authorized.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.
