@@ -2105,7 +2105,7 @@ h3 {
     radial-gradient(circle at 55% 46%, rgb(232 225 211 / 7%), transparent 28%),
     radial-gradient(circle at 72% 30%, rgb(183 154 104 / 7%), transparent 42%),
     linear-gradient(90deg, transparent, rgb(20 24 22 / 32%) 25%, #080a09 100%);
-  touch-action: pan-y pinch-zoom;
+  touch-action: pan-x pan-y pinch-zoom;
 }
 
 .specimen-field::before {
@@ -2165,7 +2165,13 @@ h3 {
     filter 220ms ease;
 }
 
-.specimen-field-link > .subject-image {
+.specimen-field-visual {
+  position: relative;
+  width: 100%;
+  pointer-events: none;
+}
+
+.specimen-field-link .subject-image {
   filter: brightness(var(--field-brightness, 1))
     contrast(var(--field-contrast, 1)) blur(var(--field-blur, 0px))
     drop-shadow(
@@ -2177,6 +2183,24 @@ h3 {
     scale(var(--field-scale, 1));
   transition: transform 260ms ease;
   will-change: transform;
+}
+
+.specimen-field-hit {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.specimen-field-hit path {
+  pointer-events: all;
+}
+
+.specimen-field.is-enhanced .specimen-field-link {
+  pointer-events: none;
 }
 
 .specimen-field-link::after {
@@ -2195,9 +2219,9 @@ h3 {
   z-index: 100;
 }
 
-.specimen-field-link:hover > .subject-image,
-.specimen-field-link:focus-visible > .subject-image,
-.specimen-field-link.is-active > .subject-image {
+.specimen-field-link:hover .subject-image,
+.specimen-field-link:focus-visible .subject-image,
+.specimen-field-link.is-active .subject-image {
   filter: brightness(var(--field-focus-brightness, 1.04))
     contrast(var(--field-focus-contrast, 1.04))
     blur(var(--field-focus-blur, 0px))
@@ -2223,7 +2247,7 @@ h3 {
 
 .specimen-field:has(.specimen-field-link.is-active)
   .specimen-field-link:not(.is-active)
-  > .subject-image {
+  .subject-image {
   filter: brightness(var(--field-muted-brightness, 0.94))
     contrast(var(--field-muted-contrast, 0.96)) blur(var(--field-blur, 0px))
     drop-shadow(
@@ -2357,9 +2381,6 @@ h3 {
 
 .specimen-field-identity b {
   display: none;
-  margin-top: 0.35rem;
-  color: var(--color-accent);
-  font-size: 0.66rem;
 }
 
 .specimen-field-next {
@@ -2713,13 +2734,23 @@ h3 {
   }
 
   .specimen-field-identity {
-    width: min(13rem, 72vw);
+    width: max-content;
     min-width: 0;
-    max-width: none;
+    max-width: min(11rem, calc(100vw - 2rem));
+    padding: 0.45rem 0.55rem;
   }
 
-  .specimen-field-identity b {
-    display: block;
+  .specimen-field-identity strong {
+    font-size: 0.82rem;
+  }
+
+  .specimen-field-identity em {
+    font-size: 0.62rem;
+  }
+
+  .specimen-field-identity small {
+    margin-top: 0.12rem;
+    font-size: 0.56rem;
   }
 
   .specimen-field-next {
@@ -2761,7 +2792,7 @@ h3 {
 
 @media (prefers-reduced-motion: reduce) {
   .specimen-field-link,
-  .specimen-field-link > .subject-image,
+  .specimen-field-link .subject-image,
   .specimen-field-identity,
   .home-hub-card > a {
     transition: none;
@@ -2774,13 +2805,13 @@ h3 {
     transform: rotate(var(--field-rotate, 0deg));
   }
 
-  .specimen-field-link > .subject-image {
+  .specimen-field-link .subject-image {
     transform: scale(var(--field-scale, 1));
   }
 
-  .specimen-field-link:hover > .subject-image,
-  .specimen-field-link:focus-visible > .subject-image,
-  .specimen-field-link.is-active > .subject-image {
+  .specimen-field-link:hover .subject-image,
+  .specimen-field-link:focus-visible .subject-image,
+  .specimen-field-link.is-active .subject-image {
     transform: scale(var(--field-focus-scale, 1.045));
   }
 }

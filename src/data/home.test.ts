@@ -52,6 +52,13 @@ describe("Home page model", () => {
         ),
       ),
     ).toBe(true);
+    expect(
+      model.heroStates.every((state) =>
+        state.specimens.every((specimen) =>
+          specimen.image.hitPath?.startsWith("M"),
+        ),
+      ),
+    ).toBe(true);
   });
 
   it("derives all depth cues monotonically from one normalized value", () => {

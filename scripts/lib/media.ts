@@ -30,6 +30,7 @@ import {
 import { fromRepositoryRoot } from "./paths";
 
 const alphaThreshold = 8;
+const hitPathGridSize = 64;
 const maxDimension = 3200;
 const minDimension = 1200;
 const maxMasterBytes = 5 * 1024 * 1024;
@@ -247,6 +248,7 @@ async function inspectPublicAsset(options: {
     relativePath,
     key: specimenId,
     diagnostics,
+    includeHitPath: true,
     missingSuggestion:
       "Run pnpm media:process from canonical staged PNG inputs.",
   });
@@ -446,6 +448,7 @@ interface InspectedTransparentWebp {
   bytes: number;
   subjectBounds: SubjectBounds;
   publicPath: string;
+  hitPath?: string;
 }
 
 async function inspectTransparentWebp(options: {
@@ -453,10 +456,17 @@ async function inspectTransparentWebp(options: {
   relativePath: string;
   key: string;
   diagnostics: Diagnostic[];
+  includeHitPath?: boolean;
   missingSuggestion: string;
 }): Promise<InspectedTransparentWebp | null> {
-  const { absolutePath, relativePath, key, diagnostics, missingSuggestion } =
-    options;
+  const {
+    absolutePath,
+    relativePath,
+    key,
+    diagnostics,
+    includeHitPath = false,
+    missingSuggestion,
+  } = options;
   let fileStats;
   try {
     fileStats = await stat(absolutePath);
@@ -575,6 +585,9 @@ async function inspectTransparentWebp(options: {
       height: metadata.height,
       bytes: fileStats.size,
       subjectBounds,
+      ...(includeHitPath
+        ? { hitPath: calculateSubjectHitPath(data, info, subjectBounds) }
+        : {}),
       publicPath: `/${relativePath
         .replace(/^public\//, "")
         .split(path.sep)
@@ -591,6 +604,67 @@ async function inspectTransparentWebp(options: {
     });
     return null;
   }
+}
+
+/**
+ * Build a compact, normalized SVG path from the alpha mask inside the
+ * registered subject bounds. Horizontal cell runs keep transparent gaps
+ * transparent, which lets a lower-depth specimen remain reachable through a
+ * foreground skull's open anatomy instead of falling behind its rectangle.
+ */
+function calculateSubjectHitPath(
+  data: Uint8Array,
+  info: { width: number; height: number; channels: number },
+  bounds: SubjectBounds,
+): string {
+  const occupied = Array.from({ length: hitPathGridSize }, () =>
+    Array<boolean>(hitPathGridSize).fill(false),
+  );
+  const alphaChannel = info.channels - 1;
+  const maxX = Math.min(info.width, bounds.x + bounds.width);
+  const maxY = Math.min(info.height, bounds.y + bounds.height);
+
+  for (let y = bounds.y; y < maxY; y += 1) {
+    for (let x = bounds.x; x < maxX; x += 1) {
+      const alpha =
+        data[(y * info.width + x) * info.channels + alphaChannel] ?? 0;
+      if (alpha <= alphaThreshold) continue;
+      const gridX = Math.min(
+        hitPathGridSize - 1,
+        Math.floor(((x - bounds.x) * hitPathGridSize) / bounds.width),
+      );
+      const gridY = Math.min(
+        hitPathGridSize - 1,
+        Math.floor(((y - bounds.y) * hitPathGridSize) / bounds.height),
+      );
+      occupied[gridY]![gridX] = true;
+    }
+  }
+
+  const path: string[] = [];
+  for (let gridY = 0; gridY < hitPathGridSize; gridY += 1) {
+    let runStart = -1;
+    for (let gridX = 0; gridX <= hitPathGridSize; gridX += 1) {
+      const isOccupied =
+        gridX < hitPathGridSize && occupied[gridY]![gridX] === true;
+      if (isOccupied && runStart < 0) {
+        runStart = gridX;
+        continue;
+      }
+      if (isOccupied || runStart < 0) continue;
+
+      const x0 = (runStart / hitPathGridSize) * 100;
+      const x1 = (gridX / hitPathGridSize) * 100;
+      const y0 = (gridY / hitPathGridSize) * 100;
+      const y1 = ((gridY + 1) / hitPathGridSize) * 100;
+      path.push(
+        `M${x0.toFixed(2)} ${y0.toFixed(2)}H${x1.toFixed(2)}V${y1.toFixed(2)}H${x0.toFixed(2)}Z`,
+      );
+      runStart = -1;
+    }
+  }
+
+  return path.join(" ");
 }
 
 export function calculateSubjectBounds(

@@ -325,6 +325,7 @@ export const mediaAssetSchema = z.strictObject({
     width: z.number().int().positive(),
     height: z.number().int().positive(),
   }),
+  hitPath: z.string().min(1).optional(),
   orientation: z.enum(["left", "right"]).nullable(),
   alt: z.string().min(1),
   credit: z.string().min(1),

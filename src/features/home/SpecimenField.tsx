@@ -11,6 +11,7 @@ import { getHeroDepthPresentation } from "@/domain/home/depth";
 const visitCursorKey = "skull-collection:home-field-state-v1";
 const identityGap = 12;
 const identityMargin = 12;
+const fallbackHitPath = "M0 0H100V100H0Z";
 
 type IdentityPlacement = "above" | "below" | "left" | "right";
 
@@ -269,7 +270,9 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
     <div className="specimen-field-shell">
       <div
         ref={fieldRef}
-        className="specimen-field"
+        className={["specimen-field", isEnhanced ? "is-enhanced" : null]
+          .filter(Boolean)
+          .join(" ")}
         data-arrangement={state.id}
         onPointerMove={moveParallax}
         onPointerLeave={resetParallax}
@@ -393,11 +396,29 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
                 }
               }}
             >
-              <SubjectImage
-                asset={specimen.image}
-                priority={index < 2 && stateIndex === 0}
-                sizes="(max-width: 48rem) 42vw, (max-width: 72rem) 28vw, 24vw"
-              />
+              <div className="specimen-field-visual">
+                <SubjectImage
+                  asset={specimen.image}
+                  priority={index < 2 && stateIndex === 0}
+                  sizes="(max-width: 48rem) 42vw, (max-width: 72rem) 28vw, 24vw"
+                />
+                {isEnhanced ? (
+                  <svg
+                    className="specimen-field-hit"
+                    viewBox="0 0 100 100"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      d={specimen.image.hitPath ?? fallbackHitPath}
+                      fill="transparent"
+                      fillRule="nonzero"
+                      pointerEvents="all"
+                    />
+                  </svg>
+                ) : null}
+              </div>
             </Link>
           );
         })}
@@ -424,7 +445,6 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
             <strong>{activeSpecimen.commonName}</strong>
             <em>{activeSpecimen.scientificName}</em>
             <small>{activeSpecimen.specimenId}</small>
-            <b>View specimen →</b>
           </span>
         ) : null}
       </div>

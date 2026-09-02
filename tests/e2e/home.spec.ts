@@ -144,12 +144,39 @@ test("touch selection reveals identity before deliberate specimen navigation", a
   await page.goto("/");
   const specimenLink = page.locator(".specimen-field-link").first();
   const href = await specimenLink.getAttribute("href");
+  const hitPosition = await specimenLink.evaluate((link) => {
+    const rect = link.getBoundingClientRect();
+    for (let row = 1; row < 20; row += 1) {
+      for (let column = 1; column < 20; column += 1) {
+        const point = {
+          x: rect.left + (rect.width * column) / 20,
+          y: rect.top + (rect.height * row) / 20,
+        };
+        if (
+          document
+            .elementFromPoint(point.x, point.y)
+            ?.closest(".specimen-field-link") === link
+        ) {
+          return { x: point.x - rect.left, y: point.y - rect.top };
+        }
+      }
+    }
+    return null;
+  });
+  expect(hitPosition).not.toBeNull();
 
-  await specimenLink.tap();
+  await specimenLink.tap({ position: hitPosition! });
   await expect(page).toHaveURL("/");
   await expect(specimenLink).toHaveClass(/is-active/);
   await expect(page.locator(".specimen-field-identity")).toBeVisible();
-  await specimenLink.tap();
+  await expect(page.locator(".specimen-field-identity b")).toHaveCount(0);
+  const identityBox = await page
+    .locator(".specimen-field-identity")
+    .boundingBox();
+  expect(identityBox).not.toBeNull();
+  expect(identityBox!.width).toBeLessThan(190);
+  expect(identityBox!.height).toBeLessThan(90);
+  await specimenLink.tap({ position: hitPosition! });
   await expect(page).toHaveURL(href!);
   await context.close();
 });
@@ -165,6 +192,11 @@ test("touch parallax is bounded without moving the specimen hitboxes", async ({
   const page = await context.newPage();
   await page.goto("/");
   const field = page.locator(".specimen-field");
+  await expect(field).toHaveClass(/is-enhanced/);
+  const touchAction = await field.evaluate(
+    (element) => getComputedStyle(element).touchAction,
+  );
+  expect(["manipulation", "pan-x pan-y pinch-zoom"]).toContain(touchAction);
   const bounds = await field.boundingBox();
   expect(bounds).not.toBeNull();
   await field.evaluate((element, box) => {
@@ -211,6 +243,98 @@ test("touch parallax is bounded without moving the specimen hitboxes", async ({
   expect(reset).toBe("0px");
   expect(Math.abs((after?.x ?? 0) - (before?.x ?? 0))).toBeLessThan(1);
   await context.close();
+});
+
+test("enhanced specimen hit areas follow alpha silhouettes instead of link rectangles", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+
+  const field = page.locator(".specimen-field");
+  await expect(field.locator(".specimen-field-hit")).toHaveCount(10);
+  const firstLink = field.locator(".specimen-field-link").first();
+  const points = await firstLink.evaluate((link) => {
+    const rect = link.getBoundingClientRect();
+    const candidates = [
+      { x: rect.left + 2, y: rect.top + 2 },
+      { x: rect.right - 2, y: rect.top + 2 },
+      { x: rect.left + 2, y: rect.bottom - 2 },
+      { x: rect.right - 2, y: rect.bottom - 2 },
+    ];
+    const pointFor = (predicate: (target: Element | null) => boolean) =>
+      candidates.find((point) =>
+        predicate(document.elementFromPoint(point.x, point.y)),
+      );
+    const outside = pointFor(
+      (target) => target?.closest(".specimen-field-link") !== link,
+    );
+    const inside = (() => {
+      for (let row = 1; row < 10; row += 1) {
+        for (let column = 1; column < 10; column += 1) {
+          const point = {
+            x: rect.left + (rect.width * column) / 10,
+            y: rect.top + (rect.height * row) / 10,
+          };
+          if (
+            document
+              .elementFromPoint(point.x, point.y)
+              ?.closest(".specimen-field-link") === link
+          ) {
+            return point;
+          }
+        }
+      }
+      return null;
+    })();
+    const passThrough = (() => {
+      const links = [...document.querySelectorAll(".specimen-field-link")];
+      const zIndex = (element: Element) =>
+        Number.parseInt(getComputedStyle(element).zIndex || "0", 10);
+      for (let first = 0; first < links.length; first += 1) {
+        for (let second = first + 1; second < links.length; second += 1) {
+          const firstRect = links[first]!.getBoundingClientRect();
+          const secondRect = links[second]!.getBoundingClientRect();
+          const left = Math.max(firstRect.left, secondRect.left);
+          const right = Math.min(firstRect.right, secondRect.right);
+          const top = Math.max(firstRect.top, secondRect.top);
+          const bottom = Math.min(firstRect.bottom, secondRect.bottom);
+          if (right <= left || bottom <= top) continue;
+          const front =
+            zIndex(links[first]!) >= zIndex(links[second]!)
+              ? links[first]!
+              : links[second]!;
+          const back = front === links[first] ? links[second]! : links[first]!;
+          for (let row = 1; row < 12; row += 1) {
+            for (let column = 1; column < 12; column += 1) {
+              const x = left + ((right - left) * column) / 12;
+              const y = top + ((bottom - top) * row) / 12;
+              if (
+                document
+                  .elementFromPoint(x, y)
+                  ?.closest(".specimen-field-link") === back
+              ) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+      return false;
+    })();
+    return { outside: outside ?? null, inside, passThrough };
+  });
+
+  expect(points.outside).not.toBeNull();
+  expect(points.inside).not.toBeNull();
+  expect(points.passThrough).toBe(true);
+  await page.mouse.move(points.outside!.x, points.outside!.y);
+  await expect(page.locator(".specimen-field-identity")).toHaveCount(0);
+  await page.mouse.move(points.inside!.x, points.inside!.y);
+  await expect(page.locator(".specimen-field-identity")).toBeVisible();
+  const href = await firstLink.getAttribute("href");
+  await page.mouse.click(points.inside!.x, points.inside!.y);
+  await expect(page).toHaveURL(href!);
 });
 
 test("specimen identity cards stay inside the field at edge placements", async ({

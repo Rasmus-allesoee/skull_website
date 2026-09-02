@@ -6,7 +6,7 @@
 
 **Interface language:** English
 
-**Last reviewed:** 2026-09-01
+**Last reviewed:** 2026-09-02
 
 ## 1. Vision
 
@@ -158,7 +158,7 @@ The list provides the complete journey when the map cannot be used.
 The home page establishes the collection as a museum entrance and compact navigation hub, not a generic dashboard or duplicate catalog.
 
 - A concise introduction and primary `/species` action sit beside a curated 2D specimen field. Its three bounded ten-slot arrangements expose all 18 published physical specimens across the cycle without eagerly rendering the whole library; deliberate overlap between arrangement windows is allowed, and every visible skull has an accessible identity and exact nested specimen link.
-- The first ten-specimen arrangement is server-rendered and remains fully useful without JavaScript. Each placement has one normalized depth value that derives its scale, sharpness, brightness, parallax, shadow, and stacking. Enhancement adds subtle bounded pointer/touch depth to the visual image while keeping each link hitbox fixed, keyboard-equivalent focus disclosure, first-tap touch selection, a deliberate second-tap/direct identity action, and a secondary next-arrangement control. The field-level identity card chooses an adjacent placement and remains clamped inside the field. Lateral views remain dominant with reviewed alternate angles mixed in. Reduced motion removes depth transforms and nonessential transitions.
+- The first ten-specimen arrangement is server-rendered and remains fully useful without JavaScript. Each placement has one normalized depth value that derives its scale, sharpness, brightness, parallax, shadow, and stacking. Enhancement adds subtle bounded pointer/touch depth to the visual image while keeping semantic link hitboxes fixed and enhanced pointer/touch hits constrained to alpha-derived silhouette paths, keyboard-equivalent focus disclosure, first-tap touch selection, a deliberate second-tap/direct identity action, and a secondary next-arrangement control. The field-level identity card chooses an adjacent placement and remains clamped inside the field. Lateral views remain dominant with reviewed alternate angles mixed in. Reduced motion removes depth transforms and nonessential transitions.
 - Six concise live statistics remain derived from published records: species-level taxa, physical specimens, represented classes, orders, families, and genera. Genus-level identifications remain visible in catalog totals/copy rather than being miscounted as species.
 - One compact exploration hub contains live Species, Map, Measurements, and Preparation cards plus a fully designed non-navigating Skull Comparison preview labelled `Coming soon`.
 - The Map card uses an owner-supplied static feature thumbnail to preview reviewed locations and specimen-detail affordances. Home never loads MapLibre, provider tiles, map controls, or the map result rail.
