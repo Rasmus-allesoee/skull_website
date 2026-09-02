@@ -4,6 +4,7 @@ import path from "node:path";
 import { getCatalog } from "@/data/catalog";
 import { getCollection } from "@/data/collection";
 import type { CanonicalView, MediaAsset } from "@/domain/content/types";
+import { heroDepthProfile } from "@/domain/home/depth";
 import type { HomeMediaManifest } from "@/domain/home/types";
 
 export interface HomeSpecimenCandidate {
@@ -14,9 +15,14 @@ export interface HomeSpecimenCandidate {
   image: MediaAsset;
 }
 
+export interface HomeSpecimenPlacement extends HomeSpecimenCandidate {
+  /** A normalized visual depth used to derive every depth cue in the field. */
+  depth: number;
+}
+
 export interface HomeSpecimenState {
   id: string;
-  specimens: HomeSpecimenCandidate[];
+  specimens: HomeSpecimenPlacement[];
 }
 
 export function getHomePageModel() {
@@ -96,7 +102,7 @@ export function distributeHeroCandidates(
   const stride = Math.max(1, Math.ceil(candidates.length / stateCount));
   const states = Array.from({ length: stateCount }, (_, index) => ({
     id: `arrangement-${index + 1}`,
-    specimens: [] as HomeSpecimenCandidate[],
+    specimens: [] as HomeSpecimenPlacement[],
   }));
 
   const sortedCandidates = candidates.slice().sort((first, second) =>
@@ -107,11 +113,12 @@ export function distributeHeroCandidates(
 
   states.forEach((state, stateIndex) => {
     for (let index = 0; index < visibleCount; index += 1) {
-      state.specimens.push(
-        sortedCandidates[
+      state.specimens.push({
+        ...sortedCandidates[
           (stateIndex * stride + index) % sortedCandidates.length
         ]!,
-      );
+        depth: heroDepthProfile[index % heroDepthProfile.length] ?? 0.5,
+      });
     }
   });
 

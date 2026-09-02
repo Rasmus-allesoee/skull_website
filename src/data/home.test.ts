@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import { getCatalog } from "@/data/catalog";
+import {
+  getHeroDepthPresentation,
+  heroDepthProfile,
+} from "@/domain/home/depth";
 
 import { distributeHeroCandidates, getHomePageModel } from "./home";
 
@@ -39,6 +43,29 @@ describe("Home page model", () => {
           specimen.href.endsWith(`/specimens/${specimen.specimenId}`),
         ),
     ).toBe(true);
+    expect(
+      model.heroStates.every((state) =>
+        state.specimens.every(
+          (specimen, index) =>
+            specimen.depth ===
+            heroDepthProfile[index % heroDepthProfile.length],
+        ),
+      ),
+    ).toBe(true);
+  });
+
+  it("derives all depth cues monotonically from one normalized value", () => {
+    const background = getHeroDepthPresentation(0.2);
+    const foreground = getHeroDepthPresentation(0.9);
+
+    expect(foreground.scale).toBeGreaterThan(background.scale);
+    expect(foreground.opacity).toBeGreaterThan(background.opacity);
+    expect(foreground.blurPx).toBeLessThan(background.blurPx);
+    expect(foreground.brightness).toBeGreaterThan(background.brightness);
+    expect(foreground.contrast).toBeGreaterThan(background.contrast);
+    expect(foreground.parallaxX).toBeGreaterThan(background.parallaxX);
+    expect(foreground.parallaxY).toBeGreaterThan(background.parallaxY);
+    expect(foreground.zIndex).toBeGreaterThan(background.zIndex);
   });
 
   it("keeps small collections useful without creating empty states", () => {

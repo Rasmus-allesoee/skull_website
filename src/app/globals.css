@@ -2096,12 +2096,6 @@ h3 {
 }
 
 .specimen-field {
-  --field-x-far: 0px;
-  --field-y-far: 0px;
-  --field-x-mid: 0px;
-  --field-y-mid: 0px;
-  --field-x-near: 0px;
-  --field-y-near: 0px;
   position: relative;
   isolation: isolate;
   min-height: clamp(34rem, 46vw, 42rem);
@@ -2153,7 +2147,7 @@ h3 {
 
 .specimen-field-link {
   position: absolute;
-  z-index: 4;
+  z-index: var(--field-z-index, 10);
   display: grid;
   width: 34%;
   min-width: 5rem;
@@ -2162,8 +2156,7 @@ h3 {
   cursor: pointer;
   border-radius: 0.25rem;
   outline-offset: 0.4rem;
-  filter: drop-shadow(0 1.5rem 1.3rem rgb(0 0 0 / 48%));
-  opacity: 0.82;
+  opacity: 1;
   text-decoration: none;
   transform: rotate(var(--field-rotate, 0deg));
   transform-origin: center;
@@ -2173,9 +2166,15 @@ h3 {
 }
 
 .specimen-field-link > .subject-image {
-  --field-move-x: var(--field-x-mid);
-  --field-move-y: var(--field-y-mid);
-  transform: translate3d(var(--field-move-x), var(--field-move-y), 0);
+  filter: brightness(var(--field-brightness, 1))
+    contrast(var(--field-contrast, 1)) blur(var(--field-blur, 0px))
+    drop-shadow(
+      0 var(--field-shadow-y, 8px) var(--field-shadow-blur, 16px)
+        rgb(0 0 0 / var(--field-shadow-alpha, 0.32))
+    );
+  opacity: var(--field-opacity, 0.82);
+  transform: translate3d(var(--field-move-x, 0px), var(--field-move-y, 0px), 0)
+    scale(var(--field-scale, 1));
   transition: transform 260ms ease;
   will-change: transform;
 }
@@ -2193,17 +2192,22 @@ h3 {
 .specimen-field-link:hover,
 .specimen-field-link:focus-visible,
 .specimen-field-link.is-active {
-  z-index: 50;
-  filter: drop-shadow(0 1.5rem 1.4rem rgb(0 0 0 / 62%))
-    drop-shadow(0 0 0.75rem rgb(183 154 104 / 22%));
-  opacity: 1;
+  z-index: 100;
 }
 
 .specimen-field-link:hover > .subject-image,
 .specimen-field-link:focus-visible > .subject-image,
 .specimen-field-link.is-active > .subject-image {
-  transform: translate3d(var(--field-move-x), var(--field-move-y), 0)
-    scale(1.045);
+  filter: brightness(var(--field-focus-brightness, 1.04))
+    contrast(var(--field-focus-contrast, 1.04))
+    blur(var(--field-focus-blur, 0px))
+    drop-shadow(
+      0 var(--field-shadow-y, 8px) var(--field-shadow-blur, 16px)
+        rgb(0 0 0 / var(--field-shadow-alpha, 0.32))
+    );
+  opacity: var(--field-focus-opacity, 1);
+  transform: translate3d(var(--field-move-x, 0px), var(--field-move-y, 0px), 0)
+    scale(var(--field-focus-scale, 1.045));
 }
 
 .specimen-field-link:hover::after,
@@ -2214,130 +2218,100 @@ h3 {
 
 .specimen-field:has(.specimen-field-link.is-active)
   .specimen-field-link:not(.is-active) {
-  opacity: 0.5;
-}
-
-.specimen-field-slot-1 {
-  --field-move-x: var(--field-x-near);
-  --field-move-y: var(--field-y-near);
-  --field-rotate: -3deg;
-  top: 31%;
-  left: 27%;
-  z-index: 10;
-  width: 34%;
   opacity: 1;
 }
 
+.specimen-field:has(.specimen-field-link.is-active)
+  .specimen-field-link:not(.is-active)
+  > .subject-image {
+  filter: brightness(var(--field-muted-brightness, 0.94))
+    contrast(var(--field-muted-contrast, 0.96)) blur(var(--field-blur, 0px))
+    drop-shadow(
+      0 var(--field-shadow-y, 8px) var(--field-shadow-blur, 16px)
+        rgb(0 0 0 / var(--field-shadow-alpha, 0.32))
+    );
+  opacity: var(--field-muted-opacity, 0.58);
+}
+
+.specimen-field-slot-1 {
+  --field-rotate: -3deg;
+  top: 29%;
+  left: 31%;
+  width: 29%;
+}
+
 .specimen-field-slot-2 {
-  --field-move-x: var(--field-x-mid);
-  --field-move-y: var(--field-y-mid);
   --field-rotate: 5deg;
-  top: 43%;
-  right: -2%;
-  width: 30%;
+  top: 14%;
+  right: 4%;
+  width: 23%;
 }
 
 .specimen-field-slot-3 {
-  --field-move-x: var(--field-x-near);
-  --field-move-y: var(--field-y-near);
   --field-rotate: -5deg;
-  top: 48%;
-  left: -4%;
-  z-index: 9;
-  width: 27%;
-  opacity: 0.96;
+  top: 45%;
+  left: 3%;
+  width: 25%;
 }
 
 .specimen-field-slot-4 {
-  --field-move-x: var(--field-x-far);
-  --field-move-y: var(--field-y-far);
   --field-rotate: 4deg;
-  top: 4%;
-  right: 4%;
-  z-index: 1;
-  width: 25%;
-  filter: blur(1.2px) drop-shadow(0 1.5rem 1.3rem rgb(0 0 0 / 46%));
-  opacity: 0.52;
+  top: 8%;
+  left: 8%;
+  width: 20%;
 }
 
 .specimen-field-slot-5 {
-  --field-move-x: var(--field-x-mid);
-  --field-move-y: var(--field-y-mid);
   --field-rotate: 6deg;
   top: 3%;
-  left: 5%;
-  z-index: 6;
-  width: 23%;
-  opacity: 0.78;
+  left: 36%;
+  width: 21%;
 }
 
 .specimen-field-slot-6 {
-  --field-move-x: var(--field-x-far);
-  --field-move-y: var(--field-y-far);
   --field-rotate: -6deg;
-  bottom: 2%;
-  left: 6%;
-  z-index: 7;
-  width: 28%;
-  filter: blur(0.7px) drop-shadow(0 1rem 1rem rgb(0 0 0 / 42%));
-  opacity: 0.56;
+  bottom: 4%;
+  left: 4%;
+  width: 20%;
 }
 
 .specimen-field-slot-7 {
-  --field-move-x: var(--field-x-far);
-  --field-move-y: var(--field-y-far);
   --field-rotate: 3deg;
-  right: 26%;
-  bottom: 4%;
-  z-index: 3;
-  width: 23%;
-  filter: blur(0.6px) drop-shadow(0 1rem 1rem rgb(0 0 0 / 42%));
-  opacity: 0.58;
+  right: 6%;
+  bottom: 8%;
+  width: 22%;
 }
 
 .specimen-field-slot-8 {
-  --field-move-x: var(--field-x-mid);
-  --field-move-y: var(--field-y-mid);
   --field-rotate: -8deg;
-  top: 17%;
-  left: 45%;
-  z-index: 5;
-  width: 23%;
-  opacity: 0.7;
+  top: 53%;
+  right: 8%;
+  width: 22%;
 }
 
 .specimen-field-slot-9 {
-  --field-move-x: var(--field-x-near);
-  --field-move-y: var(--field-y-near);
   --field-rotate: 7deg;
-  top: 67%;
-  left: 25%;
-  z-index: 8;
-  width: 21%;
-  opacity: 0.88;
+  bottom: 3%;
+  left: 30%;
+  width: 23%;
 }
 
 .specimen-field-slot-10 {
-  --field-move-x: var(--field-x-far);
-  --field-move-y: var(--field-y-far);
   --field-rotate: 5deg;
-  top: 19%;
-  right: 20%;
-  z-index: 2;
-  width: 20%;
-  filter: blur(1px) drop-shadow(0 1rem 1rem rgb(0 0 0 / 42%));
-  opacity: 0.5;
+  top: 31%;
+  right: 27%;
+  width: 18%;
 }
 
 .specimen-field-identity {
   position: absolute;
-  z-index: 45;
-  top: calc(100% + 0.75rem);
-  left: 50%;
+  z-index: 110;
+  top: 0;
+  left: 0;
   display: grid;
   width: max-content;
   min-width: 10.5rem;
-  max-width: min(16rem, 72vw);
+  max-width: min(16rem, calc(100% - 1.5rem));
   padding: 0.65rem 0.8rem;
   border: 1px solid var(--color-accent);
   border-radius: 0.25rem;
@@ -2345,22 +2319,15 @@ h3 {
   box-shadow: 0 0.75rem 2rem rgb(0 0 0 / 54%);
   opacity: 0;
   pointer-events: none;
-  transform: translate(-50%, -0.3rem);
+  transform: translateY(0.3rem);
   transition:
     opacity 150ms ease,
     transform 150ms ease;
 }
 
-.specimen-field-link:nth-child(n + 5) .specimen-field-identity {
-  top: auto;
-  bottom: calc(100% + 0.75rem);
-}
-
-.specimen-field-link:hover .specimen-field-identity,
-.specimen-field-link:focus-visible .specimen-field-identity,
-.specimen-field-link.is-active .specimen-field-identity {
+.specimen-field-identity.is-ready {
   opacity: 1;
-  transform: translate(-50%, 0);
+  transform: none;
 }
 
 .specimen-field-identity strong,
@@ -2686,88 +2653,69 @@ h3 {
   }
 
   .specimen-field-slot-1 {
-    top: 31%;
-    left: 27%;
-    width: 35%;
+    top: 30%;
+    left: 31%;
+    width: 29%;
   }
 
   .specimen-field-slot-2 {
-    top: 47%;
-    right: -5%;
-    width: 31%;
+    top: 14%;
+    right: 3%;
+    width: 24%;
   }
 
   .specimen-field-slot-3 {
-    top: 52%;
-    left: -5%;
+    top: 45%;
+    left: 2%;
     width: 25%;
   }
 
   .specimen-field-slot-4 {
-    top: 4%;
-    right: 4%;
-    width: 26%;
-    filter: drop-shadow(0 1rem 1rem rgb(0 0 0 / 46%));
-    opacity: 0.66;
+    top: 8%;
+    left: 5%;
+    width: 20%;
   }
 
   .specimen-field-slot-5 {
-    top: 2%;
-    left: 4%;
-    width: 23%;
+    top: 3%;
+    left: 37%;
+    width: 21%;
   }
 
   .specimen-field-slot-6 {
-    bottom: 2%;
-    left: 5%;
-    width: 28%;
-    filter: drop-shadow(0 1rem 1rem rgb(0 0 0 / 42%));
+    bottom: 3%;
+    left: 3%;
+    width: 21%;
   }
 
   .specimen-field-slot-7 {
-    right: 22%;
-    bottom: 3%;
+    right: 4%;
+    bottom: 7%;
     width: 22%;
   }
 
   .specimen-field-slot-8 {
-    top: 21%;
-    left: 45%;
-    width: 22%;
+    top: 54%;
+    right: 5%;
+    width: 23%;
   }
 
   .specimen-field-slot-9 {
-    top: 69%;
-    left: 25%;
-    width: 20%;
+    bottom: 3%;
+    left: 29%;
+    width: 23%;
   }
 
   .specimen-field-slot-10 {
-    top: 18%;
-    right: 18%;
-    width: 19%;
+    top: 31%;
+    right: 25%;
+    width: 18%;
   }
 
   .specimen-field-identity {
     width: min(13rem, 72vw);
     min-width: 0;
     max-width: none;
-  }
-
-  .specimen-field-slot-2 .specimen-field-identity,
-  .specimen-field-slot-3 .specimen-field-identity {
-    right: 0;
-    left: auto;
-    transform: translateY(-0.3rem);
-  }
-
-  .specimen-field-slot-2:hover .specimen-field-identity,
-  .specimen-field-slot-2:focus-visible .specimen-field-identity,
-  .specimen-field-slot-2.is-active .specimen-field-identity,
-  .specimen-field-slot-3:hover .specimen-field-identity,
-  .specimen-field-slot-3:focus-visible .specimen-field-identity,
-  .specimen-field-slot-3.is-active .specimen-field-identity {
-    transform: none;
   }
 
   .specimen-field-identity b {
@@ -2827,13 +2775,13 @@ h3 {
   }
 
   .specimen-field-link > .subject-image {
-    transform: none;
+    transform: scale(var(--field-scale, 1));
   }
 
   .specimen-field-link:hover > .subject-image,
   .specimen-field-link:focus-visible > .subject-image,
   .specimen-field-link.is-active > .subject-image {
-    transform: scale(1.045);
+    transform: scale(var(--field-focus-scale, 1.045));
   }
 }
 

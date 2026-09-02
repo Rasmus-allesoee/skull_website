@@ -4,7 +4,7 @@
 
 **Current phase:** Owner-authorized Home redesign milestone — complete locally; owner review pending
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, and focused Phase 5 is merged at `f098caf`. On `agent/next-additions`, the owner-authorized Measurements milestone and feedback refinements remain locally verified, and the Home redesign plus its first bounded feedback refinement now pass the local implementation gate. `/` server-renders a ten-slot first state with varied canonical views, exposes all 18 published specimens across three overlapping arrangements, retains canonical counts, and presents one compact Species/Map/Measurements/Preparation/Comparison hub. No push, pull request, merge, deployment, or later phase is authorized.
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, and focused Phase 5 is merged at `f098caf`. On `agent/next-additions`, the owner-authorized Measurements milestone and feedback refinements remain locally verified, and the Home redesign plus its bounded feedback refinements now pass the local implementation gate. `/` server-renders a ten-slot first state with varied canonical views, exposes all 18 published specimens across three overlapping arrangements, retains canonical counts, and presents one compact Species/Map/Measurements/Preparation/Comparison hub. No push, pull request, merge, deployment, or later phase is authorized.
 
 **Next phase:** None authorized. The exact next action is owner review of the redesigned `/` at desktop and mobile widths; publication requires a separate explicit instruction. Age/condition methodology, remaining supporting pages, Phase 3.3, and Phase 6 remain separately gated.
 
@@ -19,6 +19,8 @@ Stop at the locally verified Home acceptance gate and present it for owner revie
 - Replaced the old single featured skull with a compact 2D specimen field beside the concise introduction and primary Species action. One coherent ten-slot arrangement is prerendered as ordinary exact specimen links; JavaScript enhances only visual-image depth response, identity disclosure, touch selection, and the optional arrangement control.
 - Deterministically distributes all 18 published physical specimens across three ten-slot arrangements with deliberate overlap between arrangement windows. Only the active ten images render, so the coverage strategy does not eagerly request the complete 104-image library. A privacy-neutral local visit cursor advances the next opening, and the explicit `Another arrangement` control remains secondary to the catalog action.
 - Uses a lateral-dominant view mix with reviewed oblique, frontal, dorsal, ventral, and mandible media. Desktop pointer motion and mobile touch movement change only route-local CSS variables on the visual image; fixed link hitboxes do not move under the pointer or focused control. Focus provides the same compact identity and visible emphasis; Space/Enter follow the exact specimen link. On touch, the first tap selects and reveals name/scientific name/ID/action, and the second deliberate tap opens the same route.
+- Each placement now carries one normalized depth value. Scale, sharpness, brightness, contrast, opacity, shadow, parallax travel, and base stacking are derived from that single value, while focus raises only the visual image at its existing location. The composition uses constrained art-directed slots with distributed foreground, midground, and background weight rather than independent per-slot depth cues.
+- Identity disclosure is a field-level boundary-aware card: it prefers above the focused specimen, falls back below/left/right, and clamps to a 12px safety margin inside the responsive field so edge specimens never clip their labels.
 - Reduced motion removes parallax and nonessential transitions. The field keeps ten 64px-minimum link boxes, no horizontal overflow, stable layout, and usable links under forced colors, failed imagery, or disabled JavaScript.
 
 ### Compact exploration hub and reviewed previews
@@ -30,8 +32,8 @@ Stop at the locally verified Home acceptance gate and present it for owner revie
 
 ### Verification result
 
-- Focused model/component tests prove exact all-record coverage, bounded states, exact URLs, counts, live destination links, non-linking Comparison state, and removal of retired sections.
-- Production build prerenders all 77 routes. The complete Chromium regression and updated Home journeys cover axe, exact metadata/links, ten-slot varied-view coverage, arrangement cycling, keyboard Space navigation, focus stability, first/second-touch behavior, mobile touch parallax, 1440/820/390/360 px reflow, 44px-plus targets, reduced motion, forced colors, failed thumbnail media, static/no-JavaScript output, and existing catalog/taxonomy/sitemap regressions.
+- Focused model/component tests prove exact all-record coverage, bounded states, exact URLs, counts, live destination links, non-linking Comparison state, removal of retired sections, and monotonic depth presentation.
+- Production build prerenders all 77 routes. The complete 67-test Chromium regression and updated Home journeys cover axe, exact metadata/links, ten-slot varied-view coverage, coherent depth attributes, arrangement cycling, keyboard Space navigation, focus stability, first/second-touch behavior, mobile touch parallax, boundary-aware identity cards at desktop/mobile edges, 1440/820/390/360 px reflow, 44px-plus targets, reduced motion, forced colors, failed thumbnail media, static/no-JavaScript output, and existing catalog/taxonomy/sitemap regressions.
 - Manual production screenshots at 1440×900, 820×900, 390×844, and 360×800 show the intended desktop/tablet/mobile compositions with zero horizontal overflow. No MapLibre canvas or dead Comparison route appears on Home.
 
 ### Scope result
@@ -430,7 +432,7 @@ Package-manager gates must run sequentially with `CI=true` in non-interactive en
 
 ## 13. Exact next action
 
-1. Owner reviews the redesigned `/` at desktop and mobile widths, including the ten-specimen mixed-angle field, focus/touch/parallax behavior, compact six-rank strip, and five owner-supplied hub thumbnails.
+1. Owner reviews the redesigned `/` at desktop and mobile widths, including the ten-specimen mixed-angle field's foreground/midground/background hierarchy, boundary-safe identity cards, focus/touch/parallax behavior, compact six-rank strip, and five owner-supplied hub thumbnails.
 2. If changes are wanted, authorize only that bounded Home refinement; otherwise explicitly authorize publication before any push or pull request.
 3. Keep merged Phase 5 and the local Measurements/Home checkpoints as stable fallbacks. Do not begin age/condition methodology or another phase from this branch.
 
@@ -575,5 +577,11 @@ No unresolved content, rights, or publication blocker prevents local Home review
 - Fixed the focus/touch jump and hover loop by keeping link hitboxes stationary and applying focus/parallax transforms only to the child image. Touch movement now supplies a bounded mobile parallax response without intercepting ordinary vertical scrolling.
 - Replaced the generated Home SVG/derived previews with five owner-supplied static thumbnails: layered species catalog, feature-rich map, measurement reference, full preparation storyboard, and comparison visual. All are processed as 1200 px-longest-edge metadata-stripped WebPs through `pnpm media:process:home` and checked by normal media validation.
 - Compressed the mobile statistics strip to a three-column, two-row layout with substantially smaller numerals. Focused model/component tests pass (4 tests), the full formatting/lint/type/media/content check passes (67 unit tests plus fixture validation), the production build prerenders 77 routes, and the complete Chromium regression passes 66/66. The branch remains local and unpublished.
+
+### 2026-09-02 — Home hero field depth refinement verified locally
+
+- Replaced independently styled depth cues with one pure normalized-depth presentation mapping. Every placement now derives its scale, sharpness, brightness, contrast, opacity, shadow, parallax travel, and base stacking from the same value; constrained art-directed slots distribute the foreground, midground, and background weight while preserving exact specimen links.
+- Moved identity disclosure to a field-level overlay that measures the focused link and card, prefers above/below/left/right candidates, and clamps the complete card inside a 12px field margin at responsive sizes. Focus lifts the existing visual image without moving its hitbox or changing the composition.
+- The full repository gate passes: formatting, ESLint, media/content validation, TypeScript, 68 unit tests, and invalid-fixture validation. Production build prerenders all 77 routes, and the complete Chromium regression passes 67/67; the focused Home journeys include desktop/mobile card containment and touch parallax. Manual production checks at desktop/mobile show the revised hierarchy without clipping. The branch remains local and unpublished.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.

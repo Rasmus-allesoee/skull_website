@@ -122,7 +122,7 @@ test("the specimen field preserves exact keyboard navigation and cycles bounded 
   );
   await specimenLink.focus();
   await expect(specimenLink).toBeFocused();
-  await expect(specimenLink.locator(".specimen-field-identity")).toBeVisible();
+  await expect(page.locator(".specimen-field-identity")).toBeVisible();
   const afterFocus = await specimenLink.evaluate(
     (element) => getComputedStyle(element).transform,
   );
@@ -148,7 +148,7 @@ test("touch selection reveals identity before deliberate specimen navigation", a
   await specimenLink.tap();
   await expect(page).toHaveURL("/");
   await expect(specimenLink).toHaveClass(/is-active/);
-  await expect(specimenLink.locator(".specimen-field-identity")).toBeVisible();
+  await expect(page.locator(".specimen-field-identity")).toBeVisible();
   await specimenLink.tap();
   await expect(page).toHaveURL(href!);
   await context.close();
@@ -180,11 +180,15 @@ test("touch parallax is bounded without moving the specimen hitboxes", async ({
     );
   }, bounds);
   const moved = await field.evaluate((element) => ({
-    nearX: element.style.getPropertyValue("--field-x-near"),
-    nearY: element.style.getPropertyValue("--field-y-near"),
+    moveX: element
+      .querySelector<HTMLElement>(".specimen-field-link")
+      ?.style.getPropertyValue("--field-move-x"),
+    moveY: element
+      .querySelector<HTMLElement>(".specimen-field-link")
+      ?.style.getPropertyValue("--field-move-y"),
   }));
-  expect(moved.nearX).not.toBe("0px");
-  expect(moved.nearY).not.toBe("0px");
+  expect(moved.moveX).not.toBe("0px");
+  expect(moved.moveY).not.toBe("0px");
   const firstLink = field.locator(".specimen-field-link").first();
   const before = await firstLink.boundingBox();
   await field.evaluate((element, box) => {
@@ -200,11 +204,64 @@ test("touch parallax is bounded without moving the specimen hitboxes", async ({
   }, bounds);
   const after = await firstLink.boundingBox();
   const reset = await field.evaluate((element) =>
-    element.style.getPropertyValue("--field-x-near"),
+    element
+      .querySelector<HTMLElement>(".specimen-field-link")
+      ?.style.getPropertyValue("--field-move-x"),
   );
   expect(reset).toBe("0px");
   expect(Math.abs((after?.x ?? 0) - (before?.x ?? 0))).toBeLessThan(1);
   await context.close();
+});
+
+test("specimen identity cards stay inside the field at edge placements", async ({
+  page,
+}) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    const field = page.locator(".specimen-field");
+    const links = field.locator(".specimen-field-link");
+    for (let index = 0; index < 10; index += 1) {
+      await links.nth(index).focus();
+      const card = page.locator(".specimen-field-identity");
+      await expect(card).toBeVisible();
+      await expect(card).toHaveClass(/is-ready/);
+      const geometry = await field.evaluate((element) => {
+        const fieldBox = element.getBoundingClientRect();
+        const cardElement = element.querySelector<HTMLElement>(
+          ".specimen-field-identity",
+        )!;
+        const cardBox = cardElement.getBoundingClientRect();
+        return {
+          field: {
+            left: fieldBox.left,
+            top: fieldBox.top,
+            right: fieldBox.right,
+            bottom: fieldBox.bottom,
+          },
+          card: {
+            left: cardBox.left,
+            top: cardBox.top,
+            right: cardBox.right,
+            bottom: cardBox.bottom,
+          },
+          placement: cardElement.dataset.placement,
+        };
+      });
+      expect(geometry.card.left).toBeGreaterThanOrEqual(
+        geometry.field.left + 8,
+      );
+      expect(geometry.card.top).toBeGreaterThanOrEqual(geometry.field.top + 8);
+      expect(geometry.card.right).toBeLessThanOrEqual(geometry.field.right - 8);
+      expect(geometry.card.bottom).toBeLessThanOrEqual(
+        geometry.field.bottom - 8,
+      );
+      expect(["above", "below", "left", "right"]).toContain(geometry.placement);
+    }
+  }
 });
 
 test("Home reflows without overflow and simplifies motion and color-dependent treatment", async ({
@@ -257,7 +314,7 @@ test("Home reflows without overflow and simplifies motion and color-dependent tr
   const specimenLink = page.locator(".specimen-field-link").first();
   await specimenLink.focus();
   await expect(specimenLink).toBeFocused();
-  await expect(specimenLink.locator(".specimen-field-identity")).toBeVisible();
+  await expect(page.locator(".specimen-field-identity")).toBeVisible();
 });
 
 test("a failed Home image does not remove the surrounding navigation", async ({

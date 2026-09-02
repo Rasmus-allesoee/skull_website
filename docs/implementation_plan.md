@@ -4,7 +4,7 @@
 
 **Current phase:** Owner-authorized Home redesign complete locally; owner review pending
 
-**Last reviewed:** 2026-09-01
+**Last reviewed:** 2026-09-02
 
 ## 1. How to use this plan
 
@@ -389,10 +389,11 @@ These items were explicitly removed from the focused map milestone. They require
 - [x] Replace the retired Find a skull, Browse by class, Home Collection tree, Geographic records, and Behind the collection sections with one compact destination hub.
 - [x] Add complete Species, static Map, Measurements, and Preparation cards plus a non-navigating `Coming soon` Skull Comparison preview based on the existing comparison engine.
 - [x] Process the owner-authorized Home thumbnail PNG/JPEG sources through a reproducible Home-media path that strips EXIF/GPS and validates the committed WebPs during normal content/media checks.
+- [x] Refine the floating specimen field around one normalized depth system, constrained art-directed slots, stationary hitboxes, and a boundary-aware identity card that remains fully inside the field.
 - [x] Keep the route statically useful with no JavaScript and preserve MapLibre/search-index bundle isolation.
 - [x] Verify desktop/tablet/360–390 px reflow, touch and keyboard navigation, reduced motion, forced colors, image failure, axe, no-JavaScript, build output, and zero horizontal overflow.
 
-**Gate result:** Passed locally on 2026-09-02 on `agent/next-additions`. The bounded Home feedback refinement is committed locally for owner review; no push, pull request, merge, deployment, or later phase is authorized.
+**Gate result:** Passed locally on 2026-09-02 on `agent/next-additions`. The bounded Home feedback refinement is ready as a local checkpoint for owner review; no push, pull request, merge, deployment, or later phase is authorized.
 
 ## 9. Phase 6 — complete audited collection migration
 
