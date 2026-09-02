@@ -45,12 +45,12 @@ try {
       failOn: "error",
     }).metadata();
     if (
-      inputMetadata.format !== "jpeg" ||
+      !["jpeg", "png"].includes(inputMetadata.format ?? "") ||
       !inputMetadata.width ||
       !inputMetadata.height
     ) {
       throw new Error(
-        `${entry.source_file}: source must be a readable JPEG with dimensions.`,
+        `${entry.source_file}: source must be a readable JPEG or PNG with dimensions.`,
       );
     }
 
@@ -60,12 +60,12 @@ try {
       .toColourspace("srgb")
       .resize({
         width: 1200,
-        height: 1600,
-        fit: "cover",
+        height: 1200,
+        fit: "inside",
         position: "centre",
         withoutEnlargement: true,
       })
-      .webp({ quality: 86, smartSubsample: true })
+      .webp({ quality: 86, alphaQuality: 100, smartSubsample: true })
       .toFile(outputPath);
 
     const outputStats = await stat(outputPath);
@@ -76,7 +76,7 @@ try {
 
   const manifest = await loadHomeMedia();
   console.log(
-    `Validated ${manifest.assets.length} Home media asset; WebP format and stripped metadata confirmed.`,
+    `Validated ${manifest.assets.length} Home media assets; WebP format and stripped metadata confirmed.`,
   );
 } catch (error) {
   console.error(error instanceof Error ? error.message : error);

@@ -1,10 +1,10 @@
 # Project status
 
-**Snapshot date:** 2026-09-01
+**Snapshot date:** 2026-09-02
 
 **Current phase:** Owner-authorized Home redesign milestone — complete locally; owner review pending
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, and focused Phase 5 is merged at `f098caf`. On `agent/next-additions`, the owner-authorized Measurements milestone and feedback refinements remain locally verified, and the newly authorized Home redesign now passes its local implementation gate. `/` server-renders a six-specimen first state, cycles all 18 published specimens through three bounded arrangements, retains canonical counts, and presents one compact Species/Map/Measurements/Preparation/Comparison hub. No push, pull request, merge, deployment, or later phase is authorized.
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, and focused Phase 5 is merged at `f098caf`. On `agent/next-additions`, the owner-authorized Measurements milestone and feedback refinements remain locally verified, and the Home redesign plus its first bounded feedback refinement now pass the local implementation gate. `/` server-renders a ten-slot first state with varied canonical views, exposes all 18 published specimens across three overlapping arrangements, retains canonical counts, and presents one compact Species/Map/Measurements/Preparation/Comparison hub. No push, pull request, merge, deployment, or later phase is authorized.
 
 **Next phase:** None authorized. The exact next action is owner review of the redesigned `/` at desktop and mobile widths; publication requires a separate explicit instruction. Age/condition methodology, remaining supporting pages, Phase 3.3, and Phase 6 remain separately gated.
 
@@ -16,27 +16,27 @@ Stop at the locally verified Home acceptance gate and present it for owner revie
 
 ### Static-first hero and complete specimen coverage
 
-- Replaced the old single featured skull with a compact 2D specimen field beside the concise introduction and primary Species action. One coherent six-skull arrangement is prerendered as ordinary exact specimen links; JavaScript enhances only depth response, identity disclosure, touch selection, and the optional arrangement control.
-- Deterministically distributed all 18 published physical specimens across three six-record arrangements exactly once per cycle. Only the active six images render, so the coverage strategy does not eagerly request the complete 104-image library. A privacy-neutral local visit cursor advances the next opening, and the explicit `Another arrangement` control remains secondary to the catalog action.
-- Desktop pointer motion changes only route-local CSS variables for small near/mid/far offsets. Focus provides the same compact identity and visible emphasis; Space/Enter follow the exact specimen link. On touch, the first tap selects and reveals name/scientific name/ID/action, and the second deliberate tap opens the same route. Movement-aware outside handling does not convert ordinary scrolling into selection clearing.
-- Reduced motion removes parallax and nonessential transitions. The field keeps six 64px-minimum link boxes, no horizontal overflow, stable layout, and usable links under forced colors, failed imagery, or disabled JavaScript.
+- Replaced the old single featured skull with a compact 2D specimen field beside the concise introduction and primary Species action. One coherent ten-slot arrangement is prerendered as ordinary exact specimen links; JavaScript enhances only visual-image depth response, identity disclosure, touch selection, and the optional arrangement control.
+- Deterministically distributes all 18 published physical specimens across three ten-slot arrangements with deliberate overlap between arrangement windows. Only the active ten images render, so the coverage strategy does not eagerly request the complete 104-image library. A privacy-neutral local visit cursor advances the next opening, and the explicit `Another arrangement` control remains secondary to the catalog action.
+- Uses a lateral-dominant view mix with reviewed oblique, frontal, dorsal, ventral, and mandible media. Desktop pointer motion and mobile touch movement change only route-local CSS variables on the visual image; fixed link hitboxes do not move under the pointer or focused control. Focus provides the same compact identity and visible emphasis; Space/Enter follow the exact specimen link. On touch, the first tap selects and reveals name/scientific name/ID/action, and the second deliberate tap opens the same route.
+- Reduced motion removes parallax and nonessential transitions. The field keeps ten 64px-minimum link boxes, no horizontal overflow, stable layout, and usable links under forced colors, failed imagery, or disabled JavaScript.
 
 ### Compact exploration hub and reviewed previews
 
 - Preserved the six canonical counts: 13 published species-level taxa, 18 physical specimens, 2 classes, 6 orders, 11 families, and 15 genera.
 - Replaced the old Find a skull, Browse by class, Home Collection tree, Geographic records, and Behind the collection sections with one compact two-column-to-single-column hub. Species remains the strongest route; Map, Measurements, and Preparation use full-card real links; Skull Comparison is equally designed but explicitly non-navigating and labelled `Coming soon`.
-- The Map preview is a deterministic SVG plot of the 18 reviewed canonical coordinate records and has no MapLibre, provider tile, search, control, or result-rail code. Measurements reuses the public lateral diagram and registered SVG geometry. The Comparison preview derives its two records and relative-length presentation from the existing comparison model without introducing a future route or dataset.
-- Processed the owner-authorized 2976×3968 Preparation JPEG into a 1200×1600, 300 KiB sRGB WebP. The committed public derivative contains no EXIF/GPS/ICC/IPTC/XMP; the source JPEG remains untracked staging input. `content/home/home-media.json`, `pnpm media:process:home`, normal content compilation, and `validate:media` now own and verify this boundary.
+- The Map preview now uses the owner-supplied feature thumbnail rather than an abstract SVG plot. It has no MapLibre, provider tile, search, control, or result-rail code. Measurements, Preparation, Species, and Comparison likewise use the five reviewed owner-supplied static thumbnail derivatives, while their destination behavior remains in the live routes or explicit `Coming soon` state.
+- Processed the owner-authorized Home PNG/JPEG sources into five 1200 px-longest-edge sRGB WebPs. The committed public derivatives contain no EXIF/GPS/ICC/IPTC/XMP; all source images remain untracked staging input. `content/home/home-media.json`, `pnpm media:process:home`, normal content compilation, and `validate:media` now own and verify this boundary.
 
 ### Verification result
 
 - Focused model/component tests prove exact all-record coverage, bounded states, exact URLs, counts, live destination links, non-linking Comparison state, and removal of retired sections.
-- Production build prerenders all 77 routes. The complete 65/65 production Chromium regression passes; its nine Home journeys cover axe, exact metadata/links, arrangement cycling, keyboard Space navigation, first/second-touch behavior, 1440/820/390/360 px reflow, 44px-plus targets, reduced motion, forced colors, failed Preparation media, static/no-JavaScript output, and existing catalog/taxonomy/sitemap regressions.
+- Production build prerenders all 77 routes. The complete Chromium regression and updated Home journeys cover axe, exact metadata/links, ten-slot varied-view coverage, arrangement cycling, keyboard Space navigation, focus stability, first/second-touch behavior, mobile touch parallax, 1440/820/390/360 px reflow, 44px-plus targets, reduced motion, forced colors, failed thumbnail media, static/no-JavaScript output, and existing catalog/taxonomy/sitemap regressions.
 - Manual production screenshots at 1440×900, 820×900, 390×844, and 360×800 show the intended desktop/tablet/mobile compositions with zero horizontal overflow. No MapLibre canvas or dead Comparison route appears on Home.
 
 ### Scope result
 
-The Home milestone is complete locally and ready for owner product review. No standalone comparison page, preparation procedure content, taxonomy architecture, collection identity, remote publication, deployment, or later phase was added.
+The Home milestone and this bounded feedback refinement are complete locally and ready for owner product review. No standalone comparison page, preparation procedure content, taxonomy architecture, collection identity, remote publication, deployment, or later phase was added.
 
 ## 1.2 Owner-authorized Measurements milestone
 
@@ -430,7 +430,7 @@ Package-manager gates must run sequentially with `CI=true` in non-interactive en
 
 ## 13. Exact next action
 
-1. Owner reviews the redesigned `/` at desktop and mobile widths, including the specimen-field composition/identity/touch behavior, six-rank strip, five hub cards, and Preparation image treatment.
+1. Owner reviews the redesigned `/` at desktop and mobile widths, including the ten-specimen mixed-angle field, focus/touch/parallax behavior, compact six-rank strip, and five owner-supplied hub thumbnails.
 2. If changes are wanted, authorize only that bounded Home refinement; otherwise explicitly authorize publication before any push or pull request.
 3. Keep merged Phase 5 and the local Measurements/Home checkpoints as stable fallbacks. Do not begin age/condition methodology or another phase from this branch.
 
@@ -568,5 +568,12 @@ No unresolved content, rights, or publication blocker prevents local Home review
 - Added bounded pointer depth, keyboard/touch identity and exact specimen navigation, reduced-motion/forced-color/static fallbacks, a static canonical-coordinate preview with no MapLibre, real methodology/comparison previews, and the complete non-linking `Coming soon` Comparison state.
 - Processed the owner-authorized Preparation JPEG into one declared, metadata-stripped public WebP through a reproducible Home-media command; the original remains untracked staging input.
 - Model/component tests, formatting/lint/type/media/content checks, the 77-route production build, complete 65/65 Chromium regression, and manual 1440/820/390/360 px production review pass. The coherent milestone is committed locally for owner review; no push, pull request, merge, deployment, or next phase is authorized.
+
+### 2026-09-02 — Home feedback v1 verified locally
+
+- Expanded each bounded field state from six to ten visible specimens. Three deterministic overlapping windows cover all 18 published physical specimens across the cycle, while the first state mixes lateral, oblique, frontal, dorsal, ventral, and mandible views with lateral remaining dominant.
+- Fixed the focus/touch jump and hover loop by keeping link hitboxes stationary and applying focus/parallax transforms only to the child image. Touch movement now supplies a bounded mobile parallax response without intercepting ordinary vertical scrolling.
+- Replaced the generated Home SVG/derived previews with five owner-supplied static thumbnails: layered species catalog, feature-rich map, measurement reference, full preparation storyboard, and comparison visual. All are processed as 1200 px-longest-edge metadata-stripped WebPs through `pnpm media:process:home` and checked by normal media validation.
+- Compressed the mobile statistics strip to a three-column, two-row layout with substantially smaller numerals. Focused model/component tests pass (4 tests), the full formatting/lint/type/media/content check passes (67 unit tests plus fixture validation), the production build prerenders 77 routes, and the complete Chromium regression passes 66/66. The branch remains local and unpublished.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.

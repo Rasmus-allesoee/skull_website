@@ -17,32 +17,41 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
     x: number;
     y: number;
   } | null>(null);
+  const interactionStarted = useRef(false);
+  const touchSelection = useRef<string | null>(null);
   const [stateIndex, setStateIndex] = useState(0);
   const [activeSpecimenId, setActiveSpecimenId] = useState<string | null>(null);
   const [isEnhanced, setIsEnhanced] = useState(false);
   const state = states[stateIndex] ?? states[0];
 
   useEffect(() => {
+    let rotationTimer: ReturnType<typeof setTimeout> | undefined;
     const frame = requestAnimationFrame(() => {
       setIsEnhanced(true);
       if (states.length < 2) return;
-      try {
-        const stored = Number.parseInt(
-          localStorage.getItem(visitCursorKey) ?? "0",
-        );
-        const nextState = Number.isFinite(stored)
-          ? Math.abs(stored) % states.length
-          : 0;
-        setStateIndex(nextState);
-        localStorage.setItem(
-          visitCursorKey,
-          String((nextState + 1) % states.length),
-        );
-      } catch {
-        // Storage is optional. The server-rendered first arrangement stays useful.
-      }
+      rotationTimer = setTimeout(() => {
+        if (interactionStarted.current) return;
+        try {
+          const stored = Number.parseInt(
+            localStorage.getItem(visitCursorKey) ?? "0",
+          );
+          const nextState = Number.isFinite(stored)
+            ? Math.abs(stored) % states.length
+            : 0;
+          setStateIndex(nextState);
+          localStorage.setItem(
+            visitCursorKey,
+            String((nextState + 1) % states.length),
+          );
+        } catch {
+          // Storage is optional. The server-rendered first arrangement stays useful.
+        }
+      }, 3000);
     });
-    return () => cancelAnimationFrame(frame);
+    return () => {
+      cancelAnimationFrame(frame);
+      if (rotationTimer) clearTimeout(rotationTimer);
+    };
   }, [states.length]);
 
   if (!state) {
@@ -54,12 +63,13 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
   }
 
   const moveParallax = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (
-      event.pointerType !== "mouse" ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
+    if (event.pointerType !== "mouse" && event.pointerType !== "touch") {
+      return;
+    }
+    if (event.pointerType === "touch" && event.buttons === 0) return;
     const bounds = event.currentTarget.getBoundingClientRect();
     const x = ((event.clientX - bounds.left) / bounds.width - 0.5) * 2;
     const y = ((event.clientY - bounds.top) / bounds.height - 0.5) * 2;
@@ -98,11 +108,19 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
     outsidePointer.current = null;
     if (!start || start.id !== event.pointerId) return;
     if (Math.hypot(event.clientX - start.x, event.clientY - start.y) <= 10) {
+      touchSelection.current = null;
       setActiveSpecimenId(null);
     }
   };
 
+  const finishPointer = (event: ReactPointerEvent<HTMLDivElement>) => {
+    resetParallax();
+    finishOutsidePointer(event);
+  };
+
   const selectNextState = () => {
+    interactionStarted.current = true;
+    touchSelection.current = null;
     setActiveSpecimenId(null);
     setStateIndex((current) => {
       const next = (current + 1) % states.length;
@@ -127,9 +145,10 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
         onPointerMove={moveParallax}
         onPointerLeave={resetParallax}
         onPointerDown={beginOutsidePointer}
-        onPointerUp={finishOutsidePointer}
+        onPointerUp={finishPointer}
         onPointerCancel={() => {
           outsidePointer.current = null;
+          resetParallax();
         }}
       >
         <div className="specimen-field-light" aria-hidden="true" />
@@ -139,7 +158,13 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
           return (
             <Link
               key={specimen.specimenId}
-              className={`specimen-field-link specimen-field-slot-${index + 1}${isActive ? "is-active" : ""}`}
+              className={[
+                "specimen-field-link",
+                `specimen-field-slot-${index + 1}`,
+                isActive ? "is-active" : null,
+              ]
+                .filter(Boolean)
+                .join(" ")}
               href={specimen.href}
               aria-label={accessibleName}
               aria-describedby={
@@ -147,6 +172,8 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
               }
               onPointerEnter={(event) => {
                 if (event.pointerType === "mouse") {
+                  interactionStarted.current = true;
+                  touchSelection.current = null;
                   setActiveSpecimenId(specimen.specimenId);
                 }
               }}
@@ -156,13 +183,19 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
                 }
               }}
               onPointerDown={(event) => {
+                interactionStarted.current = true;
                 activationInput.current =
                   event.pointerType === "touch" ? "touch" : null;
               }}
               onTouchStart={() => {
+                interactionStarted.current = true;
                 activationInput.current = "touch";
               }}
-              onFocus={() => setActiveSpecimenId(specimen.specimenId)}
+              onFocus={() => {
+                interactionStarted.current = true;
+                touchSelection.current = null;
+                setActiveSpecimenId(specimen.specimenId);
+              }}
               onBlur={(event) => {
                 if (!event.currentTarget.contains(event.relatedTarget)) {
                   setActiveSpecimenId(null);
@@ -170,6 +203,7 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
               }}
               onKeyDown={(event) => {
                 if (event.key === " " || event.key === "Enter") {
+                  touchSelection.current = null;
                   activationInput.current = "keyboard";
                 }
                 if (event.key === " ") {
@@ -178,17 +212,23 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
                 }
               }}
               onClick={(event) => {
+                interactionStarted.current = true;
                 const usesTouchSelection =
                   activationInput.current !== "keyboard" &&
                   (activationInput.current === "touch" ||
                     window.matchMedia("(hover: none), (pointer: coarse)")
                       .matches);
                 activationInput.current = null;
-                if (
-                  usesTouchSelection &&
-                  activeSpecimenId !== specimen.specimenId
-                ) {
+                if (usesTouchSelection) {
+                  const isSecondTap =
+                    touchSelection.current === specimen.specimenId;
+                  if (isSecondTap) {
+                    touchSelection.current = null;
+                    return;
+                  }
                   event.preventDefault();
+                  event.stopPropagation();
+                  touchSelection.current = specimen.specimenId;
                   setActiveSpecimenId(specimen.specimenId);
                 }
               }}

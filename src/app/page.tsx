@@ -21,24 +21,20 @@ export const metadata = createPageMetadata({
 export default function Home() {
   const model = getHomePageModel();
   const { catalog } = model;
-  const preparationImage = model.homeMedia.assets.find(
-    (asset) => asset.assetId === "preparation-field-skull",
-  );
-  const measurementDiagram =
-    model.measurementReference.diagrams.find(
-      (diagram) => diagram.id === "lateral-skull",
-    ) ?? model.measurementReference.diagrams[0];
-  const comparisonReference = model.comparisons.find(
-    (record) => record.kind === "reference" && record.isDefault,
-  );
-  const comparisonSpecimen = model.comparisons.find(
-    (record) => record.kind === "specimen",
-  );
-  const speciesPreview = [
-    catalog.specimens[0],
-    catalog.specimens[Math.floor(catalog.specimens.length / 2)],
-    catalog.specimens.at(-1),
-  ].filter((record) => record !== undefined);
+  const getHomeAsset = (assetId: string) => {
+    const asset = model.homeMedia.assets.find(
+      (candidate) => candidate.assetId === assetId,
+    );
+    if (!asset) {
+      throw new Error(`Missing required Home media asset: ${assetId}`);
+    }
+    return asset;
+  };
+  const speciesThumbnail = getHomeAsset("species-catalog-thumbnail");
+  const mapThumbnail = getHomeAsset("map-thumbnail");
+  const measurementsThumbnail = getHomeAsset("measurements-thumbnail");
+  const preparationThumbnail = getHomeAsset("preparation-guide-thumbnail");
+  const comparisonThumbnail = getHomeAsset("skull-comparison-thumbnail");
 
   return (
     <MuseumShell
@@ -115,7 +111,7 @@ export default function Home() {
                 </p>
                 <span className="home-card-action">Explore species →</span>
               </div>
-              <SpeciesCardPreview specimens={speciesPreview} />
+              <SpeciesCardPreview asset={speciesThumbnail} />
             </Link>
           </article>
 
@@ -130,51 +126,47 @@ export default function Home() {
                 </p>
                 <span className="home-card-action">Open collection map →</span>
               </div>
-              <HomeMapPreview specimens={model.geographicSpecimens} />
+              <HomeMapPreview asset={mapThumbnail} />
             </Link>
           </article>
 
-          {measurementDiagram ? (
-            <article className="home-hub-card home-hub-card-measurements">
-              <Link
-                href="/methodology"
-                aria-label="Open the measurement reference"
-              >
-                <div className="home-hub-copy">
-                  <p className="card-overline">Illustrated reference</p>
-                  <h3>Measurements</h3>
-                  <p>
-                    Match the collection’s measurement vocabulary to exact
-                    landmarks across five real-skull views.
-                  </p>
-                  <span className="home-card-action">View measurements →</span>
-                </div>
-                <MeasurementCardPreview diagram={measurementDiagram} />
-              </Link>
-            </article>
-          ) : null}
+          <article className="home-hub-card home-hub-card-measurements">
+            <Link
+              href="/methodology"
+              aria-label="Open the measurement reference"
+            >
+              <div className="home-hub-copy">
+                <p className="card-overline">Illustrated reference</p>
+                <h3>Measurements</h3>
+                <p>
+                  Match the collection’s measurement vocabulary to exact
+                  landmarks across five real-skull views.
+                </p>
+                <span className="home-card-action">View measurements →</span>
+              </div>
+              <MeasurementCardPreview asset={measurementsThumbnail} />
+            </Link>
+          </article>
 
-          {preparationImage ? (
-            <article className="home-hub-card home-hub-card-preparation">
-              <Link
-                href="/guides/skull-preparation"
-                aria-label="Open the skull preparation guide outline"
-              >
-                <div className="home-hub-copy">
-                  <p className="card-overline">From recovery to record</p>
-                  <h3>Preparation guide</h3>
-                  <p>
-                    See the planned guide structure for turning a recovered
-                    skull into a documented collection specimen.
-                  </p>
-                  <span className="home-card-action">
-                    Open preparation guide →
-                  </span>
-                </div>
-                <PreparationCardPreview asset={preparationImage} />
-              </Link>
-            </article>
-          ) : null}
+          <article className="home-hub-card home-hub-card-preparation">
+            <Link
+              href="/guides/skull-preparation"
+              aria-label="Open the skull preparation guide outline"
+            >
+              <div className="home-hub-copy">
+                <p className="card-overline">From recovery to record</p>
+                <h3>Preparation guide</h3>
+                <p>
+                  See the planned guide structure for turning a recovered skull
+                  into a documented collection specimen.
+                </p>
+                <span className="home-card-action">
+                  Open preparation guide →
+                </span>
+              </div>
+              <PreparationCardPreview asset={preparationThumbnail} />
+            </Link>
+          </article>
 
           <article className="home-hub-card home-hub-card-comparison">
             <div className="home-hub-copy">
@@ -191,12 +183,7 @@ export default function Home() {
                 Preview based on the current specimen comparison engine
               </span>
             </div>
-            {comparisonReference && comparisonSpecimen ? (
-              <ComparisonCardPreview
-                specimen={comparisonSpecimen}
-                reference={comparisonReference}
-              />
-            ) : null}
+            <ComparisonCardPreview asset={comparisonThumbnail} />
           </article>
         </div>
       </section>

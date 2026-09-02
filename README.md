@@ -2,7 +2,7 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**The redesigned Home milestone is implemented locally and ready for owner review:** `/` now combines a static-first interactive six-specimen field, full 18-specimen coverage across three bounded arrangements, the six canonical collection statistics, and one compact five-card destination hub. The focused Phase 5 map remains merged in `main`; the local Home and Measurements checkpoints have not been pushed, opened as a pull request, or merged.
+**The redesigned Home milestone is implemented locally and ready for owner review:** `/` now combines a static-first interactive ten-slot field with varied canonical views, full 18-specimen coverage across three bounded arrangements, the six canonical collection statistics, and one compact five-card destination hub. The focused Phase 5 map remains merged in `main`; the local Home and Measurements checkpoints have not been pushed, opened as a pull request, or merged.
 
 Start at `/`, browse the catalog at `/species`, explore public specimen locations at `/map`, inspect the measurement reference at `/methodology`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
 
@@ -95,7 +95,7 @@ On macOS, find the computer's active LAN IPv4 address (commonly with `ipconfig g
 | `pnpm media:process:reference` | Rebuild a declared public comparison-reference WebP from its ignored local source |
 | `pnpm media:verify:methodology-sources` | Verify all five annotated/raw measurement pairs, identity registration, and encoded overlay positions |
 | `pnpm media:process:methodology` | Rebuild and validate the five metadata-stripped measurement-reference WebPs from ignored raw sources |
-| `pnpm media:process:home` | Rebuild and validate the owner-authorized metadata-stripped Home Preparation WebP from ignored staging |
+| `pnpm media:process:home` | Rebuild and validate the owner-authorized metadata-stripped Home thumbnail WebPs from ignored staging |
 | `pnpm taxonomy:refresh -- --taxon-id TAX-0001 --dry-run` | Query GBIF explicitly without changing curated taxonomy or writing a snapshot |
 | `pnpm lint` | Run ESLint with the Next.js and repository rules |
 | `pnpm typecheck` | Run TypeScript without emitting files |
@@ -140,7 +140,7 @@ The original approved plan remains in `agent_context/website_plan_from_planmode.
 
 ## Content and image safety
 
-`agent_context/skulls_meta.csv` is an incomplete illustrative draft. `agent_context/skull_images_clean/` contains local source/staging images. `agent_context/metadata_csv/` contains partial spreadsheet exports supplied while designing the class-aware measurement model. `agent_context/measurement_page/` contains raw and annotated methodology sources plus migration wording. The owner-authorized Home Preparation JPEG also remains staging input. These paths and files must not be published directly or read by a normal application build.
+`agent_context/skulls_meta.csv` is an incomplete illustrative draft. `agent_context/skull_images_clean/` contains local source/staging images. `agent_context/metadata_csv/` contains partial spreadsheet exports supplied while designing the class-aware measurement model. `agent_context/measurement_page/` contains raw and annotated methodology sources plus migration wording. The owner-authorized Home thumbnail sources remain staging input. These paths and files must not be published directly or read by a normal application build.
 
 Phase 2 established:
 
@@ -148,7 +148,7 @@ Phase 2 established:
 - `content/specimens/specimens.csv` for physical specimens, provenance, measurements, condition, observation fields, preparation, and rights;
 - `content/references/*.json` for reviewed comparison-reference identity, measurements, orientation, asset metadata, and approximate-value semantics;
 - `content/methodology/measurement-definitions.csv` and `measurement-reference.json` for the 21 definition rows and registered five-view overlay/media model;
-- `content/home/home-media.json` for the owner-authorized Home-only Preparation derivative declaration;
+- `content/home/home-media.json` for the owner-authorized Home-only thumbnail derivative declarations;
 - review-gated MDX for future cited editorial profiles and guides; and
 - `public/media/specimens/` for validated derivatives named `{specimen-id}__{view}.webp`, `public/media/references/` for validated comparison assets, `public/media/methodology/` for the five unannotated reference derivatives, and `public/media/home/` for declared Home editorial media.
 

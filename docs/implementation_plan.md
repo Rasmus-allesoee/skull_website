@@ -382,16 +382,17 @@ These items were explicitly removed from the focused map milestone. They require
 
 ## 8.1 Owner-authorized Home redesign milestone
 
-- [x] Replace the single featured-skull entrance with a server-rendered six-specimen field and a route-local progressive enhancement for bounded pointer depth, focus/touch identity, and explicit arrangement changes.
-- [x] Derive three deterministic arrangements from canonical published records so all 18 physical specimens appear exactly once per cycle with exact stable specimen links; keep only one bounded state rendered at a time.
+- [x] Replace the single featured-skull entrance with a server-rendered ten-slot field and a route-local progressive enhancement for bounded visual-image parallax, focus/touch identity, and explicit arrangement changes.
+- [x] Derive three deterministic arrangements from canonical published records so all 18 physical specimens appear across the cycle, with deliberate overlap between ten-slot windows and exact stable specimen links; keep only one bounded state rendered at a time.
+- [x] Mix lateral-dominant canonical media with reviewed oblique, frontal, dorsal, ventral, and mandible views without constructing media filenames in page code.
 - [x] Preserve the canonical six-rank statistic strip.
 - [x] Replace the retired Find a skull, Browse by class, Home Collection tree, Geographic records, and Behind the collection sections with one compact destination hub.
 - [x] Add complete Species, static Map, Measurements, and Preparation cards plus a non-navigating `Coming soon` Skull Comparison preview based on the existing comparison engine.
-- [x] Process the owner-authorized Preparation JPEG through a reproducible Home-media path that strips EXIF/GPS and validates the committed WebP during normal content/media checks.
+- [x] Process the owner-authorized Home thumbnail PNG/JPEG sources through a reproducible Home-media path that strips EXIF/GPS and validates the committed WebPs during normal content/media checks.
 - [x] Keep the route statically useful with no JavaScript and preserve MapLibre/search-index bundle isolation.
 - [x] Verify desktop/tablet/360–390 px reflow, touch and keyboard navigation, reduced motion, forced colors, image failure, axe, no-JavaScript, build output, and zero horizontal overflow.
 
-**Gate result:** Passed locally on 2026-09-01 on `agent/next-additions`. The coherent Home implementation is committed locally for owner review; no push, pull request, merge, deployment, or later phase is authorized.
+**Gate result:** Passed locally on 2026-09-02 on `agent/next-additions`. The bounded Home feedback refinement is committed locally for owner review; no push, pull request, merge, deployment, or later phase is authorized.
 
 ## 9. Phase 6 — complete audited collection migration
 

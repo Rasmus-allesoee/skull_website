@@ -3,9 +3,29 @@
   "source_root": "agent_context",
   "entries": [
     {
-      "asset_id": "preparation-field-skull",
-      "source_file": "IMG_20251009_154046.jpg",
-      "public_file": "public/media/home/preparation-field-skull.webp"
+      "asset_id": "species-catalog-thumbnail",
+      "source_file": "home_page/home_species_cataloge_thumbnail.png",
+      "public_file": "public/media/home/species-catalog-thumbnail.webp"
+    },
+    {
+      "asset_id": "map-thumbnail",
+      "source_file": "home_page/home_map_thumbnail_generated_image.png",
+      "public_file": "public/media/home/map-thumbnail.webp"
+    },
+    {
+      "asset_id": "measurements-thumbnail",
+      "source_file": "home_page/home_measurements_thumbnail.png",
+      "public_file": "public/media/home/measurements-thumbnail.webp"
+    },
+    {
+      "asset_id": "preparation-guide-thumbnail",
+      "source_file": "home_page/home_preparation_guide_thumbnail.png",
+      "public_file": "public/media/home/preparation-guide-thumbnail.webp"
+    },
+    {
+      "asset_id": "skull-comparison-thumbnail",
+      "source_file": "home_page/home_skull_comparison_thumbnail.png",
+      "public_file": "public/media/home/skull-comparison-thumbnail.webp"
     }
   ]
 }

@@ -49,18 +49,34 @@ describe("museum home", () => {
     ).toBeNull();
   });
 
-  it("server-renders six exact specimen links and removes the retired Home sections", () => {
+  it("server-renders ten exact specimen links and removes the retired Home sections", () => {
     render(<Home />);
 
     const specimenLinks = screen.getAllByRole("link", {
       name: /^View .+, .+, specimen SPEC-/,
     });
-    expect(specimenLinks).toHaveLength(6);
+    expect(specimenLinks).toHaveLength(10);
     for (const link of specimenLinks) {
       expect(link.getAttribute("href")).toMatch(
         /^\/species\/[a-z0-9-]+\/specimens\/SPEC-\d{4}$/,
       );
     }
+
+    const fieldSources = screen
+      .getAllByRole("link", {
+        name: /^View .+, .+, specimen SPEC-/,
+      })
+      .map((link) => link.querySelector("img")?.getAttribute("src") ?? "");
+    expect(fieldSources.some((source) => source.includes("oblique"))).toBe(
+      true,
+    );
+    expect(fieldSources.some((source) => source.includes("frontal"))).toBe(
+      true,
+    );
+    expect(fieldSources.some((source) => source.includes("dorsal"))).toBe(true);
+    expect(
+      fieldSources.some((source) => source.includes("mandible-dorsal")),
+    ).toBe(true);
 
     expect(screen.queryByText("Find a skull")).toBeNull();
     expect(screen.queryByText("Browse by class")).toBeNull();

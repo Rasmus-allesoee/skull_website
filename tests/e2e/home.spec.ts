@@ -16,7 +16,7 @@ test("home and catalog expose published records with metadata and no detectable 
   await expect(
     page.getByRole("link", { name: "Explore the collection" }),
   ).toHaveAttribute("href", "/species");
-  await expect(page.locator(".specimen-field-link")).toHaveCount(6);
+  await expect(page.locator(".specimen-field-link")).toHaveCount(10);
   await expect(
     page.getByRole("link", { name: "Explore the Species catalog" }),
   ).toHaveAttribute("href", "/species");
@@ -31,6 +31,26 @@ test("home and catalog expose published records with metadata and no detectable 
       name: "Open the skull preparation guide outline",
     }),
   ).toHaveAttribute("href", "/guides/skull-preparation");
+  await expect(page.locator(".home-hub-card-species img")).toHaveAttribute(
+    "src",
+    /species-catalog-thumbnail/,
+  );
+  await expect(page.locator(".home-hub-card-map img")).toHaveAttribute(
+    "src",
+    /map-thumbnail/,
+  );
+  await expect(page.locator(".home-hub-card-measurements img")).toHaveAttribute(
+    "src",
+    /measurements-thumbnail/,
+  );
+  await expect(page.locator(".home-hub-card-preparation img")).toHaveAttribute(
+    "src",
+    /preparation-guide-thumbnail/,
+  );
+  await expect(page.locator(".home-hub-card-comparison img")).toHaveAttribute(
+    "src",
+    /skull-comparison-thumbnail/,
+  );
   await expect(page.getByText("Coming soon")).toBeVisible();
   await expect(
     page.getByRole("link", { name: /Skull Comparison/i }),
@@ -84,13 +104,29 @@ test("the specimen field preserves exact keyboard navigation and cycles bounded 
     .locator(".specimen-field-link")
     .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
   expect(secondIds).not.toEqual(firstIds);
-  expect(secondIds).toHaveLength(6);
+  expect(secondIds).toHaveLength(10);
+
+  await page
+    .getByRole("button", { name: /Show another specimen arrangement/i })
+    .click();
+  const thirdIds = await field
+    .locator(".specimen-field-link")
+    .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  expect(thirdIds).toHaveLength(10);
+  expect(new Set([...firstIds, ...secondIds, ...thirdIds]).size).toBe(18);
 
   const specimenLink = field.locator(".specimen-field-link").first();
   const href = await specimenLink.getAttribute("href");
+  const beforeFocus = await specimenLink.evaluate(
+    (element) => getComputedStyle(element).transform,
+  );
   await specimenLink.focus();
   await expect(specimenLink).toBeFocused();
   await expect(specimenLink.locator(".specimen-field-identity")).toBeVisible();
+  const afterFocus = await specimenLink.evaluate(
+    (element) => getComputedStyle(element).transform,
+  );
+  expect(afterFocus).toBe(beforeFocus);
   await page.keyboard.press("Space");
   await expect(page).toHaveURL(href!);
   await expect(page.getByText("Exact specimen record")).toBeVisible();
@@ -118,6 +154,59 @@ test("touch selection reveals identity before deliberate specimen navigation", a
   await context.close();
 });
 
+test("touch parallax is bounded without moving the specimen hitboxes", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+  const field = page.locator(".specimen-field");
+  const bounds = await field.boundingBox();
+  expect(bounds).not.toBeNull();
+  await field.evaluate((element, box) => {
+    element.dispatchEvent(
+      new PointerEvent("pointermove", {
+        bubbles: true,
+        buttons: 1,
+        clientX: box!.x + box!.width * 0.9,
+        clientY: box!.y + box!.height * 0.15,
+        pointerId: 7,
+        pointerType: "touch",
+      }),
+    );
+  }, bounds);
+  const moved = await field.evaluate((element) => ({
+    nearX: element.style.getPropertyValue("--field-x-near"),
+    nearY: element.style.getPropertyValue("--field-y-near"),
+  }));
+  expect(moved.nearX).not.toBe("0px");
+  expect(moved.nearY).not.toBe("0px");
+  const firstLink = field.locator(".specimen-field-link").first();
+  const before = await firstLink.boundingBox();
+  await field.evaluate((element, box) => {
+    element.dispatchEvent(
+      new PointerEvent("pointerup", {
+        bubbles: true,
+        clientX: box!.x + box!.width * 0.9,
+        clientY: box!.y + box!.height * 0.15,
+        pointerId: 7,
+        pointerType: "touch",
+      }),
+    );
+  }, bounds);
+  const after = await firstLink.boundingBox();
+  const reset = await field.evaluate((element) =>
+    element.style.getPropertyValue("--field-x-near"),
+  );
+  expect(reset).toBe("0px");
+  expect(Math.abs((after?.x ?? 0) - (before?.x ?? 0))).toBeLessThan(1);
+  await context.close();
+});
+
 test("Home reflows without overflow and simplifies motion and color-dependent treatment", async ({
   page,
 }) => {
@@ -137,6 +226,9 @@ test("Home reflows without overflow and simplifies motion and color-dependent tr
           return { width: box.width, height: box.height };
         },
       ),
+      summaryHeight: document
+        .querySelector(".collection-summary")
+        ?.getBoundingClientRect().height,
     }));
     expect(geometry.overflow).toBeLessThanOrEqual(0);
     expect(
@@ -144,6 +236,9 @@ test("Home reflows without overflow and simplifies motion and color-dependent tr
         (target) => target.width >= 44 && target.height >= 44,
       ),
     ).toBe(true);
+    if (viewport.width <= 390) {
+      expect(geometry.summaryHeight).toBeLessThan(160);
+    }
   }
 
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -153,7 +248,8 @@ test("Home reflows without overflow and simplifies motion and color-dependent tr
     .first()
     .evaluate((element) => {
       const duration = getComputedStyle(element).transitionDuration;
-      return duration === "none" ? 0 : Number.parseFloat(duration);
+      const parsed = Number.parseFloat(duration);
+      return Number.isFinite(parsed) ? parsed : 0;
     });
   expect(reducedTransitionSeconds).toBeLessThanOrEqual(0.001);
 
@@ -177,7 +273,7 @@ test("a failed Home image does not remove the surrounding navigation", async ({
       name: "Open the skull preparation guide outline",
     }),
   ).toHaveAttribute("href", "/guides/skull-preparation");
-  await expect(page.locator(".specimen-field-link")).toHaveCount(6);
+  await expect(page.locator(".specimen-field-link")).toHaveCount(10);
 });
 
 test("family galleries form a three-column desktop grid and the compact specimen chooser opens exact records", async ({
@@ -290,7 +386,7 @@ test("Home, taxonomy, and exact specimen routes remain useful without JavaScript
       name: "A visual archive of animal skulls.",
     }),
   ).toBeVisible();
-  await expect(page.locator(".specimen-field-link")).toHaveCount(6);
+  await expect(page.locator(".specimen-field-link")).toHaveCount(10);
   await expect(
     page.getByRole("button", { name: /another specimen arrangement/i }),
   ).toHaveCount(0);

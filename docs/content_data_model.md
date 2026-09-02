@@ -20,7 +20,7 @@ The current `agent_context/skulls_meta.csv` is an incomplete illustrative workin
 | `content/guides/*.mdx` | Cited editorial guides | Taxon/specimen facts |
 | `content/media/{specimen-id}.json` | Canonical views, lateral orientation, alt text, credit, and rights declarations | Pixel-derived dimensions/bounds |
 | `content/references/{reference-id}.json` | Stable comparison-reference identity, display/search terms, approximate measurements, default state, orientation, credit, and rights | Specimen/taxon identity or universal biological claims |
-| `content/home/home-media.json` | Stable Home-only editorial media identity, public path, alt text, credit, and reserved-rights state | Specimen identity, source pixels, or preparation instructions |
+| `content/home/home-media.json` | Stable Home-only editorial thumbnail identities, public paths, alt text, credit, and reserved-rights state | Specimen identity, source pixels, or preparation instructions |
 | Media manifests generated from public assets | Dimensions, canonical view, path, subject bounds, technical validation | Rights/provenance source decisions |
 | Reviewed taxonomy snapshot | External match evidence and review state | Immutable local identity or curated vernacular names |
 
@@ -436,7 +436,7 @@ Guide MDX uses explicit title, slug, summary, review date, safety-review status,
 
 Methodology reference derivatives use stable diagram IDs under `public/media/methodology/`. They preserve the registered source aspect ratio, transparency, and sRGB pixels; strip EXIF/IPTC/XMP; stay within the 1200–3200 px longest-edge contract and 5 MB per-file budget; and are validated against the canonical methodology declaration. Their coordinate system remains the original raw/annotated canvas rather than the smaller public pixel dimensions; the declared presentation viewport crops only layout-time empty canvas and never rewrites the derivative.
 
-Home editorial derivatives use stable IDs and declared paths under `public/media/home/`. The owner-authorized Preparation source remains ignored staging input; `pnpm media:process:home` normalizes orientation, converts to sRGB, creates the reviewed 1200×1600 WebP crop, and strips EXIF/GPS/ICC/IPTC/XMP. Normal content and media validation checks the committed derivative and generates the typed Home manifest; the browser never reads the source JPEG or `agent_context`.
+Home editorial derivatives use stable IDs and declared paths under `public/media/home/`. The owner-authorized Home thumbnail sources remain ignored staging input; `pnpm media:process:home` accepts the reviewed JPEG/PNG sources, normalizes orientation, converts to sRGB, fits each image inside a 1200 px longest edge without stretching or cropping, and strips EXIF/GPS/ICC/IPTC/XMP. Normal content and media validation checks all declared derivatives and generates the typed Home manifest; the browser never reads the source files or `agent_context`.
 
 Phase 3.2 corrected the committed lateral/oblique pixels for SPEC-0003, SPEC-0013, and SPEC-0018 by rebuilding exactly those six changed derivatives from the already right-facing clean masters through the 104-entry staging map and ordinary processor. No display-time filename/flip exception or manual WebP edit was introduced. The regenerated manifest recomputes subject bounds, so galleries, cards, suggestions, and comparisons share the corrected framing wherever each canonical asset is used.
 
