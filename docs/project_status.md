@@ -21,7 +21,13 @@ Stop at the locally verified Home acceptance gate and present it for owner revie
 - Uses a lateral-dominant view mix with reviewed oblique, frontal, dorsal, ventral, and mandible media. Desktop pointer motion and mobile touch movement change only route-local CSS variables on the visual image; fixed semantic link boxes do not move under the pointer or focused control, while enhanced pointer/touch hit regions follow alpha-derived silhouette paths. Focus provides the same compact identity and visible emphasis; Space/Enter follow the exact specimen link. On touch, the first tap selects and reveals the compact name/scientific name/ID card, and the second deliberate tap opens the same route. The field allows native two-dimensional panning and pinch zoom without a redundant mobile action button.
 - Each placement now carries one normalized depth value. Scale, sharpness, brightness, contrast, opacity, shadow, parallax travel, and base stacking are derived from that single value, while focus raises only the visual image at its existing location. The composition uses constrained art-directed slots with distributed foreground, midground, and background weight rather than independent per-slot depth cues.
 - Identity disclosure is a field-level boundary-aware card: it prefers above the focused specimen, falls back below/left/right, and clamps to a 12px safety margin inside the responsive field so edge specimens never clip their labels.
-- Reduced motion removes parallax and nonessential transitions. The field keeps ten 64px-minimum link boxes, no horizontal overflow, stable layout, and usable links under forced colors, failed imagery, or disabled JavaScript.
+- Reduced motion removes parallax, mobile repulsion, and nonessential transitions. The field keeps ten 64px-minimum link boxes, no horizontal overflow, stable layout, and usable links under forced colors, failed imagery, or disabled JavaScript.
+
+### Small-touch floating-field refinement (2026-09-02)
+
+- Added a mobile-only focus response that treats the selected specimen as a temporary repulsion point. Nearby visual layers move a few pixels away with a smooth distance-weighted falloff; the selected layer stays anchored, and every displacement is clamped against an 8px field safety margin.
+- Kept the desktop pointer/hover experience unchanged. Repulsion is applied only to visual-image descendants; semantic links and alpha-derived SVG hit paths remain stationary so focus cannot drift or make an overlapping specimen unreachable.
+- Reduced-motion mode clears the response, outside selection clears all displacement variables, and arrangement/resize observers recompute only the active small-touch field.
 
 ### Compact exploration hub and reviewed previews
 

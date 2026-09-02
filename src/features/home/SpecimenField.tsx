@@ -11,6 +11,9 @@ import { getHeroDepthPresentation } from "@/domain/home/depth";
 const visitCursorKey = "skull-collection:home-field-state-v1";
 const identityGap = 12;
 const identityMargin = 12;
+const mobileTouchQuery =
+  "(max-width: 48rem) and (hover: none), (max-width: 48rem) and (pointer: coarse)";
+const mobileRepulsionMargin = 8;
 const fallbackHitPath = "M0 0H100V100H0Z";
 
 type IdentityPlacement = "above" | "below" | "left" | "right";
@@ -20,6 +23,11 @@ interface IdentityPosition {
   left: number;
   top: number;
   placement: IdentityPlacement;
+}
+
+function clampDisplacement(value: number, minimum: number, maximum: number) {
+  if (minimum > maximum) return 0;
+  return Math.min(Math.max(value, minimum), maximum);
 }
 
 export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
@@ -144,6 +152,111 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
     });
   }, [activeSpecimenId]);
 
+  const clearMobileRepulsion = useCallback(() => {
+    fieldRef.current
+      ?.querySelectorAll<HTMLElement>(".specimen-field-link")
+      .forEach((link) => {
+        link.style.setProperty("--field-mobile-push-x", "0px");
+        link.style.setProperty("--field-mobile-push-y", "0px");
+      });
+  }, []);
+
+  /**
+   * Mobile has no stable cursor position to drive the desktop parallax. When
+   * a touch selection is made, use that selection as a temporary repulsion
+   * point instead: nearby visual layers ease a few pixels away while their
+   * semantic links stay fixed. The effect is intentionally derived from
+   * measured field geometry and clamped to the field's safe area, so it cannot
+   * turn a touch selection into a new layout or push a skull out of frame.
+   */
+  const updateMobileRepulsion = useCallback(() => {
+    const field = fieldRef.current;
+    if (
+      !field ||
+      !activeSpecimenId ||
+      !window.matchMedia(mobileTouchQuery).matches ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      clearMobileRepulsion();
+      return;
+    }
+
+    const activeLink = linkRefs.current.get(activeSpecimenId);
+    if (!activeLink) {
+      clearMobileRepulsion();
+      return;
+    }
+
+    const fieldRect = field.getBoundingClientRect();
+    if (fieldRect.width <= 0 || fieldRect.height <= 0) {
+      clearMobileRepulsion();
+      return;
+    }
+
+    const activeRect = activeLink.getBoundingClientRect();
+    const activeCenter = {
+      x: activeRect.left + activeRect.width / 2,
+      y: activeRect.top + activeRect.height / 2,
+    };
+    const maximumPush = Math.min(14, Math.max(8, fieldRect.width * 0.04));
+    const influenceRadius = Math.max(
+      148,
+      Math.min(260, Math.min(fieldRect.width, fieldRect.height) * 0.72),
+    );
+
+    field
+      .querySelectorAll<HTMLElement>(".specimen-field-link")
+      .forEach((link, index) => {
+        if (link === activeLink) {
+          link.style.setProperty("--field-mobile-push-x", "0px");
+          link.style.setProperty("--field-mobile-push-y", "0px");
+          return;
+        }
+
+        const targetRect = link.getBoundingClientRect();
+        const targetCenter = {
+          x: targetRect.left + targetRect.width / 2,
+          y: targetRect.top + targetRect.height / 2,
+        };
+        let deltaX = targetCenter.x - activeCenter.x;
+        let deltaY = targetCenter.y - activeCenter.y;
+        let distance = Math.hypot(deltaX, deltaY);
+        if (distance < 0.5) {
+          const angle = index * 2.399963 + Math.PI / 5;
+          deltaX = Math.cos(angle);
+          deltaY = Math.sin(angle);
+          distance = 1;
+        }
+
+        const proximity = Math.max(0, 1 - distance / influenceRadius);
+        const depthValue = Number.parseFloat(link.dataset.depth ?? "0.5");
+        const depth = Number.isFinite(depthValue)
+          ? Math.min(1, Math.max(0, depthValue))
+          : 0.5;
+        const force = maximumPush * proximity ** 1.65 * (0.84 + depth * 0.16);
+        const requestedX = (deltaX / distance) * force;
+        const requestedY = (deltaY / distance) * force;
+        const minimumX =
+          fieldRect.left + mobileRepulsionMargin - targetRect.left;
+        const maximumX =
+          fieldRect.right - mobileRepulsionMargin - targetRect.right;
+        const minimumY = fieldRect.top + mobileRepulsionMargin - targetRect.top;
+        const maximumY =
+          fieldRect.bottom - mobileRepulsionMargin - targetRect.bottom;
+        const pushX = clampDisplacement(requestedX, minimumX, maximumX);
+        const pushY = clampDisplacement(requestedY, minimumY, maximumY);
+
+        link.style.setProperty(
+          "--field-mobile-push-x",
+          `${pushX.toFixed(2)}px`,
+        );
+        link.style.setProperty(
+          "--field-mobile-push-y",
+          `${pushY.toFixed(2)}px`,
+        );
+      });
+  }, [activeSpecimenId, clearMobileRepulsion]);
+
   useEffect(() => {
     if (!activeSpecimenId) return;
 
@@ -170,6 +283,31 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
       observer?.disconnect();
     };
   }, [activeSpecimenId, state?.id, updateIdentityPosition]);
+
+  useEffect(() => {
+    let frame: number | null = null;
+    const scheduleRepulsion = () => {
+      if (frame !== null) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        frame = null;
+        updateMobileRepulsion();
+      });
+    };
+
+    scheduleRepulsion();
+    window.addEventListener("resize", scheduleRepulsion);
+    let observer: ResizeObserver | undefined;
+    if (typeof ResizeObserver !== "undefined" && fieldRef.current) {
+      observer = new ResizeObserver(scheduleRepulsion);
+      observer.observe(fieldRef.current);
+    }
+
+    return () => {
+      if (frame !== null) cancelAnimationFrame(frame);
+      window.removeEventListener("resize", scheduleRepulsion);
+      observer?.disconnect();
+    };
+  }, [activeSpecimenId, state?.id, updateMobileRepulsion]);
 
   if (!state) {
     return (
@@ -250,6 +388,7 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
   const selectNextState = () => {
     interactionStarted.current = true;
     touchSelection.current = null;
+    clearMobileRepulsion();
     setIdentityPosition(null);
     setActiveSpecimenId(null);
     setStateIndex((current) => {

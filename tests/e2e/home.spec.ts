@@ -245,6 +245,174 @@ test("touch parallax is bounded without moving the specimen hitboxes", async ({
   await context.close();
 });
 
+test("mobile focus gently repels nearby visuals while preserving fixed links", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+
+  const field = page.locator(".specimen-field");
+  const specimenLink = field.locator(".specimen-field-link").first();
+  const hitPosition = await specimenLink.evaluate((link) => {
+    const rect = link.getBoundingClientRect();
+    for (let row = 1; row < 20; row += 1) {
+      for (let column = 1; column < 20; column += 1) {
+        const point = {
+          x: rect.left + (rect.width * column) / 20,
+          y: rect.top + (rect.height * row) / 20,
+        };
+        if (
+          document
+            .elementFromPoint(point.x, point.y)
+            ?.closest(".specimen-field-link") === link
+        ) {
+          return { x: point.x - rect.left, y: point.y - rect.top };
+        }
+      }
+    }
+    return null;
+  });
+  expect(hitPosition).not.toBeNull();
+
+  const before = await field
+    .locator(".specimen-field-link")
+    .evaluateAll((links) =>
+      links.map((link) => {
+        const box = link.getBoundingClientRect();
+        return { x: box.x, y: box.y, width: box.width, height: box.height };
+      }),
+    );
+  await specimenLink.tap({ position: hitPosition! });
+  await expect(specimenLink).toHaveClass(/is-active/);
+
+  const response = await field
+    .locator(".specimen-field-link")
+    .evaluateAll((links) =>
+      links.map((link) => {
+        const box = link.getBoundingClientRect();
+        return {
+          pushX: Number.parseFloat(
+            link.style.getPropertyValue("--field-mobile-push-x"),
+          ),
+          pushY: Number.parseFloat(
+            link.style.getPropertyValue("--field-mobile-push-y"),
+          ),
+          box: { x: box.x, y: box.y, width: box.width, height: box.height },
+          active: link.classList.contains("is-active"),
+        };
+      }),
+    );
+  const nonActive = response.filter((entry) => !entry.active);
+  expect(nonActive).toHaveLength(9);
+  expect(
+    nonActive.every(
+      (entry) => Number.isFinite(entry.pushX) && Number.isFinite(entry.pushY),
+    ),
+  ).toBe(true);
+  expect(
+    response.some(
+      (entry) =>
+        !entry.active &&
+        Number.isFinite(entry.pushX) &&
+        Number.isFinite(entry.pushY) &&
+        Math.hypot(entry.pushX, entry.pushY) > 0.1,
+    ),
+  ).toBe(true);
+  expect(response.filter((entry) => entry.active)[0]).toMatchObject({
+    pushX: 0,
+    pushY: 0,
+  });
+  response.forEach((entry, index) => {
+    expect(Math.hypot(entry.pushX, entry.pushY)).toBeLessThanOrEqual(14.01);
+    expect(entry.box.x).toBeCloseTo(before[index]!.x, 0);
+    expect(entry.box.y).toBeCloseTo(before[index]!.y, 0);
+    expect(entry.box.width).toBeCloseTo(before[index]!.width, 0);
+    expect(entry.box.height).toBeCloseTo(before[index]!.height, 0);
+  });
+
+  const outsidePosition = await field.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    for (let row = 1; row < 12; row += 1) {
+      for (let column = 1; column < 12; column += 1) {
+        const point = {
+          x: rect.left + (rect.width * column) / 12,
+          y: rect.top + (rect.height * row) / 12,
+        };
+        if (
+          !document
+            .elementFromPoint(point.x, point.y)
+            ?.closest(".specimen-field-link")
+        ) {
+          return { x: point.x - rect.left, y: point.y - rect.top };
+        }
+      }
+    }
+    return { x: 2, y: 2 };
+  });
+  await field.tap({ position: outsidePosition });
+  await expect(page.locator(".specimen-field-identity")).toHaveCount(0);
+  const cleared = await field
+    .locator(".specimen-field-link")
+    .evaluateAll((links) =>
+      links.map((link) => [
+        link.style.getPropertyValue("--field-mobile-push-x"),
+        link.style.getPropertyValue("--field-mobile-push-y"),
+      ]),
+    );
+  expect(cleared.every(([x, y]) => x === "0px" && y === "0px")).toBe(true);
+  await context.close();
+});
+
+test("mobile focus repulsion is removed under reduced motion", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+    reducedMotion: "reduce",
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+  const specimenLink = page.locator(".specimen-field-link").first();
+  const hitPosition = await specimenLink.evaluate((link) => {
+    const rect = link.getBoundingClientRect();
+    for (let row = 1; row < 20; row += 1) {
+      for (let column = 1; column < 20; column += 1) {
+        const point = {
+          x: rect.left + (rect.width * column) / 20,
+          y: rect.top + (rect.height * row) / 20,
+        };
+        if (
+          document
+            .elementFromPoint(point.x, point.y)
+            ?.closest(".specimen-field-link") === link
+        ) {
+          return { x: point.x - rect.left, y: point.y - rect.top };
+        }
+      }
+    }
+    return null;
+  });
+  expect(hitPosition).not.toBeNull();
+  await specimenLink.tap({ position: hitPosition! });
+  const pushes = await page
+    .locator(".specimen-field-link")
+    .evaluateAll((links) =>
+      links.map((link) => [
+        link.style.getPropertyValue("--field-mobile-push-x"),
+        link.style.getPropertyValue("--field-mobile-push-y"),
+      ]),
+    );
+  expect(pushes.every(([x, y]) => x === "0px" && y === "0px")).toBe(true);
+  await context.close();
+});
+
 test("enhanced specimen hit areas follow alpha silhouettes instead of link rectangles", async ({
   page,
 }) => {

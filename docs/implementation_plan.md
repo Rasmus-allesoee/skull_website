@@ -391,6 +391,7 @@ These items were explicitly removed from the focused map milestone. They require
 - [x] Process the owner-authorized Home thumbnail PNG/JPEG sources through a reproducible Home-media path that strips EXIF/GPS and validates the committed WebPs during normal content/media checks.
 - [x] Refine the floating specimen field around one normalized depth system, constrained art-directed slots, stationary hitboxes, and a boundary-aware identity card that remains fully inside the field.
 - [x] Constrain enhanced Home pointer/touch hit testing to alpha-derived silhouette paths, restore two-dimensional mobile field panning, and compact mobile identity cards without a redundant action button.
+- [x] Add a small-touch-only, safe-area-clamped repulsion response around the selected specimen while keeping semantic link geometry and desktop pointer behavior unchanged; clear it under reduced motion and on deselection.
 - [x] Keep the route statically useful with no JavaScript and preserve MapLibre/search-index bundle isolation.
 - [x] Verify desktop/tablet/360–390 px reflow, touch and keyboard navigation, reduced motion, forced colors, image failure, axe, no-JavaScript, build output, and zero horizontal overflow.
 
