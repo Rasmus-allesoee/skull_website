@@ -380,6 +380,12 @@ export interface MediaAsset {
   height: number;
   bytes: number;
   subjectBounds: SubjectBounds;
+  /**
+   * Alpha-derived path in a normalized 0–100 viewBox for precise visual hit
+   * testing in the Home specimen field. It is generated from the public WebP,
+   * not hand-authored content.
+   */
+  hitPath?: string;
   orientation: LateralOrientation | null;
   alt: string;
   credit: string;

@@ -6,7 +6,7 @@
 
 **Interface language:** English
 
-**Last reviewed:** 2026-08-31
+**Last reviewed:** 2026-09-02
 
 ## 1. Vision
 
@@ -14,7 +14,7 @@ Skull Collection will be a fast, visually led online natural-history museum buil
 
 The site begins with the collector's own Danish specimens but is designed for a larger, carefully curated reference collection. It must be credible enough for identification and comparison, accessible enough for curious non-specialists, and structured enough to remain maintainable as specimens, contributors, countries, and media types grow.
 
-The shared museum shell, Home, class/order/family/genus routes, review-quality 15-taxon/18-specimen collection, combined Phase 3.2/Phase 4 catalog discovery, and focused Phase 5 `/map` workspace are implemented. The owner-authorized Measurements milestone adds the static `/methodology` reference with 21 definitions, five real-skull diagrams, 24 registered programmatic SVG occurrences, responsive interaction, compact tappable mobile previews, adaptive diagram-anchored previews/details, and a complete semantic fallback. The comprehensive interactive tree (Phase 3.3), remaining supporting/editorial routes, complete audited collection migration, and production remain later work.
+The shared museum shell, redesigned Home hub, class/order/family/genus routes, review-quality 15-taxon/18-specimen collection, combined Phase 3.2/Phase 4 catalog discovery, and focused Phase 5 `/map` workspace are implemented. The Home entrance now combines a static-first interactive specimen field, canonical six-rank counts, and compact previews of Species, Map, Measurements, Preparation, and the future comparison experience. The owner-authorized Measurements milestone adds the static `/methodology` reference with 21 definitions, five real-skull diagrams, 24 registered programmatic SVG occurrences, responsive interaction, compact tappable mobile previews, adaptive diagram-anchored previews/details, and a complete semantic fallback. The comprehensive interactive tree (Phase 3.3), remaining supporting/editorial routes, complete audited collection migration, and production remain later work.
 
 ## 2. Product principles
 
@@ -88,7 +88,7 @@ Exclusion from v1 does not mean rejection. Each feature remains in the deferred 
 
 | Route | Purpose | Primary content and actions |
 |---|---|---|
-| `/` | Museum entrance | Featured skull, collection summary, class entry points, search entry, map preview, guide and contribution prompts |
+| `/` | Museum entrance | Interactive specimen field, six-rank collection summary, and compact destination previews |
 | `/species` | Main catalog | Indexed search/suggestions, compact class presets, taxonomy drawer, feature/measurement filters, sorting, species/specimen modes, active state, and lateral-image results |
 | `/taxonomy/{rank}/{slug}` | Rank landing page | Breadcrumb, rank summary, child index, filtered image gallery |
 | `/species/{taxon-slug}` | Canonical taxon display | Default specimen gallery, specimen selector, taxonomy, measurements, collection record, preparation, and reviewed editorial content when available |
@@ -155,17 +155,16 @@ The list provides the complete journey when the map cannot be used.
 
 ### Home
 
-The home page should establish the collection as a museum, not a generic application dashboard.
+The home page establishes the collection as a museum entrance and compact navigation hub, not a generic dashboard or duplicate catalog.
 
-- Full-width featured transparent skull on a dark, subtly lit field.
-- Working title, one-sentence purpose, and primary “Explore the collection” action.
-- A prominent catalog entry using scientific/English/Danish-name language that leads to the implemented Phase 3.2/4 search control.
-- Representative cards for available classes with live taxon/specimen counts.
-- Six concise live statistics derived from published records: species-level taxa, physical specimens, represented classes, orders, families, and genera. Genus-level identifications remain visible in catalog totals/copy rather than being miscounted as species.
-- A compact class → order → family hierarchy using the same stable routes as the catalog; the comprehensive interactive tree is deferred to Phase 3.3.
-- Compact non-cartographic geographic preview using only reviewed public coordinate records and never loading MapLibre. It links to the functioning central `/map` workspace without adding map code to Home.
-- Teasers only for real destinations; Phase 3 links the preparation outline and labels later methodology honestly instead of linking unpublished Contribution/About routes.
-- No invented statistics; empty counts are hidden or explicitly marked as pending.
+- A concise introduction and primary `/species` action sit beside a curated 2D specimen field. Its three bounded ten-slot arrangements expose all 18 published physical specimens across the cycle without eagerly rendering the whole library; deliberate overlap between arrangement windows is allowed, and every visible skull has an accessible identity and exact nested specimen link.
+- The first ten-specimen arrangement is server-rendered and remains fully useful without JavaScript. Each placement has one normalized depth value that derives its scale, sharpness, brightness, parallax, shadow, and stacking. Enhancement adds subtle bounded pointer/touch depth to the visual image while keeping semantic link hitboxes fixed and enhanced pointer/touch hits constrained to alpha-derived silhouette paths, keyboard-equivalent focus disclosure, first-tap touch selection, a small-touch distance-weighted repulsion around the selected visual layer, a deliberate second-tap/direct identity action, and a secondary next-arrangement control. The field-level identity card chooses an adjacent placement and remains clamped inside the field. Lateral views remain dominant with reviewed alternate angles mixed in. Reduced motion removes depth transforms, repulsion, and nonessential transitions.
+- Six concise live statistics remain derived from published records: species-level taxa, physical specimens, represented classes, orders, families, and genera. Genus-level identifications remain visible in catalog totals/copy rather than being miscounted as species.
+- One compact exploration hub contains live Species, Map, Measurements, and Preparation cards plus a fully designed non-navigating Skull Comparison preview labelled `Coming soon`.
+- The Map card uses an owner-supplied static feature thumbnail to preview reviewed locations and specimen-detail affordances. Home never loads MapLibre, provider tiles, map controls, or the map result rail.
+- The Measurements card reuses the reviewed public diagram and registered geometry. The Preparation card uses the owner's metadata-stripped public WebP derivative while describing the destination honestly as the planned guide structure.
+- The retired standalone `Find a skull`, `Browse by class`, `Collection tree`, and `Behind the collection` sections are absent. Their useful workflows remain on the destination routes.
+- No invented statistics, locations, comparison records, preparation procedures, or future routes are presented.
 
 ### Species catalog
 

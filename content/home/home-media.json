@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "assets": [
+    {
+      "asset_id": "species-catalog-thumbnail",
+      "public_path": "/media/home/species-catalog-thumbnail.webp",
+      "alt": "Layered collage of published animal skulls shown from multiple angles.",
+      "credit": "Rasmus",
+      "rights": "all_rights_reserved"
+    },
+    {
+      "asset_id": "map-thumbnail",
+      "public_path": "/media/home/map-thumbnail.webp",
+      "alt": "Illustrated collection map preview with reviewed locations, uncertainty areas, and specimen details.",
+      "credit": "Rasmus",
+      "rights": "all_rights_reserved"
+    },
+    {
+      "asset_id": "measurements-thumbnail",
+      "public_path": "/media/home/measurements-thumbnail.webp",
+      "alt": "Illustrated dorsal and ventral skull measurement reference with numbered landmarks.",
+      "credit": "Rasmus",
+      "rights": "all_rights_reserved"
+    },
+    {
+      "asset_id": "preparation-guide-thumbnail",
+      "public_path": "/media/home/preparation-guide-thumbnail.webp",
+      "alt": "Preparation storyboard showing the transition from an animal body to a cleaned assembled skull.",
+      "credit": "Rasmus",
+      "rights": "all_rights_reserved"
+    },
+    {
+      "asset_id": "skull-comparison-thumbnail",
+      "public_path": "/media/home/skull-comparison-thumbnail.webp",
+      "alt": "Skull comparison preview showing two skulls on a shared scale with measurement differences.",
+      "credit": "Rasmus",
+      "rights": "all_rights_reserved"
+    }
+  ]
+}

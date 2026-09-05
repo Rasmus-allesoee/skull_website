@@ -16,6 +16,46 @@ test("home and catalog expose published records with metadata and no detectable 
   await expect(
     page.getByRole("link", { name: "Explore the collection" }),
   ).toHaveAttribute("href", "/species");
+  await expect(page.locator(".specimen-field-link")).toHaveCount(10);
+  await expect(
+    page.getByRole("link", { name: "Explore the Species catalog" }),
+  ).toHaveAttribute("href", "/species");
+  await expect(
+    page.getByRole("link", { name: "Open the collection map" }),
+  ).toHaveAttribute("href", "/map");
+  await expect(
+    page.getByRole("link", { name: "Open the measurement reference" }),
+  ).toHaveAttribute("href", "/methodology");
+  await expect(
+    page.getByRole("link", {
+      name: "Open the skull preparation guide outline",
+    }),
+  ).toHaveAttribute("href", "/guides/skull-preparation");
+  await expect(page.locator(".home-hub-card-species img")).toHaveAttribute(
+    "src",
+    /species-catalog-thumbnail/,
+  );
+  await expect(page.locator(".home-hub-card-map img")).toHaveAttribute(
+    "src",
+    /map-thumbnail/,
+  );
+  await expect(page.locator(".home-hub-card-measurements img")).toHaveAttribute(
+    "src",
+    /measurements-thumbnail/,
+  );
+  await expect(page.locator(".home-hub-card-preparation img")).toHaveAttribute(
+    "src",
+    /preparation-guide-thumbnail/,
+  );
+  await expect(page.locator(".home-hub-card-comparison img")).toHaveAttribute(
+    "src",
+    /skull-comparison-thumbnail/,
+  );
+  await expect(page.getByText("Coming soon")).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: /Skull Comparison/i }),
+  ).toHaveCount(0);
+  await expect(page.locator(".maplibregl-map")).toHaveCount(0);
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
     "content",
     "Skull Collection",
@@ -42,39 +82,581 @@ test("home and catalog expose published records with metadata and no detectable 
   expect(accessibilityScanResults.violations).toEqual([]);
 });
 
-test("mobile keyboard journey reaches class, family, taxon, and exact specimen", async ({
+test("the specimen field preserves exact keyboard navigation and cycles bounded arrangements", async ({
   page,
 }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
 
-  await activateWithKeyboard(
-    page.getByRole("link", { name: /Mammalia/i }).first(),
-    page,
+  const field = page.locator(".specimen-field");
+  const firstArrangement = await field.getAttribute("data-arrangement");
+  const firstIds = await field
+    .locator(".specimen-field-link")
+    .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  await page
+    .getByRole("button", { name: /Show another specimen arrangement/i })
+    .click();
+  await expect(field).not.toHaveAttribute(
+    "data-arrangement",
+    firstArrangement!,
   );
-  await expect(page).toHaveURL("/taxonomy/class/mammals");
-  await expect(
-    page.getByRole("heading", { level: 1, name: "Mammalia" }),
-  ).toBeVisible();
+  const secondIds = await field
+    .locator(".specimen-field-link")
+    .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  expect(secondIds).not.toEqual(firstIds);
+  expect(secondIds).toHaveLength(10);
 
-  const familyLink = page
-    .getByRole("region", { name: "Families" })
-    .getByRole("link", { name: /Canidae/i });
-  await activateWithKeyboard(familyLink, page);
-  await expect(page).toHaveURL("/taxonomy/family/canidae");
+  await page
+    .getByRole("button", { name: /Show another specimen arrangement/i })
+    .click();
+  const thirdIds = await field
+    .locator(".specimen-field-link")
+    .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  expect(thirdIds).toHaveLength(10);
+  expect(new Set([...firstIds, ...secondIds, ...thirdIds]).size).toBe(18);
 
-  const taxonLink = page
-    .getByRole("region", { name: "Skulls in Canidae" })
-    .getByRole("link", { name: /Raccoon dog/i });
-  await activateWithKeyboard(taxonLink, page);
-  await expect(page).toHaveURL("/species/raccoon-dog");
-
-  const specimenLink = page
-    .getByRole("navigation", { name: "Specimen selector" })
-    .getByRole("link", { name: /SPEC-0001/i });
-  await activateWithKeyboard(specimenLink, page);
-  await expect(page).toHaveURL("/species/raccoon-dog/specimens/SPEC-0001");
+  const specimenLink = field.locator(".specimen-field-link").first();
+  const href = await specimenLink.getAttribute("href");
+  const beforeFocus = await specimenLink.evaluate(
+    (element) => getComputedStyle(element).transform,
+  );
+  await specimenLink.focus();
+  await expect(specimenLink).toBeFocused();
+  await expect(page.locator(".specimen-field-identity")).toBeVisible();
+  const afterFocus = await specimenLink.evaluate(
+    (element) => getComputedStyle(element).transform,
+  );
+  expect(afterFocus).toBe(beforeFocus);
+  await page.keyboard.press("Space");
+  await expect(page).toHaveURL(href!);
   await expect(page.getByText("Exact specimen record")).toBeVisible();
+});
+
+test("touch selection reveals identity before deliberate specimen navigation", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+  const specimenLink = page.locator(".specimen-field-link").first();
+  const href = await specimenLink.getAttribute("href");
+  const hitPosition = await specimenLink.evaluate((link) => {
+    const rect = link.getBoundingClientRect();
+    for (let row = 1; row < 20; row += 1) {
+      for (let column = 1; column < 20; column += 1) {
+        const point = {
+          x: rect.left + (rect.width * column) / 20,
+          y: rect.top + (rect.height * row) / 20,
+        };
+        if (
+          document
+            .elementFromPoint(point.x, point.y)
+            ?.closest(".specimen-field-link") === link
+        ) {
+          return { x: point.x - rect.left, y: point.y - rect.top };
+        }
+      }
+    }
+    return null;
+  });
+  expect(hitPosition).not.toBeNull();
+
+  await specimenLink.tap({ position: hitPosition! });
+  await expect(page).toHaveURL("/");
+  await expect(specimenLink).toHaveClass(/is-active/);
+  await expect(page.locator(".specimen-field-identity")).toBeVisible();
+  await expect(page.locator(".specimen-field-identity b")).toHaveCount(0);
+  const identityBox = await page
+    .locator(".specimen-field-identity")
+    .boundingBox();
+  expect(identityBox).not.toBeNull();
+  expect(identityBox!.width).toBeLessThan(190);
+  expect(identityBox!.height).toBeLessThan(90);
+  await specimenLink.tap({ position: hitPosition! });
+  await expect(page).toHaveURL(href!);
+  await context.close();
+});
+
+test("touch parallax is bounded without moving the specimen hitboxes", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+  const field = page.locator(".specimen-field");
+  await expect(field).toHaveClass(/is-enhanced/);
+  const touchAction = await field.evaluate(
+    (element) => getComputedStyle(element).touchAction,
+  );
+  expect(["manipulation", "pan-x pan-y pinch-zoom"]).toContain(touchAction);
+  const bounds = await field.boundingBox();
+  expect(bounds).not.toBeNull();
+  await field.evaluate((element, box) => {
+    element.dispatchEvent(
+      new PointerEvent("pointermove", {
+        bubbles: true,
+        buttons: 1,
+        clientX: box!.x + box!.width * 0.9,
+        clientY: box!.y + box!.height * 0.15,
+        pointerId: 7,
+        pointerType: "touch",
+      }),
+    );
+  }, bounds);
+  const moved = await field.evaluate((element) => ({
+    moveX: element
+      .querySelector<HTMLElement>(".specimen-field-link")
+      ?.style.getPropertyValue("--field-move-x"),
+    moveY: element
+      .querySelector<HTMLElement>(".specimen-field-link")
+      ?.style.getPropertyValue("--field-move-y"),
+  }));
+  expect(moved.moveX).not.toBe("0px");
+  expect(moved.moveY).not.toBe("0px");
+  const firstLink = field.locator(".specimen-field-link").first();
+  const before = await firstLink.boundingBox();
+  await field.evaluate((element, box) => {
+    element.dispatchEvent(
+      new PointerEvent("pointerup", {
+        bubbles: true,
+        clientX: box!.x + box!.width * 0.9,
+        clientY: box!.y + box!.height * 0.15,
+        pointerId: 7,
+        pointerType: "touch",
+      }),
+    );
+  }, bounds);
+  const after = await firstLink.boundingBox();
+  const reset = await field.evaluate((element) =>
+    element
+      .querySelector<HTMLElement>(".specimen-field-link")
+      ?.style.getPropertyValue("--field-move-x"),
+  );
+  expect(reset).toBe("0px");
+  expect(Math.abs((after?.x ?? 0) - (before?.x ?? 0))).toBeLessThan(1);
+  await context.close();
+});
+
+test("mobile focus gently repels nearby visuals while preserving fixed links", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+
+  const field = page.locator(".specimen-field");
+  const specimenLink = field.locator(".specimen-field-link").first();
+  const hitPosition = await specimenLink.evaluate((link) => {
+    const rect = link.getBoundingClientRect();
+    for (let row = 1; row < 20; row += 1) {
+      for (let column = 1; column < 20; column += 1) {
+        const point = {
+          x: rect.left + (rect.width * column) / 20,
+          y: rect.top + (rect.height * row) / 20,
+        };
+        if (
+          document
+            .elementFromPoint(point.x, point.y)
+            ?.closest(".specimen-field-link") === link
+        ) {
+          return { x: point.x - rect.left, y: point.y - rect.top };
+        }
+      }
+    }
+    return null;
+  });
+  expect(hitPosition).not.toBeNull();
+
+  const before = await field
+    .locator(".specimen-field-link")
+    .evaluateAll((links) =>
+      links.map((link) => {
+        const box = link.getBoundingClientRect();
+        return { x: box.x, y: box.y, width: box.width, height: box.height };
+      }),
+    );
+  await specimenLink.tap({ position: hitPosition! });
+  await expect(specimenLink).toHaveClass(/is-active/);
+
+  const response = await field
+    .locator(".specimen-field-link")
+    .evaluateAll((links) =>
+      links.map((link) => {
+        const box = link.getBoundingClientRect();
+        return {
+          pushX: Number.parseFloat(
+            link.style.getPropertyValue("--field-mobile-push-x"),
+          ),
+          pushY: Number.parseFloat(
+            link.style.getPropertyValue("--field-mobile-push-y"),
+          ),
+          box: { x: box.x, y: box.y, width: box.width, height: box.height },
+          active: link.classList.contains("is-active"),
+        };
+      }),
+    );
+  const nonActive = response.filter((entry) => !entry.active);
+  expect(nonActive).toHaveLength(9);
+  expect(
+    nonActive.every(
+      (entry) => Number.isFinite(entry.pushX) && Number.isFinite(entry.pushY),
+    ),
+  ).toBe(true);
+  const maximumObservedPush = Math.max(
+    ...nonActive.map((entry) => Math.hypot(entry.pushX, entry.pushY)),
+  );
+  expect(maximumObservedPush).toBeGreaterThan(6);
+  expect(
+    response.some(
+      (entry) =>
+        !entry.active &&
+        Number.isFinite(entry.pushX) &&
+        Number.isFinite(entry.pushY) &&
+        Math.hypot(entry.pushX, entry.pushY) > 0.1,
+    ),
+  ).toBe(true);
+  expect(response.filter((entry) => entry.active)[0]).toMatchObject({
+    pushX: 0,
+    pushY: 0,
+  });
+  response.forEach((entry, index) => {
+    expect(Math.hypot(entry.pushX, entry.pushY)).toBeLessThanOrEqual(24.01);
+    expect(entry.box.x).toBeCloseTo(before[index]!.x, 0);
+    expect(entry.box.y).toBeCloseTo(before[index]!.y, 0);
+    expect(entry.box.width).toBeCloseTo(before[index]!.width, 0);
+    expect(entry.box.height).toBeCloseTo(before[index]!.height, 0);
+  });
+
+  const outsidePosition = await field.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    for (let row = 1; row < 12; row += 1) {
+      for (let column = 1; column < 12; column += 1) {
+        const point = {
+          x: rect.left + (rect.width * column) / 12,
+          y: rect.top + (rect.height * row) / 12,
+        };
+        if (
+          !document
+            .elementFromPoint(point.x, point.y)
+            ?.closest(".specimen-field-link")
+        ) {
+          return { x: point.x - rect.left, y: point.y - rect.top };
+        }
+      }
+    }
+    return { x: 2, y: 2 };
+  });
+  await field.tap({ position: outsidePosition });
+  await expect(page.locator(".specimen-field-identity")).toHaveCount(0);
+  const cleared = await field
+    .locator(".specimen-field-link")
+    .evaluateAll((links) =>
+      links.map((link) => [
+        link.style.getPropertyValue("--field-mobile-push-x"),
+        link.style.getPropertyValue("--field-mobile-push-y"),
+      ]),
+    );
+  expect(cleared.every(([x, y]) => x === "0px" && y === "0px")).toBe(true);
+  await context.close();
+});
+
+test("mobile focus repulsion is removed under reduced motion", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+    reducedMotion: "reduce",
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+  const specimenLink = page.locator(".specimen-field-link").first();
+  const hitPosition = await specimenLink.evaluate((link) => {
+    const rect = link.getBoundingClientRect();
+    for (let row = 1; row < 20; row += 1) {
+      for (let column = 1; column < 20; column += 1) {
+        const point = {
+          x: rect.left + (rect.width * column) / 20,
+          y: rect.top + (rect.height * row) / 20,
+        };
+        if (
+          document
+            .elementFromPoint(point.x, point.y)
+            ?.closest(".specimen-field-link") === link
+        ) {
+          return { x: point.x - rect.left, y: point.y - rect.top };
+        }
+      }
+    }
+    return null;
+  });
+  expect(hitPosition).not.toBeNull();
+  await specimenLink.tap({ position: hitPosition! });
+  const pushes = await page
+    .locator(".specimen-field-link")
+    .evaluateAll((links) =>
+      links.map((link) => [
+        link.style.getPropertyValue("--field-mobile-push-x"),
+        link.style.getPropertyValue("--field-mobile-push-y"),
+      ]),
+    );
+  expect(pushes.every(([x, y]) => x === "0px" && y === "0px")).toBe(true);
+  await context.close();
+});
+
+test("desktop pointer parallax remains active without mobile repulsion", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const field = page.locator(".specimen-field");
+  const bounds = await field.boundingBox();
+  expect(bounds).not.toBeNull();
+  await page.mouse.move(
+    bounds!.x + bounds!.width * 0.85,
+    bounds!.y + bounds!.height * 0.2,
+  );
+
+  const state = await field
+    .locator(".specimen-field-link")
+    .evaluateAll((links) => ({
+      move: links[0]?.style.getPropertyValue("--field-move-x"),
+      pushes: links.map((link) => [
+        link.style.getPropertyValue("--field-mobile-push-x"),
+        link.style.getPropertyValue("--field-mobile-push-y"),
+      ]),
+    }));
+  expect(state.move).not.toBe("0px");
+  expect(
+    state.pushes.every(
+      ([x, y]) => (x === "" || x === "0px") && (y === "" || y === "0px"),
+    ),
+  ).toBe(true);
+});
+
+test("enhanced specimen hit areas follow alpha silhouettes instead of link rectangles", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+
+  const field = page.locator(".specimen-field");
+  await expect(field.locator(".specimen-field-hit")).toHaveCount(10);
+  const firstLink = field.locator(".specimen-field-link").first();
+  const points = await firstLink.evaluate((link) => {
+    const rect = link.getBoundingClientRect();
+    const candidates = [
+      { x: rect.left + 2, y: rect.top + 2 },
+      { x: rect.right - 2, y: rect.top + 2 },
+      { x: rect.left + 2, y: rect.bottom - 2 },
+      { x: rect.right - 2, y: rect.bottom - 2 },
+    ];
+    const pointFor = (predicate: (target: Element | null) => boolean) =>
+      candidates.find((point) =>
+        predicate(document.elementFromPoint(point.x, point.y)),
+      );
+    const outside = pointFor(
+      (target) => target?.closest(".specimen-field-link") !== link,
+    );
+    const inside = (() => {
+      for (let row = 1; row < 10; row += 1) {
+        for (let column = 1; column < 10; column += 1) {
+          const point = {
+            x: rect.left + (rect.width * column) / 10,
+            y: rect.top + (rect.height * row) / 10,
+          };
+          if (
+            document
+              .elementFromPoint(point.x, point.y)
+              ?.closest(".specimen-field-link") === link
+          ) {
+            return point;
+          }
+        }
+      }
+      return null;
+    })();
+    const passThrough = (() => {
+      const links = [...document.querySelectorAll(".specimen-field-link")];
+      const zIndex = (element: Element) =>
+        Number.parseInt(getComputedStyle(element).zIndex || "0", 10);
+      for (let first = 0; first < links.length; first += 1) {
+        for (let second = first + 1; second < links.length; second += 1) {
+          const firstRect = links[first]!.getBoundingClientRect();
+          const secondRect = links[second]!.getBoundingClientRect();
+          const left = Math.max(firstRect.left, secondRect.left);
+          const right = Math.min(firstRect.right, secondRect.right);
+          const top = Math.max(firstRect.top, secondRect.top);
+          const bottom = Math.min(firstRect.bottom, secondRect.bottom);
+          if (right <= left || bottom <= top) continue;
+          const front =
+            zIndex(links[first]!) >= zIndex(links[second]!)
+              ? links[first]!
+              : links[second]!;
+          const back = front === links[first] ? links[second]! : links[first]!;
+          for (let row = 1; row < 12; row += 1) {
+            for (let column = 1; column < 12; column += 1) {
+              const x = left + ((right - left) * column) / 12;
+              const y = top + ((bottom - top) * row) / 12;
+              if (
+                document
+                  .elementFromPoint(x, y)
+                  ?.closest(".specimen-field-link") === back
+              ) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+      return false;
+    })();
+    return { outside: outside ?? null, inside, passThrough };
+  });
+
+  expect(points.outside).not.toBeNull();
+  expect(points.inside).not.toBeNull();
+  expect(points.passThrough).toBe(true);
+  await page.mouse.move(points.outside!.x, points.outside!.y);
+  await expect(page.locator(".specimen-field-identity")).toHaveCount(0);
+  await page.mouse.move(points.inside!.x, points.inside!.y);
+  await expect(page.locator(".specimen-field-identity")).toBeVisible();
+  const href = await firstLink.getAttribute("href");
+  await page.mouse.click(points.inside!.x, points.inside!.y);
+  await expect(page).toHaveURL(href!);
+});
+
+test("specimen identity cards stay inside the field at edge placements", async ({
+  page,
+}) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    const field = page.locator(".specimen-field");
+    const links = field.locator(".specimen-field-link");
+    for (let index = 0; index < 10; index += 1) {
+      await links.nth(index).focus();
+      const card = page.locator(".specimen-field-identity");
+      await expect(card).toBeVisible();
+      await expect(card).toHaveClass(/is-ready/);
+      const geometry = await field.evaluate((element) => {
+        const fieldBox = element.getBoundingClientRect();
+        const cardElement = element.querySelector<HTMLElement>(
+          ".specimen-field-identity",
+        )!;
+        const cardBox = cardElement.getBoundingClientRect();
+        return {
+          field: {
+            left: fieldBox.left,
+            top: fieldBox.top,
+            right: fieldBox.right,
+            bottom: fieldBox.bottom,
+          },
+          card: {
+            left: cardBox.left,
+            top: cardBox.top,
+            right: cardBox.right,
+            bottom: cardBox.bottom,
+          },
+          placement: cardElement.dataset.placement,
+        };
+      });
+      expect(geometry.card.left).toBeGreaterThanOrEqual(
+        geometry.field.left + 8,
+      );
+      expect(geometry.card.top).toBeGreaterThanOrEqual(geometry.field.top + 8);
+      expect(geometry.card.right).toBeLessThanOrEqual(geometry.field.right - 8);
+      expect(geometry.card.bottom).toBeLessThanOrEqual(
+        geometry.field.bottom - 8,
+      );
+      expect(["above", "below", "left", "right"]).toContain(geometry.placement);
+    }
+  }
+});
+
+test("Home reflows without overflow and simplifies motion and color-dependent treatment", async ({
+  page,
+}) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 820, height: 900 },
+    { width: 390, height: 844 },
+    { width: 360, height: 800 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    const geometry = await page.evaluate(() => ({
+      overflow: document.documentElement.scrollWidth - innerWidth,
+      fieldLinks: [...document.querySelectorAll(".specimen-field-link")].map(
+        (link) => {
+          const box = link.getBoundingClientRect();
+          return { width: box.width, height: box.height };
+        },
+      ),
+      summaryHeight: document
+        .querySelector(".collection-summary")
+        ?.getBoundingClientRect().height,
+    }));
+    expect(geometry.overflow).toBeLessThanOrEqual(0);
+    expect(
+      geometry.fieldLinks.every(
+        (target) => target.width >= 44 && target.height >= 44,
+      ),
+    ).toBe(true);
+    if (viewport.width <= 390) {
+      expect(geometry.summaryHeight).toBeLessThan(160);
+    }
+  }
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const reducedTransitionSeconds = await page
+    .locator(".specimen-field-link")
+    .first()
+    .evaluate((element) => {
+      const duration = getComputedStyle(element).transitionDuration;
+      const parsed = Number.parseFloat(duration);
+      return Number.isFinite(parsed) ? parsed : 0;
+    });
+  expect(reducedTransitionSeconds).toBeLessThanOrEqual(0.001);
+
+  await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
+  const specimenLink = page.locator(".specimen-field-link").first();
+  await specimenLink.focus();
+  await expect(specimenLink).toBeFocused();
+  await expect(page.locator(".specimen-field-identity")).toBeVisible();
+});
+
+test("a failed Home image does not remove the surrounding navigation", async ({
+  page,
+}) => {
+  await page.route(/preparation-field-skull/, (route) => route.abort());
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { level: 3, name: "Preparation guide" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", {
+      name: "Open the skull preparation guide outline",
+    }),
+  ).toHaveAttribute("href", "/guides/skull-preparation");
+  await expect(page.locator(".specimen-field-link")).toHaveCount(10);
 });
 
 test("family galleries form a three-column desktop grid and the compact specimen chooser opens exact records", async ({
@@ -174,11 +756,27 @@ test("mobile catalog remains single-column and the specimen chooser stays within
   await expect(dialog).not.toBeVisible();
 });
 
-test("taxonomy and exact specimen routes remain useful without JavaScript", async ({
+test("Home, taxonomy, and exact specimen routes remain useful without JavaScript", async ({
   browser,
 }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
+
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: "A visual archive of animal skulls.",
+    }),
+  ).toBeVisible();
+  await expect(page.locator(".specimen-field-link")).toHaveCount(10);
+  await expect(
+    page.getByRole("button", { name: /another specimen arrangement/i }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("link", { name: "Open the collection map" }),
+  ).toHaveAttribute("href", "/map");
+  await expect(page.getByText("Coming soon")).toBeVisible();
 
   await page.goto("/taxonomy/family/canidae");
   await expect(
@@ -222,12 +820,3 @@ test("sitemap, robots, and unknown taxonomy routes reflect the static public sur
     }),
   ).toBeVisible();
 });
-
-async function activateWithKeyboard(
-  target: import("@playwright/test").Locator,
-  page: import("@playwright/test").Page,
-) {
-  await target.focus();
-  await expect(target).toBeFocused();
-  await page.keyboard.press("Enter");
-}

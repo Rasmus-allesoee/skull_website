@@ -2,9 +2,9 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Focused Phase 5 collection map complete and merged into `main`; next milestone selection pending
+**Current phase:** Owner-authorized Home redesign complete locally; owner review pending
 
-**Last reviewed:** 2026-08-31
+**Last reviewed:** 2026-09-02
 
 ## 1. How to use this plan
 
@@ -379,6 +379,23 @@ These items were explicitly removed from the focused map milestone. They require
 - [x] No upload backend, cookie, tracking behavior, unsupported imagery style, or unrelated editorial scope has been introduced.
 
 **Gate result:** Passed locally on 2026-08-28 on `agent/phase-5-map` and was published through PR #10 with passing remote CI, then merged into `main` with normal merge commit `f098caf` on 2026-08-29. The owner later authorized only the bounded Measurements supporting-page item above; all remaining items stay separately gated.
+
+## 8.1 Owner-authorized Home redesign milestone
+
+- [x] Replace the single featured-skull entrance with a server-rendered ten-slot field and a route-local progressive enhancement for bounded visual-image parallax, focus/touch identity, and explicit arrangement changes.
+- [x] Derive three deterministic arrangements from canonical published records so all 18 physical specimens appear across the cycle, with deliberate overlap between ten-slot windows and exact stable specimen links; keep only one bounded state rendered at a time.
+- [x] Mix lateral-dominant canonical media with reviewed oblique, frontal, dorsal, ventral, and mandible views without constructing media filenames in page code.
+- [x] Preserve the canonical six-rank statistic strip.
+- [x] Replace the retired Find a skull, Browse by class, Home Collection tree, Geographic records, and Behind the collection sections with one compact destination hub.
+- [x] Add complete Species, static Map, Measurements, and Preparation cards plus a non-navigating `Coming soon` Skull Comparison preview based on the existing comparison engine.
+- [x] Process the owner-authorized Home thumbnail PNG/JPEG sources through a reproducible Home-media path that strips EXIF/GPS and validates the committed WebPs during normal content/media checks.
+- [x] Refine the floating specimen field around one normalized depth system, constrained art-directed slots, stationary hitboxes, and a boundary-aware identity card that remains fully inside the field.
+- [x] Constrain enhanced Home pointer/touch hit testing to alpha-derived silhouette paths, restore two-dimensional mobile field panning, and compact mobile identity cards without a redundant action button.
+- [x] Add a small-touch-only, safe-area-clamped repulsion response around the selected specimen while keeping semantic link geometry and desktop pointer behavior unchanged; clear it under reduced motion and on deselection.
+- [x] Keep the route statically useful with no JavaScript and preserve MapLibre/search-index bundle isolation.
+- [x] Verify desktop/tablet/360–390 px reflow, touch and keyboard navigation, reduced motion, forced colors, image failure, axe, no-JavaScript, build output, and zero horizontal overflow.
+
+**Gate result:** Passed locally on 2026-09-02 on `agent/next-additions`. The bounded Home feedback refinement is ready as a local checkpoint for owner review; no push, pull request, merge, deployment, or later phase is authorized.
 
 ## 9. Phase 6 — complete audited collection migration
 

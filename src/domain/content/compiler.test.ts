@@ -47,6 +47,9 @@ describe("content compiler", () => {
       }),
     );
     expect(collection.media).toHaveLength(104);
+    expect(
+      collection.media.every((asset) => asset.hitPath?.startsWith("M")),
+    ).toBe(true);
     expect(collection.media[0]?.orientation).toBe("right");
     expect(
       collection.media.every((asset) =>
