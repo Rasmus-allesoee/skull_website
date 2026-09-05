@@ -314,6 +314,10 @@ test("mobile focus gently repels nearby visuals while preserving fixed links", a
       (entry) => Number.isFinite(entry.pushX) && Number.isFinite(entry.pushY),
     ),
   ).toBe(true);
+  const maximumObservedPush = Math.max(
+    ...nonActive.map((entry) => Math.hypot(entry.pushX, entry.pushY)),
+  );
+  expect(maximumObservedPush).toBeGreaterThan(6);
   expect(
     response.some(
       (entry) =>
@@ -328,7 +332,7 @@ test("mobile focus gently repels nearby visuals while preserving fixed links", a
     pushY: 0,
   });
   response.forEach((entry, index) => {
-    expect(Math.hypot(entry.pushX, entry.pushY)).toBeLessThanOrEqual(14.01);
+    expect(Math.hypot(entry.pushX, entry.pushY)).toBeLessThanOrEqual(24.01);
     expect(entry.box.x).toBeCloseTo(before[index]!.x, 0);
     expect(entry.box.y).toBeCloseTo(before[index]!.y, 0);
     expect(entry.box.width).toBeCloseTo(before[index]!.width, 0);
@@ -411,6 +415,36 @@ test("mobile focus repulsion is removed under reduced motion", async ({
     );
   expect(pushes.every(([x, y]) => x === "0px" && y === "0px")).toBe(true);
   await context.close();
+});
+
+test("desktop pointer parallax remains active without mobile repulsion", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const field = page.locator(".specimen-field");
+  const bounds = await field.boundingBox();
+  expect(bounds).not.toBeNull();
+  await page.mouse.move(
+    bounds!.x + bounds!.width * 0.85,
+    bounds!.y + bounds!.height * 0.2,
+  );
+
+  const state = await field
+    .locator(".specimen-field-link")
+    .evaluateAll((links) => ({
+      move: links[0]?.style.getPropertyValue("--field-move-x"),
+      pushes: links.map((link) => [
+        link.style.getPropertyValue("--field-mobile-push-x"),
+        link.style.getPropertyValue("--field-mobile-push-y"),
+      ]),
+    }));
+  expect(state.move).not.toBe("0px");
+  expect(
+    state.pushes.every(
+      ([x, y]) => (x === "" || x === "0px") && (y === "" || y === "0px"),
+    ),
+  ).toBe(true);
 });
 
 test("enhanced specimen hit areas follow alpha silhouettes instead of link rectangles", async ({

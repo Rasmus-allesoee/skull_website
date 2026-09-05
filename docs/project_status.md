@@ -1,6 +1,6 @@
 # Project status
 
-**Snapshot date:** 2026-09-02
+**Snapshot date:** 2026-09-05
 
 **Current phase:** Owner-authorized Home redesign milestone — complete locally; owner review pending
 
@@ -29,6 +29,12 @@ Stop at the locally verified Home acceptance gate and present it for owner revie
 - Kept the desktop pointer/hover experience unchanged. Repulsion is applied only to visual-image descendants; semantic links and alpha-derived SVG hit paths remain stationary so focus cannot drift or make an overlapping specimen unreachable.
 - Reduced-motion mode clears the response, outside selection clears all displacement variables, and arrangement/resize observers recompute only the active small-touch field.
 
+### Owner-directed mobile repulsion visibility correction (2026-09-05)
+
+- Increased the small-touch repulsion falloff so nearby skulls visibly separate on a tap while distant layers remain quiet. The response remains visual-only, safe-area-clamped, and capped at 24 CSS pixels; the selected skull and every semantic hit path remain stationary.
+- Outside dismissal now clears the visual displacement synchronously, preventing a stale settling state after the identity card closes. Desktop pointer parallax remains unchanged and never receives the touch-only variables.
+- Added regression coverage that requires measurable neighboring movement, verifies the mobile reset, and asserts desktop pointer parallax still operates with zero mobile displacement.
+
 ### Compact exploration hub and reviewed previews
 
 - Preserved the six canonical counts: 13 published species-level taxa, 18 physical specimens, 2 classes, 6 orders, 11 families, and 15 genera.
@@ -39,7 +45,7 @@ Stop at the locally verified Home acceptance gate and present it for owner revie
 ### Verification result
 
 - Focused model/component tests prove exact all-record coverage, bounded states, exact URLs, counts, live destination links, non-linking Comparison state, removal of retired sections, and monotonic depth presentation.
-- Production build prerenders all 77 routes. The complete 67-test Chromium regression and updated Home journeys cover axe, exact metadata/links, ten-slot varied-view coverage, coherent depth attributes, arrangement cycling, keyboard Space navigation, focus stability, first/second-touch behavior, mobile touch parallax, boundary-aware identity cards at desktop/mobile edges, 1440/820/390/360 px reflow, 44px-plus targets, reduced motion, forced colors, failed thumbnail media, static/no-JavaScript output, and existing catalog/taxonomy/sitemap regressions.
+- Production build prerenders all 77 routes. The complete 71-test Chromium regression and updated Home journeys cover axe, exact metadata/links, ten-slot varied-view coverage, coherent depth attributes, arrangement cycling, keyboard Space navigation, focus stability, first/second-touch behavior, mobile touch parallax, boundary-aware identity cards at desktop/mobile edges, 1440/820/390/360 px reflow, 44px-plus targets, reduced motion, forced colors, failed thumbnail media, static/no-JavaScript output, desktop pointer-parallax isolation, and existing catalog/taxonomy/sitemap regressions.
 - Manual production screenshots at 1440×900, 820×900, 390×844, and 360×800 show the intended desktop/tablet/mobile compositions with zero horizontal overflow. No MapLibre canvas or dead Comparison route appears on Home.
 
 ### Scope result

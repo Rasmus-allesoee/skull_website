@@ -164,10 +164,10 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
   /**
    * Mobile has no stable cursor position to drive the desktop parallax. When
    * a touch selection is made, use that selection as a temporary repulsion
-   * point instead: nearby visual layers ease a few pixels away while their
-   * semantic links stay fixed. The effect is intentionally derived from
-   * measured field geometry and clamped to the field's safe area, so it cannot
-   * turn a touch selection into a new layout or push a skull out of frame.
+   * point instead: nearby visual layers ease visibly away while their semantic
+   * links stay fixed. The effect is intentionally derived from measured field
+   * geometry and clamped to the field's safe area, so it cannot turn a touch
+   * selection into a new layout or push a skull out of frame.
    */
   const updateMobileRepulsion = useCallback(() => {
     const field = fieldRef.current;
@@ -198,10 +198,10 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
       x: activeRect.left + activeRect.width / 2,
       y: activeRect.top + activeRect.height / 2,
     };
-    const maximumPush = Math.min(14, Math.max(8, fieldRect.width * 0.04));
+    const maximumPush = Math.min(24, Math.max(14, fieldRect.width * 0.065));
     const influenceRadius = Math.max(
-      148,
-      Math.min(260, Math.min(fieldRect.width, fieldRect.height) * 0.72),
+      180,
+      Math.min(300, Math.min(fieldRect.width, fieldRect.height) * 0.92),
     );
 
     field
@@ -233,7 +233,7 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
         const depth = Number.isFinite(depthValue)
           ? Math.min(1, Math.max(0, depthValue))
           : 0.5;
-        const force = maximumPush * proximity ** 1.65 * (0.84 + depth * 0.16);
+        const force = maximumPush * proximity ** 1.1 * (0.9 + depth * 0.1);
         const requestedX = (deltaX / distance) * force;
         const requestedY = (deltaY / distance) * force;
         const minimumX =
@@ -376,6 +376,7 @@ export function SpecimenField({ states }: { states: HomeSpecimenState[] }) {
     if (!start || start.id !== event.pointerId) return;
     if (Math.hypot(event.clientX - start.x, event.clientY - start.y) <= 10) {
       touchSelection.current = null;
+      clearMobileRepulsion();
       setActiveSpecimenId(null);
     }
   };
