@@ -1,16 +1,16 @@
 # Project status
 
-**Snapshot date:** 2026-09-05
+**Snapshot date:** 2026-09-06
 
-**Current phase:** Owner-authorized Home redesign milestone — complete locally; owner review pending
+**Current phase:** Skull Preparation guide phase — branch created; implementation not started
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, and focused Phase 5 is merged at `f098caf`. On `agent/next-additions`, the owner-authorized Measurements milestone and feedback refinements remain locally verified, and the Home redesign plus its bounded feedback refinements now pass the local implementation gate. `/` server-renders a ten-slot first state with varied canonical views, exposes all 18 published specimens across three overlapping arrangements, retains canonical counts, and presents one compact Species/Map/Measurements/Preparation/Comparison hub. No push, pull request, merge, deployment, or later phase is authorized.
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, focused Phase 5 is merged at `f098caf`, the Measurements milestone is merged through PR #11 at `c36838a`, and the Home redesign plus bounded feedback refinements are merged through PR #12 at `4db6804`. `agent/skull-prep-page` tracks that merged `main` state and is ready for the next owner-authorized preparation-guide scope; no preparation implementation has started.
 
-**Next phase:** None authorized. The exact next action is owner review of the redesigned `/` at desktop and mobile widths; publication requires a separate explicit instruction. Age/condition methodology, remaining supporting pages, Phase 3.3, and Phase 6 remain separately gated.
+**Next phase:** Skull Preparation guide implementation on `agent/skull-prep-page`. The exact next action is to establish the owner-approved preparation-guide scope and begin its bounded implementation. Age/condition methodology, remaining supporting pages, Phase 3.3, and Phase 6 remain separately gated.
 
 ## 1. Current objective
 
-Stop at the locally verified Home acceptance gate and present it for owner review. Preserve the merged map and local Measurements checkpoints; do not publish this branch or begin age/condition methodology, another supporting page, Phase 3.3, Phase 6, or any other scope without explicit authorization.
+Preserve the merged Measurements/Home/map milestones and use `agent/skull-prep-page` for the next bounded preparation-guide scope. Do not begin age/condition methodology, Phase 3.3, Phase 6, or another supporting scope without explicit authorization.
 
 ## 1.1 Owner-authorized Home redesign milestone
 
@@ -601,5 +601,11 @@ No unresolved content, rights, or publication blocker prevents local Home review
 - Replaced broad enhanced anchor hit regions with compact alpha-derived SVG paths generated from each reviewed specimen WebP. Transparent gaps remain pass-through, so background specimens are reachable through overlapping foreground anatomy; semantic links and the static/no-JavaScript fallback remain intact.
 - Restored two-dimensional native field panning for narrow/zoomed touch layouts and removed the mobile identity action line. Mobile identity cards now use a small capped width, reduced typography, and compact padding so they do not obscure the focused skull.
 - The full repository gate passes: formatting, ESLint, media/content validation, TypeScript, 68 unit tests, and invalid-fixture validation. Production build prerenders all 77 routes, the focused Home Chromium suite passes 12/12, and the complete Chromium regression passes 68/68. Manual desktop/mobile inspection confirms precise silhouette activation, overlap pass-through, compact cards, and zero horizontal overflow. The branch remains local and unpublished.
+
+### 2026-09-06 — Measurements and Home milestones merged; preparation branch created
+
+- Split the verified `agent/next-additions` history at `a6c1845` into the preserved `agent/measurement-page` branch and the Home-only continuation `agent/home-redesign`. Both branches were pushed without staging the existing owner-provided `agent_context/` files.
+- Measurement PR #11 merged into `main` with normal merge commit `c36838a`; Home PR #12 then merged with normal merge commit `4db6804`. The source branches remain preserved on the remote.
+- Created and pushed `agent/skull-prep-page` from the updated `origin/main` at `4db6804`. No preparation-guide implementation has begun; the branch is ready for the next approved scope.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.

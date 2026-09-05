@@ -2,9 +2,9 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Owner-authorized Home redesign complete locally; owner review pending
+**Current phase:** Skull Preparation guide phase — branch `agent/skull-prep-page` created; implementation not started
 
-**Last reviewed:** 2026-09-02
+**Last reviewed:** 2026-09-06
 
 ## 1. How to use this plan
 
@@ -362,7 +362,7 @@ The owner deliberately narrowed this milestone to the geographic collection expe
 These items were explicitly removed from the focused map milestone. They require a separate owner authorization and their own content/citation review.
 
 - [ ] Promote the existing preparation route shell into the Guides hub and complete cited/safety-reviewed preparation content.
-- [x] Add the separately owner-authorized illustrated Measurements page at `/methodology` using five reviewed real-skull reference pairs, 21 canonical definitions, 24 registered SVG occurrences, a semantic table, responsive interaction, accessibility, and static fallback. Completed on 2026-08-30; the bounded owner-feedback v1/v2/v3 geometry/layout/detail/table/tooltip refinements and the latest table-row/map-menu follow-up were completed locally on 2026-08-31. Publication remains separate.
+- [x] Add the separately owner-authorized illustrated Measurements page at `/methodology` using five reviewed real-skull reference pairs, 21 canonical definitions, 24 registered SVG occurrences, a semantic table, responsive interaction, accessibility, and static fallback. Completed on 2026-08-30; the bounded owner-feedback v1/v2/v3 geometry/layout/detail/table/tooltip refinements and the latest table-row/map-menu follow-up were completed locally on 2026-08-31. Published through PR #11 and merged into `main` with normal merge commit `c36838a` on 2026-09-05.
 - [ ] Add age-estimation and specimen-condition methodology using owner-supplied/reviewed real-skull imagery and appropriate citations/species caveats.
 - [ ] Add Contribution photography/metadata/rights protocol and reviewed contact link.
 - [ ] Add About and Methodology.
@@ -395,7 +395,7 @@ These items were explicitly removed from the focused map milestone. They require
 - [x] Keep the route statically useful with no JavaScript and preserve MapLibre/search-index bundle isolation.
 - [x] Verify desktop/tablet/360–390 px reflow, touch and keyboard navigation, reduced motion, forced colors, image failure, axe, no-JavaScript, build output, and zero horizontal overflow.
 
-**Gate result:** Passed locally on 2026-09-02 on `agent/next-additions`. The bounded Home feedback refinement is ready as a local checkpoint for owner review; no push, pull request, merge, deployment, or later phase is authorized.
+**Gate result:** Passed locally on 2026-09-02 on `agent/next-additions`. The bounded Home feedback refinement was published through PR #12 and merged into `main` with normal merge commit `4db6804` on 2026-09-05; the source branch is preserved for review history.
 
 ## 9. Phase 6 — complete audited collection migration
 
