@@ -2,9 +2,9 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**The focused Phase 5 collection map is implemented locally and ready for owner review:** `/map` now provides a map-first OpenFreeMap/MapLibre workspace, canonical specimen search and facets, class/precision markers, complete clustering, geographic uncertainty areas, five supported vector styles, synchronized semantic records, deep links, and no-JavaScript/no-WebGL/provider-failure fallbacks. The current projection contains 18 published map records and 18 valid points. Supporting editorial pages remain deferred; no Phase 5 push or PR is authorized.
+**The illustrated Measurements milestone is implemented locally and ready for owner review:** `/methodology` now presents 21 canonical definitions through five real-skull reference views, 24 registered programmatic SVG occurrences, accessible detail interactions, a complete semantic table, and static/no-JavaScript fallback. The focused Phase 5 map remains merged in `main`; this measurement-page checkpoint has not been pushed, opened as a pull request, or merged.
 
-Start at `/`, browse the catalog at `/species`, explore public specimen locations at `/map`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
+Start at `/`, browse the catalog at `/species`, explore public specimen locations at `/map`, inspect the measurement reference at `/methodology`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
 
 ## Project principles
 
@@ -13,6 +13,7 @@ Start at `/`, browse the catalog at `/species`, explore public specimen location
 - Scientific, English, and Danish names are searchable even though the interface is English.
 - Primary collection content stays human-editable in two linked CSV files; reviewed MDX and media/reference declarations compile with it into validated typed build artifacts.
 - Mammal, bird, and fallback measurement profiles share the canonical specimen CSV while rendering only applicable rows and class-aware comparison matrices.
+- Measurement methodology uses a separate validated definition/overlay reference model and never becomes a parallel specimen-value table.
 - Known content is statically prerendered and remains useful before interactive JavaScript loads.
 - Missing, uncertain, and genus-level data is represented honestly.
 - Archival image masters and private working data never enter the public repository.
@@ -92,6 +93,8 @@ On macOS, find the computer's active LAN IPv4 address (commonly with `ipconfig g
 | `pnpm media:stage:phase3.1` | Copy the explicit 104-image Phase 3.1 review map from ignored local sources into ignored canonical staging names |
 | `pnpm media:process` | Build and validate public sRGB WebP derivatives from canonical staged PNGs |
 | `pnpm media:process:reference` | Rebuild a declared public comparison-reference WebP from its ignored local source |
+| `pnpm media:verify:methodology-sources` | Verify all five annotated/raw measurement pairs, identity registration, and encoded overlay positions |
+| `pnpm media:process:methodology` | Rebuild and validate the five metadata-stripped measurement-reference WebPs from ignored raw sources |
 | `pnpm taxonomy:refresh -- --taxon-id TAX-0001 --dry-run` | Query GBIF explicitly without changing curated taxonomy or writing a snapshot |
 | `pnpm lint` | Run ESLint with the Next.js and repository rules |
 | `pnpm typecheck` | Run TypeScript without emitting files |
@@ -106,9 +109,9 @@ On macOS, find the computer's active LAN IPv4 address (commonly with `ipconfig g
 ## Repository map
 
 ```text
-src/                 Next.js routes, museum/catalog/exhibit UI, domain/compiler, and data loading
-content/             canonical CSV, cited MDX, media/reference declarations, taxonomy snapshots
-public/media/        curated validated WebP specimen and reference derivatives
+src/                 Next.js routes, museum/catalog/exhibit/methodology UI, domain/compiler, and data loading
+content/             canonical CSV, cited MDX, media/reference/methodology declarations, taxonomy snapshots
+public/media/        curated validated WebP specimen, comparison, and methodology derivatives
 scripts/             content, taxonomy, fixture, staging, and image tooling
 tests/e2e/           browser and accessibility journeys
 docs/                canonical product, design, architecture, and status docs
@@ -136,15 +139,16 @@ The original approved plan remains in `agent_context/website_plan_from_planmode.
 
 ## Content and image safety
 
-`agent_context/skulls_meta.csv` is an incomplete illustrative draft. `agent_context/skull_images_clean/` contains local source/staging images. `agent_context/metadata_csv/` contains partial spreadsheet exports supplied while designing the class-aware measurement model. These paths are ignored and must not be published or read by a normal application build.
+`agent_context/skulls_meta.csv` is an incomplete illustrative draft. `agent_context/skull_images_clean/` contains local source/staging images. `agent_context/metadata_csv/` contains partial spreadsheet exports supplied while designing the class-aware measurement model. `agent_context/measurement_page/` contains raw and annotated methodology sources plus migration wording. These paths are ignored and must not be published or read by a normal application build.
 
 Phase 2 established:
 
 - `content/taxa/taxa.csv` for taxonomic identities, names, hierarchy, and publication state;
 - `content/specimens/specimens.csv` for physical specimens, provenance, measurements, condition, observation fields, preparation, and rights;
 - `content/references/*.json` for reviewed comparison-reference identity, measurements, orientation, asset metadata, and approximate-value semantics;
+- `content/methodology/measurement-definitions.csv` and `measurement-reference.json` for the 21 definition rows and registered five-view overlay/media model;
 - review-gated MDX for future cited editorial profiles and guides; and
-- `public/media/specimens/` for validated derivatives named `{specimen-id}__{view}.webp`, plus `public/media/references/` for validated comparison assets.
+- `public/media/specimens/` for validated derivatives named `{specimen-id}__{view}.webp`, `public/media/references/` for validated comparison assets, and `public/media/methodology/` for the five unannotated reference derivatives.
 
 The first canonical records (`TAX-0001`, `SPEC-0001`) were curated from only the explicitly selected staging row `ID = 1` and six matching raccoon-dog PNGs. Phase 2.2 added a processed adult-human-skull reference and fixed approximate dimensions for the calibrated specimen-page comparison. Phase 3.0 advanced the compiled contract to schema version 4 and expanded the single specimen CSV with explicit mammal/bird measurement applicability. Phase 3.1 then normalized only the 15-taxon/18-specimen subset that could be matched to 104 cleaned images and satisfy the current publication contract; the raw exports/PNG masters remain ignored and the complete Phase 6 audit remains mandatory. Phase 3.2/4 compiles those published records into an ignored 67-document rank/taxon/specimen search artifact. Phase 5 compiles the same published records into an ignored deterministic map projection; neither search nor map reads raw exports or masters. See the [migration audit](docs/phase_3_1_migration_audit.md). The current raccoon-dog profile remains deliberately `draft` and omitted from the public page until useful, cited prose is curated.
 
@@ -158,7 +162,7 @@ Do not commit secrets, raw workbooks, archival Affinity/PSD files, private notes
 
 ## Deployment
 
-Vercel is the planned hosting target, connected to GitHub after the release-hardening phase. Pull requests will later receive preview deployments and `main` will become the only production source. No production project, domain, analytics, or runtime service is configured through the current local Phase 5 checkpoint.
+Vercel is the planned hosting target, connected to GitHub after the release-hardening phase. Pull requests will later receive preview deployments and `main` will become the only production source. No production project, domain, analytics, or runtime service is configured through the current local Measurements checkpoint.
 
 ## Rights and licence
 

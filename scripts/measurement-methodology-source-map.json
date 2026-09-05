@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "source_root": "agent_context/measurement_page",
+  "entries": [
+    {
+      "diagram_id": "lateral-skull",
+      "raw_file": "raw/ms_vulpes_lateral_5.png",
+      "annotated_file": "annotated/ms_vulpes_lateral_5.png",
+      "public_file": "public/media/methodology/lateral-skull.webp"
+    },
+    {
+      "diagram_id": "dorsal-skull",
+      "raw_file": "raw/ms_vulpes_dorsal_5.png",
+      "annotated_file": "annotated/ms_vulpes_dorsal_5.png",
+      "public_file": "public/media/methodology/dorsal-skull.webp"
+    },
+    {
+      "diagram_id": "ventral-skull",
+      "raw_file": "raw/ms_vulpes_ventral_5.png",
+      "annotated_file": "annotated/ms_vulpes_ventral_5.png",
+      "public_file": "public/media/methodology/ventral-skull.webp"
+    },
+    {
+      "diagram_id": "mandible-lateral",
+      "raw_file": "raw/raw_vulpes_mandible_lateral_5.png",
+      "annotated_file": "annotated/ms_vulpes_mandible_lateral_5.png",
+      "public_file": "public/media/methodology/mandible-lateral.webp"
+    },
+    {
+      "diagram_id": "canine-lengths",
+      "raw_file": "raw/meles_canines_6.png",
+      "annotated_file": "annotated/ms_meles_canines_6.png",
+      "public_file": "public/media/methodology/canine-lengths.webp"
+    }
+  ]
+}

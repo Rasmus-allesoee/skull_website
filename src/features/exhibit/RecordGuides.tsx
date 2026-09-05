@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import {
   measurementDefinitions,
   measurementProfileLayouts,
@@ -119,9 +121,15 @@ export function MeasurementGuide({ profile }: { profile: MeasurementProfile }) {
       triggerLabel="Open measurement guide"
     >
       <p>
-        This quick guide defines the fields used in the collection. A dedicated
-        illustrated methodology page will add exact landmark photographs before
-        these measurements are presented as a reproducible measurement protocol.
+        This quick guide defines the profile-specific fields stored for this
+        specimen. The complete illustrated reference documents the collection’s
+        broader measurement vocabulary; a shared label does not by itself
+        confirm that a legacy value followed every illustrated landmark.
+      </p>
+      <p>
+        <Link href="/methodology">
+          Open the full illustrated measurement reference →
+        </Link>
       </p>
       <GuideTable
         columns={["Measurement", "Current definition"]}

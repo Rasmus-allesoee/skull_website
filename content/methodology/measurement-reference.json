@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "source_note": "Owner-supplied measurement definitions and registered positional references. These are collection reference notes, not a universal osteometric standard.",
+  "diagrams": [
+    {
+      "id": "lateral-skull",
+      "title": "Lateral skull",
+      "public_path": "/media/methodology/lateral-skull.webp",
+      "alt": "Lateral fox skull reference used to show skull length, condylobasal length, and skull height.",
+      "credit": "Reference image supplied by Rasmus",
+      "rights": "all_rights_reserved",
+      "coordinate_width": 6000,
+      "coordinate_height": 4000,
+      "viewport": [350, 250, 5650, 3000],
+      "occurrences": [
+        {
+          "number": 1,
+          "line": [599, 568, 5443, 568],
+          "extensions": [
+            [599, 568, 599, 2030],
+            [5443, 568, 5443, 1591]
+          ],
+          "label": [3000, 438]
+        },
+        {
+          "number": 2,
+          "line": [599, 848, 5216, 848],
+          "extensions": [[5216, 848, 5216, 2496]],
+          "label": [3015, 716]
+        },
+        {
+          "number": 17,
+          "line": [5622, 984, 5622, 2680],
+          "extensions": [
+            [4268, 984, 5622, 984],
+            [4619, 2680, 5622, 2680]
+          ],
+          "label": [5800, 1827]
+        }
+      ]
+    },
+    {
+      "id": "dorsal-skull",
+      "title": "Dorsal skull",
+      "public_path": "/media/methodology/dorsal-skull.webp",
+      "alt": "Dorsal fox skull reference used to show longitudinal and transverse cranial measurements.",
+      "credit": "Reference image supplied by Rasmus",
+      "rights": "all_rights_reserved",
+      "coordinate_width": 6000,
+      "coordinate_height": 4000,
+      "viewport": [1450, 0, 3650, 4000],
+      "occurrences": [
+        {
+          "number": 1,
+          "line": [4735, 192, 4735, 3710],
+          "extensions": [
+            [2940, 192, 4735, 192],
+            [2940, 3710, 4735, 3710]
+          ],
+          "label": [4860, 1970]
+        },
+        {
+          "number": 4,
+          "line": [4465, 2048, 4465, 3710],
+          "extensions": [
+            [3370, 2048, 4465, 2048],
+            [2940, 3710, 4465, 3710]
+          ],
+          "label": [4574, 2890]
+        },
+        {
+          "number": 5,
+          "line": [4465, 192, 4465, 2048],
+          "extensions": [
+            [2940, 192, 4465, 192],
+            [3370, 2048, 4465, 2048]
+          ],
+          "label": [4572, 1135]
+        },
+        {
+          "number": 6,
+          "line": [4215, 192, 4215, 1735],
+          "extensions": [
+            [2940, 192, 4215, 192],
+            [3350, 1735, 4215, 1735]
+          ],
+          "label": [4310, 945]
+        },
+        {
+          "number": 7,
+          "line": [3966, 192, 3966, 1538],
+          "extensions": [
+            [2940, 192, 3966, 192],
+            [3370, 1538, 3966, 1538]
+          ],
+          "label": [4062, 870]
+        },
+        {
+          "number": 8,
+          "line": [3715, 375, 3715, 1735],
+          "extensions": [
+            [2940, 375, 3715, 375],
+            [3350, 1735, 3715, 1735]
+          ],
+          "label": [3800, 1068]
+        },
+        {
+          "number": 12,
+          "line": [1972, 3767, 3873, 3767],
+          "extensions": [
+            [1972, 2440, 1972, 3767],
+            [3873, 2440, 3873, 3767]
+          ],
+          "label": [2950, 3880]
+        },
+        {
+          "number": 13,
+          "line": [2364, 3030, 3466, 3030],
+          "extensions": [],
+          "label": [2935, 3140]
+        },
+        {
+          "number": 14,
+          "line": [2697, 2264, 3184, 2264],
+          "extensions": [],
+          "label": [2935, 2378]
+        },
+        {
+          "number": 15,
+          "line": [2594, 1729, 3288, 1729],
+          "extensions": [],
+          "label": [2935, 1845]
+        },
+        {
+          "number": 16,
+          "line": [2609, 578, 3220, 578],
+          "extensions": [],
+          "label": [2935, 690]
+        }
+      ]
+    },
+    {
+      "id": "ventral-skull",
+      "title": "Ventral skull",
+      "public_path": "/media/methodology/ventral-skull.webp",
+      "alt": "Ventral fox skull reference used to show skull, condylobasal, and maxillary tooth-row lengths.",
+      "credit": "Reference image supplied by Rasmus",
+      "rights": "all_rights_reserved",
+      "coordinate_width": 6000,
+      "coordinate_height": 4000,
+      "viewport": [1450, 0, 3650, 4000],
+      "occurrences": [
+        {
+          "number": 1,
+          "line": [4791, 201, 4791, 3828],
+          "extensions": [
+            [2960, 201, 4791, 201],
+            [2960, 3828, 4791, 3828]
+          ],
+          "label": [4910, 2000]
+        },
+        {
+          "number": 2,
+          "line": [4458, 192, 4458, 3751],
+          "extensions": [
+            [2960, 192, 4458, 192],
+            [3130, 3751, 4458, 3751]
+          ],
+          "label": [4570, 2000]
+        },
+        {
+          "number": 3,
+          "line": [4118, 202, 4118, 2022],
+          "extensions": [
+            [2960, 202, 4118, 202],
+            [3290, 2022, 4118, 2022]
+          ],
+          "label": [4220, 1110]
+        }
+      ]
+    },
+    {
+      "id": "mandible-lateral",
+      "title": "Mandible — lateral",
+      "public_path": "/media/methodology/mandible-lateral.webp",
+      "alt": "Lateral fox mandible reference used to show jaw length, tooth-row length, and mandibular heights.",
+      "credit": "Reference image supplied by Rasmus",
+      "rights": "all_rights_reserved",
+      "coordinate_width": 6200,
+      "coordinate_height": 4133,
+      "viewport": [200, 250, 6000, 3450],
+      "occurrences": [
+        {
+          "number": 9,
+          "line": [523, 3288, 5658, 3288],
+          "extensions": [
+            [523, 1184, 523, 3288],
+            [5658, 1560, 5658, 3288]
+          ],
+          "label": [3140, 3445]
+        },
+        {
+          "number": 10,
+          "line": [523, 1184, 3913, 1184],
+          "extensions": [
+            [523, 1184, 523, 2080],
+            [3913, 1184, 3913, 2120]
+          ],
+          "label": [2200, 1040]
+        },
+        {
+          "number": 11,
+          "line": [1198, 1514, 3913, 1514],
+          "extensions": [[1198, 1514, 1198, 2110]],
+          "label": [2550, 1375]
+        },
+        {
+          "number": 18,
+          "line": [5755, 384, 5755, 2421],
+          "extensions": [
+            [4940, 384, 5755, 384],
+            [4880, 2421, 5755, 2421]
+          ],
+          "label": [5960, 1420]
+        },
+        {
+          "number": 19,
+          "line": [3853, 2026, 3853, 2840],
+          "extensions": [],
+          "label": [4020, 2450]
+        }
+      ]
+    },
+    {
+      "id": "canine-lengths",
+      "title": "Canine lengths",
+      "public_path": "/media/methodology/canine-lengths.webp",
+      "alt": "Separated maxillary and mandibular canine references used to show total anatomical canine length.",
+      "credit": "Reference image supplied by Rasmus",
+      "rights": "all_rights_reserved",
+      "coordinate_width": 6000,
+      "coordinate_height": 4000,
+      "viewport": [750, 300, 4020, 3300],
+      "occurrences": [
+        {
+          "number": 20,
+          "line": [1262, 483, 1262, 3433],
+          "extensions": [
+            [1262, 483, 1530, 483],
+            [1262, 3433, 2030, 3433]
+          ],
+          "label": [1100, 2060]
+        },
+        {
+          "number": 21,
+          "line": [4239, 720, 4239, 3422],
+          "extensions": [
+            [4058, 720, 4239, 720],
+            [3510, 3422, 4239, 3422]
+          ],
+          "label": [4420, 2060]
+        }
+      ]
+    }
+  ]
+}

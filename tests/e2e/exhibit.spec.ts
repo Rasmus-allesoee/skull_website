@@ -397,6 +397,11 @@ test("measurement, age, condition, and additional-record guides disclose the new
   });
   await expect(measurementDialog).toBeVisible();
   await expect(
+    measurementDialog.getByRole("link", {
+      name: /full illustrated measurement reference/i,
+    }),
+  ).toHaveAttribute("href", "/methodology");
+  await expect(
     measurementDialog.getByText("Condylobasal length"),
   ).toBeVisible();
   await measurementDialog.getByRole("button", { name: /close/i }).click();

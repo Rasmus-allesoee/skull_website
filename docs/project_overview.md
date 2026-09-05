@@ -6,7 +6,7 @@
 
 **Interface language:** English
 
-**Last reviewed:** 2026-08-22
+**Last reviewed:** 2026-08-31
 
 ## 1. Vision
 
@@ -14,7 +14,7 @@ Skull Collection will be a fast, visually led online natural-history museum buil
 
 The site begins with the collector's own Danish specimens but is designed for a larger, carefully curated reference collection. It must be credible enough for identification and comparison, accessible enough for curious non-specialists, and structured enough to remain maintainable as specimens, contributors, countries, and media types grow.
 
-The shared museum shell, Home, class/order/family/genus routes, review-quality 15-taxon/18-specimen collection, and combined Phase 3.2/Phase 4 catalog discovery are implemented. The focused Phase 5 checkpoint adds the complete `/map` workspace, specimen-based discovery, public-location uncertainty, clustering, synchronized semantic records, deep links, and resilient non-map fallbacks. The comprehensive interactive tree (Phase 3.3), supporting editorial routes, complete audited collection migration, and production remain later work.
+The shared museum shell, Home, class/order/family/genus routes, review-quality 15-taxon/18-specimen collection, combined Phase 3.2/Phase 4 catalog discovery, and focused Phase 5 `/map` workspace are implemented. The owner-authorized Measurements milestone adds the static `/methodology` reference with 21 definitions, five real-skull diagrams, 24 registered programmatic SVG occurrences, responsive interaction, compact tappable mobile previews, adaptive diagram-anchored previews/details, and a complete semantic fallback. The comprehensive interactive tree (Phase 3.3), remaining supporting/editorial routes, complete audited collection migration, and production remain later work.
 
 ## 2. Product principles
 
@@ -98,7 +98,7 @@ Exclusion from v1 does not mean rejection. Each feature remains in the deferred 
 | `/guides/skull-preparation` | Preparation guide | A Phase 2.1 route/outline shell; later reviewed defleshing, maceration/alternatives, degreasing, whitening, safety, and documentation |
 | `/contribute` | Contribution protocol | Required views, capture setup, files, metadata, rights, review process, contact CTA |
 | `/about` | Collector and project story | Purpose, collection, photography, preparation workflow, site method |
-| `/methodology` | Data transparency | Measurement definitions, identification confidence, taxonomy, missing data, coordinates, updates |
+| `/methodology` | Measurement reference; later broader data transparency | Implemented five-view cropped diagram board, 21 exact definition rows, compact non-blocking details, diagram-targeting table actions with return-to-row behavior, and semantic static fallback; identification confidence, taxonomy, missing-data, coordinate, and update sections remain later scope |
 | `/rights` | Rights summary | Code/content/media distinctions, credits, reuse/contact route |
 | `/privacy` | Privacy statement | No-tracking baseline, hosting logs, contact-data handling |
 | `/accessibility` | Accessibility statement | Supported behavior, known issues, feedback route |
@@ -248,7 +248,8 @@ The combined Phase 3.2/4 implementation makes `/species` the operational collect
 ### About and supporting pages
 
 - About remains personal and factual: collection purpose, acquisition sources, ethical/legal context, preparation, photography, and project development.
-- Methodology separates observations from external species facts and explains confidence, taxonomy, measurement, date, and coordinate semantics.
+- The implemented first Methodology section documents the collection's measurement vocabulary without claiming a universal osteometric standard or retroactively redefining stored legacy values. It uses real-skull reference imagery, programmatic annotations, a complete semantic table, and direct links from specimen measurement guides.
+- Later Methodology sections still separate observations from external species facts and explain confidence, taxonomy, date, and coordinate semantics.
 - Rights, Privacy, and Accessibility must reflect actual behavior at release time and are release-blocking content, not boilerplate placeholders.
 
 ## 8. Cross-cutting behavior

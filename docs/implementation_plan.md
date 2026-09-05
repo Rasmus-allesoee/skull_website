@@ -4,7 +4,7 @@
 
 **Current phase:** Focused Phase 5 collection map complete and merged into `main`; next milestone selection pending
 
-**Last reviewed:** 2026-08-29
+**Last reviewed:** 2026-08-31
 
 ## 1. How to use this plan
 
@@ -362,7 +362,8 @@ The owner deliberately narrowed this milestone to the geographic collection expe
 These items were explicitly removed from the focused map milestone. They require a separate owner authorization and their own content/citation review.
 
 - [ ] Promote the existing preparation route shell into the Guides hub and complete cited/safety-reviewed preparation content.
-- [ ] Add dedicated illustrated measurement methodology, age-estimation, and specimen-condition content using owner-supplied/reviewed real-skull imagery and appropriate citations/species caveats.
+- [x] Add the separately owner-authorized illustrated Measurements page at `/methodology` using five reviewed real-skull reference pairs, 21 canonical definitions, 24 registered SVG occurrences, a semantic table, responsive interaction, accessibility, and static fallback. Completed on 2026-08-30; the bounded owner-feedback v1/v2/v3 geometry/layout/detail/table/tooltip refinements and the latest table-row/map-menu follow-up were completed locally on 2026-08-31. Publication remains separate.
+- [ ] Add age-estimation and specimen-condition methodology using owner-supplied/reviewed real-skull imagery and appropriate citations/species caveats.
 - [ ] Add Contribution photography/metadata/rights protocol and reviewed contact link.
 - [ ] Add About and Methodology.
 - [ ] Add accurate Rights, Privacy, and Accessibility statements.
@@ -377,7 +378,7 @@ These items were explicitly removed from the focused map milestone. They require
 - [x] WebGL/provider failures retain the complete semantic experience.
 - [x] No upload backend, cookie, tracking behavior, unsupported imagery style, or unrelated editorial scope has been introduced.
 
-**Gate result:** Passed locally on 2026-08-28 on `agent/phase-5-map` and was published through PR #10 with passing remote CI, then merged into `main` with normal merge commit `f098caf` on 2026-08-29. The next milestone remains a separate owner-authorized scope.
+**Gate result:** Passed locally on 2026-08-28 on `agent/phase-5-map` and was published through PR #10 with passing remote CI, then merged into `main` with normal merge commit `f098caf` on 2026-08-29. The owner later authorized only the bounded Measurements supporting-page item above; all remaining items stay separately gated.
 
 ## 9. Phase 6 — complete audited collection migration
 

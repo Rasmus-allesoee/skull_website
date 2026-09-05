@@ -1,0 +1,22 @@
+Number,Measurement,Exact landmarks / method
+1,Skull length,Greatest straight-line distance from Prosthion (most anterior midline point of the premaxilla/alveolar process) to Akrokranion (most posterior point of the skull in the median plane). Exclude projecting teeth.
+2,Condylobasal length,"From Prosthion to the most posterior surface of the occipital condyles, parallel to the longitudinal skull axis."
+3,Maxillary tooth-row length,"Straight-line/alveolar distance from the anterior margin of the first included tooth alveolus to the posterior margin of the last tooth alveolus on one side, according to your illustrated definition."
+4,Upper neurocranium length,Akrokranion → Frontal midpoint. Frontal midpoint is the median point of the line connecting the left and right Ectorbitale—the most lateral points of the frontal bone on the caudal side of the orbits.
+5,Facial length,"Prosthion → Frontal midpoint, measured as a straight longitudinal distance."
+6,Viscerocranium length,"Prosthion → Nasion. Nasion is the median point of the frontonasal (nasofrontal) suture, at the posterior end of the nasal bones."
+7,Snout length,"Prosthion → level of the rostral/oral border of the orbits, measured along the median longitudinal axis."
+8,Nasal length,Greatest length of the nasal bones: Rhinion → Nasion. Rhinion is the median point between the most anterior tips of the nasal bones; Nasion is the median frontonasal junction.
+9,Mandible length,Greatest straight-line distance from Infradentale/anterior mandibular symphysis to the most posterior point of the condylar process.
+10,Mandibular tooth-row length,"Alveolar distance from the anterior margin of the first included tooth alveolus to the posterior margin of the last tooth alveolus on one side, according to your illustrated definition."
+11,Alveolar length of lower cheek tooth row,"From the anterior/mesial margin of the first premolar alveolus to the posterior/distal margin of the last molar alveolus, measured along one side of the mandible. In a fox: P1 → M3."
+12,Zygomatic width,Greatest transverse distance between the outermost points of the left and right zygomatic arches (Zygion–Zygion).
+13,Cranium width,"Greatest transverse width of the braincase (Euryon–Euryon), excluding the zygomatic arches."
+14,Postorbital constriction,Minimum transverse width of the cranium immediately posterior to the orbits/postorbital processes.
+15,Interorbital width,Minimum transverse distance between the medial margins of the two orbits (Entorbitale–Entorbitale).
+16,Rostrum width,"Greatest transverse width of the bony rostrum anterior to the orbits, excluding the zygomatic arches."
+17,Skull height,Maximum dorsoventral height of the complete skull between parallel planes; from the lowest ventral structure to the highest dorsal point.
+18,Mandible ramus height,"Maximum height of the ascending ramus from the lowest point of the angular process to Coronion, the highest point of the coronoid process."
+19,Mandible body height,"Dorsoventral height of the mandibular body at your standardized tooth position, measured perpendicular to the tooth row from the alveolar margin to the ventral mandibular border."
+20,Maxillary canine length,"Total anatomical canine length, cusp tip → root apex, measured along the tooth's long axis."
+21,Mandibular canine length,"Total anatomical canine length, cusp tip → root apex, measured along the tooth's long axis."
