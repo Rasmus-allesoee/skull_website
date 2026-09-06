@@ -20,7 +20,7 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **the owner-authorized Measurements and Home milestones are merged into `main` through PR #11 (`c36838a`) and PR #12 (`4db6804`); `agent/skull-prep-page` now starts from that merged state, and no preparation-guide implementation has begun**. The focused map-only Phase 5 implementation remains merged into `main` at `f098caf`, and the combined Phase 3.2/4 work remains merged at `9a0e1d0`. Age/condition methodology, other supporting/editorial pages, the optional Phase 3.3 comprehensive tree, and Phase 6 remain deferred. Consult `docs/project_status.md` for exact evidence and the next action. Do not begin preparation implementation beyond an owner-approved scope or publish any later milestone without explicit authorization.
+Current phase: **the owner-authorized Measurements and Home milestones are merged into `main` through PR #11 (`c36838a`) and PR #12 (`4db6804`); `agent/skull-prep-page` now contains the owner-authorized preparation guide; local verification and owner review are tracked in `docs/project_status.md`**. The focused map-only Phase 5 implementation remains merged into `main` at `f098caf`, and the combined Phase 3.2/4 work remains merged at `9a0e1d0`. Age/condition methodology, other supporting/editorial pages, the optional Phase 3.3 comprehensive tree, and Phase 6 remain deferred. Consult `docs/project_status.md` for exact evidence and the next action. Do not begin preparation implementation beyond an owner-approved scope or publish any later milestone without explicit authorization.
 
 Use the neutral working title **Skull Collection** from central site configuration until the final name is selected.
 
@@ -55,7 +55,7 @@ The historical approved master plan is `agent_context/website_plan_from_planmode
 ## 4. Architecture invariants
 
 - Pinned Node.js 24.18.0, pnpm 11.21.0, Next.js 16.2.12, React 19.2.8, strict TypeScript.
-- Next.js App Router and React Server Components by default; client islands only for search/filters, gallery, calibrated comparison, guidance/specimen-chooser dialogs, a future interactive tree, and MapLibre.
+- Next.js App Router and React Server Components by default; client islands only for search/filters, gallery, calibrated comparison, guidance/specimen-chooser dialogs, the preparation contents drawer, a future interactive tree, and MapLibre.
 - Known public routes are statically generated and useful before interactive JavaScript finishes.
 - Canonical structured sources are two UTF-8 linked CSVs (`taxa.csv`, `specimens.csv`), cited MDX, and reviewed media/reference declarations.
 - Normal builds never call a live spreadsheet, GBIF, map API, or runtime database.
@@ -102,6 +102,7 @@ Local context paths:
 - `agent_context/measurement_page_plan.md` — owner-authored measurement-page product specification covering the `/methodology` reference page, programmatic SVG overlays, supplied measurement definitions, interaction, and acceptance criteria.
 - `agent_context/measurement_page_feedback_v1.md` — bounded owner review of the first `/methodology` implementation; owns the refined geometry, compact detail surface, diagram order/cropping, mobile preview, and table-linking requirements.
 - `agent_context/mobile_tooltip_too_large_hide_skull.png` — owner visual evidence for the v3 mobile preview refinement; context only, never a runtime asset.
+- `agent_context/preparation_page/` — ignored owner preparation brief/photographs and generated degreasing master; maintenance-only input. The canonical page system is `docs/skull_preparation_guide.md`; reviewed content/media live under `content/guides/`, and `pnpm media:process:preparation` creates the validated public derivatives.
 - `agent_context/measurement_page/` — local measurement-page staging context: annotated positional references, the supplied measurement-description CSV, and the source prompt; these inputs are not runtime assets until explicitly promoted through the canonical content/media pipeline.
 - `agent_context/website_screenshots/localhost_3000_species.png` — ignored before-state visual evidence only, never a runtime asset.
 
@@ -180,6 +181,7 @@ Before a checkpoint:
 | `docs/implementation_plan.md` | Phase order, deliverables, dependencies, gates, deferred backlog |
 | `docs/project_status.md` | Current truth, verification, blockers, next actions, checkpoint log |
 | `docs/phase_3_1_migration_audit.md` | Accepted/blocked review-slice records, normalization decisions, Phase 6 obligations |
+| `docs/skull_preparation_guide.md` | Preparation page structure, components, source/media contracts, content decisions and verification intent |
 | `docs/interactive_taxonomic_tree.md` | Phase 3.1/tree-drawer foundations and comprehensive Phase 3.3 requirements |
 | `docs/decisions/*.md` | Historical material architecture decisions |
 | `CONTRIBUTING.md` | Contributor branch/PR and quality workflow |

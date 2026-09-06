@@ -151,14 +151,14 @@ export default function Home() {
           <article className="home-hub-card home-hub-card-preparation">
             <Link
               href="/guides/skull-preparation"
-              aria-label="Open the skull preparation guide outline"
+              aria-label="Open the skull preparation guide"
             >
               <div className="home-hub-copy">
                 <p className="card-overline">From recovery to record</p>
                 <h3>Preparation guide</h3>
                 <p>
-                  See the planned guide structure for turning a recovered skull
-                  into a documented collection specimen.
+                  Explore the methods and practical steps for turning a
+                  recovered skull into a documented collection specimen.
                 </p>
                 <span className="home-card-action">
                   Open preparation guide →

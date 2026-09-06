@@ -95,7 +95,7 @@ Exclusion from v1 does not mean rejection. Each feature remains in the deferred 
 | `/species/{taxon-slug}/specimens/{specimen-id}` | Exact specimen display | Same composition focused on one physical specimen, with unique metadata and canonical relationship |
 | `/map` | Geographic exploration | Clustered map, filters, selected-specimen popup, synchronized accessible result list |
 | `/guides` | Editorial guide hub | Guide cards and introductions |
-| `/guides/skull-preparation` | Preparation guide | A Phase 2.1 route/outline shell; later reviewed defleshing, maceration/alternatives, degreasing, whitening, safety, and documentation |
+| `/guides/skull-preparation` | Preparation guide | Implemented illustrated five-phase guide, method comparisons, contents drawer, preparation photographs, source-checked practical text and one reference list |
 | `/contribute` | Contribution protocol | Required views, capture setup, files, metadata, rights, review process, contact CTA |
 | `/about` | Collector and project story | Purpose, collection, photography, preparation workflow, site method |
 | `/methodology` | Measurement reference; later broader data transparency | Implemented five-view cropped diagram board, 21 exact definition rows, compact non-blocking details, diagram-targeting table actions with return-to-row behavior, and semantic static fallback; identification confidence, taxonomy, missing-data, coordinate, and update sections remain later scope |
@@ -162,7 +162,7 @@ The home page establishes the collection as a museum entrance and compact naviga
 - Six concise live statistics remain derived from published records: species-level taxa, physical specimens, represented classes, orders, families, and genera. Genus-level identifications remain visible in catalog totals/copy rather than being miscounted as species.
 - One compact exploration hub contains live Species, Map, Measurements, and Preparation cards plus a fully designed non-navigating Skull Comparison preview labelled `Coming soon`.
 - The Map card uses an owner-supplied static feature thumbnail to preview reviewed locations and specimen-detail affordances. Home never loads MapLibre, provider tiles, map controls, or the map result rail.
-- The Measurements card reuses the reviewed public diagram and registered geometry. The Preparation card uses the owner's metadata-stripped public WebP derivative while describing the destination honestly as the planned guide structure.
+- The Measurements card reuses the reviewed public diagram and registered geometry. The Preparation card uses the owner's metadata-stripped public WebP derivative and links to the complete cited preparation guide.
 - The retired standalone `Find a skull`, `Browse by class`, `Collection tree`, and `Behind the collection` sections are absent. Their useful workflows remain on the destination routes.
 - No invented statistics, locations, comparison records, preparation procedures, or future routes are presented.
 
@@ -207,7 +207,7 @@ The combined Phase 3.2/4 implementation makes `/species` the operational collect
 - Include a searchable keyboard-operable comparison selector and a class-aware difference table. Mammal/mammal uses six rows; bird/bird uses nine; bird/mammal uses six explicitly labelled functional mappings, including orbital width ↔ maximum width and cranium height ↔ skull height. Cross-class mappings are descriptive comparisons between different landmarks, not claims of anatomical homology. Difference wording and ratio always describe the current page specimen relative to the selected comparison; wording, not color alone, communicates direction. Show the approximation explanation only when at least one displayed difference is actually derived from an approximate source value.
 - Put owner, sex, age class, condition, source, date, location, and coordinate precision in the collection record under the `Metadata` kicker. Age and five-level condition definitions open in accessible dialogs; pathology, trauma, teeth-set completeness, and skeleton completeness live under `Show additional recorded data`.
 - Place a `View on map` action near the Collection record for specimens with public coordinates. It focuses the exact specimen through `/map?specimen={id}` while keeping MapLibre isolated to the map route.
-- Describe preparation as `Skull preparation` and link to the permanent guide route. The guide stays an explicit outline—not procedural or safety advice—until cited content review.
+- Describe preparation as `Skull preparation` and link to the permanent guide route. The complete guide distinguishes personal practice from cited recommendations and supplies method comparisons, practical precautions and stable section links.
 - Keep photography credit concise as `Photo: {name}`. Reserve collection/media/data reuse through the global `© {year} Rasmus. All rights reserved.` footer rather than a large rights panel; detailed legal scope remains in `RIGHTS.md` and the later Rights page.
 - Hide an entirely empty optional section. Within a populated group, render missing values as “Not recorded” and non-applicable values as “Not applicable.”
 - Give exact specimen URLs unique titles/descriptions and an appropriate relationship to the taxon canonical page.
@@ -231,8 +231,8 @@ The combined Phase 3.2/4 implementation makes `/species` the operational collect
 ### Guides and preparation guide
 
 - Guides use editorial long-form layouts with stable headings and a table of contents.
-- The Phase 2.1 preparation link resolves to a static route shell so navigation is real even before guide content is publishable.
-- The preparation guide will cover intake and legal/safety caveats, defleshing methods, maceration, beetles or careful heat alternatives, degreasing with suitable agents, hydrogen-peroxide whitening, drying, assembly, photography, troubleshooting, and record keeping.
+- The permanent preparation route now contains the owner-authorized full guide; its five-stage illustrated workflow and sticky contents drawer expose phase/method anchors, with native no-JavaScript navigation.
+- The preparation guide covers intake, separation/skinning/trimming, five defleshing methods, degreasing, optional whitening, teeth/jaw assembly, drying, storage and records. Four visible comparison tables and restrained native detail disclosures support long-form reading. Six collector photographs plus one clearly labelled AI degreasing illustration are curated through the media pipeline. Personal observations and cited recommendations remain explicit. See [skull_preparation_guide.md](skull_preparation_guide.md).
 - Methodology will later include dedicated illustrated measurement, age-estimation, and specimen-condition sections. The owner must supply/review real-skull landmark and reference imagery; age claims require species-aware citations and caveats.
 - Specific chemical or biological safety claims require source review before publication.
 - Images, diagrams, warnings, and comparisons should carry information that prose cannot convey as clearly.

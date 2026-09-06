@@ -2,15 +2,38 @@
 
 **Snapshot date:** 2026-09-06
 
-**Current phase:** Skull Preparation guide phase — branch created; implementation not started
+**Current phase:** Skull Preparation guide — verified locally; owner product review pending
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, focused Phase 5 is merged at `f098caf`, the Measurements milestone is merged through PR #11 at `c36838a`, and the Home redesign plus bounded feedback refinements are merged through PR #12 at `4db6804`. `agent/skull-prep-page` tracks that merged `main` state and is ready for the next owner-authorized preparation-guide scope; no preparation implementation has started.
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, focused Phase 5 is merged at `f098caf`, the Measurements milestone is merged through PR #11 at `c36838a`, and the Home redesign plus bounded feedback refinements are merged through PR #12 at `4db6804`. `agent/skull-prep-page` now contains the owner-authorized full preparation guide. The full page, media pipeline, navigation, comparisons and canonical documentation have passed the local gate and are preserved in the coherent preparation-guide checkpoint. Owner product review is the next step.
 
-**Next phase:** Skull Preparation guide implementation on `agent/skull-prep-page`. The exact next action is to establish the owner-approved preparation-guide scope and begin its bounded implementation. Age/condition methodology, remaining supporting pages, Phase 3.3, and Phase 6 remain separately gated.
+**Next action:** Owner review of `/guides/skull-preparation` on desktop and mobile. Address only preparation-page feedback; publication requires separate explicit authorization. Age/condition methodology, remaining supporting pages, Phase 3.3, and Phase 6 remain separately gated.
 
 ## 1. Current objective
 
-Preserve the merged Measurements/Home/map milestones and use `agent/skull-prep-page` for the next bounded preparation-guide scope. Do not begin age/condition methodology, Phase 3.3, Phase 6, or another supporting scope without explicit authorization.
+Preserve the verified preparation-guide checkpoint on `agent/skull-prep-page` and await owner product review. No push, PR, merge or deployment is authorized. Do not begin age/condition methodology, Phase 3.3, Phase 6, or another supporting scope without explicit authorization.
+
+## 1.0 Owner-authorized Skull Preparation guide
+
+### Implementation and decisions
+
+- Replaced the existing `/guides/skull-preparation` outline with a complete static guide: preparation/separation/skinning, five defleshing methods, degreasing, optional whitening, tooth/jaw assembly, dry storage and documentation. Five illustrated workflow stages expose phase/method links; four visible comparison tables and three native detail disclosures support the prose.
+- Added a sticky compact contents control and native modal drawer with reading-position cues, keyboard wrapping, Escape/backdrop/Close restoration and destination focus. The full prose, figures, tables and native contents disclosure work without JavaScript; mobile comparison rows remain labelled and semantic.
+- Canonical restricted MDX compiles to `.generated/preparation-guide-v1.json` without executing JSX or reading staging input. Thirteen claim-linked references use the shared profile/guide citation component and one reference list. Null publication years render `n.d.` rather than guessed dates.
+- Promoted six owner-authorized photographs and one explicitly labelled AI degreasing illustration into seven metadata-stripped WebPs (1,401 KiB total). The new media command and normal content/media validation enforce declaration/use parity, dimensions, size and metadata removal. Original photographs, brief and generated master remain ignored.
+- Kept collector practice distinct from sourced guidance. Corrected airtight-container/venting advice, explained ambiguous developer dilution, treated whitening as optional and distinguished the mandibular symphysis from the jaw joints. Exact species/age timing and a universal optimal temperature were not invented; specialist solvent options retain concentration-specific safety boundaries. The concise system reference and generation prompt are in [skull_preparation_guide.md](skull_preparation_guide.md).
+- Updated Home link wording, relevant existing journeys, canonical architecture/content/design/plan documents and the repository index. No collection record, stable URL, rights grant, Guides hub or other phase changed.
+
+### Verification
+
+- Pinned Node 24.18.0 / pnpm 11.21.0. `CI=true pnpm check` passed: formatting, ESLint, media/content validation, strict TypeScript, **76/76 unit/component tests**, and **six expected invalid-fixture failures**. Four existing missing-optional-frontal-view warnings remain unchanged.
+- Production build passed and prerendered **77/77 routes**, including the complete guide. The final build was repeated after the visually identified procedure-numbering correction; focused formatting/lint checks also passed.
+- Full Chromium regression: **76/76 passed**, without retries, in 3.4 minutes. After the route-only procedure-marker correction, the final focused guide suite passed **5/5 without retries** in 21.7 seconds, including a visible-numbering assertion. Coverage includes all workflow/citation destinations, hash/history behavior, drawer focus trapping/restoration, axe, 320/360/390/768/1024 px reflow, no JavaScript, reduced motion, forced colors, failed images and absence of map/search requests from the guide.
+- Manual production visual review: 1440×900 overview; 390×844 workflow, stacked comparisons and drawer; 360×800 prose; and 720×900 effective-200%-width comparison. The 720 px measurement confirmed document width exactly equals viewport width; automated phone/tablet checks also found no horizontal overflow. Screenshots remain ignored under `output/playwright/`. The final marker check confirms numbered procedures survive the global style reset.
+- Scope and ignored-file audit: only intended guide code/content/curated media, required integrations, tests and canonical documentation belong to the checkpoint; owner context, raw masters, generated output and unrelated screenshots are excluded.
+
+### Next step and boundary
+
+The guide is ready for owner desktop/mobile review. Source-check status is an editorial review, not independent professional certification; timing ranges and collector observations remain labelled. No push, PR, merge, deployment, remote CI, or later phase was performed or authorized.
 
 ## 1.1 Owner-authorized Home redesign milestone
 
@@ -607,5 +630,11 @@ No unresolved content, rights, or publication blocker prevents local Home review
 - Split the verified `agent/next-additions` history at `a6c1845` into the preserved `agent/measurement-page` branch and the Home-only continuation `agent/home-redesign`. Both branches were pushed without staging the existing owner-provided `agent_context/` files.
 - Measurement PR #11 merged into `main` with normal merge commit `c36838a`; Home PR #12 then merged with normal merge commit `4db6804`. The source branches remain preserved on the remote.
 - Created and pushed `agent/skull-prep-page` from the updated `origin/main` at `4db6804`. No preparation-guide implementation has begun; the branch is ready for the next approved scope.
+
+### 2026-09-06 — Skull Preparation guide verified locally
+
+- Completed the owner-authorized illustrated preparation guide and canonical page-system document, including all five defleshing alternatives, chemical/adhesive comparisons, seven curated images, thirteen references and resilient drawer/static navigation.
+- The full quality gate, 77-route production build and 76/76 Chromium regression pass. Final route-only procedure-numbering refinement passed a rebuilt production check and all five focused guide journeys. Responsive manual review and source/media/scope audits pass.
+- Preserve the coherent local checkpoint on `agent/skull-prep-page` for owner review. No push, PR, merge, deployment, other editorial page or later phase was started.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.

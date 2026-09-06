@@ -71,3 +71,6 @@ agent_context/website_screenshots/localhost_3000_species.png
 *.temp
 *.swp
 *~
+
+# Owner preparation photographs, brief and generated illustration master
+agent_context/preparation_page/

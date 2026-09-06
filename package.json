@@ -35,7 +35,8 @@
     "test:fixtures": "node --import tsx scripts/verify-invalid-fixtures.ts",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "check": "pnpm format:check && pnpm lint && pnpm validate:media && pnpm validate:content && pnpm typecheck && pnpm test && pnpm test:fixtures"
+    "check": "pnpm format:check && pnpm lint && pnpm validate:media && pnpm validate:content && pnpm typecheck && pnpm test && pnpm test:fixtures",
+    "media:process:preparation": "node --import tsx scripts/process-preparation-media.ts"
   },
   "dependencies": {
     "@fontsource-variable/newsreader": "5.3.0",

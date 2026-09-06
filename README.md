@@ -173,3 +173,7 @@ Source code is licensed under the [MIT License](LICENSE). Photographs, written c
 ## Contributing
 
 Repository development guidance is in [CONTRIBUTING.md](CONTRIBUTING.md). Public specimen contributions are a later product workflow and will initially use a requirements guide plus direct contact—not anonymous uploads.
+
+### Preparation guide maintenance
+
+The full page system and source decisions are documented in [docs/skull_preparation_guide.md](docs/skull_preparation_guide.md). Edit its reviewed MDX and media declaration under `content/guides/`. Run `pnpm media:process:preparation` only when deliberately promoting the owner-authorized ignored source images; `pnpm check` and `pnpm build` validate/use the curated public derivatives without those masters.

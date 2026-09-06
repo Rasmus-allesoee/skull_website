@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "assets": [
+    {
+      "asset_id": "intake",
+      "public_path": "/media/preparation/intake.webp",
+      "alt": "Raccoon-dog head before skinning.",
+      "caption": "Before skinning: photograph from the collector’s preparation sequence.",
+      "credit": "Rasmus",
+      "rights": "all_rights_reserved",
+      "provenance": "owner-photograph"
+    },
+    {
+      "asset_id": "skinned-head",
+      "public_path": "/media/preparation/skinned-head.webp",
+      "alt": "Skinned raccoon-dog head with eyes and some muscle still present.",
+      "caption": "After skinning and preliminary trimming; this head is not yet fully defleshed.",
+      "credit": "Rasmus",
+      "rights": "all_rights_reserved",
+      "provenance": "owner-photograph"
+    },
+    {
+      "asset_id": "maceration",
+      "public_path": "/media/preparation/maceration.webp",
+      "alt": "Raccoon-dog skull lifted above a bucket containing maceration water.",
+      "caption": "Maceration in progress. Support the skull from below when lifting; do not use a blade as a lever through an opening.",
+      "credit": "Rasmus",
+      "rights": "all_rights_reserved",
+      "provenance": "owner-photograph"
+    },
+    {
+      "asset_id": "degreasing",
+      "public_path": "/media/preparation/degreasing.webp",
+      "alt": "Illustration of a flesh-free skull submerged in a detergent bath in an open tub.",
+      "caption": "AI-generated illustration of a detergent bath; not a photograph or an anatomical reference.",
+      "credit": "OpenAI image generation",
+      "rights": "all_rights_reserved",
+      "provenance": "ai-illustration"
+    },
+    {
+      "asset_id": "whitening",
+      "public_path": "/media/preparation/whitening.webp",
+      "alt": "Skull held above a container of foaming whitening solution.",
+      "caption": "The collector’s cream-developer treatment. Foam needs headroom and secondary containment.",
+      "credit": "Rasmus",
+      "rights": "all_rights_reserved",
+      "provenance": "owner-photograph"
+    },
+    {
+      "asset_id": "assembly",
+      "public_path": "/media/preparation/assembly.webp",
+      "alt": "Cleaned skull, separate jaw halves, and loose teeth arranged on a dark surface.",
+      "caption": "Keep each specimen’s skull, jaw halves, and loose teeth together before assembly.",
+      "credit": "Rasmus",
+      "rights": "all_rights_reserved",
+      "provenance": "owner-photograph"
+    },
+    {
+      "asset_id": "finished",
+      "public_path": "/media/preparation/finished.webp",
+      "alt": "Cleaned, assembled raccoon-dog skull in an oblique view.",
+      "caption": "After cleaning and assembly: retain natural bone texture rather than chasing a uniform white finish.",
+      "credit": "Rasmus",
+      "rights": "all_rights_reserved",
+      "provenance": "owner-photograph"
+    }
+  ]
+}

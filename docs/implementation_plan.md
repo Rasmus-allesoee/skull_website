@@ -361,7 +361,7 @@ The owner deliberately narrowed this milestone to the geographic collection expe
 
 These items were explicitly removed from the focused map milestone. They require a separate owner authorization and their own content/citation review.
 
-- [ ] Promote the existing preparation route shell into the Guides hub and complete cited/safety-reviewed preparation content.
+- [x] Complete the separately owner-authorized preparation guide on its existing route: five-stage workflow, full method coverage, seven curated images, tables, drawer/static navigation, citations, and documentation. Local verification is recorded in `project_status.md`; a broader Guides hub remains deferred.
 - [x] Add the separately owner-authorized illustrated Measurements page at `/methodology` using five reviewed real-skull reference pairs, 21 canonical definitions, 24 registered SVG occurrences, a semantic table, responsive interaction, accessibility, and static fallback. Completed on 2026-08-30; the bounded owner-feedback v1/v2/v3 geometry/layout/detail/table/tooltip refinements and the latest table-row/map-menu follow-up were completed locally on 2026-08-31. Published through PR #11 and merged into `main` with normal merge commit `c36838a` on 2026-09-05.
 - [ ] Add age-estimation and specimen-condition methodology using owner-supplied/reviewed real-skull imagery and appropriate citations/species caveats.
 - [ ] Add Contribution photography/metadata/rights protocol and reviewed contact link.
@@ -396,6 +396,10 @@ These items were explicitly removed from the focused map milestone. They require
 - [x] Verify desktop/tablet/360–390 px reflow, touch and keyboard navigation, reduced motion, forced colors, image failure, axe, no-JavaScript, build output, and zero horizontal overflow.
 
 **Gate result:** Passed locally on 2026-09-02 on `agent/next-additions`. The bounded Home feedback refinement was published through PR #12 and merged into `main` with normal merge commit `4db6804` on 2026-09-05; the source branch is preserved for review history.
+
+## 8.2 Owner-authorized Skull Preparation guide
+
+The 2026-09-06 brief authorizes only the complete `/guides/skull-preparation` page and its coherent local commit. System, content decisions, source/media contracts, acceptance checks and remaining limitations are maintained in [skull_preparation_guide.md](skull_preparation_guide.md). It does not authorize remote publication, a Guides hub, other editorial pages, or Phase 6. Exact local gate evidence and owner-review status live in `project_status.md`.
 
 ## 9. Phase 6 — complete audited collection migration
 

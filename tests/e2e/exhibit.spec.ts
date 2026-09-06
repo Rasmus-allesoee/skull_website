@@ -795,7 +795,7 @@ test.describe("mobile touch behavior", () => {
   });
 });
 
-test("preparation record links to a safe, explicit guide shell", async ({
+test("preparation record links to the complete cited guide", async ({
   page,
 }) => {
   await page.goto(specimenPath);
@@ -807,7 +807,7 @@ test("preparation record links to a safe, explicit guide shell", async ({
     page.getByRole("heading", { level: 1, name: "Skull preparation" }),
   ).toBeVisible();
   await expect(
-    page.getByText("This is not yet a procedural or safety guide."),
+    page.getByRole("heading", { name: "The preparation process" }),
   ).toBeVisible();
   await expect(
     page.getByText("© 2026 Rasmus. All rights reserved."),

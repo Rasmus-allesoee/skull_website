@@ -25,6 +25,8 @@ import { buildMapProjection } from "../../src/domain/map/projection";
 import type { MeasurementReference } from "../../src/domain/methodology/types";
 import type { HomeMediaManifest } from "../../src/domain/home/types";
 import { validatePublicMedia } from "./media";
+import type { PreparationGuide } from "../../src/domain/guides/guide";
+import { loadPreparationGuide } from "./preparation";
 import { loadHomeMedia } from "./home-media";
 import { loadMeasurementReference } from "./measurements";
 import { fromRepositoryRoot } from "./paths";
@@ -37,6 +39,7 @@ export interface ContentBuildResult {
   measurementReference: MeasurementReference;
   measurementMediaBytes: number;
   homeMedia: HomeMediaManifest;
+  preparationGuide: PreparationGuide;
   warnings: Diagnostic[];
 }
 
@@ -78,6 +81,7 @@ export async function buildContent(options?: {
     publicMediaBytes: measurementMediaBytes,
   } = await loadMeasurementReference();
   const homeMedia = await loadHomeMedia();
+  const preparationGuide = await loadPreparationGuide();
   const result = compileCollection({
     taxa,
     specimens,
@@ -98,6 +102,11 @@ export async function buildContent(options?: {
     await writeFile(
       path.join(generatedDirectory, "collection.json"),
       `${JSON.stringify(result.collection, null, 2)}\n`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(generatedDirectory, "preparation-guide-v1.json"),
+      `${JSON.stringify(preparationGuide, null, 2)}\n`,
       "utf8",
     );
     const serializedSearchArtifact = `${JSON.stringify(searchArtifact, null, 2)}\n`;
@@ -136,6 +145,7 @@ export async function buildContent(options?: {
     measurementReference,
     measurementMediaBytes,
     homeMedia,
+    preparationGuide,
   };
 }
 

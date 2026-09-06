@@ -289,3 +289,9 @@ The combined Phase 3.2/4 checkpoint recasts `/species` as a working visual catal
 - Uncalibrated skulls visually overlaid as if dimensions were comparable.
 - Animation that delays reading or ignores reduced motion.
 - Accessibility overlays in place of correct components.
+
+## Preparation reference page
+
+The preparation guide uses a five-stage image workflow with real phase/method links, short completion outcomes and an optional-whitening branch. A bounded sticky strip opens a native left-hand contents drawer; Escape/backdrop/Close restore focus, destination links focus their heading, and a native disclosure provides the static fallback. Reading position is a navigation cue, not a progress-completion claim.
+
+Prose remains at roughly 72 characters, with wide semantic comparison tables that become labelled rows on phones. Larger figures preserve complete source framing; cropped workflow previews remain supplementary to text. AI provenance is visibly labelled. Safety/completion callouts stay open; only nonessential detail uses native disclosures. Reuse existing neutral/brass tokens, visible focus, reduced-motion anchor behavior and forced-color semantics. Page architecture and content decisions live in [skull_preparation_guide.md](skull_preparation_guide.md).

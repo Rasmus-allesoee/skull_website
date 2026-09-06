@@ -1,6 +1,5 @@
-import type { ReactNode } from "react";
-
-import type { Citation, TaxonProfile } from "@/domain/content/types";
+import { CitationList, renderCitations } from "@/components/Citations";
+import type { TaxonProfile } from "@/domain/content/types";
 
 export function Profile({ profile }: { profile: TaxonProfile }) {
   const citationNumber = new Map(
@@ -35,52 +34,4 @@ export function Profile({ profile }: { profile: TaxonProfile }) {
       </div>
     </section>
   );
-}
-
-function CitationList({ citations }: { citations: Citation[] }) {
-  return (
-    <section className="references" aria-labelledby="references-title">
-      <h3 id="references-title">References</h3>
-      <ol>
-        {citations.map((citation, index) => (
-          <li id={`ref-${citation.key}`} key={citation.key}>
-            <span className="reference-number">{index + 1}</span>
-            <p>
-              {citation.authors} ({citation.year}).{" "}
-              <cite>{citation.title}</cite>.{" "}
-              <a href={citation.url} target="_blank" rel="noreferrer">
-                Open source{" "}
-                <span className="visually-hidden">(external link)</span>
-              </a>
-              . Accessed {citation.accessed}.
-            </p>
-          </li>
-        ))}
-      </ol>
-    </section>
-  );
-}
-
-function renderCitations(
-  paragraph: string,
-  citationNumber: Map<string, number>,
-): ReactNode[] {
-  const nodes: ReactNode[] = [];
-  let cursor = 0;
-  for (const match of paragraph.matchAll(/\[cite:([a-z0-9-]+)\]/g)) {
-    const index = match.index ?? 0;
-    nodes.push(paragraph.slice(cursor, index));
-    const key = match[1] ?? "";
-    const number = citationNumber.get(key);
-    nodes.push(
-      <sup key={`${key}-${index}`}>
-        <a href={`#ref-${key}`} aria-label={`Reference ${number}`}>
-          [{number}]
-        </a>
-      </sup>,
-    );
-    cursor = index + match[0].length;
-  }
-  nodes.push(paragraph.slice(cursor));
-  return nodes;
 }
