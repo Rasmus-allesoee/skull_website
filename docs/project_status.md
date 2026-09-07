@@ -2,9 +2,9 @@
 
 **Snapshot date:** 2026-09-07
 
-**Current phase:** Skull Preparation guide owner-feedback v1 — implemented and verified locally; owner product review pending
+**Current phase:** Skull Preparation guide owner-feedback v1 plus final condition-table refinements — implemented and verified locally; owner product review pending
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, focused Phase 5 is merged at `f098caf`, the Measurements milestone is merged through PR #11 at `c36838a`, and the Home redesign plus bounded feedback refinements are merged through PR #12 at `4db6804`. `agent/skull-prep-page` now contains the owner-authorized preparation guide and the complete owner-feedback v1 overhaul. The revised beginner-facing content, progressive disclosures, citation previews, eight-asset media set, navigation and canonical documentation pass the local gate. Owner product review is the next step.
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, focused Phase 5 is merged at `f098caf`, the Measurements milestone is merged through PR #11 at `c36838a`, and the Home redesign plus bounded feedback refinements are merged through PR #12 at `4db6804`. `agent/skull-prep-page` now contains the owner-authorized preparation guide, the complete owner-feedback v1 overhaul, and the final condition-table refinements. The revised beginner-facing content, progressive disclosures, citation previews, fourteen-asset media set, image quick previews, linked start points, navigation and canonical documentation pass the local gate. Owner product review is the next step.
 
 **Next action:** Owner review of `/guides/skull-preparation` on desktop and mobile. Address only preparation-page feedback; publication requires separate explicit authorization. Age/condition methodology, remaining supporting pages, Phase 3.3, and Phase 6 remain separately gated.
 
@@ -55,6 +55,26 @@ The guide is ready for owner desktop/mobile review. Source-check status is an ed
 - Production build passed and prerendered **77/77 routes**. The final full Chromium regression passed **76/76 without retries** in 3.0 minutes, including the focused **5/5** preparation journeys. Preparation coverage includes all methods/references, the citation popover, drawer focus, mobile disclosures, axe, no JavaScript, deep links, reduced motion, forced colors, failed images and overflow.
 - Manual production review at 1440 × 900 and 390 × 844 confirmed the revised workflow hierarchy, mobile stacking, opened maceration disclosure and compact citation popover. The production console contained no errors.
 - The work remains local on `agent/skull-prep-page`. Owner review is required before any commit publication, push, pull request, merge or deployment; no later phase was started.
+
+## 1.0.2 Owner-directed Skull Preparation condition-table refinements (2026-09-07)
+
+### Content and media
+
+- Added `Fresh animal body` to the “Before you begin” starting-condition table and revised every row’s “Best place to start” text so it uses general preferred-method wording where several defleshing routes remain suitable.
+- Added brass internal links from the table to separation, skinning, rehydration, defleshing, degreasing, whitening and assembly anchors. “What to expect” copy now distinguishes freezing, loose tissue, grease returning on drying, and optional whitening consistently.
+- Generated and curated six coherent square *Vulpes vulpes* condition thumbnails for fresh body, fresh/frozen head, partly decomposed head, dry/mummified head, greasy bare skull, and clean grease-free skull. They are explicitly labelled AI-generated visual cues rather than collection evidence, processed through the existing metadata-stripping preparation-media pipeline, and retained alongside the eight existing guide assets.
+
+### Interaction and implementation
+
+- Extended the restricted guide dialect with only validated `[label](#stable-id)` links and `![alt](asset:asset-id)` preparation-media tokens. Unknown anchors, unsupported syntax, undeclared media, and unused media still fail the content contract.
+- Added a progressively enhanced native condition-image quick preview. Without JavaScript, each thumbnail remains an ordinary image link; with JavaScript, it opens an accessible native dialog and restores focus on close. The table remains semantic and usable on narrow screens.
+- Clarified degreasing timing as specific to the documented clear dish-detergent bath (roughly 1:10–1:20 soap-to-water), while noting that formulation, concentration, temperature, ammonia and acetone change the timing and safety profile.
+
+### Verification and boundary
+
+- Reprocessed and validated fourteen preparation WebPs with sRGB conversion, full square/aspect preservation, no EXIF/IPTC/XMP metadata, 1000–1600 px longest-edge bounds and the existing per-file size contract.
+- Added parser/media-parity and focused browser assertions for linked start points, condition thumbnails, quick-preview fallback, and detergent-specific timing. The complete guide remains static-first and no-JavaScript useful.
+- The refinement remains local on `agent/skull-prep-page`; no push, pull request, merge, deployment or later phase was started.
 
 ## 1.1 Owner-authorized Home redesign milestone
 

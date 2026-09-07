@@ -72,6 +72,60 @@
       "credit": "Rasmus",
       "rights": "all_rights_reserved",
       "provenance": "owner-photograph"
+    },
+    {
+      "asset_id": "condition-fresh-body",
+      "public_path": "/media/preparation/condition-fresh-body.webp",
+      "alt": "AI-generated red fox body shown as a fresh starting condition.",
+      "caption": "AI-generated condition illustration for a fresh animal body; it is a visual cue, not a documentary photograph.",
+      "credit": "OpenAI image generation",
+      "rights": "all_rights_reserved",
+      "provenance": "ai-illustration"
+    },
+    {
+      "asset_id": "condition-fresh-head",
+      "public_path": "/media/preparation/condition-fresh-head.webp",
+      "alt": "AI-generated fresh or frozen red fox head.",
+      "caption": "AI-generated condition illustration for a fresh or frozen head; it is a visual cue, not a documentary photograph.",
+      "credit": "OpenAI image generation",
+      "rights": "all_rights_reserved",
+      "provenance": "ai-illustration"
+    },
+    {
+      "asset_id": "condition-partly-decomposed-head",
+      "public_path": "/media/preparation/condition-partly-decomposed-head.webp",
+      "alt": "AI-generated partly decomposed red fox head with patchy fur loss.",
+      "caption": "AI-generated condition illustration for a partly decomposed head; it is a visual cue, not a documentary photograph.",
+      "credit": "OpenAI image generation",
+      "rights": "all_rights_reserved",
+      "provenance": "ai-illustration"
+    },
+    {
+      "asset_id": "condition-mummified-head",
+      "public_path": "/media/preparation/condition-mummified-head.webp",
+      "alt": "AI-generated dry or mummified red fox head.",
+      "caption": "AI-generated condition illustration for a dry or mummified head; it is a visual cue, not a documentary photograph.",
+      "credit": "OpenAI image generation",
+      "rights": "all_rights_reserved",
+      "provenance": "ai-illustration"
+    },
+    {
+      "asset_id": "condition-greasy-skull",
+      "public_path": "/media/preparation/condition-greasy-skull.webp",
+      "alt": "AI-generated bare red fox skull with yellow translucent greasy areas.",
+      "caption": "AI-generated condition illustration for a bare skull that still contains grease; it is a visual cue, not a documentary photograph.",
+      "credit": "OpenAI image generation",
+      "rights": "all_rights_reserved",
+      "provenance": "ai-illustration"
+    },
+    {
+      "asset_id": "condition-clean-skull",
+      "public_path": "/media/preparation/condition-clean-skull.webp",
+      "alt": "AI-generated clean, grease-free red fox skull.",
+      "caption": "AI-generated condition illustration for a clean, grease-free skull; it is a visual cue, not a documentary photograph.",
+      "credit": "OpenAI image generation",
+      "rights": "all_rights_reserved",
+      "provenance": "ai-illustration"
     }
   ]
 }

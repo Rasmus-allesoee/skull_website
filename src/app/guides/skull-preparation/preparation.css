@@ -416,11 +416,86 @@
   width: 21%;
   font-weight: 600;
 }
+.prep-condition-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.prep-condition-thumbnail {
+  display: block;
+  flex: 0 0 4.5rem;
+}
+.prep-condition-thumbnail a {
+  display: block;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-elevated);
+  line-height: 0;
+}
+.prep-condition-thumbnail a:hover,
+.prep-condition-thumbnail a:focus-visible {
+  border-color: var(--color-accent);
+}
+.prep-condition-thumbnail img {
+  display: block;
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: cover;
+}
+.prep-inline-link {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+.prep-condition-lightbox {
+  width: min(48rem, calc(100vw - 2rem));
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100dvh - 2rem);
+  margin: auto;
+  padding: 1rem;
+  border: 1px solid var(--color-accent);
+  background: var(--color-surface-elevated);
+  color: var(--color-text);
+  box-shadow: 0 1.25rem 4rem rgb(0 0 0 / 45%);
+}
+.prep-condition-lightbox::backdrop {
+  background: rgb(0 0 0 / 62%);
+}
+.prep-condition-lightbox-frame {
+  position: relative;
+  display: grid;
+  gap: 0.75rem;
+}
+.prep-condition-lightbox-frame form {
+  justify-self: end;
+}
+.prep-condition-lightbox h2 {
+  margin: 0;
+  color: var(--color-accent);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.prep-condition-lightbox-image {
+  display: block;
+  width: 100%;
+  max-height: min(68dvh, 36rem);
+  object-fit: contain;
+  background: var(--color-surface);
+}
+.prep-condition-lightbox p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
 .prep-table tbody tr:nth-child(even) {
   background: var(--color-surface);
 }
 .prep-cell-label {
   display: none;
+}
+.prep-cell-content {
+  min-width: 0;
 }
 .prep-references {
   margin-top: 4rem;
@@ -628,6 +703,17 @@
     padding: 0.25rem 0 0.6rem;
     border: 0;
     font-size: 1rem;
+  }
+  .prep-condition-cell {
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+  .prep-condition-thumbnail {
+    flex-basis: 4rem;
+  }
+  .prep-condition-thumbnail img {
+    width: 4rem;
+    height: 4rem;
   }
   .prep-table td {
     display: grid;

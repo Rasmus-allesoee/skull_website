@@ -3,6 +3,7 @@ import sharp from "sharp";
 import { z } from "zod";
 import {
   parseGuide,
+  extractGuideMediaIds,
   type GuideBlock,
   type GuideMediaAsset,
   type PreparationGuide,
@@ -85,9 +86,18 @@ export async function loadPreparationGuide(): Promise<PreparationGuide> {
   );
   const media = await loadPreparationMedia();
   const used = new Set(guide.metadata.stages.map((s) => s.asset));
+  const addTextMedia = (text: string) => {
+    extractGuideMediaIds(text).forEach((id) => used.add(id));
+  };
   function visit(blocks: GuideBlock[]) {
     for (const b of blocks) {
       if (b.kind === "figure") used.add(b.asset);
+      if (b.kind === "paragraph") addTextMedia(b.text);
+      if (b.kind === "list") b.items.forEach(addTextMedia);
+      if (b.kind === "table") {
+        b.headers.forEach(addTextMedia);
+        b.rows.flat().forEach(addTextMedia);
+      }
       if (b.kind === "aside" || b.kind === "details" || b.kind === "disclosure")
         visit(b.blocks);
     }

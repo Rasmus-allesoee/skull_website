@@ -1,6 +1,6 @@
 # Skull preparation guide
 
-Status: owner-feedback v1 overhaul implemented and verified locally on 2026-09-07; owner review pending. No remote publication authorized.
+Status: owner-feedback v1 overhaul and owner-directed condition-table refinements implemented and verified locally on 2026-09-07; owner review pending. No remote publication authorized.
 
 ## Intent and visitor structure
 
@@ -10,7 +10,7 @@ Status: owner-feedback v1 overhaul implemented and verified locally on 2026-09-0
 - A small sticky navigation strip opens a left-hand native modal contents drawer. Phase highlighting follows reading position; Escape/backdrop/Close return focus, while section navigation focuses the destination. A native contents disclosure serves visitors without JavaScript.
 - Shared separation/skinning guidance stays visible. Method-specific tissue preparation and the five defleshing methods use native disclosures, as do the three degreaser procedures; hash and contents links open their target disclosure when JavaScript is available, while native summaries remain operable without it. Six semantic tables stack into labelled rows on phones. Practical safety, method choice, finish checks and first-person troubleshooting remain easy to scan.
 - Existing dark neutral/brass tokens, readable line lengths, small workflow photographs and uncropped larger figures support reference reading. H1 is brass/bold, H2 is brass/regular and H3 is brass/italic as directed by the owner. No decorative animation or extra library is introduced.
-- Inline citation numbers open one small native popover containing that source and its external link. The complete numbered reference list remains at the end for scanning and no-JavaScript fallback.
+- Inline citation numbers open one small native popover containing that source and its external link. The complete numbered reference list remains at the end for scanning and no-JavaScript fallback. The starting-condition table also supports validated internal guide links and six square AI-generated red-fox condition thumbnails. Each thumbnail is a normal image link without JavaScript and is progressively enhanced to a native quick-preview dialog when JavaScript is available.
 
 ## Canonical sources and implementation
 
@@ -18,7 +18,7 @@ Status: owner-feedback v1 overhaul implemented and verified locally on 2026-09-0
 | --- | --- |
 | `content/guides/skull-preparation.mdx` | Reviewed beginner-facing text, stable headings/disclosures, workflow metadata, 20 references, review date and source-check status |
 | `src/domain/guides/guide.ts` | Strict frontmatter and restricted MDX parser; typed block model; citation, anchor, workflow, table and syntax validation |
-| `content/guides/preparation-media.json` | Eight editorial asset identities, public paths, descriptions, captions, credits, rights and explicit photograph/AI provenance |
+| `content/guides/preparation-media.json` | Fourteen editorial asset identities, public paths, descriptions, captions, credits, rights and explicit photograph/AI provenance |
 | `scripts/preparation-media-source-map.json` | Maintenance-only mapping from ignored source masters |
 | `scripts/process-preparation-media.ts` | `pnpm media:process:preparation`; sRGB, orientation-normalized, metadata-stripped WebP derivatives |
 | `scripts/lib/preparation.ts` | Public media validation, used/declaration parity and guide compilation |
@@ -26,7 +26,7 @@ Status: owner-feedback v1 overhaul implemented and verified locally on 2026-09-0
 | `src/features/preparation/` | Server-rendered guide/figures/tables and the isolated client contents drawer |
 | `src/components/Citations.tsx` and `PreparationGuide.tsx` | Shared reference list plus preparation-specific click-to-open citation cards |
 
-The MDX dialect supports paragraphs, flat ordered/unordered lists, pipe tables, `##`–`####` headings with explicit `{#stable-id}`, and only literal `<Figure asset="id" />`, `<Aside title="...">`, `<Details title="...">`, and `<Disclosure id="..." level="3|4" title="...">` blocks. Disclosures may contain a non-nested Aside/Details callout, but no container contains authored headings and disclosures cannot nest. There is no MDX execution, arbitrary HTML, import, expression or runtime network access. Guide reference years may be null and render as `n.d.` rather than inventing publication dates. Do not silently rename an existing anchor.
+The MDX dialect supports paragraphs, flat ordered/unordered lists, pipe tables, `##`–`####` headings with explicit `{#stable-id}`, validated internal links in the form `[label](#stable-id)`, preparation-media tokens in the form `![alt](asset:asset-id)`, and only literal `<Figure asset="id" />`, `<Aside title="...">`, `<Details title="...">`, and `<Disclosure id="..." level="3|4" title="...">` blocks. Disclosures may contain a non-nested Aside/Details callout, but no container contains authored headings and disclosures cannot nest. There is no MDX execution, arbitrary HTML, import, expression or runtime network access. Guide reference years may be null and render as `n.d.` rather than inventing publication dates. Do not silently rename an existing anchor.
 
 Normal `content:build`, `validate:content`, and `validate:media` validate the guide or its public derivatives without reading `agent_context`. No schema or value in either collection CSV changes. This implements ADRs 0001–0003 within their accepted boundaries; no new ADR is needed.
 
@@ -44,11 +44,13 @@ Normal `content:build`, `validate:content`, and `validate:media` validate the gu
 
 ## Images and provenance
 
-Seven owner-authorized photographs and one generated illustration are curated as eight WebPs under `public/media/preparation/`, maximum 1600 px longest edge and 750 kB per asset, with no EXIF/GPS/ICC/IPTC/XMP. The feedback-supplied oily-patch photograph appears at the start of degreasing. Processing preserves the full aspect ratio. Workflow previews may crop decoratively; detailed figures preserve anatomy. The original whole-body photograph is not needed and remains unused staging context.
+Seven owner-authorized photographs, one generated degreasing illustration, and six generated red-fox condition illustrations are curated as fourteen WebPs under `public/media/preparation/`, maximum 1600 px longest edge and 750 kB per asset, with no EXIF/GPS/ICC/IPTC/XMP. The feedback-supplied oily-patch photograph appears at the start of degreasing. Processing preserves the full aspect ratio. Workflow previews may crop decoratively; detailed figures and condition thumbnails preserve their source framing. AI provenance is visible in the condition-table note and quick-preview captions. The original whole-body photograph is not needed and remains unused staging context.
 
 No separate owner photograph of the Fanola bottle was present in the supplied preparation staging directory on 2026-09-07. The existing cream-developer treatment photograph remains beside the corrected first-person product text; do not scrape a retailer image with unreviewed publication rights. Add a future owner-supplied bottle photograph through the same media pipeline when available.
 
 The degreasing illustration was made with the built-in image generation tool and visually checked: one open tub, submerged flesh-free skull, detergent bottle, no sealed lid or heater. It is labelled in both workflow and figure, and is not an anatomical reference or evidence from this collection. Its curated path is `public/media/preparation/degreasing.webp`; the master remains ignored at `agent_context/preparation_page/degreasing-illustration.png`.
+
+The six condition thumbnails were generated as a coherent square set for *Vulpes vulpes*: a fresh body, fresh/frozen head, partly decomposed head, dry/mummified head, greasy bare skull and clean grease-free skull. Their curated paths are `condition-fresh-body.webp`, `condition-fresh-head.webp`, `condition-partly-decomposed-head.webp`, `condition-mummified-head.webp`, `condition-greasy-skull.webp`, and `condition-clean-skull.webp`; their generated PNG masters remain ignored under `agent_context/preparation_page/`. They are intentionally labelled as AI-generated visual cues rather than collection evidence.
 
 Generation prompt:
 
@@ -56,6 +58,6 @@ Generation prompt:
 
 ## Acceptance and next step
 
-The owner-feedback v1 gate passed on 2026-09-07: full repository checks including 76 unit/component tests and six expected invalid fixtures, an 8-asset preparation-media validation, a 77-route production build, and the complete 76-test Chromium regression including five preparation journeys. Manual production inspection covered desktop and mobile overview, an opened method disclosure and the single-source citation popover. Exact evidence is recorded in `project_status.md`.
+The owner-feedback v1 gate and condition-table refinement gate passed locally on 2026-09-07: full repository checks including 78 unit/component tests and six expected invalid fixtures, a 14-asset preparation-media validation, a 77-route production build, and the focused 6/6 Chromium preparation suite. The focused browser checks cover desktop/mobile reflow, axe, linked condition-table anchors, the native quick-preview/focus return, no-JavaScript image-link fallback, reduced motion, forced colors, failed images, deep links and overflow. Manual production inspection covered the workflow, the condition table at desktop and 390 px mobile, and the quick-preview path. Exact evidence is recorded in `project_status.md`.
 
 The owner now reviews this local page. Do not push, open a PR, merge, deploy, or begin another phase.

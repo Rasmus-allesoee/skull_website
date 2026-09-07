@@ -4,6 +4,8 @@ import { citationSchema } from "../content/schemas";
 import type { MediaAsset } from "../content/types";
 
 const id = z.string().regex(/^[a-z][a-z0-9-]*$/);
+const internalLinkPattern = /\[([^\]\n]+)\]\(#([a-z][a-z0-9-]*)\)/g;
+const mediaPattern = /!\[([^\]\n]+)\]\(asset:([a-z][a-z0-9-]*)\)/g;
 const reference = citationSchema.extend({
   year: citationSchema.shape.year.nullable(),
 });
@@ -62,6 +64,16 @@ export interface PreparationGuide {
   blocks: GuideBlock[];
   headings: GuideHeading[];
   media: GuideMediaAsset[];
+}
+
+/** Return the stable internal-guide targets authored in a text node. */
+export function extractGuideAnchorIds(text: string): string[] {
+  return [...text.matchAll(internalLinkPattern)].map((match) => match[2]!);
+}
+
+/** Return preparation-media IDs authored in a text node. */
+export function extractGuideMediaIds(text: string): string[] {
+  return [...text.matchAll(mediaPattern)].map((match) => match[2]!);
 }
 
 /** Parse a deliberately restricted MDX dialect; never compile or execute JSX. */
@@ -210,6 +222,13 @@ export function parseGuide(source: string): Omit<PreparationGuide, "media"> {
     )
   )
     throw new Error("Duplicate or reserved guide heading ID");
+  const knownAnchors = new Set(["workflow", "references", ...ids]);
+  if (
+    extractGuideAnchorIds(parsed.content).some(
+      (target) => !knownAnchors.has(target),
+    )
+  )
+    throw new Error("Guide link target does not resolve");
   if (
     headings[0]?.level !== 2 ||
     headings.some((h, i) => i > 0 && h.level > headings[i - 1]!.level + 1)
@@ -227,7 +246,10 @@ export function parseGuide(source: string): Omit<PreparationGuide, "media"> {
   return { schemaVersion: 1, metadata, blocks, headings };
 }
 function validateText(text: string) {
-  const plain = text.replace(/\[cite:[a-z0-9-]+\]/g, "");
+  const plain = text
+    .replace(/\[cite:[a-z0-9-]+\]/g, "")
+    .replace(mediaPattern, "")
+    .replace(internalLinkPattern, "");
   if (/[<>{}\[\]`#]/.test(plain) || /^(?:import|export)\s/.test(plain))
     throw new Error(`Unsupported guide syntax: ${text.slice(0, 80)}`);
 }

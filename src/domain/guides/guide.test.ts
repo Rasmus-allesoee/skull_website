@@ -24,6 +24,20 @@ describe("preparation guide publication contract", () => {
     );
     expect(JSON.stringify(guide)).not.toMatch(/agent_context|undefined/);
   });
+
+  it("keeps starting-condition links and media tokens in the typed table", () => {
+    const guide = parseGuide(source);
+    const table = guide.blocks.find(
+      (block) =>
+        block.kind === "table" && block.headers[0] === "Starting condition",
+    );
+    expect(table?.kind).toBe("table");
+    if (table?.kind !== "table") return;
+    expect(table.rows).toHaveLength(6);
+    expect(table.rows[0]?.[0]).toContain("asset:condition-fresh-body");
+    expect(table.rows[0]?.[1]).toContain("#separation");
+    expect(table.rows[5]?.[1]).toContain("#assembly");
+  });
   it.each([
     ["unresolved citation", source.replace("[cite:hendry]", "[cite:missing]")],
     ["duplicate anchor", source.replace("{#skinning}", "{#separation}")],
@@ -37,9 +51,13 @@ describe("preparation guide publication contract", () => {
     [
       "ragged table",
       source.replace(
-        /\| Fresh or frozen head\s+\|/,
+        /\| !\[Fresh or frozen head\]\(asset:condition-fresh-head\) Fresh or frozen head\s+\|/,
         "| Fresh or frozen head | Extra column |",
       ),
+    ],
+    [
+      "unresolved guide link",
+      source.replace("(#separation)", "(#missing-guide-target)"),
     ],
   ])("rejects %s", (_label, input) =>
     expect(() => parseGuide(input)).toThrow(),

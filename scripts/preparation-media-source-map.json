@@ -33,6 +33,30 @@
     {
       "asset_id": "finished",
       "source_file": "mårhund_angle_1.png"
+    },
+    {
+      "asset_id": "condition-fresh-body",
+      "source_file": "condition-fresh-body.png"
+    },
+    {
+      "asset_id": "condition-fresh-head",
+      "source_file": "condition-fresh-head.png"
+    },
+    {
+      "asset_id": "condition-partly-decomposed-head",
+      "source_file": "condition-partly-decomposed-head.png"
+    },
+    {
+      "asset_id": "condition-mummified-head",
+      "source_file": "condition-mummified-head.png"
+    },
+    {
+      "asset_id": "condition-greasy-skull",
+      "source_file": "condition-greasy-skull.png"
+    },
+    {
+      "asset_id": "condition-clean-skull",
+      "source_file": "condition-clean-skull.png"
     }
   ]
 }

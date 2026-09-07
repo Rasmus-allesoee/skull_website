@@ -7,6 +7,7 @@ import type {
 } from "@/domain/guides/guide";
 import { CitationList } from "@/components/Citations";
 import { GuideContents } from "./GuideContents";
+import { PreparationConditionThumbnail } from "./PreparationConditionThumbnail";
 export function PreparationGuide({ guide }: { guide: Guide }) {
   const numbers = new Map(
     guide.metadata.citations.map((c, i) => [c.key, i + 1]),
@@ -15,37 +16,62 @@ export function PreparationGuide({ guide }: { guide: Guide }) {
   const inline = (text: string) => {
     const nodes: ReactNode[] = [];
     let cursor = 0;
-    for (const match of text.matchAll(/\[cite:([a-z0-9-]+)\]/g)) {
+    const tokens =
+      /\[cite:([a-z0-9-]+)\]|!\[([^\]\n]+)\]\(asset:([a-z][a-z0-9-]*)\)|\[([^\]\n]+)\]\(#([a-z][a-z0-9-]*)\)/g;
+    for (const match of text.matchAll(tokens)) {
       const index = match.index ?? 0;
       nodes.push(text.slice(cursor, index));
-      const key = match[1]!;
-      const number = numbers.get(key)!;
-      const citation = guide.metadata.citations.find(
-        (item) => item.key === key,
-      )!;
-      const popoverId = `prep-citation-${key}-${citationOccurrence++}`;
-      nodes.push(
-        <span className="prep-citation" key={popoverId}>
-          <button
-            type="button"
-            popoverTarget={popoverId}
-            aria-label={`Show reference ${number}`}
-          >
-            [{number}]
-          </button>
-          <span id={popoverId} popover="auto" className="prep-citation-popover">
-            <span className="prep-citation-number">Reference {number}</span>
-            <span>
-              {citation.authors} ({citation.year ?? "n.d."}).{" "}
-              <cite>{citation.title}</cite>.
+      if (match[1]) {
+        const key = match[1];
+        const number = numbers.get(key)!;
+        const citation = guide.metadata.citations.find(
+          (item) => item.key === key,
+        )!;
+        const popoverId = `prep-citation-${key}-${citationOccurrence++}`;
+        nodes.push(
+          <span className="prep-citation" key={popoverId}>
+            <button
+              type="button"
+              popoverTarget={popoverId}
+              aria-label={`Show reference ${number}`}
+            >
+              [{number}]
+            </button>
+            <span
+              id={popoverId}
+              popover="auto"
+              className="prep-citation-popover"
+            >
+              <span className="prep-citation-number">Reference {number}</span>
+              <span>
+                {citation.authors} ({citation.year ?? "n.d."}).{" "}
+                <cite>{citation.title}</cite>.
+              </span>
+              <a href={citation.url} target="_blank" rel="noreferrer">
+                Open source{" "}
+                <span className="visually-hidden">(external link)</span>
+              </a>
             </span>
-            <a href={citation.url} target="_blank" rel="noreferrer">
-              Open source{" "}
-              <span className="visually-hidden">(external link)</span>
-            </a>
-          </span>
-        </span>,
-      );
+          </span>,
+        );
+      } else if (match[3]) {
+        nodes.push(
+          <PreparationConditionThumbnail
+            key={`prep-media-${match[3]}-${index}`}
+            asset={asset(match[3])}
+          />,
+        );
+      } else {
+        nodes.push(
+          <a
+            key={`prep-link-${match[5]}-${index}`}
+            className="prep-inline-link"
+            href={`#${match[5]}`}
+          >
+            {match[4]}
+          </a>,
+        );
+      }
       cursor = index + match[0].length;
     }
     nodes.push(text.slice(cursor));
@@ -83,7 +109,8 @@ export function PreparationGuide({ guide }: { guide: Guide }) {
           </L>
         );
       }
-      case "table":
+      case "table": {
+        const isConditionTable = block.headers[0] === "Starting condition";
         return (
           <div key={index} className="prep-table">
             <table>
@@ -108,14 +135,22 @@ export function PreparationGuide({ guide }: { guide: Guide }) {
                     {row.map((cell, j) =>
                       j === 0 ? (
                         <th key={j} scope="row">
-                          {inline(cell)}
+                          {isConditionTable ? (
+                            <span className="prep-condition-cell">
+                              {inline(cell)}
+                            </span>
+                          ) : (
+                            inline(cell)
+                          )}
                         </th>
                       ) : (
                         <td key={j}>
                           <span className="prep-cell-label" aria-hidden="true">
                             {block.headers[j]}
                           </span>
-                          {inline(cell)}
+                          <span className="prep-cell-content">
+                            {inline(cell)}
+                          </span>
                         </td>
                       ),
                     )}
@@ -125,6 +160,7 @@ export function PreparationGuide({ guide }: { guide: Guide }) {
             </table>
           </div>
         );
+      }
       case "aside":
         return (
           <aside key={index} className="prep-note">

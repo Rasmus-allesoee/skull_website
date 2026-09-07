@@ -17,6 +17,19 @@ test("preparation guide exposes all methods, sources and working workflow links"
   await expect(page.locator(".prep-table table")).toHaveCount(6);
   await expect(page.locator(".references li")).toHaveCount(20);
   await expect(page.locator(".prep-figure")).toHaveCount(7);
+  await expect(page.locator(".prep-condition-thumbnail")).toHaveCount(6);
+  await expect(page.locator(".prep-condition-cell").first()).toContainText(
+    "Fresh animal body",
+  );
+  await expect(page.locator('.prep-table a[href="#separation"]')).toHaveCount(
+    1,
+  );
+  await expect(page.locator('.prep-table a[href="#assembly"]')).toHaveCount(1);
+  await expect(
+    page.getByText("clear, colourless hand-dish detergent bath", {
+      exact: false,
+    }),
+  ).toBeVisible();
   await expect(page.locator(".prep-image-label")).toHaveText("AI illustration");
   expect(
     await page
@@ -62,6 +75,20 @@ test("preparation guide exposes all methods, sources and working workflow links"
   ).toEqual([]);
   expect(errors).toEqual([]);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+test("condition thumbnails progressively enhance to a focus-restoring quick preview", async ({
+  page,
+}) => {
+  await page.goto(route);
+  const trigger = page.locator(".prep-condition-thumbnail a").first();
+  await trigger.click();
+  const dialog = page.locator(".prep-condition-lightbox[open]");
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText("AI-generated condition illustration");
+  await dialog.getByRole("button", { name: "Close image" }).click();
+  await expect(dialog).not.toBeVisible();
+  await expect(trigger).toBeFocused();
 });
 
 test("contents drawer traps focus, restores it on Escape and focuses selected headings", async ({
@@ -154,6 +181,10 @@ test("static guide works without JavaScript and every table retains semantic con
   await page.keyboard.press("Enter");
   await expect(page.locator("#burial")).toHaveAttribute("open", "");
   await expect(page.locator(".prep-table table")).toHaveCount(6);
+  await expect(page.locator(".prep-condition-thumbnail a")).toHaveCount(6);
+  await expect(
+    page.locator(".prep-condition-thumbnail a").first(),
+  ).toHaveAttribute("href", "/media/preparation/condition-fresh-body.webp");
   expect(
     await page
       .locator(".prep-article > ol")
