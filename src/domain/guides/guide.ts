@@ -35,7 +35,19 @@ export type GuideBlock =
   | { kind: "list"; ordered: boolean; items: string[] }
   | { kind: "table"; headers: string[]; rows: string[][] }
   | { kind: "figure"; asset: string }
-  | { kind: "details" | "aside"; title: string; blocks: GuideBlock[] };
+  | { kind: "details" | "aside"; title: string; blocks: GuideBlock[] }
+  | {
+      kind: "disclosure";
+      level: 3 | 4;
+      id: string;
+      title: string;
+      blocks: GuideBlock[];
+    };
+export type GuideHeading = {
+  level: 2 | 3 | 4;
+  id: string;
+  text: string;
+};
 export type GuideMediaAsset = Pick<
   MediaAsset,
   "publicPath" | "width" | "height" | "bytes" | "alt" | "credit" | "rights"
@@ -48,7 +60,7 @@ export interface PreparationGuide {
   schemaVersion: 1;
   metadata: z.infer<typeof frontmatterSchema>;
   blocks: GuideBlock[];
-  headings: Extract<GuideBlock, { kind: "heading" }>[];
+  headings: GuideHeading[];
   media: GuideMediaAsset[];
 }
 
@@ -73,7 +85,7 @@ export function parseGuide(source: string): Omit<PreparationGuide, "media"> {
     throw new Error("Unresolved or unused guide citation");
   const lines = parsed.content.trim().split(/\r?\n/);
   let cursor = 0;
-  function blocksUntil(end?: string): GuideBlock[] {
+  function blocksUntil(end?: string, allowContainers = false): GuideBlock[] {
     const blocks: GuideBlock[] = [];
     while (cursor < lines.length) {
       const line = lines[cursor++]!.trim();
@@ -98,9 +110,31 @@ export function parseGuide(source: string): Omit<PreparationGuide, "media"> {
         blocks.push({ kind: "figure", asset: figure[1]! });
         continue;
       }
+      const disclosure =
+        /^<Disclosure id="([a-z][a-z0-9-]*)" level="([34])" title="([^"<>]+)">$/.exec(
+          line,
+        );
+      if (disclosure) {
+        if (end) throw new Error("Nested guide disclosures are not supported");
+        const heading = {
+          id: disclosure[1]!,
+          level: Number(disclosure[2]) as 3 | 4,
+          text: disclosure[3]!,
+        };
+        headings.push(heading);
+        blocks.push({
+          kind: "disclosure",
+          id: heading.id,
+          level: heading.level,
+          title: heading.text,
+          blocks: blocksUntil("</Disclosure>", true),
+        });
+        continue;
+      }
       const container = /^<(Details|Aside) title="([^"<>]+)">$/.exec(line);
       if (container) {
-        if (end) throw new Error("Nested guide disclosures are not supported");
+        if (end && !allowContainers)
+          throw new Error("Nested guide disclosures are not supported");
         blocks.push({
           kind: container[1] === "Details" ? "details" : "aside",
           title: container[2]!,

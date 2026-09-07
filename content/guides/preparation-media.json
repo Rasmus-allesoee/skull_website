@@ -23,7 +23,7 @@
       "asset_id": "maceration",
       "public_path": "/media/preparation/maceration.webp",
       "alt": "Raccoon-dog skull lifted above a bucket containing maceration water.",
-      "caption": "Maceration in progress. Support the skull from below when lifting; do not use a blade as a lever through an opening.",
+      "caption": "Maceration in progress: a raccoon-dog skull lifted from the bath for inspection.",
       "credit": "Rasmus",
       "rights": "all_rights_reserved",
       "provenance": "owner-photograph"
@@ -38,10 +38,19 @@
       "provenance": "ai-illustration"
     },
     {
+      "asset_id": "oily-spot",
+      "public_path": "/media/preparation/oily-spot.webp",
+      "alt": "Close view of a cleaned skull with a yellow-brown translucent greasy patch below the eye socket.",
+      "caption": "A yellow-brown, slightly translucent patch visible after drying: this skull needs more degreasing.",
+      "credit": "Rasmus",
+      "rights": "all_rights_reserved",
+      "provenance": "owner-photograph"
+    },
+    {
       "asset_id": "whitening",
       "public_path": "/media/preparation/whitening.webp",
       "alt": "Skull held above a container of foaming whitening solution.",
-      "caption": "The collector’s cream-developer treatment. Foam needs headroom and secondary containment.",
+      "caption": "My diluted cream-developer treatment. The mixture produces a large amount of foam.",
       "credit": "Rasmus",
       "rights": "all_rights_reserved",
       "provenance": "owner-photograph"

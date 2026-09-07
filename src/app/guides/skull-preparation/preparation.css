@@ -13,24 +13,13 @@
 .prep-intro h1 {
   margin-block: 0 0.6rem;
   font-family: var(--font-display);
-  font-weight: 400;
+  color: var(--color-accent);
+  font-weight: 700;
   font-size: clamp(2.6rem, 5vw, 4.5rem);
   line-height: 1.1;
 }
 .prep-intro > p:not(.eyebrow) {
   max-width: 72ch;
-}
-.prep-intro-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1.5rem;
-  color: var(--color-text-muted);
-  font-size: 0.8125rem;
-}
-.prep-intro .prep-photo-note {
-  margin-block: 0.75rem 0;
-  color: var(--color-text-muted);
-  font-size: 0.8125rem;
 }
 .prep-workflow {
   scroll-margin-top: 6rem;
@@ -44,6 +33,8 @@
 .prep-workflow-heading h2 {
   font-size: 1.35rem;
   margin-bottom: 0.75rem;
+  color: var(--color-accent);
+  font-weight: 400;
 }
 .prep-workflow-heading p {
   color: var(--color-text-muted);
@@ -52,16 +43,22 @@
 .prep-workflow > ol {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 1rem;
+  gap: 0;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 .prep-workflow > ol > li {
   min-width: 0;
+  border: 1px solid var(--color-border);
   border-top: 2px solid var(--color-accent);
+  border-right: 0;
   display: flex;
   flex-direction: column;
+  padding: 0.7rem;
+}
+.prep-workflow > ol > li:last-child {
+  border-right: 1px solid var(--color-border);
 }
 .prep-stage {
   display: block;
@@ -113,7 +110,8 @@
 .prep-method-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.15rem 0.7rem;
+  display: grid;
+  gap: 0;
   list-style: none;
   padding: 0;
   margin: 0 0 0.5rem;
@@ -124,18 +122,48 @@
   min-height: 2.25rem;
   font-size: 0.8125rem;
   color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
+  text-decoration: none;
+}
+.prep-method-links a::after {
+  content: "→";
+  color: var(--color-accent);
+  margin-left: auto;
 }
 .prep-outcome {
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-accent);
   margin-block: auto 0;
   padding-top: 0.5rem;
   font-size: 0.75rem;
-  color: var(--color-text-muted);
+  color: var(--color-text);
+  line-height: 1.45;
+}
+.prep-outcome span {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--color-accent);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 .prep-workflow-note {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+  margin-block: 1.25rem 1.5rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-surface);
   font-size: 0.8125rem;
   color: var(--color-text-muted);
-  margin-block: 1.25rem 1.5rem;
+}
+.prep-workflow-note strong {
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.72rem;
 }
 .prep-nav-bar {
   position: sticky;
@@ -183,16 +211,21 @@
   font-family: var(--font-display);
   font-size: clamp(1.9rem, 3vw, 2.7rem);
   font-weight: 400;
+  color: var(--color-accent);
   line-height: 1.2;
 }
 .prep-article h3 {
   margin-block: 2.25rem 0.85rem;
   font-size: 1.3rem;
   line-height: 1.4;
+  color: var(--color-accent);
+  font-style: italic;
+  font-weight: 600;
 }
 .prep-article h4 {
   margin-block: 1.5rem 0.6rem;
   font-size: 1.05rem;
+  color: var(--color-accent);
 }
 .prep-article :is(h2, h3, h4),
 .prep-references,
@@ -203,9 +236,51 @@
   padding-left: 0.2rem;
   margin-bottom: 0.65rem;
 }
-.prep-article sup a {
+.prep-citation {
+  display: inline;
+}
+.prep-citation > button {
+  display: inline;
+  min-width: 0;
+  min-height: 0;
+  margin: 0 0.1rem;
+  padding: 0.05rem 0.2rem;
+  border: 0;
+  background: transparent;
   color: var(--color-accent);
-  padding-inline: 0.2rem;
+  font: inherit;
+  font-size: 0.72em;
+  vertical-align: super;
+  line-height: 1;
+  cursor: pointer;
+}
+.prep-citation-popover {
+  width: min(28rem, calc(100vw - 2rem));
+  max-height: min(22rem, calc(100dvh - 2rem));
+  margin: auto;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--color-accent);
+  background: var(--color-surface-elevated);
+  color: var(--color-text);
+  box-shadow: 0 1.25rem 4rem rgb(0 0 0 / 45%);
+  line-height: 1.55;
+}
+.prep-citation-popover:popover-open {
+  display: grid;
+  gap: 0.65rem;
+}
+.prep-citation-popover::backdrop {
+  background: rgb(0 0 0 / 38%);
+}
+.prep-citation-number {
+  color: var(--color-accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.prep-citation-popover a {
+  justify-self: start;
 }
 .prep-heading-link {
   font-family: var(--font-sans);
@@ -236,6 +311,52 @@
   margin-block: 1.75rem;
   border-block: 1px solid var(--color-border);
 }
+.prep-method {
+  max-width: 76ch;
+  margin-block: 1rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  scroll-margin-top: 5.5rem;
+}
+.prep-method > summary {
+  cursor: pointer;
+  list-style: none;
+}
+.prep-method > summary::-webkit-details-marker {
+  display: none;
+}
+.prep-method > summary h3,
+.prep-method > summary h4 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+  padding: 1rem 1.1rem;
+}
+.prep-method[open] > summary {
+  border-bottom: 1px solid var(--color-border);
+}
+.prep-method-body {
+  padding: 1.1rem 1.2rem 0.4rem;
+}
+.prep-method-action {
+  flex: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.prep-method-close,
+.prep-method[open] .prep-method-open {
+  display: none;
+}
+.prep-method[open] .prep-method-close {
+  display: inline;
+}
 .prep-details summary,
 .prep-static-contents summary {
   cursor: pointer;
@@ -249,6 +370,9 @@
 .prep-figure {
   margin: 2rem 0;
   max-width: 45rem;
+}
+.prep-figure-oily-spot {
+  max-width: 52rem;
 }
 .prep-figure img {
   width: 100%;
@@ -416,7 +540,8 @@
     grid-template-columns: 6rem 1fr;
     gap: 0 1rem;
     padding-block: 0.6rem;
-    border-top: 1px solid var(--color-border);
+    border: 1px solid var(--color-border);
+    border-top: 2px solid var(--color-accent);
   }
   .prep-stage {
     display: contents;
@@ -436,11 +561,16 @@
     grid-column: 2;
   }
   .prep-method-links {
+    display: flex;
     gap: 0 0.75rem;
     margin-bottom: 0.3rem;
   }
   .prep-method-links a {
     min-height: 2.5rem;
+    border-top: 0;
+  }
+  .prep-method-links a::after {
+    display: none;
   }
   .prep-outcome {
     font-size: 0.75rem;
@@ -462,6 +592,16 @@
   }
   .prep-note {
     padding: 1rem;
+  }
+  .prep-workflow-note {
+    grid-template-columns: 1fr;
+  }
+  .prep-method > summary h3,
+  .prep-method > summary h4 {
+    padding: 0.9rem;
+  }
+  .prep-method-body {
+    padding: 1rem 0.9rem 0.25rem;
   }
   .prep-table table,
   .prep-table tbody,
@@ -545,13 +685,15 @@
    have their own deliberate numbering and do not use these selectors. */
 .prep-article > ol,
 .prep-note ol,
-.prep-details ol {
+.prep-details ol,
+.prep-method ol {
   list-style: decimal;
   padding-left: 1.5rem;
 }
 .prep-article > ul,
 .prep-note ul,
-.prep-details ul {
+.prep-details ul,
+.prep-method ul {
   list-style: disc;
   padding-left: 1.5rem;
 }

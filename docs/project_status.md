@@ -1,16 +1,16 @@
 # Project status
 
-**Snapshot date:** 2026-09-06
+**Snapshot date:** 2026-09-07
 
-**Current phase:** Skull Preparation guide — verified locally; owner product review pending
+**Current phase:** Skull Preparation guide owner-feedback v1 — implemented and verified locally; owner product review pending
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, focused Phase 5 is merged at `f098caf`, the Measurements milestone is merged through PR #11 at `c36838a`, and the Home redesign plus bounded feedback refinements are merged through PR #12 at `4db6804`. `agent/skull-prep-page` now contains the owner-authorized full preparation guide. The full page, media pipeline, navigation, comparisons and canonical documentation have passed the local gate and are preserved in the coherent preparation-guide checkpoint. Owner product review is the next step.
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, focused Phase 5 is merged at `f098caf`, the Measurements milestone is merged through PR #11 at `c36838a`, and the Home redesign plus bounded feedback refinements are merged through PR #12 at `4db6804`. `agent/skull-prep-page` now contains the owner-authorized preparation guide and the complete owner-feedback v1 overhaul. The revised beginner-facing content, progressive disclosures, citation previews, eight-asset media set, navigation and canonical documentation pass the local gate. Owner product review is the next step.
 
 **Next action:** Owner review of `/guides/skull-preparation` on desktop and mobile. Address only preparation-page feedback; publication requires separate explicit authorization. Age/condition methodology, remaining supporting pages, Phase 3.3, and Phase 6 remain separately gated.
 
 ## 1. Current objective
 
-Preserve the verified preparation-guide checkpoint on `agent/skull-prep-page` and await owner product review. No push, PR, merge or deployment is authorized. Do not begin age/condition methodology, Phase 3.3, Phase 6, or another supporting scope without explicit authorization.
+Preserve the verified owner-feedback v1 preparation-guide work on `agent/skull-prep-page` and await owner product review. No push, PR, merge or deployment is authorized. Do not begin age/condition methodology, Phase 3.3, Phase 6, or another supporting scope without explicit authorization.
 
 ## 1.0 Owner-authorized Skull Preparation guide
 
@@ -34,6 +34,27 @@ Preserve the verified preparation-guide checkpoint on `agent/skull-prep-page` an
 ### Next step and boundary
 
 The guide is ready for owner desktop/mobile review. Source-check status is an editorial review, not independent professional certification; timing ranges and collector observations remain labelled. No push, PR, merge, deployment, remote CI, or later phase was performed or authorized.
+
+## 1.0.1 Owner-directed Skull Preparation feedback v1 overhaul (2026-09-07)
+
+### Beginner content and source model
+
+- Rewrote the guide around the decisions a first-time preparator actually makes: how to assess a find, choose among five defleshing methods, recognise the endpoint of each phase, recover from common problems and decide when optional whitening or recordkeeping is useful. Practical first-person observations remain explicit; community practices are attributed rather than presented as universal rules.
+- Expanded the bibliography from 13 to 20 claim-linked sources using the owner-supplied Reddit guide and two local PDFs plus reviewed museum, practitioner and chemical-safety material. Water maceration now covers pressure-safe winter opening, useful temperature/time ranges, partial water changes, nasal/braincase rinsing and loose-tooth handling. Dermestids, burial, above-ground decay and controlled heat each have method-specific setup, timing, finish and risk guidance.
+- Made detergent the accessible default degreaser, added a method comparison and practical ammonia/acetone procedures, and placed the supplied oily-patch photograph at the point where visitors decide whether degreasing is complete. Corrected the cream-developer dilution to one part 12% product with four to six parts water (approximately 1.7–2.4%) and added a local acetone recovery procedure for a wrongly glued tooth.
+
+### Page and interaction refinement
+
+- Rebuilt the five-stage overview as bounded workflow cards with internal hierarchy and explicit `Move on when` outcomes. H1 is brass/bold, H2 brass/regular and H3 brass/italic; redundant source/provenance/meta labels were removed from the visible page.
+- Added 13 native method/procedure disclosures and six semantic comparison tables. Contents/hash links reveal their target disclosure; all prose and controls remain useful without JavaScript. Inline citation numbers now open a compact single-source native popover while the complete reference list remains the static fallback.
+- Expanded the curated set from seven to eight metadata-stripped WebPs by processing the supplied oily-patch photograph. No standalone Fanola bottle photograph was present in the supplied staging files, so the existing treatment photograph remains and no unreviewed third-party product image was introduced.
+
+### Verification and boundary
+
+- Pinned Node 24.18.0 / pnpm 11.21.0. Final `CI=true pnpm check` passed formatting, ESLint, media/content validation, strict TypeScript, **76/76 unit/component tests** and **six expected invalid-fixture failures**. The existing four missing-optional-frontal-view warnings remain unchanged. Media validation confirms eight preparation derivatives; content compilation confirms five workflow stages and 20 references.
+- Production build passed and prerendered **77/77 routes**. The final full Chromium regression passed **76/76 without retries** in 3.0 minutes, including the focused **5/5** preparation journeys. Preparation coverage includes all methods/references, the citation popover, drawer focus, mobile disclosures, axe, no JavaScript, deep links, reduced motion, forced colors, failed images and overflow.
+- Manual production review at 1440 × 900 and 390 × 844 confirmed the revised workflow hierarchy, mobile stacking, opened maceration disclosure and compact citation popover. The production console contained no errors.
+- The work remains local on `agent/skull-prep-page`. Owner review is required before any commit publication, push, pull request, merge or deployment; no later phase was started.
 
 ## 1.1 Owner-authorized Home redesign milestone
 

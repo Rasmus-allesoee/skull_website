@@ -14,9 +14,9 @@ test("preparation guide exposes all methods, sources and working workflow links"
   await page.goto(route);
   await expect(page).toHaveTitle("Skull preparation guide | Skull Collection");
   await expect(page.locator(".prep-workflow > ol > li")).toHaveCount(5);
-  await expect(page.locator(".prep-table table")).toHaveCount(4);
-  await expect(page.locator(".references li")).toHaveCount(13);
-  await expect(page.locator(".prep-figure")).toHaveCount(6);
+  await expect(page.locator(".prep-table table")).toHaveCount(6);
+  await expect(page.locator(".references li")).toHaveCount(20);
+  await expect(page.locator(".prep-figure")).toHaveCount(7);
   await expect(page.locator(".prep-image-label")).toHaveText("AI illustration");
   expect(
     await page
@@ -29,6 +29,17 @@ test("preparation guide exposes all methods, sources and working workflow links"
   ).toEqual([]);
   await page.locator('.prep-method-links a[href="#beetles"]').click();
   await expect(page).toHaveURL(`${route}#beetles`);
+  await expect(page.locator("#beetles")).toHaveAttribute("open", "");
+  for (const id of ["beetles", "burial", "heat", "detergent"]) {
+    const methodList = page.locator(`#${id} ol`);
+    await expect(methodList).toHaveCount(1);
+    expect(
+      await methodList.evaluate((element) => ({
+        listStyleType: getComputedStyle(element).listStyleType,
+        paddingLeft: getComputedStyle(element).paddingLeft,
+      })),
+    ).toEqual({ listStyleType: "decimal", paddingLeft: "24px" });
+  }
   await expect
     .poll(() =>
       page.locator("#beetles").evaluate((e) => e.getBoundingClientRect().top),
@@ -38,8 +49,12 @@ test("preparation guide exposes all methods, sources and working workflow links"
   await expect(page).toHaveURL(`${route}#workflow`);
   await page.goBack();
   await expect(page).toHaveURL(`${route}#beetles`);
-  await page.locator('sup a[href="#ref-amnh-beetles"]').click();
-  await expect(page.locator("#ref-amnh-beetles")).toBeInViewport();
+  await page.getByRole("button", { name: "Show reference 11" }).first().click();
+  const citation = page.locator(".prep-citation-popover:popover-open");
+  await expect(citation).toContainText("American Museum of Natural History");
+  await expect(
+    citation.getByRole("link", { name: /Open source/ }),
+  ).toBeVisible();
   expect(
     requests.filter((url) =>
       /catalog-search|maplibre|openfreemap|agent_context/.test(url),
@@ -102,13 +117,9 @@ test("mobile guide reflows, retains touch navigation and usable disclosures", as
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator('.prep-method-links a[href="#maceration"]').tap();
   await expect(page).toHaveURL(`${route}#maceration`);
-  await page
-    .getByText("Troubleshooting: dark bone, wax and stubborn tendons", {
-      exact: true,
-    })
-    .tap();
+  await expect(page.locator("#maceration")).toHaveAttribute("open", "");
   await expect(
-    page.getByText("Blackening is not, by itself", { exact: false }),
+    page.getByText("Dark or strangely coloured bone", { exact: false }),
   ).toBeVisible();
   await page.locator("#degreaser-comparison").scrollIntoViewIfNeeded();
   await expect(page.locator(".prep-nav-bar")).toBeInViewport();
@@ -136,21 +147,21 @@ test("static guide works without JavaScript and every table retains semantic con
     .getByRole("link", { name: "Burial", exact: true })
     .click();
   await expect(page).toHaveURL(`${route}#burial`);
-  await expect(page.getByRole("table")).toHaveCount(4);
+  await page.waitForLoadState("networkidle");
+  const burialSummary = page.locator("#burial > summary");
+  await expect(burialSummary).toBeVisible();
+  await burialSummary.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#burial")).toHaveAttribute("open", "");
+  await expect(page.locator(".prep-table table")).toHaveCount(6);
   expect(
     await page
       .locator(".prep-article > ol")
       .first()
       .evaluate((element) => getComputedStyle(element).listStyleType),
   ).toBe("decimal");
-  const detailSummary = page.getByText(
-    "How long, which animals, and when is it finished?",
-    { exact: true },
-  );
-  await detailSummary.focus();
-  await page.keyboard.press("Enter");
   await expect(
-    page.getByText("There is no verified young-versus-old rule", {
+    page.getByText("Burial needs little attention once set up", {
       exact: false,
     }),
   ).toBeVisible();
@@ -178,7 +189,7 @@ test("deep links, reduced motion, forced colors and failed images preserve guide
   await page.getByRole("button", { name: "Contents", exact: true }).click();
   await page
     .getByRole("dialog")
-    .getByRole("link", { name: "Drying, storage and documentation" })
+    .getByRole("link", { name: "Drying, storage and optional records" })
     .click();
   await expect(page.locator("#storage")).toBeFocused();
   await expect(page.locator("#storage")).toBeInViewport();

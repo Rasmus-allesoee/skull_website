@@ -27,22 +27,6 @@ export default function SkullPreparationGuidePage() {
         <p className="eyebrow">Methods & practice</p>
         <h1>{guide.metadata.title}</h1>
         <p>{guide.metadata.summary}</p>
-        <div className="prep-intro-meta">
-          <span>Five phases · multiple methods</span>
-          <span>
-            Source-checked{" "}
-            <time dateTime={guide.metadata.last_reviewed}>
-              {new Intl.DateTimeFormat("en-GB", {
-                dateStyle: "long",
-                timeZone: "UTC",
-              }).format(new Date(guide.metadata.last_reviewed))}
-            </time>
-          </span>
-        </div>
-        <p className="prep-photo-note">
-          Includes photographs of animal preparation. Collector photographs are
-          by Rasmus; the degreasing bath is an AI-generated illustration.
-        </p>
       </header>
       <PreparationGuide guide={guide} />
     </MuseumShell>

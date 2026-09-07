@@ -88,7 +88,8 @@ export async function loadPreparationGuide(): Promise<PreparationGuide> {
   function visit(blocks: GuideBlock[]) {
     for (const b of blocks) {
       if (b.kind === "figure") used.add(b.asset);
-      if (b.kind === "aside" || b.kind === "details") visit(b.blocks);
+      if (b.kind === "aside" || b.kind === "details" || b.kind === "disclosure")
+        visit(b.blocks);
     }
   }
   visit(guide.blocks);

@@ -2,9 +2,9 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**The redesigned Home milestone is implemented locally and ready for owner review:** `/` now combines a static-first interactive ten-slot field with varied canonical views, full 18-specimen coverage across three bounded arrangements, the six canonical collection statistics, and one compact five-card destination hub. The focused Phase 5 map remains merged in `main`; the local Home and Measurements checkpoints have not been pushed, opened as a pull request, or merged.
+**Current local milestone:** the preparation guide owner-feedback v1 overhaul is implemented and verified locally on `agent/skull-prep-page`; owner review is pending. The Measurements and Home milestones are merged into `main`; the preparation work remains local and unpublished.
 
-Start at `/`, browse the catalog at `/species`, explore public specimen locations at `/map`, inspect the measurement reference at `/methodology`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
+Start at `/`, browse the catalog at `/species`, explore public specimen locations at `/map`, inspect the measurement reference at `/methodology`, open the full beginner preparation guide at `/guides/skull-preparation`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`.
 
 ## Project principles
 

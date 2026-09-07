@@ -1,16 +1,56 @@
 import Image from "next/image";
+import type { ReactNode } from "react";
 import type {
   GuideBlock,
   GuideMediaAsset,
   PreparationGuide as Guide,
 } from "@/domain/guides/guide";
-import { CitationList, renderCitations } from "@/components/Citations";
+import { CitationList } from "@/components/Citations";
 import { GuideContents } from "./GuideContents";
 export function PreparationGuide({ guide }: { guide: Guide }) {
   const numbers = new Map(
     guide.metadata.citations.map((c, i) => [c.key, i + 1]),
   );
-  const inline = (text: string) => renderCitations(text, numbers);
+  let citationOccurrence = 0;
+  const inline = (text: string) => {
+    const nodes: ReactNode[] = [];
+    let cursor = 0;
+    for (const match of text.matchAll(/\[cite:([a-z0-9-]+)\]/g)) {
+      const index = match.index ?? 0;
+      nodes.push(text.slice(cursor, index));
+      const key = match[1]!;
+      const number = numbers.get(key)!;
+      const citation = guide.metadata.citations.find(
+        (item) => item.key === key,
+      )!;
+      const popoverId = `prep-citation-${key}-${citationOccurrence++}`;
+      nodes.push(
+        <span className="prep-citation" key={popoverId}>
+          <button
+            type="button"
+            popoverTarget={popoverId}
+            aria-label={`Show reference ${number}`}
+          >
+            [{number}]
+          </button>
+          <span id={popoverId} popover="auto" className="prep-citation-popover">
+            <span className="prep-citation-number">Reference {number}</span>
+            <span>
+              {citation.authors} ({citation.year ?? "n.d."}).{" "}
+              <cite>{citation.title}</cite>.
+            </span>
+            <a href={citation.url} target="_blank" rel="noreferrer">
+              Open source{" "}
+              <span className="visually-hidden">(external link)</span>
+            </a>
+          </span>
+        </span>,
+      );
+      cursor = index + match[0].length;
+    }
+    nodes.push(text.slice(cursor));
+    return nodes;
+  };
   const asset = (id: string) => guide.media.find((a) => a.assetId === id)!;
   function render(block: GuideBlock, index: number) {
     switch (block.kind) {
@@ -99,6 +139,28 @@ export function PreparationGuide({ guide }: { guide: Guide }) {
             <div>{block.blocks.map(render)}</div>
           </details>
         );
+      case "disclosure": {
+        const H = `h${block.level}` as "h3" | "h4";
+        return (
+          <details
+            key={index}
+            id={block.id}
+            className="prep-method"
+            data-guide-disclosure
+          >
+            <summary>
+              <H>
+                {block.title}
+                <span className="prep-method-action" aria-hidden="true">
+                  <span className="prep-method-open">Open guide +</span>
+                  <span className="prep-method-close">Close guide −</span>
+                </span>
+              </H>
+            </summary>
+            <div className="prep-method-body">{block.blocks.map(render)}</div>
+          </details>
+        );
+      }
     }
   }
   return (
@@ -142,26 +204,27 @@ export function PreparationGuide({ guide }: { guide: Guide }) {
                   </li>
                 ))}
               </ul>
-              <p className="prep-outcome">{s.outcome}</p>
+              <p className="prep-outcome">
+                <span>Move on when</span>
+                {s.outcome}
+              </p>
             </li>
           ))}
         </ol>
-        <p className="prep-workflow-note">
-          Defleshing → degreasing → optional whitening → dry assembly. If grease
-          returns after drying, go back to degreasing.
-        </p>
+        <aside className="prep-workflow-note">
+          <strong>The basic route</strong>
+          <span>
+            Defleshing → degreasing → optional whitening → dry assembly. If
+            grease returns after drying, go back to degreasing.
+          </span>
+        </aside>
       </section>
       <GuideContents headings={guide.headings} />
       <article className="prep-article" aria-label="Detailed preparation guide">
         {guide.blocks.map(render)}
         <section id="references" tabIndex={-1} className="prep-references">
           <h2 id="prep-references-heading">References</h2>
-          <p>
-            One reference list for the complete guide. Collector notes describe
-            personal practice. Historical preparation sources document methods;
-            current product safety instructions take precedence. Source checks
-            do not constitute an independent professional safety certification.
-          </p>
+          <p>Open any numbered citation in the guide to preview its source.</p>
           <CitationList
             citations={guide.metadata.citations}
             showHeading={false}

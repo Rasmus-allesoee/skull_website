@@ -19,6 +19,10 @@
       "source_file": "degreasing-illustration.png"
     },
     {
+      "asset_id": "oily-spot",
+      "source_file": "skull_with_oily_spot.png"
+    },
+    {
       "asset_id": "whitening",
       "source_file": "mårhund_skull_h2o2.jpg"
     },

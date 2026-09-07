@@ -195,6 +195,9 @@ Responsive checkpoints are content-derived, with explicit QA at:
 - **Map key/control semantics:** local mammal/bird shapes plus text labels; approximate/selection/uncertainty and cluster count never rely on color alone. Canvas clusters receive synchronized count-labelled DOM buttons for keyboard inspection.
 - **Article shell:** breadcrumb, title/summary, metadata, table of contents, prose, figures, citations.
 - **Callout:** information, caution, or safety state with explicit heading/icon/text.
+- **Preparation workflow:** five bounded stage cards with internal method dividers, an explicit `Move on when` label, and a separate basic-route callout. On phones the same cards stack without losing their image, method links or outcome hierarchy.
+- **Preparation method disclosure:** native summary plus brass italic H3 or brass H4, explicit open/close text, bordered body and stable deep-link ID. Hash navigation progressively opens the target; without JavaScript the native summary remains the complete control. Shared preliminary steps remain visible while method-dependent instructions stay collapsed by default.
+- **Preparation citation card:** the brass inline reference number is a button that opens one small native popover with author, title and external source action. The complete numbered reference list remains below the article for scanning and fallback.
 
 ## 10. Interaction states
 
@@ -237,6 +240,7 @@ Do not show false skeletons on statically available content. Avoid disabled navi
 The writing voice is calm, precise, factual, and welcoming.
 
 - Prefer common direct words over institutional filler.
+- Preparation prose is beginner-first, practical and personal: give the action, useful range, finish test and troubleshooting consequence. Use first person for the owner's experience, identify community practice as such, and remove internal editorial debate or sentences about what the guide does not provide.
 - Use “Not recorded,” “Not applicable,” “Approximate location,” and “Identification uncertain” consistently.
 - Do not sensationalize death, roadkill, decomposition, or chemicals.
 - Distinguish specimen observation from general species fact.

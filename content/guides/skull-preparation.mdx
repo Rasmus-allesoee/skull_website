@@ -2,12 +2,68 @@
 {
   "title": "Skull preparation",
   "slug": "skull-preparation",
-  "summary": "A practical guide to preparing animal skulls: choose a defleshing method, remove grease, whiten if wanted, and reassemble for lasting storage.",
-  "last_reviewed": "2026-09-06",
+  "summary": "A practical, beginner-friendly guide to turning a fresh, frozen or partly decomposed animal head into a clean, stable skull.",
+  "last_reviewed": "2026-09-07",
   "review_status": "reviewed",
   "safety_review": "source-checked",
   "citations":
     [
+      {
+        "key": "reddit",
+        "title": "Processing a Carcass 101: the bones of bone collecting",
+        "authors": "firdahoe and the r/bonecollecting community",
+        "year": 2020,
+        "url": "https://www.reddit.com/r/bonecollecting/comments/irniaq/processing_a_carcass_101_the_bones_of_bone/",
+        "accessed": "2026-09-07",
+      },
+      {
+        "key": "nps",
+        "title": "Conserve O Gram 11/7: Vertebrate Skeletons: Preparation and Storage",
+        "authors": "H. Gregory McDonald · National Park Service",
+        "year": 2006,
+        "url": "https://www.nps.gov/subjects/museums/upload/11-07_508.pdf",
+        "accessed": "2026-09-07",
+      },
+      {
+        "key": "dermestid",
+        "title": "Cleaning Osteological Specimens with Beetles of the genus Dermestes Linnaeus, 1758",
+        "authors": "Yaneth Muñoz-Saba et al.",
+        "year": 2020,
+        "url": "https://www.natsca.org/sites/default/files/publications/JoNSC-Vol7-Munoz-Saba_et_al_2020_0.pdf",
+        "accessed": "2026-09-07",
+      },
+      {
+        "key": "jakes",
+        "title": "How to clean animal bones: the complete guide",
+        "authors": "Jake McGowan-Lowe",
+        "year": 2012,
+        "url": "https://www.jakes-bones.com/p/how-to-clean-animal-bones.html",
+        "accessed": "2026-09-07",
+      },
+      {
+        "key": "baccyflap",
+        "title": "Animal bones: carcass to bare bones",
+        "authors": "baccyflap.com",
+        "year": null,
+        "url": "https://baccyflap.com/res/natmat/bones/",
+        "accessed": "2026-09-07",
+      },
+      {
+        "key": "bonelust",
+        "title": "I have been macerating bones and they are now a strange color",
+        "authors": "Jana Miller · BoneLust",
+        "year": 2015,
+        "url": "https://bone-lust.blogspot.com/2015/05/bonelust-q-ive-been-macerating-bones.html",
+        "accessed": "2026-09-07",
+      },
+      {
+        "key": "nara",
+        "title": "Animal Bone Specimens Preparation Method",
+        "authors": "Takeshi Yamazaki · Nara National Research Institute for Cultural Properties",
+        "year": 2011,
+        "url": "https://www.nara.accu.or.jp/img/elearning/2011/animal.pdf",
+        "accessed": "2026-09-07",
+      },
       {
         "key": "hendry",
         "title": "Vertebrates, in Care and Conservation of Natural History Collections, pp. 1–36",
@@ -119,19 +175,19 @@
         "id": "preparation",
         "title": "Prepare",
         "asset": "intake",
-        "outcome": "Skin removed; parts labelled",
+        "outcome": "Head skinned; tissue trimmed for the chosen method",
         "methods":
           [
             { "id": "separation", "title": "Separate" },
             { "id": "skinning", "title": "Skin" },
-            { "id": "trimming", "title": "Trim" },
+            { "id": "tissue-removal", "title": "Trim for the method" },
           ],
       },
       {
         "id": "defleshing",
         "title": "Deflesh",
         "asset": "maceration",
-        "outcome": "No soft tissue remains",
+        "outcome": "No flesh, brain or other soft tissue remains",
         "methods":
           [
             { "id": "maceration", "title": "Maceration" },
@@ -145,7 +201,7 @@
         "id": "degreasing",
         "title": "Degrease",
         "asset": "degreasing",
-        "outcome": "Dry inspection shows no oil",
+        "outcome": "The dry skull has no oily or translucent patches",
         "methods":
           [
             { "id": "detergent", "title": "Detergent" },
@@ -157,7 +213,7 @@
         "id": "whitening",
         "title": "Whiten · optional",
         "asset": "whitening",
-        "outcome": "Desired tone; thoroughly rinsed",
+        "outcome": "The desired colour is reached and the skull is rinsed",
         "methods":
           [
             { "id": "peroxide-bath", "title": "Peroxide bath" },
@@ -168,7 +224,7 @@
         "id": "assembly",
         "title": "Assemble & store",
         "asset": "assembly",
-        "outcome": "Dry, aligned and documented",
+        "outcome": "Every part is dry, correctly placed and secure",
         "methods":
           [
             { "id": "teeth", "title": "Teeth" },
@@ -180,285 +236,376 @@
 }
 ---
 
-## Before you begin {#before-you-begin}
+## 0. Before you begin {#before-you-begin}
 
-This guide concerns fresh or frozen animal remains for a dry skull collection. Archaeological, chemically preserved or fragile material needs separate consideration. Preparation can affect future research value; record treatments and choose the method accordingly. [cite:hendry]
+If you have just found a dead animal, start here: make sure you may keep it, avoid handling anything that looks sick or died unexpectedly, put on gloves, and either begin soon or freeze the head in a leakproof bag. Freezing pauses decomposition and buys you time; it does not disinfect the animal. Alaska’s wildlife guide likewise recommends freezing a skull that cannot be cleaned promptly. [cite:alaska]
 
-<Aside title="Handling and workspace">
+<Aside title="Four checks before bringing it home">
 
-Do not collect or process animals suspected of infectious disease. Avoid contact with sick or unexpectedly dead birds and other potentially infected wildlife; follow the relevant wildlife authority’s reporting advice. Gloves alone do not make an infected carcass safe. [cite:bird-flu]
-
-Use dedicated tools and containers, eye protection against splashes, suitable gloves, and a washable work area separate from food, children, pets and finished specimens. Wash hands after handling. Never use smell, whiteness, freezing or ordinary preparation as proof of disinfection. Check the product label and safety data sheet before each chemical step.
+1. Check the rules for that species and location before you collect it. Protected wildlife, roadkill and hunted animals are not treated the same everywhere.
+2. Leave animals suspected of infectious disease alone. Current public-health advice specifically warns against contact with sick or dead wild birds where bird flu may be present. [cite:bird-flu]
+3. Use gloves, dedicated tools and a washable work area away from food, children, pets and finished skulls. Protect your eyes during splashy steps and wash your hands afterwards.
+4. Decide how you will handle tissue, dirty water and used chemicals before filling a bucket. Never mix leftover treatments.
 
 </Aside>
 
-Confirm permission to possess the animal before starting; rules depend on species and location. Plan disposal with your local waste authority, including tissue, biologically contaminated water and used chemicals. This guide does not authorize burial or discharge into soil, drains or waterways. Keep different waste streams separate and labelled rather than combining leftovers.
+The complete process is defleshing, degreasing, optional whitening, and drying or assembly. Do not jump straight to peroxide: it changes colour, but it does not replace removal of flesh and grease. Community and museum guides agree on that order. [cite:reddit] [cite:nps]
 
-Keep a tray, fine sieve or mesh bag, forceps, a small sharp knife, soft brush, labels, and separate containers for loose parts ready. Photograph the unprepared head and its teeth. Assign one label to each specimen and carry that label through every bath. Existing breaks and missing teeth are worth recording before cleaning changes the evidence.
+| Starting condition                          | Best place to start                                                                     | What to expect                                                   |
+| ------------------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Fresh or frozen head                        | Skin it, then choose maceration, beetles, burial, above-ground decay or controlled heat | More trimming means less smell and a shorter defleshing stage    |
+| Partly decomposed head                      | Contain it and continue with maceration, burial or above-ground decay                   | Loose teeth and small bones may already be present               |
+| Dry or mummified head                       | Rehydrate in plain water, then macerate or use beetles                                  | Dry tissue can take days to soften before decomposition restarts |
+| Bare skull with yellow or translucent areas | Begin at degreasing                                                                     | Let it dry between baths so hidden grease becomes visible        |
+| Clean, grease-free skull                    | Whiten only if you want a paler colour                                                  | Natural cream or tan bone is not a failed result                 |
 
 ## 1. Preparation for defleshing {#preparation}
 
-The aim is access to the tissues, without damage to the skull. How much preliminary trimming is useful depends on the method: a water bath can finish work that would be awkward with a knife; a beetle colony benefits from a carefully trimmed head. Preserve the parts you actually intend to retain.
+Separating the head and removing the skin are common to every method. After that, the amount of tissue to remove depends on how you plan to deflesh it.
 
-### Separating the head: C1 and C2 {#separation}
+### Separating the head: find the joint {#separation}
 
-The atlas (C1) is the first neck vertebra, adjoining the skull; the axis (C2) lies behind it. Work at an exposed joint rather than trying to cut through a vertebra. Support the head on a stable surface, cut surrounding soft tissue in small controlled passes, and move the joint gently to see where it opens. Keep the blade away from the supporting hand.
+The atlas, or C1, is the first neck vertebra and sits directly against the skull. The axis, or C2, is behind it. Bend and rotate the neck gently to feel where the skull–atlas joint moves. Cut the muscle around that joint in short passes until you can see or feel the gap, then cut through the remaining connective tissue. Do not try to saw through a vertebra.
 
-If the skull–atlas joint cannot be seen clearly, leave a short piece of neck attached for maceration and separate it after the tissues loosen. This is preferable to levering a blade against the skull or twisting until something breaks. Do not force the occipital region or a delicate skull base.
-
-<Aside title="From my collection · separating and skinning">
-
-I have found the atlas–axis region awkward and have sometimes relied on force after cutting into the joint. I have not settled on an ideal technique. For this guide, the more controlled option is to expose the joint or let maceration finish the separation.
-
-For skinning, I start with a cut along the top of the head, from the back toward the nose, then use my fingers to pull the skin toward the mouth. Small cuts help release attachments as I go. Around the lips and the underside of the jaw, I work in short sections; I do not have one consistent technique for every head.
-
-</Aside>
+I still find this one of the awkward parts. If I cannot expose the joint cleanly, I leave a short section of neck attached and let maceration loosen it. That is easier than damaging the back of the skull while trying to force a knife into a joint I cannot see.
 
 ### Removing the skin {#skinning}
 
-Cut through the skin only, lift an edge, and use gentle traction to reveal the next attachment. Cut the attachment you can see instead of scraping blindly across bone. Work around the eyes, ears, lips and jaw angle with particular care. Keep the nasal opening and its thin internal bones clear of the knife. There is no need to make the skull visibly clean at this stage.
+I begin with a cut along the top of the head from the back towards the nose. I lift the skin with my fingers, pull it towards the mouth and make small cuts only where it remains attached. Around the lips and under the lower jaw, short controlled cuts work better than trying to remove everything in one piece.
 
-### How much tissue should you trim? {#trimming}
-
-For my maceration preparations, skinning alone can be enough. On medium and large carnivores I also remove the bulky temporalis muscles and accessible soft cartilage. I generally leave the tongue, eyes and brain for the bath rather than spending time on difficult dissection. That is a practical choice, not a requirement to leave them in every method.
-
-Removing easily reached muscle reduces what the bath or colony must process; trying to remove every tendon can cost time and damage delicate surfaces. Museum preparation guidance emphasizes careful preliminary dissection and retaining small skeletal elements such as the hyoid apparatus. If you want these, separate and label them rather than discarding the throat tissues indiscriminately. [cite:harris]
+Keep the blade angled into the soft tissue rather than towards the bone. Be especially careful around the eye sockets, the thin nasal opening and any antler or horn bases. The skull does not have to look clean yet; the point is to remove the hide so the next method can reach the tissue.
 
 <Figure asset="skinned-head" />
 
-<Aside title="Ready for defleshing">
+### Removing tissue for your chosen method {#tissue-removal}
 
-Skin is removed, unnecessary bulk is trimmed without scoring bone, and every retained part has a specimen label. Take another photograph before the head enters the chosen treatment.
+Open only the method you intend to use. A water bath can deal with tissue that would be tedious to dissect, while a beetle colony works best when the head is much more carefully prepared.
 
-</Aside>
+<Disclosure id="prep-maceration" level="4" title="For water maceration">
+
+Skinning is usually enough for a small or medium head. On larger heads I also cut away the thick cheek and temporalis muscles because this shortens the process and reduces the initial mess. I normally leave the eyes, tongue and brain for the bath.
+
+Do not spend an hour scraping every tendon from the bone. Remove what is easy to reach without cutting into the skull; maceration is good at the awkward work.
+
+</Disclosure>
+
+<Disclosure id="prep-beetles" level="4" title="For dermestid beetles">
+
+Remove the skin, eyes, tongue, brain, viscera and the large masses of muscle. Leave a thin layer of fresh tissue so the beetles have something to eat, but do not put a wet, dripping head into the colony. The published Dermestes protocol removes these bulky tissues before cleaning. [cite:dermestid]
+
+If you want tiny elements such as the hyoid bones, find and retain them during trimming. Small anatomical parts are easily discarded with throat tissue. [cite:harris]
+
+</Disclosure>
+
+<Disclosure id="prep-burial" level="4" title="For burial">
+
+Skin the head and remove large, easy pieces of muscle if you can tolerate the work. Less tissue means a shorter burial, but a head can still decompose if you leave more attached. Put small skulls or loose parts in a fine mesh bag or a wide-mouthed container only if easier recovery matters to you; these are useful options, not requirements.
+
+</Disclosure>
+
+<Disclosure id="prep-above" level="4" title="For above-ground decay">
+
+You may leave more tissue than for maceration or beetles. Skinning exposes the flesh to flies and other insects, but leaving some skin can slow drying in a hot climate. Whatever you choose, the carcass must fit inside a cage that animals cannot drag through, overturn or dig under.
+
+</Disclosure>
+
+<Disclosure id="prep-heat" level="4" title="For controlled simmering">
+
+Remove the skin and as much flesh as is practical, but leave enough tissue to shield the bone while it heats. This method is for robust, usually larger mammal skulls. Do not use it for birds, fish, very small mammals or young skulls that may fall apart when their connective tissue softens. [cite:reddit]
+
+</Disclosure>
 
 ## 2. Defleshing: choose a method {#defleshing}
 
-All five routes remove soft tissue, with different equipment and recovery risks. The table gives planning scales, not completion promises. Maceration is the collector’s main method. Burial can stain bone; prolonged boiling can damage it. [cite:hendry]
+Maceration is my main method because it needs little specialist equipment and reaches areas that are difficult to clean by hand. Each alternative has a situation where it makes sense.
 
-| Method             | Planning scale                               | Advantages                                            | Tradeoffs                                                  |
-| ------------------ | -------------------------------------------- | ----------------------------------------------------- | ---------------------------------------------------------- |
-| Water maceration   | Weeks; cold conditions may mean months       | Simple equipment; inspectable bath; little knife work | Odour, contaminated liquid, loose teeth and parts          |
-| Dermestid beetles  | Days to weeks; colony-dependent              | Good access to delicate structures                    | Colony care, containment and pest isolation                |
-| Burial             | Months or longer; site-dependent             | Little active equipment                               | Poor monitoring, staining, loss and root intrusion         |
-| Above-ground decay | Weeks to months or longer; weather-dependent | Insects can reach tissue                              | Scavengers, drying, exposure and scattered parts           |
-| Controlled heat    | Hours of treatment plus cleanup              | Fast tissue loosening                                 | Greater risk to teeth and fragile bone; not a rolling boil |
+| Method               | Rough time                                                                             | Why choose it                                       | Main drawbacks                                                           |
+| -------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------ |
+| Water maceration     | About 2–4 weeks when warm; cold baths can take months                                  | Cheap, thorough and little knife work               | Strong odour, dirty water and loose teeth                                |
+| Dermestid beetles    | Often 3–10 days for small fresh specimens; 20–30 days for larger or difficult material | Excellent for delicate or articulated skeletons     | A colony needs heat, feeding, containment and pest control               |
+| Burial               | Usually months                                                                         | Low day-to-day effort and useful for larger remains | Slow, hard to inspect, and may stain or lose parts                       |
+| Above-ground decay   | Weeks to months in suitable weather                                                    | Insects do most of the work                         | Scavengers, flies, smell and mummification in dry weather                |
+| Controlled simmering | Roughly an hour for some small mammal heads; many hours for large heads                | Fast when time matters                              | Heat can trap grease, crack teeth, soften bone and separate young skulls |
 
-### Water maceration {#maceration}
+<Disclosure id="maceration" level="3" title="Water maceration">
 
-Submerge the skinned head completely in water in a dedicated, labelled container. Use enough water to cover the highest point and leave headroom for displaced liquid and gas. A fine mesh bag or basket within the bucket makes recovery easier; choose a mesh finer than the smallest tooth you want to keep. Inspect the seams and closure. No bag guarantees recovery of every tiny element.
+Maceration is simply decomposition in water. Put the skinned head in a dedicated bucket, cover it completely with plain water and leave enough empty space at the top for foam and gas. A lid keeps animals and rain out and controls some smell.
 
-Keep the container in a secure, ventilated work area. Use a loosely fitted or properly vented cover to exclude animals and reduce splashes; do not snap a gas-producing bath airtight. There is no recommended schedule for periodically opening an airtight lid: avoid building pressure in the first place. Briefly opening a lid is also not a reliable way to oxygenate the whole bath.
+In winter I sometimes bring the buckets indoors and use a tight-fitting lid because the smell would otherwise be unbearable. I periodically carry the bucket outside, set it down, and open it slowly for a few minutes to release pressure and exchange some air. Never open a swollen or pressurised container towards your face. A loose or vented lid is simpler wherever odour control allows it.
 
-#### Temperature and timing {#maceration-timing}
+Do not add peroxide, disinfectant or antibacterial dish soap. Maceration depends on microorganisms breaking down the tissue, and those products work against the process. A small amount of ordinary old maceration water can help start a new bath, but fresh tissue will also establish its own active bath. [cite:reddit]
 
-My approximate fox-skull observations are more than three months around 10 °C outdoors, sometimes with persistent tendons, versus roughly two to four weeks around 20 °C. These are personal estimates, not controlled trials, and do not guarantee complete removal of wax or connective tissue. A larger head, more retained tissue or fluctuating temperature changes the result.
+| Conditions      | A useful expectation                                                                                                 |
+| --------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Around 20–25 °C | Small and medium mammal skulls may be ready in roughly 2–4 weeks; very fleshy or large heads take longer             |
+| Around 10 °C    | Expect months rather than weeks; tendons and waxy deposits may persist                                               |
+| Near freezing   | Decomposition nearly stops until the bath warms again                                                                |
+| Frozen solid    | The process pauses. Thaw the whole bucket gradually before inspecting; do not pour boiling water onto a frozen skull |
 
-Use the measured water temperature in your notes, not just the air temperature. A stable mild environment is easier to compare between batches than a bucket alternately chilled at night and heated by sunlight. This guide does not set a universal optimum or prescribe an unattended heater: the available sources and collector observations do not establish one for every skull.
+My fox skulls have taken more than three months outdoors at roughly 10 °C, sometimes with tendons still attached. At around 20 °C, similar skulls have usually taken roughly two to four weeks. Treat these as ballpark observations: tissue load, skull size and changing weather matter as much as the number on a thermometer.
 
-#### Water changes and recovery {#water-changes}
+I usually replace most of the initially bloody water after about five to seven days. I leave roughly 10–30% of the old liquid in the bucket, then top it up with fresh water. Later I change the water less often, because every complete change removes part of the active microbial community. BoneLust likewise recommends letting a new bath establish before changing it repeatedly. [cite:bonelust]
 
-In my workflow, I change about 80% of the initially bloody water after five to seven days, then inspect periodically until the tissue has released. Retaining some old water carries existing microorganisms into the fresh bath, but there is no demonstrated requirement for exactly 20% old water. Do not add disinfectant or peroxide to a bath intended for biological maceration.
+Pour slowly through a fine sieve so loose teeth cannot disappear with the water. Check the sediment at the bottom before discarding anything. Teeth normally loosen as the gums disappear; let them fall out rather than forcing them.
 
-At each change, pour slowly through a fine sieve into a second dedicated container so all liquid is captured for appropriate disposal. Keep the skull supported, leave sediment in the bucket until inspected, and search it over a contrasting tray. Do not empty it onto the ground: that makes tiny teeth difficult to recover and does not establish acceptable disposal.
+<Aside title="Beginner tip · keep loose teeth in order">
 
-Remove teeth only when they are already loose enough to lift without force. Keep left and right tooth groups and the jaw halves separated and labelled. Inspect behind the teeth, inside the braincase and along the lower jaw for tissue. Gentle low-pressure rinsing and fine forceps help reach recesses; avoid a jet through the delicate nasal bones. [cite:alaska]
+If tooth placement is unfamiliar, keep the upper and lower teeth separate and divide them into left and right groups as they come loose. I do not usually need to do this because the root and socket shapes make the position clear, but it can save a beginner a frustrating puzzle later.
+
+</Aside>
+
+The main process is finished when no flesh remains on the outside of the skull. The brain often needs a final check: it can remain as a soft white or grey mass inside the cranium after the rest looks clean. I point the foramen magnum down, shake out what will release, then rinse into the braincase until the loose material is gone.
+
+Rinse the nasal cavity gently as well. The turbinates are very thin scrolls of bone and can trap debris; use a low-pressure stream rather than a pressure washer. Alaska’s guide also recommends repeated flushing through the braincase and nasal cavity. [cite:alaska]
 
 <Figure asset="maceration" />
 
-<Details title="Troubleshooting: dark bone, wax and stubborn tendons">
+<Aside title="Troubleshooting maceration">
 
-Blackening is not, by itself, proof of one particular microbe or oxygen condition. Do not promise that airing the lid will prevent it or that peroxide will remove every stain. First establish whether there is a loose surface deposit, retained tissue or staining within the bone. Record it before further treatment.
+- Dark or strangely coloured bone: let it dry before judging it. Some staining fades after degreasing or peroxide, while some remains. Colour alone does not mean the skull is ruined.
+- White, waxy material: this may be adipocere, or corpse wax. Warm detergent, time and gentle mechanical removal are usually more useful than trying to whiten over it. [cite:hendry] [cite:adipocere]
+- Persistent tendons: continue maceration. Cold is the usual reason a bath appears to stop.
+- Waxy debris in the lower jaw: I sometimes find it inside the mandibular foramen. Rinse the channel under water and use a fine blunt probe or move a thin steel wire in and out to loosen the waxy gunk. It can be quite tricky to fully clean!
+- Mummified tissue: soak it in plain water for several days to rehydrate it, then continue maceration. Both Jake’s Bones and the r/bonecollecting guide describe rehydration as the practical first step. [cite:jakes] [cite:reddit]
 
-Adipocere, or corpse wax, forms through changes to fats during decomposition. It can resist cleaning; a lid’s air supply alone does not explain its presence. [cite:hendry]
+</Aside>
 
-For a waxy deposit, try gentle mechanical removal after soaking in a suitable warm aqueous detergent bath. A small student study found detergent soaking more useful than peroxide for adipocere removal; it is limited evidence, not a universal protocol. Stop if the bone surface begins to shed. [cite:adipocere]
+</Disclosure>
 
-For tendons that still resist, return to maceration rather than pulling hard. In my preparations, the mandibular foramen can retain wax-like debris. Work under water over a recovery tray: use a gentle rinse and, only where the channel is visible and accessible, a fine blunt probe. Do not drill, enlarge the opening or force a sharp wire through resistance.
+<Disclosure id="beetles" level="3" title="Dermestid beetles">
 
-</Details>
+I have not used dermestid beetles myself, so the small practical details here come from published colony protocols and experienced keepers rather than my own preparations.
 
-### Dermestid beetles {#beetles}
+Dermestids are popular because their larvae can remove tissue while leaving delicate bones and some articulations together. They are especially useful for fish, birds, reptiles, small mammals and young animals that may disarticulate in water. They are living museum pests, however, so escape control matters as much as feeding them. [cite:dermestid] [cite:amnh-beetles]
 
-These are dermestid beetles, not desmid beetles. Museum colonies clean tissue from many vertebrate groups, including delicate skeletons; maintaining the colony environment is part of the method. [cite:amnh-beetles]
+1. Use a smooth-sided, escape-resistant enclosure with a tightly fitted ventilated lid. Keep it well away from finished skulls, hides, feathers, textiles and stored food.
+2. Keep the colony warm and dark. The reviewed protocol reports roughly 23–29 °C and about 52% relative humidity; excessive damp encourages mould, while cold slows or collapses the colony. [cite:dermestid]
+3. Place the trimmed head on a shallow tray. Do not add material treated with insecticide, peroxide or other chemicals.
+4. Check small skulls daily. An active colony may clean a fresh small skull in 3–10 days; large, dry or previously treated material can take 20–30 days or longer.
+5. Remove the skull when the tissue is gone and before thin bone or cartilage is eaten. Check the braincase and other cavities for larvae and eggs.
+6. Isolate the cleaned skull from the collection and follow a proven pest-kill step before storage. The National Park Service describes freezing at −18 to −20 °C for 72 hours as one option. [cite:nps]
 
-1. Arrange access to an established colony or a preparator. Check what specimen condition the colony keeper accepts before delivering material.
-2. Skin and trim the head, retaining the required small bones. Keep preservatives, insecticides and whitening chemicals away from the colony.
-3. Place the prepared material on a labelled recovery tray in the escape-resistant colony enclosure. Inspect progress regularly and remove the skull when the required tissue has been eaten.
-4. Check cavities for remaining tissue and insects, recover loose parts, and complete the keeper’s pest-isolation procedure before taking material near a finished collection. Degreasing may still be needed.
+The colony still leaves fat in the bone, so move on to degreasing. Maintaining dermestids for one occasional skull is a large commitment: the colony needs regular food, humidity control, ventilation, cleaning and an escape plan even when no specimen is ready.
 
-For occasional skulls, using a maintained colony is usually a more practical choice than creating a new one. Colony capacity and feeding activity determine the schedule; a duration quoted for one setup is not a service guarantee for another.
+</Disclosure>
 
-### Burial {#burial}
+<Disclosure id="burial" level="3" title="Burial">
 
-Keep one specimen in a durable fine-mesh recovery bag inside a rigid, recoverable perforated container. Mark and record the location, retain a duplicate label, and arrange protection from digging animals. Soil organisms need access, but loose teeth should remain contained. Only use a site where the landowner and applicable rules permit this method.
+Burial needs little attention once set up, but it is slow and can stain bone. Choose dark, biologically active soil that stays slightly moist and drains. Heavy waterlogged clay can exclude air and hold stagnant water; very dry sand may preserve or mummify tissue instead of decomposing it. Community guides report several months for larger remains. [cite:reddit] [cite:baccyflap]
 
-Excavate the whole container onto a tray, not just the visible skull. Check for roots, fragments and loose teeth before discarding surrounding material. If tissue remains, reassess the method rather than repeatedly digging without a plan. Burial trades low active effort for poor visibility; reserve it for material where staining and loss would be acceptable.
+1. Dig roughly 60–70 cm deep for an ordinary head. Go deeper in loose sandy soil or where scavengers are active.
+2. Optional but useful: wrap a small specimen in fine mesh, place it in a wide perforated plant pot, or lay wire mesh below it. These make teeth easier to recover while still allowing soil organisms to enter.
+3. Backfill firmly. Put heavy rocks or rigid mesh over the filled hole so foxes, badgers and dogs cannot dig directly down to the specimen.
+4. Mark the location clearly. A label matters mainly when several specimens are close together; for one burial, a durable marker is usually enough.
+5. Wait at least a few months before the first careful check. Large heads and cold soil can need much longer.
+6. When ready, remove the upper soil with a spade and excavate the last layer by hand over a tray or sheet. Sieve the surrounding soil for teeth and small fragments.
 
-### Leaving material above ground {#above-ground}
+Roots may enter the skull and fine soil can lodge in cavities. Rinse gently after recovery. If tissue remains, rebury it for longer or transfer it to maceration.
 
-Use a securely anchored rigid mesh cage with a closed base, a fine recovery tray and a closure animals cannot lift. Tying a head to a stake is not equivalent containment. Allow insect access while preventing a scavenger from pulling the head through the mesh; inspect after bad weather or disturbance.
+</Disclosure>
 
-A very dry head may mummify instead of cleaning efficiently. Transfer persistent tissue to maceration if the exposure method stalls. Recover all debris over a tray and check the site carefully. This method needs a suitable secure location and tolerance for odour; it is not a reason to leave unsecured remains in shared outdoor space.
+<Disclosure id="above-ground" level="3" title="Leaving material above ground">
 
-### Boiling and controlled simmering {#heat}
+Above-ground decay can be quick in warm, damp weather because flies and other insects have direct access. It can also fail spectacularly if a scavenger takes the carcass or dry weather turns it into leather.
 
-Avoid a rolling boil. Alaska’s wildlife-agency guide describes controlled heating around 160 °F, approximately 71 °C, and warns that excessive heat exposure can crack teeth and soften bone. It gives roughly 40–60 minutes for some small skulls and much longer for large ones; these examples are not safe fixed timers for every specimen. [cite:alaska]
+I use the metal top of an old rodent cage. I put a heavy weight on it, but that is not a guarantee: a whole badger has still been moved several metres, and animals have dug underneath the edge. Peg or wire the cage to the ground, weight it, and add a buried skirt of rigid mesh (predator apron) around the perimeter where digging is likely. The openings must admit insects but be too small for an animal to pull the head through.
 
-If choosing heat, thoroughly trim the head, use a dedicated temperature-monitored vessel, keep the skull submerged and check frequently. Remove loosened tissue gently between short treatments. Stop as soon as it releases; do not keep cooking to eliminate every last tendon. Follow with appropriate grease removal and recovery of loose teeth. Fragile, juvenile or scientifically valuable skulls are poor candidates for this shortcut.
+In dry weather, lay an opaque board or other rain-safe cover over part of the cage to create shade and retain moisture without blocking insect access. Water the carcass when it starts to dry. Once it mummifies, decomposition slows dramatically and may not restart until the tissue is rehydrated. Community experience similarly recommends moisture and shade where drying is a problem. [cite:reddit]
+
+Expect smell and flies. Put the cage where it can be checked after storms and cannot affect neighbours, pets or shared outdoor space. Recover everything over a tray when the bone is exposed, then rinse and inspect the braincase and nasal cavity.
+
+</Disclosure>
+
+<Disclosure id="heat" level="3" title="Boiling and controlled simmering">
+
+Never use a rolling boil. Heat loosens tissue quickly, but it can drive fat deeper into bone, crack teeth, soften thin areas and separate the sutures of a juvenile skull. Grease trapped by cooking may move back to the surface years later, leaving a yellow, oily and sometimes smelly skull. Community guides consistently treat boiling as the damaging version of this shortcut. [cite:reddit] [cite:jakes]
+
+If speed matters and the skull is a robust adult mammal, use controlled simmering instead:
+
+1. Use a dedicated pot and hold the water at about 71 °C, well below boiling.
+2. Keep the skull submerged and begin checking early. The Alaska guide gives roughly 40–60 minutes for fox-, marten- or lynx-sized skulls and up to about eight hours for thawed wolf or bear skulls. Those are useful size examples, not countdown timers. [cite:alaska]
+3. Remove the skull as soon as muscle releases easily. Pick off loosened tissue while warm, return it for another short period only if needed, and keep the water from boiling.
+4. Flush the braincase and nasal cavity gently. Collect every loose tooth.
+5. Expect a longer degreasing stage than after maceration or beetles.
+
+Do not put a greasy bare skull back into very hot water to speed up degreasing. Birds, fish, small mammals and young animals are much safer with beetles or a carefully contained biological method. The Nara preparation guide likewise warns that overheating can deform thin bone. [cite:nara]
+
+</Disclosure>
 
 <Aside title="Ready for degreasing">
 
-No visible muscle, skin or persistent connective tissue remains. Cavities have been inspected and rinsed, and the skull, teeth and other retained parts are accounted for. Whitening cannot substitute for this check.
+No skin, muscle, brain or persistent connective tissue remains. The braincase and nasal cavity have been rinsed, and loose teeth have been recovered. The skull may still be yellow or greasy; that is what the next stage addresses.
 
 </Aside>
 
 ## 3. Degreasing {#degreasing}
 
-Flesh-free bone can retain grease. Degreasing addresses residual fats; whitening is a separate treatment. Museum literature describes solvent and alkaline methods with differing risks. [cite:hendry]
+Bone can look clean while still holding fat. As it dries, grease appears as yellow-brown staining, a translucent patch, a waxy feel or a stale smell. Very fatty animals such as pigs, bears and marine mammals can take months. Smaller and younger animals often finish sooner in my experience, partly because they generally contain less accumulated fat and their more open bone releases it readily.
 
-### Start with an aqueous detergent bath {#detergent}
+<Figure asset="oily-spot" />
 
-For a modest home collection, begin with a clear, uncoloured dishwashing detergent suitable for hand washing, or a documented aqueous laboratory cleaner. Avoid added bleach, abrasive cleaners and strongly coloured or perfumed formulations. A laboratory product’s stated working dilution is more reproducible than an unspecified squirt of household soap; dishwashing products are not interchangeable concentrations.
+### Choose a degreaser {#degreaser-comparison}
 
-1. Rinse away maceration residue before starting. Keep loose teeth in their labelled container or fine basket.
-2. Cover the skull in clean water and add detergent at the product’s hand-washing dilution, or follow the laboratory cleaner’s instructions. Record product, amount, water volume and temperature.
-3. Keep the bath mild and stable. Do not apply the temperature for a different cleaner or industrial degreasing system to your product.
-4. Replace the entire solution when it becomes visibly oily, heavily cloudy or laden with residue. Rinse off loosened deposits before refilling. Cloudiness alone is not a chemical measurement of remaining grease.
-5. After progress slows, rinse thoroughly and let the skull dry before evaluating the surface. Return it to a fresh bath if oily or translucent patches recur.
+| Agent                       | Best use                                       | Advantages                                              | Drawbacks                                                                                          |
+| --------------------------- | ---------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Clear dish detergent        | First choice for almost every home preparation | Cheap, easy to obtain, water-based and easy to refresh  | Slow on very fatty skulls; perfumes and dyes can linger                                            |
+| Enzymatic laundry detergent | Small remnants of tissue plus grease           | Enzymes can help with both jobs                         | Can damage cartilage and delicate fish or juvenile bone; rinse very well                           |
+| Household ammonia           | Persistent grease when detergent has stalled   | Faster alkaline option with a published museum method   | Strong irritating vapour; splash risk; never mix with bleach                                       |
+| Acetone                     | Stubborn grease in sound, fully dry bone       | Fast solvent action and reusable when managed correctly | Extremely flammable; specialist container, gloves, ventilation and hazardous-waste disposal needed |
+
+<Disclosure id="detergent" level="3" title="Clear dish detergent: start here">
+
+Use a clear, colourless hand-dishwashing detergent without chlorine bleach. Strong perfume is worth avoiding: bone can retain the smell, and you may forever associate that scent with decomposition. Jake’s Bones makes exactly this practical point. [cite:jakes]
+
+1. Rinse the skull and put it in a plastic tub large enough to submerge it.
+2. Add warm water and detergent. I commonly use roughly one part soap to 10–20 parts water, using the stronger end for a greasy skull and a small container. Exact measurement is unnecessary; the bath should feel clearly soapy rather than like ordinary dishwater.
+3. Keep the bath warm if practical, but never boiling. A stable warm room or thermostatically controlled water bath works faster than a cold shed.
+4. Replace the solution when a greasy film forms, the water becomes heavily cloudy or progress stops. Early baths may need changing every few days; later, every 1-2 weeks may be enough. There's no harm in leaving the skull in the same, safe solution for a very long time.
+5. Rinse the skull and let it dry completely every few changes. Wet bone hides grease. If a dry yellow or translucent patch returns, resume with fresh solution.
+
+Cloudy water is a useful sign that material is leaving the skull, but it is not the finish test. The process is finished when the rinsed, fully dry skull has no oily patches or odour and a fresh bath stays mostly clear for about a week. The community guide uses the same combination of a stable bath and dry visual inspection. [cite:reddit]
+
+Enzymatic washing powder can speed work where a little tissue remains, but it also attacks the soft connections that hold delicate skulls together. Use it cautiously on birds, fish, juveniles and very small animals. The National Park Service records damage to fish skeletons from enzyme detergents. [cite:nps]
 
 <Figure asset="degreasing" />
 
-### Comparing degreasers {#degreaser-comparison}
+</Disclosure>
 
-There is no established fastest product for every species. The recommendation here favours a manageable aqueous starting point; moving to a solvent is a change in equipment and safety requirements, not just a stronger version of dish soap.
+<Disclosure id="ammonia-method" level="3" title="Household ammonia: when detergent stalls">
 
-| Agent                      | Useful role                               | Limitations                                              | Working dilution                                       |
-| -------------------------- | ----------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------ |
-| Clear dish detergent       | Accessible first bath                     | Slow; formulation varies; rinse residues well            | Product’s hand-washing instructions; record the amount |
-| Aqueous laboratory cleaner | Reproducible formulation and instructions | Compatibility must be checked for bone                   | Manufacturer’s specified working solution              |
-| Aqueous ammonia            | Specialist alkaline option                | Irritating vapour and splash hazard                      | Requires a concentration-specific protocol and SDS     |
-| Acetone                    | Specialist solvent for persistent fats    | Highly flammable; equipment, glove and waste constraints | No generic home-bath dilution supplied                 |
+Use only clear household aqueous ammonia with a known label, outdoors or with strong cross-ventilation. Ammonia vapour irritates the eyes, skin and lungs. Wear splash goggles and gloves specified on the product safety sheet, and never mix ammonia with chlorine bleach. [cite:ammonia]
 
-### Ammonia: a separate controlled process {#ammonia-method}
+The National Park Service describes a room-temperature soak made from equal parts regular household ammonia and water. Change it when discoloured, occasionally rinse and dry the skull to inspect for grease, and repeat only while oily areas remain. [cite:nps]
 
-The relevant product is aqueous ammonia, sometimes called ammonium hydroxide, not an arbitrary ammonium salt. It can injure eyes and skin and irritate breathing passages. Never mix it with chlorine bleach. Consult the concentration-specific SDS, provide appropriate ventilation and chemical protection, and keep the bath labelled and separate from other treatments. [cite:ammonia]
+Do not heat an ammonia bath. Keep the labelled container closed when it is not being inspected, away from children, pets, acids and cleaning products. Collect spent solution according to the product label and local household-chemical rules rather than pouring it onto soil or vegetation.
 
-Only proceed with a bone-compatible protocol for the actual product concentration. Monitor the surface, then rinse thoroughly between processes. This guide does not transplant concentrated historical museum recipes into an unsupervised home bath.
+</Disclosure>
 
-### Acetone: a specialist option {#acetone-method}
+<Disclosure id="acetone-method" level="3" title="Acetone: a specialist option for persistent grease">
 
-Acetone is highly flammable even at ordinary room temperature, and vapour can cause irritation and dizziness. Never heat it or place it near flames, sparks, electrical heaters or peroxide. A dust mask does not control solvent vapour. Use solvent-rated equipment, ventilation, eye protection and gloves selected from the actual SDS; disposable gloves are not automatically suitable. [cite:acetone]
+Acetone dissolves fat quickly and can be reused, but it is a highly flammable solvent with a flash point below ordinary room temperature. Vapour may cause eye and airway irritation, headache or dizziness. Never heat it or work near flames, sparks, switches, motors, heaters, peroxide or smoking. [cite:acetone]
 
-A trained preparator should choose the solvent-compatible vessel, lid, transfer method and waste route. Do not substitute a reused food bucket, improvised bag, or nail-polish remover with unknown additives. Rinse and dry as required by the chosen protocol before any separate whitening treatment; never mix treatment liquids.
+Use pure acetone, not nail-polish remover: remover may contain water, fragrance, oils or dyes that can remain in the bone. Use the original container or a sealable glass or metal vessel explicitly rated for acetone and large enough to hold the dry skull. Many ordinary plastic tubs, bags, seals and coatings soften or leak in acetone.
 
-<Details title="How long, which animals, and when is it finished?">
+Work with strong ventilation, splash goggles and gloves rated for acetone. NIOSH lists butyl and other specialist barriers for extended acetone contact; thin latex or ordinary disposable nitrile gloves are not reliable immersion protection. Keep the vessel in secondary containment and label it clearly. [cite:acetone]
 
-Budget repeated inspections rather than a species-based deadline. A small skull with little residual fat may finish sooner than a larger or persistently greasy specimen, but size alone is not a reliable predictor. Allow weeks and be prepared for a longer treatment; this is a planning allowance, not a validated species timetable.
+Submerge the fully dry skull, close the compatible lid to limit evaporation, and inspect it regularly without introducing water. When the greasy areas have cleared, lift it with compatible tools, let the solvent drain back into the vessel, and allow the skull to air outside until all solvent odour has gone. Store or dispose of used acetone through a household hazardous-waste service; never pour it into a drain or onto the ground.
 
-There is no verified young-versus-old rule in the sources reviewed for this guide. Juvenile skulls also demand care because their elements can separate; age is not a reason to use stronger chemicals. The collector has not supplied controlled species-by-species degreasing records, so exact durations would imply evidence we do not have.
+</Disclosure>
 
-Use several checks together: a rinsed, fully dry surface without oily patches; no fresh grease appearing during a rest period; and little new contamination of a fresh bath. Do not chase every coloured mark as grease: mineral stains and natural colour can persist. Keep the observation date so later seepage can be recognized.
+<Aside title="How long does degreasing take?">
 
-</Details>
+- A small, lightly greasy skull may take one or two weeks.
+- Many ordinary mammal skulls need several weeks.
+- Pig, bear and marine-mammal skulls can need several months, especially if they were boiled.
+- Young skulls often finish faster in my experience, but their sutures and separate elements need gentler handling.
+- The calendar is secondary: dry the skull, inspect it, and continue if oil returns.
+
+</Aside>
 
 <Aside title="Ready for whitening or assembly">
 
-After rinsing and dry inspection, the skull has no recurring oily patches or retained detergent. If the natural colour is acceptable, skip whitening and proceed to assembly.
+The skull is fully dry, smells neutral and has no recurring oily or translucent patches. A fresh detergent bath remains mostly clear. If you like the natural bone colour, skip whitening and continue to assembly.
 
 </Aside>
 
-## 4. Whitening: optional, not a cleaning shortcut {#whitening}
+## 4. Whitening is optional {#whitening}
 
-Whitening is optional. Preserve satisfactory natural colour, especially for research material. Conservation literature cautions that peroxide can damage bone. [cite:hendry]
+Whitening changes the colour of clean bone; it does not finish defleshing or degreasing. Hydrogen peroxide is the usual choice for a display skull. Sound adult skulls normally tolerate a controlled dilute treatment well, while prolonged or repeated exposure is unnecessary once the colour looks right. Published conservation sources are more cautious where research material, fragile bone or unknown previous treatments are involved. [cite:hendry]
 
-### A plain hydrogen peroxide bath {#peroxide-bath}
+Never use household chlorine bleach. It attacks the organic part of bone and can leave the surface brittle, chalky and permanently weakened. [cite:reddit] [cite:alaska]
 
-Choose plain aqueous hydrogen peroxide with a known concentration. For optional whitening of sound bone, 3% is a conservative starting concentration used in published skeletal preparation, rather than starting at 12%. Even this is not a guarantee against damage. [cite:harris]
+### A plain 3% hydrogen peroxide bath {#peroxide-bath}
 
-Use a compatible clean plastic container, enough liquid to contact the intended surface, and an extra tray to catch overflow. Work at room temperature out of direct sun. Inspect frequently from the start and stop once the result is adequate. Rinse thoroughly with clean water and let the skull dry naturally before deciding whether another treatment is justified.
+Plain 3% aqueous peroxide is the easiest concentration for a beginner because it can be used without dilution and the result is gradual. Published skeletal-preparation guidance also uses dilute peroxide for whitening. [cite:harris]
 
-There is no validated concentration-to-hours conversion for these varied skulls. Do not prescribe “overnight at 12%” or leave a bath unattended for days. Fragility, previous treatment, retained tissue and product formulation all change the outcome. Stop if the surface becomes chalky, roughened or starts shedding.
+1. Put the clean, degreased skull in a clean plastic tub and add enough peroxide to cover it. Keep antlers and horn sheaths out if you want to retain their natural colour.
+2. Cover the tub loosely to exclude dirt while allowing oxygen to escape. Peroxide slowly breaks down into water and oxygen, so a sealed container can pressurise. [cite:icsc]
+3. Keep it at room temperature and out of direct sun. Light and heat break peroxide down faster, wasting the active solution before it has finished whitening.
+4. Inspect after a few hours and then regularly. Remove the skull when it is slightly darker than your target; it will look paler after drying.
+5. Rinse thoroughly with clean water and let it dry slowly. Repeat a short treatment later if you want it whiter.
 
-<Aside title="Peroxide protection and pressure">
+Wear splash goggles and compatible gloves. Peroxide irritates skin and eyes and is an oxidizer, so keep it away from acetone, fuels, metals and other cleaners. Follow the product label if splashed. [cite:peroxide]
 
-Prevent skin and eye contact; wear splash protection and chemical-compatible gloves. Peroxide is an oxidizer: keep it separate from acetone and other organic solvents, incompatible metals and cleaning products. If splashed, flush with water promptly and follow the SDS and local poison-service advice. [cite:peroxide]
+### My diluted cream-developer method {#cream-developer}
 
-Decomposition releases oxygen; heat and light accelerate it. Do not seal a treatment container or bag, even with a dilute bath. External air is not needed to supply the reaction’s oxygen. The cited ILO card concerns concentrated peroxide and supports this chemistry, not permission to use its concentration here. [cite:icsc]
+I use Fanola 40 Vol Perfumed Cream Developer, labelled 12% hydrogen peroxide. I mix one part developer with roughly four to six parts water. If the stated 12% and volumes are accurate, the starting mixture is approximately 1.7–2.4% peroxide. It does not have to be measured like laboratory work; the important practical point is that I dilute the 12% product substantially. [cite:fanola]
 
-</Aside>
-
-### The collector’s cream developer {#cream-developer}
-
-I use Fanola 40 Vol Perfumed Cream Developer, labelled 12%, diluted with water. The retailer describes a hair-development product; that is not a bone-conservation approval. I have found it inexpensive, but price and formulation can change, so this guide does not publish a fixed current price. [cite:fanola]
-
-My note says “about 80% water”. If that means four parts water to one part 12% developer, the nominal arithmetic is about 2.4%; if it means adding water equal to 80% of the developer volume, it is about 6.7%. These are different mixtures. Cream density, formulation and whether a percentage is by mass or volume also matter: neither calculation establishes the measured strength of my previous baths.
-
-For a reproducible record, write the actual product and measured quantities. Plain aqueous peroxide is easier to characterize than a cream emulsion. A hair developer contains formulation ingredients beyond peroxide and water, so rinse residues thoroughly and do not assume all developers behave alike. My mixture can foam considerably; leave generous headroom and use a catch tray.
+The cream foams much more than plain liquid peroxide, so use a large open tub with generous empty space and place it inside a second tray. Turn the skull if thick foam keeps a surface out of contact. Once the colour is right, rinse every cavity carefully because cream products contain thickeners and other ingredients beyond peroxide and water.
 
 <Figure asset="whitening" />
 
-| Choice                           | Benefit                                               | Caution                                                    |
-| -------------------------------- | ----------------------------------------------------- | ---------------------------------------------------------- |
-| No whitening                     | Preserves natural colour and avoids another exposure  | Does not remove existing stains                            |
-| Plain 3% aqueous peroxide        | Known starting concentration; straightforward rinsing | Monitor for damage; no universal treatment time            |
-| Stronger peroxide, including 12% | More concentrated stock                               | Greater handling burden; not the recommended starting bath |
-| Cream developer                  | Clings to exposed surfaces                            | Extra ingredients; harder to rinse and quantify            |
-| Chlorine bleach                  | Not recommended                                       | Harsh on bone; do not substitute for peroxide              |
-
-Avoid household chlorine bleach (sodium hypochlorite): wildlife-agency guidance specifically cautions against it for skulls. Do not combine it with ammonia, peroxide or other cleaners. [cite:alaska]
-
-<Details title="Use less peroxide without chasing a stronger bath">
-
-First finish defleshing and degreasing so peroxide is not consumed by avoidable residues. Choose the smallest compatible tub that comfortably fits the skull, rotate only if you can keep all intended surfaces treated evenly, and keep separate parts in a smaller vessel.
-
-An open compatible plastic liner supported inside a rigid catch tray can reduce unused volume, but teeth may puncture it. Never zip or tie it closed. A brushed cream treatment uses less liquid but can whiten unevenly and leave material in recesses. Do not improvise a thickening paste with household powders; use only a documented bone-compatible formulation. Plain immersion is the simpler reproducible option here.
-
-</Details>
+| Choice                      | When it makes sense                                      | Practical note                                                     |
+| --------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------ |
+| No whitening                | You like the natural colour or want the least treatment  | Cream, tan and mottled bone can be perfectly clean                 |
+| Plain 3% peroxide           | Best beginner option for an even bath                    | Use as supplied, inspect regularly and rinse well                  |
+| Diluted 12% cream developer | Less liquid is available or a clinging product is useful | Dilute; leave headroom for foam; rinse thickener from cavities     |
+| Sun whitening               | Only a small change is wanted and weather is suitable    | Slow and less controllable; protect every loose piece from animals |
+| Chlorine bleach             | Never                                                    | Weakens bone and can cause lasting powdering                       |
 
 ## 5. Teeth, mandibles and final care {#assembly}
 
-Finish every wet process and let the parts dry before attaching anything. First arrange and photograph all loose teeth next to their probable positions. A clean specimen with deliberately removable parts can be more useful for study than one permanently glued into a display pose.
+Finish every wet stage and let the skull and loose parts dry before gluing. Wet sockets hide poor fits and slow adhesive curing.
 
 <Figure asset="assembly" />
 
 ### Replacing teeth {#teeth}
 
-Dry-fit every tooth without force. Match the root shape, side and neighbouring teeth; a tooth that stops high or rotates strangely may be in the wrong socket. Do not grind it or enlarge the socket to make it fit. If placement is uncertain, keep it labelled separately until identified.
+Dry-fit each tooth first. Root shape, wear surface and neighbouring teeth usually reveal the correct socket. If a tooth sits too high, points at an odd angle or will not enter without force, try another socket rather than grinding the root.
 
-I use super glue and have applied it over roughly half of the root. For a controlled repair, start with the smallest amount that holds rather than treating that coverage as a target. Apply to a hidden contact area, keep the visible crown clean, seat the tooth in the rehearsed orientation, and support it while the adhesive sets. Avoid filling the socket with excess glue.
+I use a small amount of super glue on part of the root. Rehearse the angle, apply one or two small drops to a hidden contact area, seat the tooth and hold it still while it sets. Filling the socket adds mess without improving a good fit.
 
 ### Choosing an adhesive {#adhesive-choice}
 
-AMNH distinguishes solvent-setting adhesives such as Paraloid B-72 from reactive products such as cyanoacrylate and epoxy; they differ in working and removal properties. Its guidance concerns fossils, so selecting a product for fresh bone still needs material-specific judgment. [cite:adhesives]
+White PVA glue is slower and easier to reverse with water, which makes it friendly for a first attempt. Paraloid B-72 is a conservation adhesive with better ageing and resolubility, but it requires preparation with solvents. Cyanoacrylate, or super glue, is fast and easy to buy but gives little repositioning time and is difficult to remove cleanly. [cite:adhesives]
 
-| Option                                      | Where it helps                                                | Main tradeoff                                                  |
-| ------------------------------------------- | ------------------------------------------------------------- | -------------------------------------------------------------- |
-| Keep parts separate                         | Study, uncertain placement, future treatment                  | Needs labelled, fitted storage                                 |
-| Conservation adhesive such as Paraloid B-72 | Planned, retreatable joins under an appropriate protocol      | Solvent handling and careful formulation                       |
-| White glue                                  | Simple small display joins; mentioned in the Alaska guide     | Formulations and ageing differ; not all are conservation grade |
-| Super glue                                  | Collector’s fast-setting method for sound, well-fitting parts | Little adjustment time; excess is difficult to correct         |
+| Option              | Best feature                                      | Main tradeoff                                         |
+| ------------------- | ------------------------------------------------- | ----------------------------------------------------- |
+| Keep parts separate | No irreversible decision                          | Small parts need a fitted storage compartment         |
+| White PVA glue      | Cheap, slow enough to adjust and water-reversible | Not every formulation ages well                       |
+| Paraloid B-72       | Stable and resoluble conservation choice          | Must be obtained and mixed with a solvent             |
+| Super glue          | Fast, strong and easy to buy                      | Very little adjustment time; excess is hard to remove |
 
-For an irreplaceable or fragile specimen, seek conservation advice before gluing. Do not coat the entire skull simply to make it shiny or hide grease. Leave a record of the product and attachment points.
+### Removing a tooth glued into the wrong socket {#removing-glue}
+
+Acetone can swell cured cyanoacrylate and make careful mechanical removal easier. Test a tiny hidden area first. With strong ventilation and eye protection, apply a very small amount around the join with a glass dropper or cotton swab, wait for it to penetrate, then gently test the tooth. Repeat instead of twisting hard. Do not soak an assembled skull unless you intend to degrease the surrounding bone as well. [cite:adhesives]
+
+Acetone may draw grease from the treated spot and change its colour relative to the rest of the skull. Let the area dry completely before regluing. Use the same fire, glove and waste precautions described in the acetone-degreasing section. [cite:acetone]
 
 ### Aligning the mandibles {#mandibles}
 
-The join between left and right lower-jaw halves is the mandibular symphysis, at the front; the temporomandibular joints connect the jaw to the skull behind. Rehearse the complete fit before adding adhesive. Check both joint positions and how the tooth rows meet, rather than aligning only the front seam.
+The left and right lower-jaw halves meet at the mandibular symphysis at the front. Before gluing that join, place both halves against the skull and check that the jaw joints seat correctly and the tooth rows meet naturally.
 
-I glue the separated halves at their front join. With badgers, I have found the jaw joints can trap the condyles: it may be necessary to seat each half separately before joining them. Treat this as a collector’s observation, not a reason to force every badger jaw into place. If it will not fit gently, leave the halves separate and investigate. Do not glue the moving jaw joints to the skull merely to hold a pose.
+With badgers, I have found that the jaw joints can trap the condyles. It may be necessary to place the two halves into their joints separately and only then bring the front ends together. If the fit is wrong, stop and check the orientation; forcing the jaws can break the joint or lock them in a crooked position.
 
-### Drying, storage and documentation {#storage}
+Glue the front symphysis if you want the mandible to behave as one piece. Do not glue the moving jaw joints to the skull unless a permanent fixed display is specifically intended.
 
-Dry in a supported position at room temperature, away from direct heat. Protect teeth and thin projections from pressure. Avoid abrupt changes in temperature and humidity, direct sun and heat sources; a suitable enclosure helps keep dust and environmental fluctuations down. Handle the dry skull with clean hands and support it from below. [cite:care]
+### Drying, storage and optional records {#storage}
 
-Before enclosing it, check recesses for moisture and review the dry surface for grease or residue. Store separated teeth and bones in labelled compartments with the same specimen identifier. Inspect later for oil, new cracks, loose joins or pest activity. Return to the relevant phase only when the problem is identified.
+Rinse away the final treatment and let the skull dry slowly at room temperature for several days. Keep it out of direct sun, an oven and direct contact with a radiator. Rapid uneven drying can crack teeth and warp or separate thin bone. [cite:reddit]
 
-Record the defleshing method, bath dates and temperatures, products and quantities, water changes, whitening exposure, adhesive, losses and repairs. Photograph the finished skull from consistent views before making measurements. These observations are more useful to a future preparator than a simple note saying “cleaned”.
+Before putting it in a closed box, check the braincase, tooth sockets and nasal cavity for moisture. Store it where temperature and humidity do not swing sharply, support the jaw and delicate projections, and keep loose parts in a small compartment with the skull. Check it again after a few weeks for returning grease, loose teeth, new cracks or insects. [cite:care]
+
+<Aside title="Optional · preserve the story of the specimen">
+
+For a personal display, notes are your choice. For a scientific or growing collection, a short record becomes valuable:
+
+1. Species identification
+2. Time and location it was found
+3. Preparation method
+4. Main cleaning products
+5. Any lost or repaired parts
+6. Keep a permanent identifier with the dry skull
+7. Characteristics of the specific skull to distinquish from others (useful if labels are lost)
+8. Measurements of dry skull
+9. If possible, full body weight of fresh animal before preparation
+
+</Aside>
 
 <Figure asset="finished" />
 
-<Aside title="Finished means stable and documented">
+<Aside title="Finished">
 
-All retained parts are accounted for; the surface is clean and fully dry; joins fit without force; and the treatment record stays with the specimen. A slightly cream-coloured skull with intact detail is a successful result.
+The skull is free of tissue, fully degreased and dry. Its colour is where you want it, every tooth is correctly placed, and no join is under strain. Clean natural bone does not have to be brilliant white.
 
 </Aside>

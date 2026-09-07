@@ -48,6 +48,20 @@ export function GuideContents({
       cancelAnimationFrame(frame);
     };
   }, [headings]);
+  useEffect(() => {
+    const revealHashTarget = () => {
+      const id = decodeURIComponent(window.location.hash.slice(1));
+      const target = id ? document.getElementById(id) : null;
+      if (
+        target instanceof HTMLDetailsElement &&
+        target.dataset.guideDisclosure
+      )
+        target.open = true;
+    };
+    revealHashTarget();
+    window.addEventListener("hashchange", revealHashTarget);
+    return () => window.removeEventListener("hashchange", revealHashTarget);
+  }, []);
   const links = (
     <ol>
       {headings
@@ -58,6 +72,12 @@ export function GuideContents({
               href={`#${h.id}`}
               aria-current={active === h.id ? "location" : undefined}
               onClick={() => {
+                const target = document.getElementById(h.id);
+                if (
+                  target instanceof HTMLDetailsElement &&
+                  target.dataset.guideDisclosure
+                )
+                  target.open = true;
                 destination.current = h.id;
                 dialog.current?.close();
               }}

@@ -6,8 +6,11 @@ describe("preparation guide publication contract", () => {
   it("compiles all stages, stable method targets, comparisons, and citations", () => {
     const guide = parseGuide(source);
     expect(guide.metadata.stages).toHaveLength(5);
-    expect(guide.blocks.filter((b) => b.kind === "table")).toHaveLength(4);
-    expect(guide.metadata.citations).toHaveLength(13);
+    expect(guide.blocks.filter((b) => b.kind === "table")).toHaveLength(5);
+    expect(guide.metadata.citations).toHaveLength(20);
+    expect(guide.blocks.filter((b) => b.kind === "disclosure")).toHaveLength(
+      13,
+    );
     expect(guide.headings.map((h) => h.id)).toEqual(
       expect.arrayContaining([
         "before-you-begin",
@@ -26,16 +29,16 @@ describe("preparation guide publication contract", () => {
     ["duplicate anchor", source.replace("{#skinning}", "{#separation}")],
     [
       "missing workflow target",
-      source.replace("{#maceration}", "{#different}"),
+      source.replace('id="maceration"', 'id="different"'),
     ],
-    ["unclosed disclosure", source.replace("</Details>", "")],
+    ["unclosed disclosure", source.replace("</Disclosure>", "")],
     ["raw HTML", source + "\n<script>alert(1)</script>\n"],
     ["MDX expression", source + "\n{process.env.SECRET}\n"],
     [
       "ragged table",
       source.replace(
-        /\| Weeks; cold conditions may mean months\s*\|/,
-        "| Weeks | Extra column |",
+        /\| Fresh or frozen head\s+\|/,
+        "| Fresh or frozen head | Extra column |",
       ),
     ],
   ])("rejects %s", (_label, input) =>
