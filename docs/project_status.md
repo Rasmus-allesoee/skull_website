@@ -1,16 +1,16 @@
 # Project status
 
-**Snapshot date:** 2026-09-07
+**Snapshot date:** 2026-09-08
 
-**Current phase:** Skull Preparation guide owner-feedback v1 plus final condition-table refinements — implemented and verified locally; owner product review pending
+**Current phase:** Skull Preparation guide publication — implemented, verified, and owner-approved
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, focused Phase 5 is merged at `f098caf`, the Measurements milestone is merged through PR #11 at `c36838a`, and the Home redesign plus bounded feedback refinements are merged through PR #12 at `4db6804`. `agent/skull-prep-page` now contains the owner-authorized preparation guide, the complete owner-feedback v1 overhaul, and the final condition-table refinements. The revised beginner-facing content, progressive disclosures, citation previews, fourteen-asset media set, image quick previews, linked start points, navigation and canonical documentation pass the local gate. Owner product review is the next step.
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, focused Phase 5 is merged at `f098caf`, the Measurements milestone is merged through PR #11 at `c36838a`, and the Home redesign plus bounded feedback refinements are merged through PR #12 at `4db6804`. The clean `agent/skull-prep-release` branch contains the owner-authorized preparation guide, the complete owner-feedback v1 overhaul, and the final condition-table refinements through `daa0f05`. The revised beginner-facing content, progressive disclosures, citation previews, fourteen-asset media set, image quick previews, linked start points, navigation and canonical documentation pass the local gate. The owner approved publication and a normal merge on 2026-09-08.
 
-**Next action:** Owner review of `/guides/skull-preparation` on desktop and mobile. Address only preparation-page feedback; publication requires separate explicit authorization. Age/condition methodology, remaining supporting pages, Phase 3.3, and Phase 6 remain separately gated.
+**Next action:** Push the publication-status checkpoint, open the Preparation pull request against `main`, verify remote checks and reviews, then merge with normal merge history. After updating local `main`, create a new branch for the separately authorized migration/release work.
 
 ## 1. Current objective
 
-Preserve the verified owner-feedback v1 preparation-guide work on `agent/skull-prep-page` and await owner product review. No push, PR, merge or deployment is authorized. Do not begin age/condition methodology, Phase 3.3, Phase 6, or another supporting scope without explicit authorization.
+Publish and merge the verified owner-approved Preparation milestone from `agent/skull-prep-release` without including the unrelated migration/release planning checkpoint from `agent/skull-prep-page`. Preserve owner context files and do not begin migration implementation until the new branch is created from updated `main`.
 
 ## 1.0 Owner-authorized Skull Preparation guide
 

@@ -399,7 +399,7 @@ These items were explicitly removed from the focused map milestone. They require
 
 ## 8.2 Owner-authorized Skull Preparation guide
 
-The 2026-09-06 brief authorizes only the complete `/guides/skull-preparation` page and its coherent local commit. System, content decisions, source/media contracts, acceptance checks and remaining limitations are maintained in [skull_preparation_guide.md](skull_preparation_guide.md). It does not authorize remote publication, a Guides hub, other editorial pages, or Phase 6. Exact local gate evidence and owner-review status live in `project_status.md`.
+The 2026-09-06 brief authorizes only the complete `/guides/skull-preparation` page and its coherent commits. The owner approved publication and a normal merge on 2026-09-08; the clean publication branch is `agent/skull-prep-release`. System, content decisions, source/media contracts, acceptance checks and remaining limitations are maintained in [skull_preparation_guide.md](skull_preparation_guide.md). It does not authorize a Guides hub or other editorial pages. Exact local gate evidence and publication status live in `project_status.md`.
 
 ## 9. Phase 6 — complete audited collection migration
 
