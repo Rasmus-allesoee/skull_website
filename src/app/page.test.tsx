@@ -36,7 +36,7 @@ describe("museum home", () => {
     ).toHaveAttribute("href", "/methodology");
     expect(
       screen.getByRole("link", {
-        name: "Open the skull preparation guide outline",
+        name: "Open the skull preparation guide",
       }),
     ).toHaveAttribute("href", "/guides/skull-preparation");
 

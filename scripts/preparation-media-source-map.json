@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "source_root": "agent_context/preparation_page",
+  "entries": [
+    {
+      "asset_id": "intake",
+      "source_file": "mårhund_head.jpg"
+    },
+    {
+      "asset_id": "skinned-head",
+      "source_file": "mårhund_head_defleshed.jpg"
+    },
+    {
+      "asset_id": "maceration",
+      "source_file": "mårhund_skull_maceration.jpg"
+    },
+    {
+      "asset_id": "degreasing",
+      "source_file": "degreasing-illustration.png"
+    },
+    {
+      "asset_id": "oily-spot",
+      "source_file": "skull_with_oily_spot.png"
+    },
+    {
+      "asset_id": "whitening",
+      "source_file": "mårhund_skull_h2o2.jpg"
+    },
+    {
+      "asset_id": "assembly",
+      "source_file": "mårhund_skull_cleaned_unassembled.jpg"
+    },
+    {
+      "asset_id": "finished",
+      "source_file": "mårhund_angle_1.png"
+    },
+    {
+      "asset_id": "condition-fresh-body",
+      "source_file": "condition-fresh-body.png"
+    },
+    {
+      "asset_id": "condition-fresh-head",
+      "source_file": "condition-fresh-head.png"
+    },
+    {
+      "asset_id": "condition-partly-decomposed-head",
+      "source_file": "condition-partly-decomposed-head.png"
+    },
+    {
+      "asset_id": "condition-mummified-head",
+      "source_file": "condition-mummified-head.png"
+    },
+    {
+      "asset_id": "condition-greasy-skull",
+      "source_file": "condition-greasy-skull.png"
+    },
+    {
+      "asset_id": "condition-clean-skull",
+      "source_file": "condition-clean-skull.png"
+    }
+  ]
+}

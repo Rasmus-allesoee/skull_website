@@ -28,7 +28,7 @@ test("home and catalog expose published records with metadata and no detectable 
   ).toHaveAttribute("href", "/methodology");
   await expect(
     page.getByRole("link", {
-      name: "Open the skull preparation guide outline",
+      name: "Open the skull preparation guide",
     }),
   ).toHaveAttribute("href", "/guides/skull-preparation");
   await expect(page.locator(".home-hub-card-species img")).toHaveAttribute(
@@ -653,7 +653,7 @@ test("a failed Home image does not remove the surrounding navigation", async ({
   ).toBeVisible();
   await expect(
     page.getByRole("link", {
-      name: "Open the skull preparation guide outline",
+      name: "Open the skull preparation guide",
     }),
   ).toHaveAttribute("href", "/guides/skull-preparation");
   await expect(page.locator(".specimen-field-link")).toHaveCount(10);

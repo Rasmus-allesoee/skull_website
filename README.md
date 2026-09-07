@@ -2,9 +2,9 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**The redesigned Home milestone is implemented locally and ready for owner review:** `/` now combines a static-first interactive ten-slot field with varied canonical views, full 18-specimen coverage across three bounded arrangements, the six canonical collection statistics, and one compact five-card destination hub. The focused Phase 5 map remains merged in `main`; the local Home and Measurements checkpoints have not been pushed, opened as a pull request, or merged.
+**Current local milestone:** the preparation guide owner-feedback v1 overhaul plus the final condition-table refinements are implemented, verified, and owner-approved for publication from `agent/skull-prep-release`. The Measurements and Home milestones are merged into `main`; the Preparation pull request is the next publication gate.
 
-Start at `/`, browse the catalog at `/species`, explore public specimen locations at `/map`, inspect the measurement reference at `/methodology`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`. A non-procedural preparation-guide foundation is available at `/guides/skull-preparation`.
+Start at `/`, browse the catalog at `/species`, explore public specimen locations at `/map`, inspect the measurement reference at `/methodology`, open the full beginner preparation guide at `/guides/skull-preparation`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`.
 
 ## Project principles
 
@@ -173,3 +173,7 @@ Source code is licensed under the [MIT License](LICENSE). Photographs, written c
 ## Contributing
 
 Repository development guidance is in [CONTRIBUTING.md](CONTRIBUTING.md). Public specimen contributions are a later product workflow and will initially use a requirements guide plus direct contact—not anonymous uploads.
+
+### Preparation guide maintenance
+
+The full page system and source decisions are documented in [docs/skull_preparation_guide.md](docs/skull_preparation_guide.md). Edit its reviewed MDX and media declaration under `content/guides/`. Run `pnpm media:process:preparation` only when deliberately promoting the owner-authorized ignored source images; `pnpm check` and `pnpm build` validate/use the curated public derivatives without those masters.

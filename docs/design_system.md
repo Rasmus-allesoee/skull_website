@@ -177,6 +177,7 @@ Responsive checkpoints are content-derived, with explicit QA at:
 - **Measurement differences:** compact profile-selected table to the right of the skull pair at wide widths and below it when constrained: six mammal rows, nine bird rows, six explicitly mapped bird/mammal rows, or four shared fallback rows. The current specimen is always the comparison numerator. Absolute wording states longer/shorter, wider/narrower, higher/lower, or heavier/lighter; a restrained semantic color is supplementary; ratio uses sensible precision. Cross-class tables state that mapped width/height landmarks differ. Approximation guidance appears only when a displayed result uses an approximate source measurement.
 - **Collection record:** `Metadata` kicker; owner, source, date, location/precision, sex, age, and condition; reference dialogs for age and the five-level condition scale; pathology, trauma, teeth set, and retained skeleton in one additional-data disclosure. Phase 5 adds a nearby `View on map` link for public coordinates, targeting the accessible focused map route rather than embedding MapLibre early.
 - **Preparation timeline:** semantic ordered list; unknown dates/durations do not break order.
+- **Preparation condition table:** the starting-condition table may pair each row with a compact square condition thumbnail. Thumbnails have an ordinary image-link fallback, a visible AI-illustration note when generated, brass internal guide links in the “Best place to start” column, and a native quick-preview dialog when JavaScript is available. The dialog is nonessential enhancement; the table text and links remain fully usable without it.
 - **Guide dialog:** native modal semantics, labelled close control, left-aligned title/note, single-line desktop title where space permits, scrollable table, mobile row cards, Escape, and focus restoration.
 - **Citation list:** stable keys/backlinks, readable metadata, external-link indication.
 - **Related taxa:** up to three same-family cards and three deterministic collection-wide cards; current/duplicate taxa excluded and empty groups omitted. With one published taxon the component deliberately renders nothing.
@@ -195,6 +196,9 @@ Responsive checkpoints are content-derived, with explicit QA at:
 - **Map key/control semantics:** local mammal/bird shapes plus text labels; approximate/selection/uncertainty and cluster count never rely on color alone. Canvas clusters receive synchronized count-labelled DOM buttons for keyboard inspection.
 - **Article shell:** breadcrumb, title/summary, metadata, table of contents, prose, figures, citations.
 - **Callout:** information, caution, or safety state with explicit heading/icon/text.
+- **Preparation workflow:** five bounded stage cards with internal method dividers, an explicit `Move on when` label, and a separate basic-route callout. On phones the same cards stack without losing their image, method links or outcome hierarchy.
+- **Preparation method disclosure:** native summary plus brass italic H3 or brass H4, explicit open/close text, bordered body and stable deep-link ID. Hash navigation progressively opens the target; without JavaScript the native summary remains the complete control. Shared preliminary steps remain visible while method-dependent instructions stay collapsed by default.
+- **Preparation citation card:** the brass inline reference number is a button that opens one small native popover with author, title and external source action. The complete numbered reference list remains below the article for scanning and fallback.
 
 ## 10. Interaction states
 
@@ -237,6 +241,7 @@ Do not show false skeletons on statically available content. Avoid disabled navi
 The writing voice is calm, precise, factual, and welcoming.
 
 - Prefer common direct words over institutional filler.
+- Preparation prose is beginner-first, practical and personal: give the action, useful range, finish test and troubleshooting consequence. Use first person for the owner's experience, identify community practice as such, and remove internal editorial debate or sentences about what the guide does not provide.
 - Use “Not recorded,” “Not applicable,” “Approximate location,” and “Identification uncertain” consistently.
 - Do not sensationalize death, roadkill, decomposition, or chemicals.
 - Distinguish specimen observation from general species fact.
@@ -289,3 +294,9 @@ The combined Phase 3.2/4 checkpoint recasts `/species` as a working visual catal
 - Uncalibrated skulls visually overlaid as if dimensions were comparable.
 - Animation that delays reading or ignores reduced motion.
 - Accessibility overlays in place of correct components.
+
+## Preparation reference page
+
+The preparation guide uses a five-stage image workflow with real phase/method links, short completion outcomes and an optional-whitening branch. A bounded sticky strip opens a native left-hand contents drawer; Escape/backdrop/Close restore focus, destination links focus their heading, and a native disclosure provides the static fallback. Reading position is a navigation cue, not a progress-completion claim.
+
+Prose remains at roughly 72 characters, with wide semantic comparison tables that become labelled rows on phones. Larger figures preserve complete source framing; cropped workflow previews remain supplementary to text. AI provenance is visibly labelled. Safety/completion callouts stay open; only nonessential detail uses native disclosures. Reuse existing neutral/brass tokens, visible focus, reduced-motion anchor behavior and forced-color semantics. Page architecture and content decisions live in [skull_preparation_guide.md](skull_preparation_guide.md).

@@ -1,16 +1,81 @@
 # Project status
 
-**Snapshot date:** 2026-09-05
+**Snapshot date:** 2026-09-08
 
-**Current phase:** Owner-authorized Home redesign milestone — complete locally; owner review pending
+**Current phase:** Skull Preparation guide publication — implemented, verified, and owner-approved
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, and focused Phase 5 is merged at `f098caf`. On `agent/next-additions`, the owner-authorized Measurements milestone and feedback refinements remain locally verified, and the Home redesign plus its bounded feedback refinements now pass the local implementation gate. `/` server-renders a ten-slot first state with varied canonical views, exposes all 18 published specimens across three overlapping arrangements, retains canonical counts, and presents one compact Species/Map/Measurements/Preparation/Comparison hub. No push, pull request, merge, deployment, or later phase is authorized.
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, focused Phase 5 is merged at `f098caf`, the Measurements milestone is merged through PR #11 at `c36838a`, and the Home redesign plus bounded feedback refinements are merged through PR #12 at `4db6804`. The clean `agent/skull-prep-release` branch contains the owner-authorized preparation guide, the complete owner-feedback v1 overhaul, and the final condition-table refinements through `daa0f05`. The revised beginner-facing content, progressive disclosures, citation previews, fourteen-asset media set, image quick previews, linked start points, navigation and canonical documentation pass the local gate. The owner approved publication and a normal merge on 2026-09-08.
 
-**Next phase:** None authorized. The exact next action is owner review of the redesigned `/` at desktop and mobile widths; publication requires a separate explicit instruction. Age/condition methodology, remaining supporting pages, Phase 3.3, and Phase 6 remain separately gated.
+**Next action:** Push the publication-status checkpoint, open the Preparation pull request against `main`, verify remote checks and reviews, then merge with normal merge history. After updating local `main`, create a new branch for the separately authorized migration/release work.
 
 ## 1. Current objective
 
-Stop at the locally verified Home acceptance gate and present it for owner review. Preserve the merged map and local Measurements checkpoints; do not publish this branch or begin age/condition methodology, another supporting page, Phase 3.3, Phase 6, or any other scope without explicit authorization.
+Publish and merge the verified owner-approved Preparation milestone from `agent/skull-prep-release` without including the unrelated migration/release planning checkpoint from `agent/skull-prep-page`. Preserve owner context files and do not begin migration implementation until the new branch is created from updated `main`.
+
+## 1.0 Owner-authorized Skull Preparation guide
+
+### Implementation and decisions
+
+- Replaced the existing `/guides/skull-preparation` outline with a complete static guide: preparation/separation/skinning, five defleshing methods, degreasing, optional whitening, tooth/jaw assembly, dry storage and documentation. Five illustrated workflow stages expose phase/method links; four visible comparison tables and three native detail disclosures support the prose.
+- Added a sticky compact contents control and native modal drawer with reading-position cues, keyboard wrapping, Escape/backdrop/Close restoration and destination focus. The full prose, figures, tables and native contents disclosure work without JavaScript; mobile comparison rows remain labelled and semantic.
+- Canonical restricted MDX compiles to `.generated/preparation-guide-v1.json` without executing JSX or reading staging input. Thirteen claim-linked references use the shared profile/guide citation component and one reference list. Null publication years render `n.d.` rather than guessed dates.
+- Promoted six owner-authorized photographs and one explicitly labelled AI degreasing illustration into seven metadata-stripped WebPs (1,401 KiB total). The new media command and normal content/media validation enforce declaration/use parity, dimensions, size and metadata removal. Original photographs, brief and generated master remain ignored.
+- Kept collector practice distinct from sourced guidance. Corrected airtight-container/venting advice, explained ambiguous developer dilution, treated whitening as optional and distinguished the mandibular symphysis from the jaw joints. Exact species/age timing and a universal optimal temperature were not invented; specialist solvent options retain concentration-specific safety boundaries. The concise system reference and generation prompt are in [skull_preparation_guide.md](skull_preparation_guide.md).
+- Updated Home link wording, relevant existing journeys, canonical architecture/content/design/plan documents and the repository index. No collection record, stable URL, rights grant, Guides hub or other phase changed.
+
+### Verification
+
+- Pinned Node 24.18.0 / pnpm 11.21.0. `CI=true pnpm check` passed: formatting, ESLint, media/content validation, strict TypeScript, **76/76 unit/component tests**, and **six expected invalid-fixture failures**. Four existing missing-optional-frontal-view warnings remain unchanged.
+- Production build passed and prerendered **77/77 routes**, including the complete guide. The final build was repeated after the visually identified procedure-numbering correction; focused formatting/lint checks also passed.
+- Full Chromium regression: **76/76 passed**, without retries, in 3.4 minutes. After the route-only procedure-marker correction, the final focused guide suite passed **5/5 without retries** in 21.7 seconds, including a visible-numbering assertion. Coverage includes all workflow/citation destinations, hash/history behavior, drawer focus trapping/restoration, axe, 320/360/390/768/1024 px reflow, no JavaScript, reduced motion, forced colors, failed images and absence of map/search requests from the guide.
+- Manual production visual review: 1440×900 overview; 390×844 workflow, stacked comparisons and drawer; 360×800 prose; and 720×900 effective-200%-width comparison. The 720 px measurement confirmed document width exactly equals viewport width; automated phone/tablet checks also found no horizontal overflow. Screenshots remain ignored under `output/playwright/`. The final marker check confirms numbered procedures survive the global style reset.
+- Scope and ignored-file audit: only intended guide code/content/curated media, required integrations, tests and canonical documentation belong to the checkpoint; owner context, raw masters, generated output and unrelated screenshots are excluded.
+
+### Next step and boundary
+
+The guide is ready for owner desktop/mobile review. Source-check status is an editorial review, not independent professional certification; timing ranges and collector observations remain labelled. No push, PR, merge, deployment, remote CI, or later phase was performed or authorized.
+
+## 1.0.1 Owner-directed Skull Preparation feedback v1 overhaul (2026-09-07)
+
+### Beginner content and source model
+
+- Rewrote the guide around the decisions a first-time preparator actually makes: how to assess a find, choose among five defleshing methods, recognise the endpoint of each phase, recover from common problems and decide when optional whitening or recordkeeping is useful. Practical first-person observations remain explicit; community practices are attributed rather than presented as universal rules.
+- Expanded the bibliography from 13 to 20 claim-linked sources using the owner-supplied Reddit guide and two local PDFs plus reviewed museum, practitioner and chemical-safety material. Water maceration now covers pressure-safe winter opening, useful temperature/time ranges, partial water changes, nasal/braincase rinsing and loose-tooth handling. Dermestids, burial, above-ground decay and controlled heat each have method-specific setup, timing, finish and risk guidance.
+- Made detergent the accessible default degreaser, added a method comparison and practical ammonia/acetone procedures, and placed the supplied oily-patch photograph at the point where visitors decide whether degreasing is complete. Corrected the cream-developer dilution to one part 12% product with four to six parts water (approximately 1.7–2.4%) and added a local acetone recovery procedure for a wrongly glued tooth.
+
+### Page and interaction refinement
+
+- Rebuilt the five-stage overview as bounded workflow cards with internal hierarchy and explicit `Move on when` outcomes. H1 is brass/bold, H2 brass/regular and H3 brass/italic; redundant source/provenance/meta labels were removed from the visible page.
+- Added 13 native method/procedure disclosures and six semantic comparison tables. Contents/hash links reveal their target disclosure; all prose and controls remain useful without JavaScript. Inline citation numbers now open a compact single-source native popover while the complete reference list remains the static fallback.
+- Expanded the curated set from seven to eight metadata-stripped WebPs by processing the supplied oily-patch photograph. No standalone Fanola bottle photograph was present in the supplied staging files, so the existing treatment photograph remains and no unreviewed third-party product image was introduced.
+
+### Verification and boundary
+
+- Pinned Node 24.18.0 / pnpm 11.21.0. Final `CI=true pnpm check` passed formatting, ESLint, media/content validation, strict TypeScript, **76/76 unit/component tests** and **six expected invalid-fixture failures**. The existing four missing-optional-frontal-view warnings remain unchanged. Media validation confirms eight preparation derivatives; content compilation confirms five workflow stages and 20 references.
+- Production build passed and prerendered **77/77 routes**. The final full Chromium regression passed **76/76 without retries** in 3.0 minutes, including the focused **5/5** preparation journeys. Preparation coverage includes all methods/references, the citation popover, drawer focus, mobile disclosures, axe, no JavaScript, deep links, reduced motion, forced colors, failed images and overflow.
+- Manual production review at 1440 × 900 and 390 × 844 confirmed the revised workflow hierarchy, mobile stacking, opened maceration disclosure and compact citation popover. The production console contained no errors.
+- The work remains local on `agent/skull-prep-page`. Owner review is required before any commit publication, push, pull request, merge or deployment; no later phase was started.
+
+## 1.0.2 Owner-directed Skull Preparation condition-table refinements (2026-09-07)
+
+### Content and media
+
+- Added `Fresh animal body` to the “Before you begin” starting-condition table and revised every row’s “Best place to start” text so it uses general preferred-method wording where several defleshing routes remain suitable.
+- Added brass internal links from the table to separation, skinning, rehydration, defleshing, degreasing, whitening and assembly anchors. The renamed “Key watch-out” column now gives one distinct practical warning or diagnostic clue for each starting condition.
+- Generated and curated six coherent square *Vulpes vulpes* condition thumbnails for fresh body, fresh/frozen head, partly decomposed head, dry/mummified head, greasy bare skull, and clean grease-free skull. They are explicitly labelled AI-generated visual cues rather than collection evidence, processed through the existing metadata-stripping preparation-media pipeline, and retained alongside the eight existing guide assets.
+
+### Interaction and implementation
+
+- Extended the restricted guide dialect with only validated `[label](#stable-id)` links and `![alt](asset:asset-id)` preparation-media tokens. Unknown anchors, unsupported syntax, undeclared media, and unused media still fail the content contract.
+- Added a progressively enhanced native condition-image quick preview. Each thumbnail uses a validated size-versioned direct asset URL so replacement derivatives cannot remain hidden behind a stale optimizer cache. Without JavaScript, it remains an ordinary image link; with JavaScript, it opens an accessible native dialog, closes from its outside backdrop, and restores focus on close. The table remains semantic and usable on narrow screens.
+- Clarified degreasing timing as specific to the documented clear dish-detergent bath (roughly 1:10–1:20 soap-to-water), while noting that formulation, concentration, temperature, ammonia and acetone change the timing and safety profile.
+
+### Verification and boundary
+
+- Reprocessed and validated fourteen preparation WebPs with sRGB conversion, full square/aspect preservation, no EXIF/IPTC/XMP metadata, 1000–1600 px longest-edge bounds and the existing per-file size contract.
+- Added parser/media-parity and focused browser assertions for linked start points, condition thumbnails, quick-preview fallback, and detergent-specific timing. The complete guide remains static-first and no-JavaScript useful.
+- Final validation after the copy and illustration refinement passed formatting, lint, media/content validation, strict TypeScript, **78/78 unit/component tests**, **six expected invalid-fixture failures**, the production build (**77/77 routes**), and the focused preparation browser suite (**6/6**). The new outside-backdrop dismissal and focus restoration are covered by the browser test.
+- The refinement remains local on `agent/skull-prep-page`; no push, pull request, merge, deployment or later phase was started.
 
 ## 1.1 Owner-authorized Home redesign milestone
 
@@ -601,5 +666,17 @@ No unresolved content, rights, or publication blocker prevents local Home review
 - Replaced broad enhanced anchor hit regions with compact alpha-derived SVG paths generated from each reviewed specimen WebP. Transparent gaps remain pass-through, so background specimens are reachable through overlapping foreground anatomy; semantic links and the static/no-JavaScript fallback remain intact.
 - Restored two-dimensional native field panning for narrow/zoomed touch layouts and removed the mobile identity action line. Mobile identity cards now use a small capped width, reduced typography, and compact padding so they do not obscure the focused skull.
 - The full repository gate passes: formatting, ESLint, media/content validation, TypeScript, 68 unit tests, and invalid-fixture validation. Production build prerenders all 77 routes, the focused Home Chromium suite passes 12/12, and the complete Chromium regression passes 68/68. Manual desktop/mobile inspection confirms precise silhouette activation, overlap pass-through, compact cards, and zero horizontal overflow. The branch remains local and unpublished.
+
+### 2026-09-06 — Measurements and Home milestones merged; preparation branch created
+
+- Split the verified `agent/next-additions` history at `a6c1845` into the preserved `agent/measurement-page` branch and the Home-only continuation `agent/home-redesign`. Both branches were pushed without staging the existing owner-provided `agent_context/` files.
+- Measurement PR #11 merged into `main` with normal merge commit `c36838a`; Home PR #12 then merged with normal merge commit `4db6804`. The source branches remain preserved on the remote.
+- Created and pushed `agent/skull-prep-page` from the updated `origin/main` at `4db6804`. No preparation-guide implementation has begun; the branch is ready for the next approved scope.
+
+### 2026-09-06 — Skull Preparation guide verified locally
+
+- Completed the owner-authorized illustrated preparation guide and canonical page-system document, including all five defleshing alternatives, chemical/adhesive comparisons, seven curated images, thirteen references and resilient drawer/static navigation.
+- The full quality gate, 77-route production build and 76/76 Chromium regression pass. Final route-only procedure-numbering refinement passed a rebuilt production check and all five focused guide journeys. Responsive manual review and source/media/scope audits pass.
+- Preserve the coherent local checkpoint on `agent/skull-prep-page` for owner review. No push, PR, merge, deployment, other editorial page or later phase was started.
 
 Future entries stay concise and evidence-based. Git history owns file-level chronology; this ledger owns phase outcomes, decisions, blockers, and next action.
