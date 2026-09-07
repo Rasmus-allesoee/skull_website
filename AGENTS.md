@@ -20,9 +20,9 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **the owner-authorized Measurements and Home milestones are merged into `main` through PR #11 (`c36838a`) and PR #12 (`4db6804`); `agent/skull-prep-page` now contains the locally verified owner-feedback v1 preparation-guide overhaul; owner review is tracked in `docs/project_status.md`**. The focused map-only Phase 5 implementation remains merged into `main` at `f098caf`, and the combined Phase 3.2/4 work remains merged at `9a0e1d0`. Age/condition methodology, other supporting/editorial pages, the optional Phase 3.3 comprehensive tree, and Phase 6 remain deferred. Consult `docs/project_status.md` for exact evidence and the next action. Do not begin preparation implementation beyond an owner-approved scope or publish any later milestone without explicit authorization.
+Current phase: **the owner-authorized Measurements and Home milestones are merged into `main` through PR #11 (`c36838a`) and PR #12 (`4db6804`); the Preparation guide is approved for publication from `agent/skull-prep-page`; and the owner has authorized the complete Phase 6 migration audit using updated raw exports before v1 release preparation**. The focused map-only Phase 5 implementation remains merged into `main` at `f098caf`, and the combined Phase 3.2/4 work remains merged at `9a0e1d0`. Age/condition methodology, other supporting/editorial pages, and the optional Phase 3.3 comprehensive tree remain deferred. Consult `docs/project_status.md` for exact evidence and the next action. Do not publish remote changes or begin deployment until the migration and release gates are verified.
 
-Use the neutral working title **Skull Collection** from central site configuration until the final name is selected.
+Use the selected public name **Skull Collection** from central site configuration. A custom domain and optional logo/brand mark remain deferred.
 
 ## 2. Mandatory reading order
 
@@ -89,7 +89,7 @@ Local context paths:
 - `agent_context/prompt_phase_3_feedback.md` — owner feedback defining the bounded Phase 3.1 catalog/migration/refinement scope.
 - `agent_context/interactive_taxonomic_tree_plan.md` — owner product direction for the Phase 3.1 tree foundation and future comprehensive Phase 3.3 experience; canonical guidance lives in `docs/interactive_taxonomic_tree.md`.
 - `agent_context/interactive_tree_sketch.png` and the Phase 3.1 reference-site screenshots — local visual context only, never runtime assets.
-- `agent_context/metadata_csv/` — ignored partial spreadsheet exports supplied during Phase 3; migration evidence only, never runtime or canonical input.
+- `agent_context/metadata_csv/` — ignored owner-supplied raw spreadsheet exports, including the updated `taxa_raw.csv` and `specimens_raw.csv`; authorized Phase 6 audit evidence only, never runtime or canonical input.
 - `agent_context/prompt_species_page_redesign_suggestions.md` and `agent_context/species_page_redesign_phase_3_2.md` — owner-approved input and binding Phase 3.2/Phase 4 catalog specification; canonical implemented behavior lives in `docs/`.
 - `agent_context/phase_5_map_feature_plan.md` — owner-authored map-only Phase 5 implementation brief; supporting/editorial pages remain deferred.
 - `agent_context/home_page_plan.md` — owner-authored Home-page redesign implementation brief covering the interactive specimen-field entrance, live collection statistics, destination hub cards, static map preview, and current-route boundaries.
@@ -109,7 +109,7 @@ Local context paths:
 
 Phase 2 uses only staging metadata row `ID = 1` and the six `mårhund_*_1.png` files as migration evidence for `TAX-0001` / `SPEC-0001`. The reviewed canonical values live in `content/`; never make a normal build depend on the ignored staging sources. Owner feedback supersedes the initial slice's display wording and condition classification, but it does not authorize inventing unrecorded pathology, trauma, teeth-set, skeleton, age-evidence, or reuse facts. The Phase 2.2 adult-human comparison source is also ignored staging input; only its reviewed declaration and processed public WebP derivative belong in Git.
 
-Phase 3.0 expanded the one canonical `specimens.csv` header with reviewed mammal/bird measurement fields and explicit statuses. Phase 3.1 later normalized only the 15-taxon/18-specimen review slice that could be reconciled to 104 cleaned images and satisfy the current publication contract. Raw exports/masters remain ignored, 33 legacy specimen rows remain blocked migration candidates, and Phase 6 must complete the full row/rights/note/media/publication audit recorded in `docs/phase_3_1_migration_audit.md`.
+Phase 3.0 expanded the one canonical `specimens.csv` header with reviewed mammal/bird measurement fields and explicit statuses. Phase 3.1 later normalized only the 15-taxon/18-specimen review slice that could be reconciled to 104 cleaned images and satisfy the current publication contract. Raw exports/masters remain ignored, 33 legacy specimen rows remain blocked migration candidates, and the owner has now authorized Phase 6 to reconcile the updated raw exports through the full row/rights/note/media/publication audit recorded in `docs/phase_3_1_migration_audit.md`.
 
 Archival `.af`, PSD, camera originals, TIFF/PNG masters, raw workbooks, private notes, and EXIF/GPS-bearing media stay outside Git. Public specimen derivatives use immutable specimen IDs and canonical views only after `pnpm media:process` and `pnpm validate:media` confirm metadata stripping and the rest of the media contract. Public comparison references use stable reference IDs and the separate `pnpm media:process:reference` maintenance command.
 

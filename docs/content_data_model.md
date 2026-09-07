@@ -2,13 +2,13 @@
 
 **Status:** Approved contract; schema version 4, class-aware measurements, and generated search projection implemented
 
-**Last reviewed:** 2026-09-02
+**Last reviewed:** 2026-09-08
 
 ## 1. Purpose
 
 This document defines how taxonomic identities, physical specimens, measurements, provenance, preparation, editorial profiles, citations, and media relate. It is the contract between human-maintained content and the application.
 
-The current `agent_context/skulls_meta.csv` is an incomplete illustrative working sheet. The partial `agent_context/metadata_csv/*.csv` exports include useful bird-measurement evidence but also legacy row IDs, helper columns, incomplete taxonomy, and unreviewed publication fields. None is a production input or may dictate identity. Phase 2 used only the user-selected row with source `ID = 1` as evidence for a manually curated representative record; Phase 6 ingests reviewed normalized exports after stable IDs, public notes, rights, and image filenames are complete.
+The current `agent_context/skulls_meta.csv` is an incomplete illustrative working sheet. The updated `agent_context/metadata_csv/taxa_raw.csv` and `specimens_raw.csv` exports include useful corrections and additional metadata, but also legacy row IDs, helper/header evidence, incomplete taxonomy, and unreviewed publication fields. None is a production input or may dictate identity. Phase 2 used only the user-selected row with source `ID = 1` as evidence for a manually curated representative record; Phase 6 now audits and then ingests reviewed normalized exports only after stable IDs, public notes, rights, and image filenames are complete.
 
 ## 2. Sources of truth
 
@@ -560,7 +560,7 @@ The complete accepted/blocked record matrix and transformation rationale are in 
 
 ## 17. Migration from the current draft
 
-The draft metadata, partial `metadata_csv` exports, and staged images are input evidence, not production sources. Phase 3.1 converted only the audited review slice above. Complete migration in Phase 6 will:
+The draft metadata, updated raw `metadata_csv` exports, and staged images are input evidence, not production sources. Phase 3.1 converted only the audited review slice above. Complete migration in Phase 6 will:
 
 1. preserve a private backup of the original working sheet and image masters;
 2. reconcile every row against the Phase 3.1 accepted/blocked ledger, preserve its public IDs/URLs, and assign immutable IDs only to genuinely unmapped physical records;

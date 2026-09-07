@@ -2,9 +2,9 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Skull Preparation guide phase — branch `agent/skull-prep-page` created; implementation not started
+**Current phase:** Owner-authorized Phase 6 complete migration audit and v1 release preparation
 
-**Last reviewed:** 2026-09-06
+**Last reviewed:** 2026-09-08
 
 ## 1. How to use this plan
 
@@ -51,7 +51,7 @@ Phase 6 complete audited collection migration
 Phase 7 release hardening, production, and v1.0.0
 ```
 
-Supporting/editorial content remains required before release but is now a separately authorized milestone whose exact placement after the focused map gate is an owner scheduling decision.
+Supporting/editorial content is now post-release work unless the owner explicitly brings a page into the core release scope. The initial release keeps the implemented core museum routes and defers the remaining supporting pages.
 
 Phase 2 is deliberately the strongest early gate: it tests data, media, URL, design, accessibility, and build decisions with one real specimen before repetition makes change costly.
 
@@ -399,13 +399,13 @@ These items were explicitly removed from the focused map milestone. They require
 
 ## 8.2 Owner-authorized Skull Preparation guide
 
-The 2026-09-06 brief authorizes only the complete `/guides/skull-preparation` page and its coherent local commit. System, content decisions, source/media contracts, acceptance checks and remaining limitations are maintained in [skull_preparation_guide.md](skull_preparation_guide.md). It does not authorize remote publication, a Guides hub, other editorial pages, or Phase 6. Exact local gate evidence and owner-review status live in `project_status.md`.
+The 2026-09-06 brief authorized the complete `/guides/skull-preparation` page and its coherent local commits. The owner has now approved its publication and merge, but requested that the complete Phase 6 migration audit run first against the updated raw exports. System, content decisions, source/media contracts, acceptance checks and remaining limitations are maintained in [skull_preparation_guide.md](skull_preparation_guide.md). This does not authorize a Guides hub or other deferred editorial pages. Exact local gate evidence and the publication sequence live in `project_status.md`.
 
 ## 9. Phase 6 — complete audited collection migration
 
 ### Dependencies
 
-- User supplies completed/corrected metadata for unresolved rows and any missing accepted image sets.
+- The owner-supplied corrected raw exports are available under ignored `agent_context/metadata_csv/` and must be preserved as audit evidence before any normalization.
 - Rights/credits and public-note decisions are available.
 - Phase 2 compiler/media contract is stable.
 - The Phase 3.1 ID/URL map and [migration audit](phase_3_1_migration_audit.md) are treated as the starting checkpoint, not discarded.
@@ -413,7 +413,7 @@ The 2026-09-06 brief authorizes only the complete `/guides/skull-preparation` pa
 ### Ingestion
 
 - [ ] Back up private originals outside Git.
-- [ ] Reconcile all 22 legacy taxon rows and 51 specimen rows against the Phase 3.1 accepted/blocked ledger.
+- [ ] Parse and reconcile every record represented by the updated `taxa_raw.csv` and `specimens_raw.csv` exports against the Phase 3.1 accepted/blocked ledger; do not infer record counts from their physical line totals or helper/header evidence.
 - [ ] Map replacement data into `taxa.csv`/`specimens.csv` without treating legacy row numbers as identity.
 - [ ] Preserve and review Phase 3.1 immutable IDs/URLs; assign new IDs only to genuinely unmapped physical records.
 - [ ] Review slugs, hierarchy, default specimens, and publication states.
@@ -424,7 +424,7 @@ The 2026-09-06 brief authorizes only the complete `/guides/skull-preparation` pa
 - [ ] Add concise cited profiles only where useful reviewed overview/identification content exists; otherwise keep the optional profile absent or draft without public placeholder prose.
 - [ ] Keep incomplete records as drafts.
 - [ ] Review repository size against the media-storage threshold.
-- [ ] Normalize the partial exports currently retained under ignored `agent_context/metadata_csv/`; do not reuse their row-number IDs or extra spreadsheet-only helper columns as canonical identity.
+- [ ] Normalize the updated exports currently retained under ignored `agent_context/metadata_csv/`; do not reuse their row-number IDs or extra spreadsheet-only helper columns as canonical identity.
 
 ### Acceptance gate
 
@@ -438,8 +438,9 @@ The 2026-09-06 brief authorizes only the complete `/guides/skull-preparation` pa
 
 ### Product and content completion
 
-- [ ] Select final name, domain, central metadata, public email, and brand mark.
-- [ ] Complete/review all in-scope editorial and policy pages.
+- [x] Select the public name (`Skull Collection`) and public contact email (`rasmus.allesoe@gmail.com`).
+- [ ] Set the production `NEXT_PUBLIC_SITE_URL` to the generated Vercel URL; defer a custom domain and optional logo/brand mark.
+- [ ] Review the core release content and explicitly record About, Rights, Privacy, Accessibility, Contribution, and other supporting/editorial pages as post-release work.
 - [ ] Resolve known issues or explicitly remove affected records/features from release scope.
 - [ ] Verify rights for every public asset and data source.
 
@@ -455,9 +456,9 @@ The 2026-09-06 brief authorizes only the complete `/guides/skull-preparation` pa
 
 ### Deployment and release
 
-- [ ] Create/configure Vercel project and GitHub preview deployments.
+- [ ] Create/configure the Vercel project and GitHub preview deployments after the migration audit; use the generated temporary Vercel URL initially.
 - [ ] Confirm plan terms are appropriate before any commercial use or material traffic.
-- [ ] Configure production only from `main` and attach custom domain.
+- [ ] Configure production only from `main`; defer attaching a custom domain.
 - [ ] Verify production independently, including map provider attribution and headers.
 - [ ] Test rollback to the prior Vercel deployment and Git checkpoint.
 - [ ] Tag `v1.0.0`, publish release notes, and record release evidence/status.

@@ -2,7 +2,7 @@
 
 **Status:** Accepted baseline; measurement-reference compilation and route-scoped interaction architecture implemented
 
-**Last reviewed:** 2026-09-02
+**Last reviewed:** 2026-09-08
 
 ## 1. Architectural goals
 
@@ -325,10 +325,10 @@ Security headers are introduced alongside the feature hosts they must permit, th
 |---|---|---|
 | Local | Working branch and local content | Development and authoring |
 | CI | Pull-request commit, clean install | Deterministic checks and production build |
-| Preview | Vercel pull-request deployment, later | Visual/content review against exact commit |
-| Production | Vercel deployment from `main`, later | Public site only |
+| Preview | Vercel pull-request deployment, after the migration audit | Visual/content review against exact commit |
+| Production | Vercel deployment from `main`, initially at the generated temporary URL | Public site only |
 
-No Vercel project is created in Phase 0/1. Phase 7 selects the final name/domain and contact address, configures production, verifies headers and metadata, tests rollback, and tags `v1.0.0`.
+No Vercel project is created yet. The selected public name is `Skull Collection`, the initial public contact email is `rasmus.allesoe@gmail.com`, and the first release uses Vercel's generated URL. A custom domain and optional brand mark are deferred. Phase 7 configures the project after the migration audit, verifies headers and metadata, tests rollback, and tags `v1.0.0`.
 
 For same-network phone/tablet development, `dev:network` binds to `0.0.0.0`, while `next.config.ts` supplies exact loopback and currently detected non-internal IPv4 values to `allowedDevOrigins`. Visitors use the computer's LAN IP, never the bind address. This prevents the Next.js development HMR WebSocket from being rejected and repeatedly reloading the page. `preview:network` is the production-like fallback and has no development HMR channel.
 

@@ -2,7 +2,7 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**Current local milestone:** the preparation guide owner-feedback v1 overhaul plus the final condition-table refinements are implemented and verified locally on `agent/skull-prep-page`; owner review is pending. The Measurements and Home milestones are merged into `main`; the preparation work remains local and unpublished.
+**Current local milestone:** the preparation guide owner-feedback v1 overhaul plus the final condition-table refinements are implemented and verified locally on `agent/skull-prep-page`; publication is approved and held while the updated raw CSV migration audit runs. The Measurements and Home milestones are merged into `main`.
 
 Start at `/`, browse the catalog at `/species`, explore public specimen locations at `/map`, inspect the measurement reference at `/methodology`, open the full beginner preparation guide at `/guides/skull-preparation`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`.
 
@@ -164,7 +164,7 @@ Do not commit secrets, raw workbooks, archival Affinity/PSD files, private notes
 
 ## Deployment
 
-Vercel is the planned hosting target, connected to GitHub after the release-hardening phase. Pull requests will later receive preview deployments and `main` will become the only production source. No production project, domain, analytics, or runtime service is configured through the current local Measurements checkpoint.
+Vercel is the selected hosting target. After the migration audit, the preparation branch can be published and reviewed through a Vercel Preview; the first production release should use Vercel's generated temporary URL and deploy only from `main`. A custom domain and optional logo/brand mark are deferred. No Vercel project or production deployment is configured yet, and no analytics or runtime service is required.
 
 ## Rights and licence
 

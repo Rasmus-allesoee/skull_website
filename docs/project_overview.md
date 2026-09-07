@@ -6,7 +6,7 @@
 
 **Interface language:** English
 
-**Last reviewed:** 2026-09-02
+**Last reviewed:** 2026-09-08
 
 ## 1. Vision
 
@@ -14,7 +14,7 @@ Skull Collection will be a fast, visually led online natural-history museum buil
 
 The site begins with the collector's own Danish specimens but is designed for a larger, carefully curated reference collection. It must be credible enough for identification and comparison, accessible enough for curious non-specialists, and structured enough to remain maintainable as specimens, contributors, countries, and media types grow.
 
-The shared museum shell, redesigned Home hub, class/order/family/genus routes, review-quality 15-taxon/18-specimen collection, combined Phase 3.2/Phase 4 catalog discovery, and focused Phase 5 `/map` workspace are implemented. The Home entrance now combines a static-first interactive specimen field, canonical six-rank counts, and compact previews of Species, Map, Measurements, Preparation, and the future comparison experience. The owner-authorized Measurements milestone adds the static `/methodology` reference with 21 definitions, five real-skull diagrams, 24 registered programmatic SVG occurrences, responsive interaction, compact tappable mobile previews, adaptive diagram-anchored previews/details, and a complete semantic fallback. The comprehensive interactive tree (Phase 3.3), remaining supporting/editorial routes, complete audited collection migration, and production remain later work.
+The shared museum shell, redesigned Home hub, class/order/family/genus routes, review-quality 15-taxon/18-specimen collection, combined Phase 3.2/Phase 4 catalog discovery, focused Phase 5 `/map` workspace, Measurements reference, and owner-approved Preparation guide are implemented locally. The Home entrance combines a static-first interactive specimen field, canonical six-rank counts, and compact previews of Species, Map, Measurements, Preparation, and the future comparison experience. The complete audited collection migration and production remain the next release gates. About, Rights, Privacy, Accessibility, Contribution, and other supporting/editorial routes are intentionally deferred from the initial core release.
 
 ## 2. Product principles
 
@@ -59,7 +59,7 @@ The shared museum shell, redesigned Home hub, class/order/family/genus routes, r
 ### Included in the first public release
 
 - English interface with scientific, English, and Danish search aliases.
-- Home, Species, taxonomy landing pages, Map, Guides, Contribution, About, Methodology, Rights, Privacy, and Accessibility.
+- Home, Species, taxonomy landing pages, Map, Methodology, and the complete Preparation guide.
 - Class → order → family → genus → taxon navigation where those ranks exist.
 - Search across taxa, taxonomic ranks, aliases, and specimen IDs.
 - Species and specimen result modes with skull-length and skull-weight filters.
@@ -68,8 +68,11 @@ The shared museum shell, redesigned Home hub, class/order/family/genus routes, r
 - Six-view galleries where available, with lateral view mandatory.
 - Measurements, specimen biology, provenance, preparation, rights, and citations.
 - A Denmark-first interactive map with an equivalent result list.
-- Contribution requirements and a contact action, without public uploads.
 - Static metadata, sitemap, Open Graph imagery, and structured data.
+
+### Initial core-release boundary
+
+The first deployment is intentionally limited to the implemented core museum experience: Home, Species/catalog and taxonomy browsing, Map, Measurements, and the complete Preparation guide. Supporting/editorial and policy pages (`/guides`, `/contribute`, `/about`, `/rights`, `/privacy`, and `/accessibility`) remain documented future routes but are explicitly deferred until after the initial release. Existing structured rights fields, credits, the all-rights-reserved footer, and no-tracking behavior still apply even while the dedicated policy pages are deferred.
 
 ### Explicitly excluded from v1
 
@@ -242,14 +245,14 @@ The combined Phase 3.2/4 implementation makes `/species` the operational collect
 - Specify background/surface, lighting, focus stacking, camera alignment, scale/calibration, minimum resolution, color profile, file format, canonical views, and naming.
 - Request taxonomy guess, locality/date precision, measurements, preparation, owner/credit, rights grant, and public notes.
 - Explain acceptance, requested corrections, attribution, edits, takedown contact, and non-guaranteed publication.
-- Use a contact link in v1. Do not imply that attaching large source files to email is the final transfer method.
+- When contribution work is authorized, use the recorded public contact email rather than implying that attaching large source files to email is the final transfer method.
 
 ### About and supporting pages
 
 - About remains personal and factual: collection purpose, acquisition sources, ethical/legal context, preparation, photography, and project development.
 - The implemented first Methodology section documents the collection's measurement vocabulary without claiming a universal osteometric standard or retroactively redefining stored legacy values. It uses real-skull reference imagery, programmatic annotations, a complete semantic table, and direct links from specimen measurement guides.
 - Later Methodology sections still separate observations from external species facts and explain confidence, taxonomy, date, and coordinate semantics.
-- Rights, Privacy, and Accessibility must reflect actual behavior at release time and are release-blocking content, not boilerplate placeholders.
+- When Rights, Privacy, and Accessibility pages are authorized, they must reflect actual behavior at that release time and must not be boilerplate placeholders. The initial core release defers these dedicated pages while retaining the existing rights fields, footer notice, no-tracking behavior, and accessibility checks.
 
 ## 8. Cross-cutting behavior
 
@@ -273,7 +276,7 @@ The combined Phase 3.2/4 implementation makes `/species` the operational collect
 - `taxa.csv` and `specimens.csv` remain the only canonical collection tables; bird measurements do not create a second specimen source.
 - Mammal and bird profiles control applicability, table order, definition guidance, and comparison rows. Unknown future classes use the conservative shared-field fallback until a reviewed profile is added.
 - `not_recorded` means an applicable measurement was not supplied; `not_applicable` is reserved for fields outside the specimen's class profile.
-- The partial exports under `agent_context/metadata_csv/` are migration evidence, not runtime/public files. Phase 3.1 normalized only the accepted 15-taxon/18-specimen review slice and recorded every boundary in `phase_3_1_migration_audit.md`; Phase 6 still performs the complete source-row, rights, note, taxonomy, and publication audit.
+- The updated exports under `agent_context/metadata_csv/` are migration evidence, not runtime/public files. Phase 3.1 normalized only the accepted 15-taxon/18-specimen review slice and recorded every boundary in `phase_3_1_migration_audit.md`; the owner has authorized Phase 6 to perform the complete source-row, rights, note, taxonomy, and publication audit before release.
 
 ### Photography and gallery
 
@@ -329,6 +332,6 @@ The first public release is complete only when:
 
 ## 11. Naming and future change
 
-“Skull Collection” is a neutral working title stored in one central configuration. The final title, domain, public email, and brand mark are release-hardening decisions. Product structure must not depend on the temporary name.
+“Skull Collection” is the selected public name stored in one central configuration. The initial release uses a generated Vercel URL; a custom domain and optional logo/brand mark are deferred. The public contact email is `rasmus.allesoe@gmail.com` and should be wired into a real contact surface when that supporting page is authorized. Product structure must not depend on the temporary URL or optional mark.
 
 The Phase 2.2 specimen-page scale card establishes reusable calibrated comparison primitives. A dedicated public two-select comparison route, overlays/split sliders, 360°, 3D, illustrations, direct contributions, database administration, analytics, localization, and data export remain deferred work. They require their documented prerequisites and a new scope decision; they are not to be smuggled into an earlier phase.

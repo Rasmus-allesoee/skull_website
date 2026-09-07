@@ -1,6 +1,6 @@
 # Skull preparation guide
 
-Status: owner-feedback v1 overhaul and owner-directed condition-table refinements implemented and verified locally on 2026-09-07; owner review pending. No remote publication authorized.
+Status: owner-feedback v1 overhaul and owner-directed condition-table refinements implemented and verified locally on 2026-09-07; owner approved first-release publication and merge on 2026-09-08. Remote publication remains held until the authorized Phase 6 migration audit is complete.
 
 ## Intent and visitor structure
 

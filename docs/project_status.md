@@ -1,16 +1,33 @@
 # Project status
 
-**Snapshot date:** 2026-09-07
+**Snapshot date:** 2026-09-08
 
-**Current phase:** Skull Preparation guide owner-feedback v1 plus final condition-table refinements — implemented and verified locally; owner product review pending
+**Current phase:** Owner-authorized Phase 6 complete migration audit and v1 release preparation
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, focused Phase 5 is merged at `f098caf`, the Measurements milestone is merged through PR #11 at `c36838a`, and the Home redesign plus bounded feedback refinements are merged through PR #12 at `4db6804`. `agent/skull-prep-page` now contains the owner-authorized preparation guide, the complete owner-feedback v1 overhaul, and the final condition-table refinements. The revised beginner-facing content, progressive disclosures, citation previews, fourteen-asset media set, image quick previews, linked start points, navigation and canonical documentation pass the local gate. Owner product review is the next step.
+**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, focused Phase 5 is merged at `f098caf`, the Measurements milestone is merged through PR #11 at `c36838a`, and the Home redesign plus bounded feedback refinements are merged through PR #12 at `4db6804`. `agent/skull-prep-page` contains the owner-approved preparation guide and its final local fixes; its remote publication and merge are approved but intentionally held until the updated raw CSV migration audit is complete. The owner has selected the core pages for the first release, retained the public name `Skull Collection`, supplied a public contact email, chosen a temporary Vercel URL instead of a custom domain, and explicitly deferred About, Rights, Privacy, Accessibility, and other supporting pages until after the initial release.
 
-**Next action:** Owner review of `/guides/skull-preparation` on desktop and mobile. Address only preparation-page feedback; publication requires separate explicit authorization. Age/condition methodology, remaining supporting pages, Phase 3.3, and Phase 6 remain separately gated.
+**Next action:** Audit `agent_context/metadata_csv/taxa_raw.csv` and `agent_context/metadata_csv/specimens_raw.csv` against the Phase 3.1 accepted/blocked ledger and current canonical sources. Do not copy rows into `content/` until IDs, taxonomy, media, rights, notes, dates, coordinates, measurements, and publication states are reviewed.
 
 ## 1. Current objective
 
-Preserve the verified owner-feedback v1 preparation-guide work on `agent/skull-prep-page` and await owner product review. No push, PR, merge or deployment is authorized. Do not begin age/condition methodology, Phase 3.3, Phase 6, or another supporting scope without explicit authorization.
+Complete the owner-authorized migration audit, then publish the approved preparation branch and proceed through Vercel Preview before production. Keep raw exports, private masters, generated artifacts, and deferred supporting pages outside the public release.
+
+## 1.0.3 Owner-authorized migration and v1 release decisions (2026-09-08)
+
+### Decisions recorded
+
+- The complete Phase 6 migration audit is authorized before deployment. Updated ignored inputs are `agent_context/metadata_csv/taxa_raw.csv` (22 physical lines) and `agent_context/metadata_csv/specimens_raw.csv` (53 physical lines), both modified 2026-09-07. The files contain legacy/header/formatting evidence, so the audit must parse and reconcile records rather than infer counts from line totals. They remain audit evidence, not runtime or canonical sources.
+- The Preparation guide is approved for the first release. Push/PR/merge of `agent/skull-prep-page` is authorized after the migration sequence is settled; no remote write has been performed in this checkpoint.
+- Public name remains `Skull Collection`; public contact email is `rasmus.allesoee@gmail.com`. A separate logo/brand mark is not required for v1; the current text identity is acceptable.
+- The first deployment should use Vercel's generated temporary URL. A paid/custom domain decision is deferred.
+- About, Rights, Privacy, Accessibility, Contribution, and other supporting/editorial pages are explicitly deferred from the initial core release. Existing rights fields, credits, the all-rights-reserved notice, no-tracking behavior, and release validation still apply. The supplied contact email is recorded for the later contact surface; this checkpoint does not add a new public contact route.
+- Recommended deployment sequence is Preview first, then Production from `main` after migration/release checks pass. The owner will sign into Vercel/GitHub directly; credentials and tokens must not be shared in chat.
+
+### Immediate audit boundary
+
+- Reconcile every raw taxon/specimen row to the accepted/blocked Phase 3.1 matrix without reusing spreadsheet row numbers as identity.
+- Preserve existing public IDs/URLs, identify genuinely new physical records, and review all corrected/new taxonomy, media, rights, public notes, dates, coordinates, measurements, and publication states.
+- Produce a migration report and proposed canonical CSV/media changes before promoting any record to `published`.
 
 ## 1.0 Owner-authorized Skull Preparation guide
 
