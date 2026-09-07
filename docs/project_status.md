@@ -61,19 +61,20 @@ The guide is ready for owner desktop/mobile review. Source-check status is an ed
 ### Content and media
 
 - Added `Fresh animal body` to the “Before you begin” starting-condition table and revised every row’s “Best place to start” text so it uses general preferred-method wording where several defleshing routes remain suitable.
-- Added brass internal links from the table to separation, skinning, rehydration, defleshing, degreasing, whitening and assembly anchors. “What to expect” copy now distinguishes freezing, loose tissue, grease returning on drying, and optional whitening consistently.
+- Added brass internal links from the table to separation, skinning, rehydration, defleshing, degreasing, whitening and assembly anchors. The renamed “Key watch-out” column now gives one distinct practical warning or diagnostic clue for each starting condition.
 - Generated and curated six coherent square *Vulpes vulpes* condition thumbnails for fresh body, fresh/frozen head, partly decomposed head, dry/mummified head, greasy bare skull, and clean grease-free skull. They are explicitly labelled AI-generated visual cues rather than collection evidence, processed through the existing metadata-stripping preparation-media pipeline, and retained alongside the eight existing guide assets.
 
 ### Interaction and implementation
 
 - Extended the restricted guide dialect with only validated `[label](#stable-id)` links and `![alt](asset:asset-id)` preparation-media tokens. Unknown anchors, unsupported syntax, undeclared media, and unused media still fail the content contract.
-- Added a progressively enhanced native condition-image quick preview. Without JavaScript, each thumbnail remains an ordinary image link; with JavaScript, it opens an accessible native dialog and restores focus on close. The table remains semantic and usable on narrow screens.
+- Added a progressively enhanced native condition-image quick preview. Without JavaScript, each thumbnail remains an ordinary image link; with JavaScript, it opens an accessible native dialog, closes from its outside backdrop, and restores focus on close. The table remains semantic and usable on narrow screens.
 - Clarified degreasing timing as specific to the documented clear dish-detergent bath (roughly 1:10–1:20 soap-to-water), while noting that formulation, concentration, temperature, ammonia and acetone change the timing and safety profile.
 
 ### Verification and boundary
 
 - Reprocessed and validated fourteen preparation WebPs with sRGB conversion, full square/aspect preservation, no EXIF/IPTC/XMP metadata, 1000–1600 px longest-edge bounds and the existing per-file size contract.
 - Added parser/media-parity and focused browser assertions for linked start points, condition thumbnails, quick-preview fallback, and detergent-specific timing. The complete guide remains static-first and no-JavaScript useful.
+- Final validation after the copy and illustration refinement passed formatting, lint, media/content validation, strict TypeScript, **78/78 unit/component tests**, **six expected invalid-fixture failures**, the production build (**77/77 routes**), and the focused preparation browser suite (**6/6**). The new outside-backdrop dismissal and focus restoration are covered by the browser test.
 - The refinement remains local on `agent/skull-prep-page`; no push, pull request, merge, deployment or later phase was started.
 
 ## 1.1 Owner-authorized Home redesign milestone

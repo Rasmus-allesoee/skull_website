@@ -94,7 +94,7 @@
     {
       "asset_id": "condition-partly-decomposed-head",
       "public_path": "/media/preparation/condition-partly-decomposed-head.webp",
-      "alt": "AI-generated partly decomposed red fox head with patchy fur loss.",
+      "alt": "AI-generated partly decomposed red fox head with exposed skull and damp tissue.",
       "caption": "AI-generated condition illustration for a partly decomposed head; it is a visual cue, not a documentary photograph.",
       "credit": "OpenAI image generation",
       "rights": "all_rights_reserved",
@@ -103,7 +103,7 @@
     {
       "asset_id": "condition-mummified-head",
       "public_path": "/media/preparation/condition-mummified-head.webp",
-      "alt": "AI-generated dry or mummified red fox head.",
+      "alt": "AI-generated dry, mummified red fox head with sparse fur and exposed bone.",
       "caption": "AI-generated condition illustration for a dry or mummified head; it is a visual cue, not a documentary photograph.",
       "credit": "OpenAI image generation",
       "rights": "all_rights_reserved",

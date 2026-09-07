@@ -18,6 +18,9 @@ test("preparation guide exposes all methods, sources and working workflow links"
   await expect(page.locator(".references li")).toHaveCount(20);
   await expect(page.locator(".prep-figure")).toHaveCount(7);
   await expect(page.locator(".prep-condition-thumbnail")).toHaveCount(6);
+  await expect(
+    page.getByRole("columnheader", { name: "Key watch-out" }),
+  ).toBeVisible();
   await expect(page.locator(".prep-condition-cell").first()).toContainText(
     "Fresh animal body",
   );
@@ -86,6 +89,11 @@ test("condition thumbnails progressively enhance to a focus-restoring quick prev
   const dialog = page.locator(".prep-condition-lightbox[open]");
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText("AI-generated condition illustration");
+  await page.mouse.click(4, 4);
+  await expect(dialog).not.toBeVisible();
+  await expect(trigger).toBeFocused();
+  await trigger.click();
+  await expect(dialog).toBeVisible();
   await dialog.getByRole("button", { name: "Close image" }).click();
   await expect(dialog).not.toBeVisible();
   await expect(trigger).toBeFocused();

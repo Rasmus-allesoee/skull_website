@@ -20,6 +20,10 @@ export function PreparationConditionThumbnail({
     dialog.showModal();
   }
 
+  function closeOnBackdrop(event: MouseEvent<HTMLDialogElement>) {
+    if (event.target === event.currentTarget) dialogRef.current?.close();
+  }
+
   return (
     <>
       <span className="prep-condition-thumbnail">
@@ -42,6 +46,7 @@ export function PreparationConditionThumbnail({
         ref={dialogRef}
         className="prep-condition-lightbox"
         aria-labelledby={titleId}
+        onClick={closeOnBackdrop}
         onClose={() => triggerRef.current?.focus()}
       >
         <div className="prep-condition-lightbox-frame">
