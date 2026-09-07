@@ -12,6 +12,9 @@ export function PreparationConditionThumbnail({
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLAnchorElement>(null);
   const titleId = `prep-condition-${asset.assetId}-title`;
+  // The validated byte count changes when an editorial derivative is replaced;
+  // the query keeps browsers/CDNs from reusing an older same-path image.
+  const imageSrc = `${asset.publicPath}?v=${asset.bytes}`;
 
   function openPreview(event: MouseEvent<HTMLAnchorElement>) {
     const dialog = dialogRef.current;
@@ -29,15 +32,16 @@ export function PreparationConditionThumbnail({
       <span className="prep-condition-thumbnail">
         <a
           ref={triggerRef}
-          href={asset.publicPath}
+          href={imageSrc}
           aria-label={`Enlarge ${asset.alt}`}
           onClick={openPreview}
         >
           <Image
-            src={asset.publicPath}
+            src={imageSrc}
             width={asset.width}
             height={asset.height}
             alt={asset.alt}
+            unoptimized
             sizes="(max-width: 42rem) 4rem, 4.5rem"
           />
         </a>
@@ -56,10 +60,11 @@ export function PreparationConditionThumbnail({
           <h2 id={titleId}>{asset.alt}</h2>
           <Image
             className="prep-condition-lightbox-image"
-            src={asset.publicPath}
+            src={imageSrc}
             width={asset.width}
             height={asset.height}
             alt=""
+            unoptimized
             sizes="(max-width: 42rem) calc(100vw - 2rem), 44rem"
           />
           <p>{asset.caption}</p>

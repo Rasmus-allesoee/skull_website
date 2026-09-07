@@ -19,6 +19,11 @@ test("preparation guide exposes all methods, sources and working workflow links"
   await expect(page.locator(".prep-figure")).toHaveCount(7);
   await expect(page.locator(".prep-condition-thumbnail")).toHaveCount(6);
   await expect(
+    page.locator(
+      '.prep-condition-thumbnail a[href*="condition-partly-decomposed-head.webp?v="]',
+    ),
+  ).toHaveCount(1);
+  await expect(
     page.getByRole("columnheader", { name: "Key watch-out" }),
   ).toBeVisible();
   await expect(page.locator(".prep-condition-cell").first()).toContainText(
@@ -192,7 +197,10 @@ test("static guide works without JavaScript and every table retains semantic con
   await expect(page.locator(".prep-condition-thumbnail a")).toHaveCount(6);
   await expect(
     page.locator(".prep-condition-thumbnail a").first(),
-  ).toHaveAttribute("href", "/media/preparation/condition-fresh-body.webp");
+  ).toHaveAttribute(
+    "href",
+    /^\/media\/preparation\/condition-fresh-body\.webp\?v=\d+$/,
+  );
   expect(
     await page
       .locator(".prep-article > ol")

@@ -67,7 +67,7 @@ The guide is ready for owner desktop/mobile review. Source-check status is an ed
 ### Interaction and implementation
 
 - Extended the restricted guide dialect with only validated `[label](#stable-id)` links and `![alt](asset:asset-id)` preparation-media tokens. Unknown anchors, unsupported syntax, undeclared media, and unused media still fail the content contract.
-- Added a progressively enhanced native condition-image quick preview. Without JavaScript, each thumbnail remains an ordinary image link; with JavaScript, it opens an accessible native dialog, closes from its outside backdrop, and restores focus on close. The table remains semantic and usable on narrow screens.
+- Added a progressively enhanced native condition-image quick preview. Each thumbnail uses a validated size-versioned direct asset URL so replacement derivatives cannot remain hidden behind a stale optimizer cache. Without JavaScript, it remains an ordinary image link; with JavaScript, it opens an accessible native dialog, closes from its outside backdrop, and restores focus on close. The table remains semantic and usable on narrow screens.
 - Clarified degreasing timing as specific to the documented clear dish-detergent bath (roughly 1:10–1:20 soap-to-water), while noting that formulation, concentration, temperature, ammonia and acetone change the timing and safety profile.
 
 ### Verification and boundary
