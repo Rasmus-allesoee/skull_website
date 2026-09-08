@@ -4,6 +4,7 @@ import { getRelatedTaxa } from "@/data/catalog";
 import { getEligibleSkullComparisons } from "@/data/comparison";
 import type { ExhibitRecord } from "@/data/collection";
 import { humanizeToken } from "@/domain/content/display";
+import { resolveMeasurementProfile } from "@/domain/content/types";
 import { RelatedTaxa } from "@/features/catalog/RelatedTaxa";
 
 import { CollectionRecord } from "./CollectionRecord";
@@ -92,7 +93,13 @@ export function ExhibitPage({
         className="record-grid content-section"
         aria-label="Specimen record"
       >
-        <CollectionRecord specimen={specimen} />
+        <CollectionRecord
+          specimen={specimen}
+          measurementProfile={resolveMeasurementProfile(
+            taxon.hierarchy.classSlug,
+            taxon.hierarchy.className,
+          )}
+        />
         <PreparationTimeline specimen={specimen} />
       </section>
       <RelatedTaxa suggestions={suggestions} />

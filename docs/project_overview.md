@@ -273,7 +273,7 @@ The combined Phase 3.2/4 implementation makes `/species` the operational collect
 - `taxa.csv` and `specimens.csv` remain the only canonical collection tables; bird measurements do not create a second specimen source.
 - Mammal and bird profiles control applicability, table order, definition guidance, and comparison rows. Unknown future classes use the conservative shared-field fallback until a reviewed profile is added.
 - `not_recorded` means an applicable measurement was not supplied; `not_applicable` is reserved for fields outside the specimen's class profile.
-- The partial exports under `agent_context/metadata_csv/` are migration evidence, not runtime/public files. Phase 3.1 normalized only the accepted 15-taxon/18-specimen review slice and recorded every boundary in `phase_3_1_migration_audit.md`; Phase 6 still performs the complete source-row, rights, note, taxonomy, and publication audit.
+- The exports under `agent_context/metadata_csv/` are ignored migration evidence, not runtime/public files. Phase 6 completed the source-row, rights, note, taxonomy, and publication audit while retaining the accepted 15-taxon/18-specimen public set. The unified canonical CSV includes a validated taxon-plus-owner-label crosswalk beside immutable public IDs.
 
 ### Photography and gallery
 

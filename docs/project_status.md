@@ -2,15 +2,24 @@
 
 **Snapshot date:** 2026-09-08
 
-**Current phase:** Skull Preparation guide publication — implemented, verified, and owner-approved
+**Current phase:** Phase 6 migration complete; Phase 7 release hardening active
 
-**Overall state:** The combined Phase 3.2/4 work is merged into `main` at `9a0e1d0`, focused Phase 5 is merged at `f098caf`, the Measurements milestone is merged through PR #11 at `c36838a`, and the Home redesign plus bounded feedback refinements are merged through PR #12 at `4db6804`. The clean `agent/skull-prep-release` branch contains the owner-authorized preparation guide, the complete owner-feedback v1 overhaul, and the final condition-table refinements through `daa0f05`. The revised beginner-facing content, progressive disclosures, citation previews, fourteen-asset media set, image quick previews, linked start points, navigation and canonical documentation pass the local gate. The owner approved publication and a normal merge on 2026-09-08.
+**Overall state:** Measurements, Home, and Preparation are merged into `main`; Preparation landed through PR #13 at merge commit `0e332ac`. On `agent/v1-release`, the complete Phase 6 audit reconciles 22 taxon rows, 52 specimen rows, 12 bird-measurement rows, and 104 reviewed PNGs. The owner-amended proposal is applied to canonical schema version 5 without changing the 15 public taxa, 18 public specimens, stable defaults, or URLs. Thirty-one source specimens remain deferred for missing reviewed media and three are rejected. Release hardening and the first Vercel deployment are owner-authorized and in progress.
 
-**Next action:** Push the publication-status checkpoint, open the Preparation pull request against `main`, verify remote checks and reviews, then merge with normal merge history. After updating local `main`, create a new branch for the separately authorized migration/release work.
+**Next action:** Commit the verified Phase 6 migration checkpoint, complete the separate release-hardening checkpoint, then push `agent/v1-release`, obtain its Vercel Preview, verify it, merge normally into `main`, verify Production, test rollback, and tag `v1.0.0`.
 
-## 1. Current objective
+## 0. Phase 6 complete audited migration (2026-09-08)
 
-Publish and merge the verified owner-approved Preparation milestone from `agent/skull-prep-release` without including the unrelated migration/release planning checkpoint from `agent/skull-prep-page`. Preserve owner context files and do not begin migration implementation until the new branch is created from updated `main`.
+- Added an executable source audit with exact SHA-256 fingerprints and explicit dispositions for every updated raw taxon/specimen row and every reviewed source image.
+- Applied the owner-approved canonical proposal. Schema version 5 adds a validated `species_name + specimen_id_raw` curator crosswalk, exact non-negative `missing_teeth_count`, mammal postorbital/interorbital widths, and the owner-preferred skull-measurement column order.
+- Retained all owner amendments: added bird skull masses and stone-marten measurements, corrected age/location and whitening records, measured body masses of 8,050 g and 8,600 g, and the owner-classified `SPEC-0014` trauma observation.
+- Permanent IDs are assigned sequentially from the next unused collection-wide `SPEC-####` only when a new physical specimen passes review. They are not based on acquisition date, species name, weight, measurements, or raw row position. The per-taxon raw label remains a review crosswalk and never owns a URL.
+- `pnpm migration:audit` passes with 15/6/1 taxon and 18/31/3 specimen published/deferred/rejected dispositions. `pnpm migration:prepare` reproduces canonical content with zero differences. The complete `pnpm check` passes formatting, lint, media/content validation, strict TypeScript, 78/78 unit/component tests, and six expected invalid-fixture failures; the production build prerenders 77/77 routes.
+- The full Chromium regression passed 75/77 journeys on its first run; both failures were stale migration-dependent expectations/timing, not product regressions. After correction, the two focused journeys pass. The Phase 7 browser/security/accessibility matrix remains the active release gate.
+
+## 1. Historical Preparation publication checkpoint
+
+This checkpoint recorded the verified owner-approved Preparation milestone before it was published from `agent/skull-prep-release`. It subsequently merged through PR #13; Phase 6 began on `agent/v1-release` from updated `main`.
 
 ## 1.0 Owner-authorized Skull Preparation guide
 
@@ -421,7 +430,7 @@ The bounded Measurements milestone is complete locally and ready for owner produ
 - Removed the public cited-profile block for now. `TAX-0001.mdx` remains a valid draft and the parser, schema, citation validation, reviewed-profile query, and rendering component remain available for later curated prose.
 - Moved measurements immediately below photography/selection. Retained the additional-measurement disclosure, removed the unclear generic diagram, and added an accessible definition dialog. The interim 116 mm versus 100 mm reference was subsequently removed and replaced by the Phase 2.2 calibrated skull comparison.
 - Advanced compiled content to schema version 2 and added controlled fields for five-level condition, expanded age classes, pathology, trauma, teeth-set completeness, and retained-skeleton completeness.
-- Added owner to the Collection record; changed `SPEC-0001` from the overly broad `damaged` state to `good` with the reviewed note `Small chip at the anterior nasal tip.`; retained `adult` without exposing unsupported `legacy stage 4` wording.
+- Added owner to the Collection record; changed `SPEC-0001` from the overly broad `damaged` state to `good` without publishing the private distinguishing note; retained `adult` without exposing unsupported `legacy stage 4` wording.
 - Added complete age-class and condition-scale guidance dialogs. Pathology, trauma, teeth set, and skeleton appear in `Show additional recorded data`; all four remain `Not recorded` for `SPEC-0001` because the staging evidence does not support inferred `No`, `Complete`, or `None` values.
 - Renamed the preparation presentation to `Skull preparation` and linked it to a real static `/guides/skull-preparation` outline. The route is explicitly not procedural/safety guidance until its claims and citations are reviewed.
 - Removed the large rights/credit panel. Gallery captions now use `Photo: Rasmus`, owner appears in the record, and every current page ends with the central `© 2026 Rasmus. All rights reserved.` notice. Structured rights remain blocking publication data and `RIGHTS.md` remains authoritative.

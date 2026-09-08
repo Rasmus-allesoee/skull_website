@@ -475,7 +475,7 @@ test("feature and numeric facets filter physical records without treating unknow
   const sealCard = page.locator(".taxon-card", { hasText: "Harbour seal" });
   await expect(sealCard).toBeVisible();
   await expect(
-    sealCard.getByText(/2 of 3 specimens match.*length 200–230 mm/),
+    sealCard.getByText(/2 of 3 specimens match.*length 205–230 mm/),
   ).toBeVisible();
   await expect(page.getByText("European mole")).not.toBeVisible();
 
@@ -493,7 +493,7 @@ test("feature and numeric facets filter physical records without treating unknow
   await expect(page).toHaveURL(/direction=descending/);
   expect(await specimenIds(page)).toEqual(["SPEC-0014", "SPEC-0015"]);
 
-  await page.goto("/species?scope=family%3Atalpidae&lengthMin=1");
+  await page.goto("/species?scope=family%3Atalpidae&massMin=1");
   await expect(
     page.getByRole("heading", {
       level: 3,

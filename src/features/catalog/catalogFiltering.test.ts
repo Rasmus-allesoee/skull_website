@@ -33,14 +33,23 @@ describe("catalog filtering", () => {
   });
 
   it("excludes unknown measurements only while a numeric range is active", () => {
+    const fixture = structuredClone(catalog);
+    const mole = fixture.specimens.find(
+      ({ specimen }) => specimen.taxonId === "TAX-0013",
+    )!;
+    mole.specimen.measurements.skullLength = {
+      status: "not_recorded",
+      value: null,
+      unit: "mm",
+    };
     const allMoles = filterCatalog(
-      catalog,
+      fixture,
       { ...defaultCatalogState, query: "European mole" },
       documents.filter((document) => document.taxonId === "TAX-0013"),
     );
     expect(allMoles.taxa).toHaveLength(1);
     const measuredOnly = filterCatalog(
-      catalog,
+      fixture,
       {
         ...defaultCatalogState,
         query: "European mole",
@@ -119,9 +128,15 @@ describe("catalog filtering", () => {
   });
 
   it("reverses numeric ordering while keeping unknown measurements last", () => {
+    const fixture = structuredClone(catalog);
+    fixture.specimens[0]!.specimen.measurements.skullLength = {
+      status: "not_recorded",
+      value: null,
+      unit: "mm",
+    };
     for (const direction of ["ascending", "descending"] as const) {
       const result = filterCatalog(
-        catalog,
+        fixture,
         {
           ...defaultCatalogState,
           mode: "specimens",

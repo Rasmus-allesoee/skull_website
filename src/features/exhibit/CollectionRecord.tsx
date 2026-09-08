@@ -5,11 +5,21 @@ import {
   formatPartialDate,
   humanizeToken,
 } from "@/domain/content/display";
-import type { ObservationStatus, SpecimenRecord } from "@/domain/content/types";
+import type {
+  MeasurementProfile,
+  ObservationStatus,
+  SpecimenRecord,
+} from "@/domain/content/types";
 
 import { AgeGuide, ConditionGuide } from "./RecordGuides";
 
-export function CollectionRecord({ specimen }: { specimen: SpecimenRecord }) {
+export function CollectionRecord({
+  specimen,
+  measurementProfile,
+}: {
+  specimen: SpecimenRecord;
+  measurementProfile: MeasurementProfile;
+}) {
   const coordinates =
     specimen.location.latitude !== null && specimen.location.longitude !== null
       ? `${formatCoordinate(specimen.location.latitude, "latitude")}, ${formatCoordinate(specimen.location.longitude, "longitude")}`
@@ -116,8 +126,12 @@ export function CollectionRecord({ specimen }: { specimen: SpecimenRecord }) {
             </dd>
           </div>
           <div>
-            <dt>Teeth set</dt>
-            <dd>{humanizeToken(specimen.teethCompleteness)}</dd>
+            <dt>Missing teeth</dt>
+            <dd>
+              {measurementProfile === "bird"
+                ? "Not applicable"
+                : (specimen.missingTeethCount ?? "Not recorded")}
+            </dd>
           </div>
           <div>
             <dt>Skeleton</dt>

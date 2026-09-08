@@ -1,6 +1,6 @@
 # Phase 3.1 review-slice migration audit
 
-**Status:** Implemented review slice; final Phase 6 migration audit still required
+**Status:** Historical review slice; superseded by the completed [Phase 6 audit](phase_6_migration_audit.md)
 
 **Audited:** 2026-08-21; Phase 3.2 derivative-orientation reconciliation 2026-08-22
 
@@ -64,9 +64,9 @@ In total, 33 of the 51 legacy specimen rows were not migrated. They remain raw m
 
 Owner review identified that the committed SPEC-0003, SPEC-0013, and SPEC-0018 lateral/oblique derivatives faced left even though their reviewed clean masters already faced right. The correction restaged all 104 explicitly mapped masters and reran the ordinary processor rather than editing public WebPs or adding CSS/runtime flips. Git scope confirmed that only the six named derivatives changed; full validation recomputed alpha bounds and reconfirmed sRGB, transparency, dimensions, stripped metadata, rights declarations, and the 24.83 MiB collection total. No identity, measurement, declaration, view count, or Phase 6 migration decision changed.
 
-## 5. Phase 6 obligations retained
+## 5. Phase 6 obligations (completed 2026-09-08)
 
-Phase 3.1 does not waive the full migration gate. Phase 6 must:
+Phase 3.1 did not waive the full migration gate. Phase 6 subsequently completed these obligations:
 
 1. reconcile all 22 legacy taxon and 51 specimen rows against the canonical IDs created here;
 2. obtain or reject missing essential media and decide the unsupported `Cervidae` row;

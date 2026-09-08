@@ -84,6 +84,13 @@ export function compileCollection(input: CompilationInput): CompilationResult {
     "specimen_id",
     diagnostics,
   );
+  validateUniqueValues(
+    input.specimens,
+    (row) => `${row.data.species_name}#${row.data.specimen_id_raw}`,
+    "content/specimens/specimens.csv",
+    "species_name + specimen_id_raw",
+    diagnostics,
+  );
 
   const taxaById = new Map(taxa.map((taxon) => [taxon.taxonId, taxon]));
   const specimensById = new Map(
@@ -157,6 +164,32 @@ export function compileCollection(input: CompilationInput): CompilationResult {
         suggestion: "Use an existing stable taxon ID.",
       });
       continue;
+    }
+
+    const sourceRow = input.specimens.find(
+      (row) => row.data.specimen_id === specimen.specimenId,
+    );
+    if (sourceRow) {
+      const expectedSpeciesName =
+        taxon.identificationQualifier === "sp"
+          ? `${taxon.scientificName} sp.`
+          : taxon.scientificName;
+      if (sourceRow.data.species_name !== expectedSpeciesName) {
+        diagnostics.push({
+          source,
+          key: specimen.specimenId,
+          field: "species_name",
+          value: sourceRow.data.species_name,
+          rule: "Review species name must match the linked canonical taxon identity",
+          suggestion: `Use ${expectedSpeciesName}.`,
+        });
+      }
+      requireValue(
+        sourceRow.data.specimen_id_raw,
+        sourceRow,
+        "specimen_id_raw",
+        diagnostics,
+      );
     }
 
     if (
@@ -270,7 +303,7 @@ export function compileCollection(input: CompilationInput): CompilationResult {
 
   return {
     collection: {
-      schemaVersion: 4,
+      schemaVersion: 5,
       taxa: taxa.sort((a, b) => a.taxonId.localeCompare(b.taxonId)),
       specimens: specimens.sort((a, b) =>
         a.specimenId.localeCompare(b.specimenId),
@@ -456,6 +489,8 @@ function transformSpecimen(
   for (const field of [
     "specimen_id",
     "taxon_id",
+    "species_name",
+    "specimen_id_raw",
     "owner_credit",
     "specimen_credit",
     "media_credit",
@@ -630,6 +665,14 @@ function transformSpecimen(
       "interorbital_width_mm",
       diagnostics,
     ),
+    postorbitalWidth: parseMeasurement(
+      raw.postorbital_width_mm,
+      raw.postorbital_width_mm_status,
+      "mm",
+      row,
+      "postorbital_width_mm",
+      diagnostics,
+    ),
     orbitalWidth: parseMeasurement(
       raw.orbital_width_mm,
       raw.orbital_width_mm_status,
@@ -725,6 +768,7 @@ function transformSpecimen(
     [
       "maceration",
       "dermestid_beetles",
+      "burial",
       "simmering",
       "manual",
       "natural",
@@ -768,7 +812,13 @@ function transformSpecimen(
       status: raw.trauma_status,
       description: nullable(raw.trauma_description),
     },
-    teethCompleteness: raw.teeth_completeness,
+    missingTeethCount: parseOptionalNumber(
+      raw.missing_teeth_count,
+      row,
+      "missing_teeth_count",
+      diagnostics,
+      { integer: true, nonNegative: true },
+    ),
     skeletonCompleteness: raw.skeleton_completeness,
     acquisitionSource: raw.acquisition_source,
     acquisitionDate,

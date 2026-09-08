@@ -27,7 +27,7 @@ test("taxon/default and exact specimen deep links are static, distinct, and acce
       .getByLabel("Collection record")
       .getByText("Sex", { exact: true })
       .locator("..")
-      .getByText("Not recorded"),
+      .getByText("Female"),
   ).toBeVisible();
   await expect(
     page.getByText("Owner", { exact: true }).locator("..").getByText("Rasmus"),
@@ -357,8 +357,8 @@ test("measurement, age, condition, and additional-record guides disclose the new
   await expect(
     page.getByText("Adult human skull", { exact: true }),
   ).toBeVisible();
-  await expect(page.getByText("~66 mm shorter")).toBeVisible();
-  await expect(page.getByText("(0.64×)")).toBeVisible();
+  await expect(page.getByText("~63 mm shorter")).toBeVisible();
+  await expect(page.getByText("(0.65×)")).toBeVisible();
   const primaryScale = page.locator(
     '[data-comparison-id="specimen:SPEC-0001"]',
   );
@@ -372,7 +372,7 @@ test("measurement, age, condition, and additional-record guides disclose the new
   expect(primaryScaleBox).not.toBeNull();
   expect(humanScaleBox).not.toBeNull();
   expect(primaryScaleBox!.width / humanScaleBox!.width).toBeCloseTo(
-    116 / 182,
+    119 / 182,
     2,
   );
 
@@ -463,15 +463,15 @@ test("measurement, age, condition, and additional-record guides disclose the new
   ).toBeVisible();
   await expect(
     page
-      .getByText("Teeth set", { exact: true })
+      .getByText("Missing teeth", { exact: true })
       .locator("..")
-      .getByText("Not recorded"),
+      .getByText("3", { exact: true }),
   ).toBeVisible();
   await expect(
     page
       .getByText("Skeleton", { exact: true })
       .locator("..")
-      .getByText("Not recorded"),
+      .getByText("No", { exact: true }),
   ).toBeVisible();
 });
 
@@ -597,7 +597,7 @@ test.describe("mobile touch behavior", () => {
         human.getBoundingClientRect().width
       );
     });
-    expect(portraitScaleRatio).toBeCloseTo(116 / 182, 2);
+    expect(portraitScaleRatio).toBeCloseTo(119 / 182, 2);
 
     await page.getByRole("button", { name: "Inspect image" }).tap();
     await expect(dialog).toBeVisible();
@@ -681,7 +681,7 @@ test.describe("mobile touch behavior", () => {
         human.getBoundingClientRect().width
       );
     });
-    expect(landscapeScaleRatio).toBeCloseTo(116 / 182, 2);
+    expect(landscapeScaleRatio).toBeCloseTo(119 / 182, 2);
   });
 
   test("the main gallery preserves native page pinch zoom and two-dimensional pan", async ({

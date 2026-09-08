@@ -268,7 +268,7 @@ Turn the approved conversational plan into durable sources of truth and create a
 - [x] Pass the complete sequential local quality/build/browser/manual visual gate and create the separate verified Phase 3.1 commit.
 - [x] Receive owner approval of the rendered Phase 3.1 result.
 
-Phase 3.1 is a review slice, not the final Phase 6 audit. It establishes public URL identity for the accepted 15/18 records, but Phase 6 still reconciles every legacy row, unresolved media/identity/rights/public-note decision, and field transformation. See [phase_3_1_migration_audit.md](phase_3_1_migration_audit.md).
+Phase 3.1 was a review slice rather than the final audit. Phase 6 later reconciled every updated legacy row and preserved the public URL identities established here. See [phase_3_1_migration_audit.md](phase_3_1_migration_audit.md) and [phase_6_migration_audit.md](phase_6_migration_audit.md).
 
 ### Phase 3.2 — catalog-first Species redesign with integrated Phase 4 discovery
 
@@ -412,19 +412,19 @@ The 2026-09-06 brief authorizes only the complete `/guides/skull-preparation` pa
 
 ### Ingestion
 
-- [ ] Back up private originals outside Git.
-- [ ] Reconcile all 22 legacy taxon rows and 51 specimen rows against the Phase 3.1 accepted/blocked ledger.
-- [ ] Map replacement data into `taxa.csv`/`specimens.csv` without treating legacy row numbers as identity.
-- [ ] Preserve and review Phase 3.1 immutable IDs/URLs; assign new IDs only to genuinely unmapped physical records.
-- [ ] Review slugs, hierarchy, default specimens, and publication states.
-- [ ] Separate private working notes from public prose.
-- [ ] Verify taxonomy and resolve all blocking match flags.
-- [ ] Validate dates, units, measurements, coordinates/precision, preparation, rights, and credits.
-- [ ] Rename/process every accepted media set and review alpha/framing.
-- [ ] Add concise cited profiles only where useful reviewed overview/identification content exists; otherwise keep the optional profile absent or draft without public placeholder prose.
-- [ ] Keep incomplete records as drafts.
-- [ ] Review repository size against the media-storage threshold.
-- [ ] Normalize the partial exports currently retained under ignored `agent_context/metadata_csv/`; do not reuse their row-number IDs or extra spreadsheet-only helper columns as canonical identity.
+- [x] Keep private originals outside Git and verify ignored source evidence is absent from the release checkpoint; backup remains owner-operated.
+- [x] Reconcile all 22 legacy taxon rows and 52 specimen rows against the Phase 3.1 accepted/blocked ledger.
+- [x] Map reviewed replacement data into `specimens.csv` without treating legacy row numbers as public identity.
+- [x] Preserve and review Phase 3.1 immutable IDs/URLs; no new public ID was needed.
+- [x] Review slugs, hierarchy, default specimens, and publication states.
+- [x] Separate private working notes from public prose.
+- [x] Verify taxonomy and resolve all blocking match flags for the retained public set.
+- [x] Validate dates, units, measurements, coordinates/precision, preparation, rights, and credits.
+- [x] Reconcile every accepted media set and review the existing 104 validated derivatives; no new media was supplied.
+- [x] Keep the optional profile draft and absent from public output rather than adding placeholder prose.
+- [x] Keep incomplete/unreviewed source rows outside published output.
+- [x] Review repository size against the media-storage threshold.
+- [x] Normalize the ignored raw exports through a complete disposition ledger and retain `species_name + specimen_id_raw` only as a validated curator crosswalk, never as public identity.
 
 ### Acceptance gate
 

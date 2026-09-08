@@ -1,0 +1,301 @@
+{
+  "schema_version": 1,
+  "sources": {
+    "taxa": {
+      "path": "agent_context/metadata_csv/taxa_raw.csv",
+      "sha256": "fc02aea68e9fbcc24a0ab588e6b20c54654d81bb8bcd4dc36ec3b1bb4b867f8a",
+      "expected_records": 22
+    },
+    "specimens": {
+      "path": "agent_context/metadata_csv/specimens_raw.csv",
+      "sha256": "290025abb81d027efa7ee824432de646575018ffc880c7404ce0570585c74d26",
+      "preamble_lines": 1,
+      "expected_records": 52
+    },
+    "bird_measurements": {
+      "path": "agent_context/metadata_csv/specimens_birds_measurements_raw.csv",
+      "sha256": "a5a63152dfc60e1389be90027fd445c35f7ed0b553ca84556f61a842ede5076f",
+      "expected_records": 12
+    },
+    "media": {
+      "path": "agent_context/skull_images_clean",
+      "expected_pngs": 104
+    }
+  },
+  "taxa": {
+    "published": [
+      {
+        "scientific_name": "Nyctereutes procyonoides",
+        "canonical_taxon_id": "TAX-0001"
+      },
+      {
+        "scientific_name": "Alca torda",
+        "canonical_taxon_id": "TAX-0002"
+      },
+      {
+        "scientific_name": "Felis catus",
+        "canonical_taxon_id": "TAX-0003"
+      },
+      {
+        "scientific_name": "Gavia",
+        "canonical_taxon_id": "TAX-0004"
+      },
+      {
+        "scientific_name": "Haematopus ostralegus",
+        "canonical_taxon_id": "TAX-0005"
+      },
+      {
+        "scientific_name": "Larus",
+        "canonical_taxon_id": "TAX-0006"
+      },
+      {
+        "scientific_name": "Lepus europaeus",
+        "canonical_taxon_id": "TAX-0007"
+      },
+      {
+        "scientific_name": "Martes foina",
+        "canonical_taxon_id": "TAX-0008"
+      },
+      {
+        "scientific_name": "Meles meles",
+        "canonical_taxon_id": "TAX-0009"
+      },
+      {
+        "scientific_name": "Morus bassanus",
+        "canonical_taxon_id": "TAX-0010"
+      },
+      {
+        "scientific_name": "Mustela nivalis",
+        "canonical_taxon_id": "TAX-0011"
+      },
+      {
+        "scientific_name": "Phoca vitulina",
+        "canonical_taxon_id": "TAX-0012"
+      },
+      {
+        "scientific_name": "Talpa europaea",
+        "canonical_taxon_id": "TAX-0013"
+      },
+      {
+        "scientific_name": "Uria aalge",
+        "canonical_taxon_id": "TAX-0014"
+      },
+      {
+        "scientific_name": "Vulpes vulpes",
+        "canonical_taxon_id": "TAX-0015"
+      }
+    ],
+    "deferred_missing_media": [
+      "Cervus elaphus",
+      "Martes martes",
+      "Oryctolagus cuniculus",
+      "Ovis aries",
+      "Phocoena phocoena",
+      "Sorex araneus"
+    ],
+    "rejected": [
+      {
+        "scientific_name": "Cervidae",
+        "reason": "Family-level row is not a supported terminal exhibit taxon and has no reviewed media."
+      }
+    ]
+  },
+  "specimens": {
+    "published": [
+      {
+        "raw_key": "Nyctereutes procyonoides#SPEC-0001",
+        "canonical_specimen_id": "SPEC-0001",
+        "distinguishing_features": null,
+        "age_class": "adult",
+        "age_detail": null,
+        "location_label": "Wadden Sea region, Denmark"
+      },
+      {
+        "raw_key": "Alca torda#1",
+        "canonical_specimen_id": "SPEC-0002",
+        "distinguishing_features": null,
+        "age_class": "indeterminate",
+        "age_detail": "Estimated as between young adult and adult.",
+        "location_label": "Fanø beach, Denmark"
+      },
+      {
+        "raw_key": "Felis catus#1",
+        "canonical_specimen_id": "SPEC-0003",
+        "distinguishing_features": null,
+        "age_class": "adult",
+        "age_detail": null,
+        "location_label": "Esbjerg, Denmark"
+      },
+      {
+        "raw_key": "Gavia sp.#1",
+        "canonical_specimen_id": "SPEC-0004",
+        "distinguishing_features": null,
+        "age_class": "indeterminate",
+        "age_detail": "Estimated as between young adult and adult.",
+        "location_label": "Fanø beach, Denmark"
+      },
+      {
+        "raw_key": "Haematopus ostralegus#1",
+        "canonical_specimen_id": "SPEC-0005",
+        "distinguishing_features": null,
+        "age_class": "indeterminate",
+        "age_detail": null,
+        "location_label": "Fanø beach, Denmark"
+      },
+      {
+        "raw_key": "Larus sp.#4",
+        "canonical_specimen_id": "SPEC-0006",
+        "distinguishing_features": null,
+        "age_class": "indeterminate",
+        "age_detail": "Estimated as between young adult and adult.",
+        "location_label": "Fanø beach, Denmark"
+      },
+      {
+        "raw_key": "Lepus europaeus#1",
+        "canonical_specimen_id": "SPEC-0007",
+        "distinguishing_features": null,
+        "age_class": "adult",
+        "age_detail": null,
+        "location_label": "Esbjerg Municipality, Denmark"
+      },
+      {
+        "raw_key": "Martes foina#1",
+        "canonical_specimen_id": "SPEC-0008",
+        "distinguishing_features": null,
+        "age_class": "adult",
+        "age_detail": null,
+        "location_label": "Odense, Denmark"
+      },
+      {
+        "raw_key": "Meles meles#1",
+        "canonical_specimen_id": "SPEC-0009",
+        "distinguishing_features": null,
+        "age_class": "juvenile",
+        "age_detail": null,
+        "location_label": "Oksbøl, Denmark"
+      },
+      {
+        "raw_key": "Meles meles#3",
+        "canonical_specimen_id": "SPEC-0010",
+        "distinguishing_features": null,
+        "age_class": "old_adult",
+        "age_detail": null,
+        "location_label": "Henne Kirkeby, Denmark",
+        "body_mass_g": "8050"
+      },
+      {
+        "raw_key": "Morus bassanus#2",
+        "canonical_specimen_id": "SPEC-0011",
+        "distinguishing_features": null,
+        "age_class": "adult",
+        "age_detail": null,
+        "location_label": "Fanø beach, Denmark"
+      },
+      {
+        "raw_key": "Mustela nivalis#1",
+        "canonical_specimen_id": "SPEC-0012",
+        "distinguishing_features": null,
+        "age_class": "young_adult",
+        "age_detail": null,
+        "location_label": "Esbjerg, Denmark"
+      },
+      {
+        "raw_key": "Phoca vitulina#1",
+        "canonical_specimen_id": "SPEC-0013",
+        "distinguishing_features": null,
+        "age_class": "juvenile",
+        "age_detail": null,
+        "location_label": "Sønderho beach, Denmark"
+      },
+      {
+        "raw_key": "Phoca vitulina#6",
+        "canonical_specimen_id": "SPEC-0014",
+        "distinguishing_features": null,
+        "age_class": "adult",
+        "age_detail": null,
+        "location_label": "Rindby beach, Denmark",
+        "trauma_description": "The left mandible has a hole surrounded by healed bone on the outer surface just posterior to the last molar."
+      },
+      {
+        "raw_key": "Phoca vitulina#7",
+        "canonical_specimen_id": "SPEC-0015",
+        "distinguishing_features": null,
+        "age_class": "young_adult",
+        "age_detail": null,
+        "location_label": "Rindby beach, Denmark"
+      },
+      {
+        "raw_key": "Talpa europaea#1",
+        "canonical_specimen_id": "SPEC-0016",
+        "distinguishing_features": null,
+        "age_class": "juvenile",
+        "age_detail": "Cranial sutures are not fully fused; the teeth show little visible wear.",
+        "location_label": "Esbjerg, Denmark"
+      },
+      {
+        "raw_key": "Uria aalge#1",
+        "canonical_specimen_id": "SPEC-0017",
+        "distinguishing_features": null,
+        "age_class": "indeterminate",
+        "age_detail": "Estimated as between young adult and adult.",
+        "location_label": "Fanø beach, Denmark"
+      },
+      {
+        "raw_key": "Vulpes vulpes#5",
+        "canonical_specimen_id": "SPEC-0018",
+        "distinguishing_features": null,
+        "age_class": "adult",
+        "age_detail": null,
+        "location_label": "Ølufvad, Denmark",
+        "body_mass_g": "8600"
+      }
+    ],
+    "deferred_missing_media": [
+      "Alca torda#2",
+      "Cervus elaphus#1",
+      "Larus sp.#3",
+      "Larus sp.#2",
+      "Larus sp.#1",
+      "Martes foina#3",
+      "Martes foina#2",
+      "Martes martes#1",
+      "Meles meles#4",
+      "Meles meles#2",
+      "Meles meles#5",
+      "Meles meles#6",
+      "Morus bassanus#3",
+      "Morus bassanus#1",
+      "Nyctereutes procyonoides#SPEC-0002",
+      "Nyctereutes procyonoides#SPEC-0003",
+      "Oryctolagus cuniculus#1",
+      "Ovis aries#1",
+      "Phoca vitulina#9",
+      "Phoca vitulina#8",
+      "Phoca vitulina#5",
+      "Phoca vitulina#4",
+      "Phocoena phocoena#1",
+      "Sorex araneus#1",
+      "Sorex araneus#2",
+      "Vulpes vulpes#6",
+      "Vulpes vulpes#7",
+      "Vulpes vulpes#4",
+      "Vulpes vulpes#3",
+      "Vulpes vulpes#2",
+      "Vulpes vulpes#1"
+    ],
+    "rejected": [
+      {
+        "raw_key": "Cervidae#1",
+        "reason": "Unsupported family-level identity and no reviewed media."
+      },
+      {
+        "raw_key": "Phoca vitulina#3",
+        "reason": "Owner source says the specimen was not retained."
+      },
+      {
+        "raw_key": "Phoca vitulina#2",
+        "reason": "Owner source says the specimen was not retained."
+      }
+    ]
+  }
+}

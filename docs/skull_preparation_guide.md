@@ -1,6 +1,6 @@
 # Skull preparation guide
 
-Status: owner-feedback v1 overhaul and owner-directed condition-table refinements implemented and verified locally on 2026-09-07; owner approved publication and a normal merge on 2026-09-08. The clean publication branch is `agent/skull-prep-release`.
+Status: owner-feedback v1 overhaul and owner-directed condition-table refinements merged through PR #13 at `0e332ac` on 2026-09-08.
 
 ## Intent and visitor structure
 
@@ -60,4 +60,4 @@ Generation prompt:
 
 The owner-feedback v1 gate and condition-table refinement gate passed locally on 2026-09-07: full repository checks including 78 unit/component tests and six expected invalid fixtures, a 14-asset preparation-media validation, a 77-route production build, and the focused 6/6 Chromium preparation suite. The focused browser checks cover desktop/mobile reflow, axe, linked condition-table anchors, the native quick-preview/focus return, no-JavaScript image-link fallback, reduced motion, forced colors, failed images, deep links and overflow. Manual production inspection covered the workflow, the condition table at desktop and 390 px mobile, and the quick-preview path. Exact evidence is recorded in `project_status.md`.
 
-The owner now reviews this local page. Do not push, open a PR, merge, deploy, or begin another phase.
+The Preparation milestone is public-release scope and remains covered by the repository-wide release gate.

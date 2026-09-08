@@ -26,6 +26,8 @@
     "media:process:methodology": "node --import tsx scripts/process-methodology-media.ts",
     "media:process:home": "node --import tsx scripts/process-home-media.ts",
     "media:verify:methodology-sources": "node --import tsx scripts/verify-measurement-sources.ts",
+    "migration:audit": "node --import tsx scripts/audit-phase-6-migration.ts",
+    "migration:prepare": "node --import tsx scripts/prepare-phase-6-metadata.ts",
     "taxonomy:refresh": "node --import tsx scripts/refresh-taxonomy.ts",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "pnpm content:build && next typegen && tsc --noEmit",

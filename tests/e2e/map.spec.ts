@@ -334,6 +334,7 @@ test("closing an unfiltered popup preserves the manually explored camera", async
   await result.click();
   const popup = page.locator(".map-popup-card");
   await expect(popup).toBeVisible();
+  await page.waitForTimeout(650);
   const beforeCenter = await frame.getAttribute("data-map-center");
   const beforeZoom = await frame.getAttribute("data-map-zoom");
   await popup.getByRole("button", { name: "Close map popup" }).click();
