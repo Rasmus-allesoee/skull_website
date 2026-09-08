@@ -1,12 +1,21 @@
 # Project status
 
-**Snapshot date:** 2026-09-08
+**Snapshot date:** 2026-09-09
 
-**Current phase:** Phase 6 migration complete; Phase 7 local release hardening complete, deployment active
+**Current phase:** v1.0.0 production release complete; analytics follow-up pending owner decision
 
-**Overall state:** Measurements, Home, and Preparation are merged into `main`; Preparation landed through PR #13 at merge commit `0e332ac`. On `agent/v1-release`, clean local commit `bc04372` applies the complete owner-approved Phase 6 migration, followed by the verified release-hardening checkpoint at the branch head. The canonical collection remains 15 public taxa, 18 public specimens, and 104 specimen images; 31 source specimens remain deferred for missing reviewed media and three are rejected. The first Vercel deployment is owner-authorized and is now the active external gate.
+**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, and release hardening are merged into `main`. PR #14 merged normally at `61964d1`; the canonical collection remains 15 public taxa, 18 public specimens, and 104 specimen images, with 31 source specimens deferred for missing reviewed media and three rejected. v1.0.0 is live on Vercel at `https://skullwebsite-xi.vercel.app`. Web Analytics has not been added to the tagged release.
 
-**Next action:** Push `agent/v1-release`, configure the Git-connected Vercel project, and verify the exact Preview deployment. Then obtain exact-head approval for a normal merge into `main`; after merge, verify Production, exercise rollback and restoration, and tag and publish `v1.0.0`.
+**Next action:** Decide whether to add Vercel Web Analytics. If approved, create a separate branch from updated `main`, install `@vercel/analytics`, add the App Router `<Analytics />` component, update the privacy/publication documentation, validate the production CSP and browser behavior, and release it separately.
+
+## 0.3 v1.0.0 deployment and release verification (2026-09-09)
+
+- PR #14 (`feat: prepare first public release`) merged normally into `main` at `61964d1` after GitHub CI passed on head `5bf8490c98a467646754eb9dbcccb37a36013644`. The release tag `v1.0.0` was created on that merge commit and pushed; GitHub release notes are published at the repository's v1.0.0 release page.
+- Git-connected Vercel project `skull_website` now builds Preview deployments for branches/PRs and Production deployments from `main`. The successful production deployment is `dpl_4CmLmwUjt3XQsy5Nd3vCR1Nh8T8H`, with stable aliases `https://skullwebsite-xi.vercel.app`, `https://skullwebsite-rasmus-allesoee.vercel.app`, and the `main` branch alias. Its Vercel build used Node `24.x`, compiled the content pipeline, and prerendered 77/77 routes.
+- Production HTTP checks returned 200 for `/`, `/species`, `/map`, `/methodology`, `/guides/skull-preparation`, `/robots.txt`, and `/sitemap.xml`. Headers include the expected HSTS, CSP (with MapLibre's route-scoped OpenFreeMap exception only on `/map`), `X-Content-Type-Options: nosniff`, and `X-Frame-Options: DENY`. Canonical URLs, sitemap, robots, and WebSite JSON-LD resolve to the assigned production domain.
+- Real-browser production smoke passed for Home and Map: the Home field exposes ten specimen links and the full collection hub; Map reports 18 mapped records, 18 accessible specimen links, two visible clusters, attribution, and `Map and specimen list are ready.` The browser console had zero errors; one non-fatal CSS preload warning remains.
+- Rollback control was exercised with a second successful production deployment of the same commit (`dpl_Zd23tbZVP8SHsGTBRA5ADmLL5YPx`): production was rolled back to the first successful deployment, returned 200 with the expected security headers, and was restored by promoting the second verified deployment. The failed initial Node-engine deployment remains in Vercel history but was never used as a rollback target.
+- No Vercel Web Analytics package, tracking script, custom events, or cookies are part of v1.0.0. This preserves the documented v1 no-analytics boundary while the owner learns the platform and decides whether the optional analytics feature belongs in a later release.
 
 ## 0. Phase 6 complete audited migration (2026-09-08)
 

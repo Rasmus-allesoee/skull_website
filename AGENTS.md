@@ -20,7 +20,7 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **Phase 6 migration is applied and locally validated on `agent/v1-release`; release hardening and the owner-authorized first Vercel deployment are active**. Measurements and Home are merged through PRs #11/#12, and Preparation is merged through PR #13 at `0e332ac`. The first technical release deliberately defers the separate About, Contribution, Rights, Privacy, Accessibility, Guides-hub, broader methodology, comprehensive tree, and standalone comparison routes. Consult `docs/project_status.md` for exact evidence and the next action.
+Current phase: **v1.0.0 is released from `main` and deployed to Vercel at `https://skullwebsite-xi.vercel.app`; analytics remains an explicit follow-up choice**. Measurements and Home are merged through PRs #11/#12, Preparation through PR #13 at `0e332ac`, and the audited migration/release hardening through PR #14 at merge commit `61964d1`. The first technical release deliberately defers the separate About, Contribution, Rights, Privacy, Accessibility, Guides-hub, broader methodology, comprehensive tree, and standalone comparison routes. Consult `docs/project_status.md` for exact evidence and the next action.
 
 Use the owner-selected public v1 name **Skull Collection** from central site configuration.
 
