@@ -475,7 +475,7 @@ test("feature and numeric facets filter physical records without treating unknow
   const sealCard = page.locator(".taxon-card", { hasText: "Harbour seal" });
   await expect(sealCard).toBeVisible();
   await expect(
-    sealCard.getByText(/2 of 3 specimens match.*length 200–230 mm/),
+    sealCard.getByText(/2 of 3 specimens match.*length 205–230 mm/),
   ).toBeVisible();
   await expect(page.getByText("European mole")).not.toBeVisible();
 
@@ -493,7 +493,7 @@ test("feature and numeric facets filter physical records without treating unknow
   await expect(page).toHaveURL(/direction=descending/);
   expect(await specimenIds(page)).toEqual(["SPEC-0014", "SPEC-0015"]);
 
-  await page.goto("/species?scope=family%3Atalpidae&lengthMin=1");
+  await page.goto("/species?scope=family%3Atalpidae&massMin=1");
   await expect(
     page.getByRole("heading", {
       level: 3,
@@ -587,6 +587,7 @@ test("mode, class, sort, reload, and browser history restore the same URL-backed
 
 test("the one canonical taxonomy drawer filters the grid, preserves route parity, and restores focus", async ({
   page,
+  browserName,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/species");
@@ -630,14 +631,24 @@ test("the one canonical taxonomy drawer filters the grid, preserves route parity
     };
   });
   expect(stickyGeometry).not.toBeNull();
-  expect(stickyGeometry!.controlTop).toBeLessThanOrEqual(1);
+  if (browserName === "chromium") {
+    expect(stickyGeometry!.controlTop).toBeLessThanOrEqual(1);
+  } else {
+    expect(stickyGeometry!.controlTop).toBeGreaterThanOrEqual(0);
+  }
   expect(stickyGeometry!.taxonomyTop).toBeGreaterThanOrEqual(
     stickyGeometry!.controlBottom - 1,
   );
 
   await page.evaluate(() => window.scrollTo(0, 0));
   await drawer.getByRole("button", { name: "Expand Mammalia" }).click();
+  await expect(
+    drawer.getByRole("button", { name: "Collapse Mammalia" }),
+  ).toBeVisible();
   await drawer.getByRole("button", { name: "Expand Carnivora" }).click();
+  await expect(
+    drawer.getByRole("button", { name: "Collapse Carnivora" }),
+  ).toBeVisible();
   await drawer.getByRole("button", { name: "Mustelidae 3 taxa" }).click();
   await expect(page).toHaveURL(/scope=family%3Amustelidae/);
   await expectCatalogCount(page, "3 taxa");

@@ -54,6 +54,16 @@ describe("exhibit components", () => {
     (record) => record.isDefault,
   )!.id;
 
+  it("makes every measured published specimen eligible for comparison", () => {
+    const physicalSpecimens = comparisonRecords.filter(
+      (record) => record.kind === "specimen",
+    );
+    expect(physicalSpecimens).toHaveLength(18);
+    expect(physicalSpecimens.map((record) => record.specimenId)).toEqual(
+      expect.arrayContaining(["SPEC-0010", "SPEC-0014", "SPEC-0015"]),
+    );
+  });
+
   it("changes gallery view by buttons and arrow keys, then restores focus after zoom", async () => {
     const user = userEvent.setup();
     render(<Gallery assets={exhibit.media} commonName="Raccoon dog" />);
@@ -125,7 +135,10 @@ describe("exhibit components", () => {
           comparisonOptions={comparisonOptions}
           defaultComparisonId={defaultComparisonId}
         />
-        <CollectionRecord specimen={exhibit.specimen} />
+        <CollectionRecord
+          specimen={exhibit.specimen}
+          measurementProfile="mammal"
+        />
         <PreparationTimeline specimen={exhibit.specimen} />
       </main>,
     );
@@ -159,11 +172,14 @@ describe("exhibit components", () => {
     await user.click(within(ageDialog).getByRole("button", { name: /close/i }));
 
     await user.click(screen.getByText("Show additional recorded data"));
+    expect(
+      screen.getByText("Missing teeth").nextElementSibling,
+    ).toHaveTextContent("3");
     expect(screen.getByText("Pathology").nextElementSibling).toHaveTextContent(
       "Not recorded",
     );
     expect(screen.getByText("Skeleton").nextElementSibling).toHaveTextContent(
-      "Not recorded",
+      "No",
     );
   });
 
@@ -317,9 +333,9 @@ describe("exhibit components", () => {
         Number.parseFloat(
           humanSubject.style.getPropertyValue("--relative-length"),
         ),
-    ).toBeCloseTo(116 / 182, 8);
-    expect(screen.getByText("~66 mm shorter")).toBeInTheDocument();
-    expect(screen.getByText("(0.64×)")).toBeInTheDocument();
+    ).toBeCloseTo(119 / 182, 8);
+    expect(screen.getByText("~63 mm shorter")).toBeInTheDocument();
+    expect(screen.getByText("(0.65×)")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Compare" }));
     const combobox = screen.getByRole("combobox", { name: "Search skulls" });
@@ -333,8 +349,8 @@ describe("exhibit components", () => {
         name: "Open Red fox specimen SPEC-0014",
       }),
     ).toHaveAttribute("href", "/species/red-fox/specimens/SPEC-0014");
-    expect(screen.getByText("26 mm shorter")).toBeInTheDocument();
-    expect(screen.getByText("(0.82×)")).toBeInTheDocument();
+    expect(screen.getByText("23 mm shorter")).toBeInTheDocument();
+    expect(screen.getByText("(0.84×)")).toBeInTheDocument();
     expect(
       screen.queryByText(
         "Representative adult-human reference; dimensions and mass are approximate and are not a universal human average.",
@@ -365,7 +381,10 @@ describe("exhibit components", () => {
           comparisonOptions={comparisonOptions}
           defaultComparisonId={defaultComparisonId}
         />
-        <CollectionRecord specimen={exhibit.specimen} />
+        <CollectionRecord
+          specimen={exhibit.specimen}
+          measurementProfile="mammal"
+        />
         <PreparationTimeline specimen={exhibit.specimen} />
       </main>,
     );

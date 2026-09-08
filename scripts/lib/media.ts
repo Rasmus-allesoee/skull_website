@@ -44,6 +44,7 @@ export interface MediaValidationResult {
 
 export async function validatePublicMedia(options?: {
   writeManifest?: boolean;
+  specimenSourceText?: string;
 }): Promise<MediaValidationResult> {
   const diagnostics: Diagnostic[] = [];
   const sourceDirectory = fromRepositoryRoot("content", "media");
@@ -56,7 +57,8 @@ export async function validatePublicMedia(options?: {
     "specimens.csv",
   );
   const specimenRows = parseStrictCsv({
-    text: await readFile(specimenCsvPath, "utf8"),
+    text:
+      options?.specimenSourceText ?? (await readFile(specimenCsvPath, "utf8")),
     source: "content/specimens/specimens.csv",
     headers: specimenHeaders,
     schema: rawSpecimenSchema,

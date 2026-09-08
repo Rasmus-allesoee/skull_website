@@ -1,4 +1,4 @@
-import type { PartialDate } from "@/domain/content/types";
+import type { CompiledCollection, PartialDate } from "@/domain/content/types";
 
 export const mapProjectionVersion = 2 as const;
 
@@ -70,7 +70,7 @@ export interface MapFeatureCollection {
 
 export interface MapProjectionArtifact {
   schemaVersion: typeof mapProjectionVersion;
-  collectionSchemaVersion: 4;
+  collectionSchemaVersion: CompiledCollection["schemaVersion"];
   records: MapRecord[];
   geoJson: MapFeatureCollection;
 }

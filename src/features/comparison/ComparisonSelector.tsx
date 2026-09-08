@@ -164,8 +164,8 @@ export function ComparisonSelector({
             )}
           </div>
           <p className="comparison-eligibility-note">
-            Only published default specimens with a lateral image and maximum
-            skull length are eligible.
+            Only published specimens with a lateral image and maximum skull
+            length are eligible.
           </p>
         </div>
       </dialog>

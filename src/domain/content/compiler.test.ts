@@ -27,8 +27,9 @@ describe("content compiler", () => {
       value: null,
       unit: "g",
     });
-    expect(collection.schemaVersion).toBe(4);
+    expect(collection.schemaVersion).toBe(6);
     expect(specimen.condition).toBe("good");
+    expect(specimen.conditionDescription).toBeNull();
     expect(specimen.ageDetail).toBeNull();
     expect(specimen.pathology).toEqual({
       status: "not_recorded",
@@ -37,6 +38,19 @@ describe("content compiler", () => {
     expect(specimen.trauma).toEqual({
       status: "not_recorded",
       description: null,
+    });
+    expect(specimen.missingTeethCount).toBe(3);
+    expect(
+      collection.specimens.find(({ specimenId }) => specimenId === "SPEC-0010")
+        ?.measurements.bodyMass,
+    ).toEqual({ status: "measured", value: 8050, unit: "g" });
+    expect(
+      collection.specimens.find(({ specimenId }) => specimenId === "SPEC-0014")
+        ?.trauma,
+    ).toEqual({
+      status: "yes",
+      description:
+        "The left mandible has a hole surrounded by healed bone on the outer surface just posterior to the last molar.",
     });
     expect(specimen.ownerCredit).toBe("Rasmus");
     expect(specimen.rights.mediaCredit).toBe("Rasmus");

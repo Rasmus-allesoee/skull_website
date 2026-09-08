@@ -77,6 +77,7 @@ export function Gallery({
   const wheelHandlerRef = useRef<(event: globalThis.WheelEvent) => void>(
     () => undefined,
   );
+  const inspectionScrollYRef = useRef(0);
   const activeIndex = assets.length === 0 ? 0 : requestedIndex % assets.length;
   const activeAsset = assets[activeIndex];
 
@@ -272,12 +273,23 @@ export function Gallery({
     if (dialogRef.current?.open) return;
     resetInspection();
     returnFocusRef.current = trigger;
+    inspectionScrollYRef.current = window.scrollY;
+    document.documentElement.style.setProperty(
+      "--inspection-scroll-offset",
+      `${-inspectionScrollYRef.current}px`,
+    );
     dialogRef.current?.showModal();
     document.documentElement.classList.add("inspection-open");
   }
 
   function closeInspection() {
     dialogRef.current?.close();
+  }
+
+  function releaseInspectionScroll() {
+    document.documentElement.classList.remove("inspection-open");
+    document.documentElement.style.removeProperty("--inspection-scroll-offset");
+    window.scrollTo({ top: inspectionScrollYRef.current, behavior: "instant" });
   }
 
   function constrainPan(nextPan: Point, nextZoom: number): Point {
@@ -358,6 +370,9 @@ export function Gallery({
     return () => {
       viewport.removeEventListener("wheel", handleWheel);
       document.documentElement.classList.remove("inspection-open");
+      document.documentElement.style.removeProperty(
+        "--inspection-scroll-offset",
+      );
     };
   }, []);
 
@@ -653,7 +668,7 @@ export function Gallery({
         aria-labelledby="inspection-title"
         aria-describedby="inspection-help"
         onClose={() => {
-          document.documentElement.classList.remove("inspection-open");
+          releaseInspectionScroll();
           resetInspection();
           returnFocusRef.current?.focus();
         }}

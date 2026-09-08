@@ -59,7 +59,7 @@ The shared museum shell, redesigned Home hub, class/order/family/genus routes, r
 ### Included in the first public release
 
 - English interface with scientific, English, and Danish search aliases.
-- Home, Species, taxonomy landing pages, Map, Guides, Contribution, About, Methodology, Rights, Privacy, and Accessibility.
+- Home, Species, taxonomy landing pages, Map, the illustrated Measurements reference, and the complete Skull Preparation guide.
 - Class → order → family → genus → taxon navigation where those ranks exist.
 - Search across taxa, taxonomic ranks, aliases, and specimen IDs.
 - Species and specimen result modes with skull-length and skull-weight filters.
@@ -68,7 +68,7 @@ The shared museum shell, redesigned Home hub, class/order/family/genus routes, r
 - Six-view galleries where available, with lateral view mandatory.
 - Measurements, specimen biology, provenance, preparation, rights, and citations.
 - A Denmark-first interactive map with an equivalent result list.
-- Contribution requirements and a contact action, without public uploads.
+- A public contact action in the global footer, without forms or uploads.
 - Static metadata, sitemap, Open Graph imagery, and structured data.
 
 ### Explicitly excluded from v1
@@ -81,6 +81,7 @@ The shared museum shell, redesigned Home hub, class/order/family/genus routes, r
 - Full Danish interface translation.
 - A public API or licensed dataset download.
 - E-commerce or monetization.
+- The Guides hub, Contribution protocol, About, Rights, Privacy, Accessibility, broader methodology sections, comprehensive taxonomy tree, and standalone Comparison page. The owner explicitly deferred these supporting routes so the first technical release can prove deployment; existing rights/privacy/accessibility behavior remains enforced in code and repository documentation.
 
 Exclusion from v1 does not mean rejection. Each feature remains in the deferred backlog with prerequisites in [implementation_plan.md](implementation_plan.md).
 
@@ -94,14 +95,14 @@ Exclusion from v1 does not mean rejection. Each feature remains in the deferred 
 | `/species/{taxon-slug}` | Canonical taxon display | Default specimen gallery, specimen selector, taxonomy, measurements, collection record, preparation, and reviewed editorial content when available |
 | `/species/{taxon-slug}/specimens/{specimen-id}` | Exact specimen display | Same composition focused on one physical specimen, with unique metadata and canonical relationship |
 | `/map` | Geographic exploration | Clustered map, filters, selected-specimen popup, synchronized accessible result list |
-| `/guides` | Editorial guide hub | Guide cards and introductions |
+| `/guides` | Editorial guide hub | Deferred after the first technical release |
 | `/guides/skull-preparation` | Preparation guide | Implemented illustrated five-phase guide, method comparisons, contents drawer, preparation photographs, source-checked practical text and one reference list |
-| `/contribute` | Contribution protocol | Required views, capture setup, files, metadata, rights, review process, contact CTA |
-| `/about` | Collector and project story | Purpose, collection, photography, preparation workflow, site method |
+| `/contribute` | Contribution protocol | Deferred after the first technical release; public contact remains in the footer |
+| `/about` | Collector and project story | Deferred after the first technical release |
 | `/methodology` | Measurement reference; later broader data transparency | Implemented five-view cropped diagram board, 21 exact definition rows, compact non-blocking details, diagram-targeting table actions with return-to-row behavior, and semantic static fallback; identification confidence, taxonomy, missing-data, coordinate, and update sections remain later scope |
-| `/rights` | Rights summary | Code/content/media distinctions, credits, reuse/contact route |
-| `/privacy` | Privacy statement | No-tracking baseline, hosting logs, contact-data handling |
-| `/accessibility` | Accessibility statement | Supported behavior, known issues, feedback route |
+| `/rights` | Rights summary | Deferred page; the repository `RIGHTS.md`, per-record rights, credits, and footer notice remain authoritative |
+| `/privacy` | Privacy statement | Deferred page; v1 has no analytics, cookies, accounts, forms, or user-data collection by the application |
+| `/accessibility` | Accessibility statement | Deferred page; WCAG-oriented implementation and release checks remain required |
 
 “Guides” replaces the ambiguous working label “Other Stuff.”
 
@@ -203,7 +204,7 @@ The combined Phase 3.2/4 implementation makes `/species` the operational collect
 - Place the specimen selector near the gallery and keep the default specimen explicit.
 - Put the measurement section immediately below the gallery/selector, followed by the collection and preparation records. A concise cited profile and skull-identification section return only after useful, reviewed, source-backed prose exists; draft profile infrastructure remains build-valid but is not rendered.
 - Present the specimen measurement table directly below the heading/note and retain progressive disclosure for additional recorded measurements. Derive a `mammal`, `bird`, or fallback `other` profile from the linked taxon's class and render only that profile's meaningful rows; class-specific non-applicable fields must not become visible clutter. Link a profile-specific measurement-definition dialog. At wide widths, pair the compact table with the reusable `A sense of scale` card; stack them on narrow screens.
-- The scale card compares canonical lateral views using recorded maximum length, compiled alpha subject bounds, explicit orientation, and one responsive pixels-per-millimetre factor shared by both skulls. Default to the reviewed adult-human reference, allow selection only from eligible default specimens/references, align both skulls to the primary orientation without rewriting assets, and label approximate reference values honestly. Descriptive notes belong to the selected comparison record and disappear when that record has no note. This is a mathematically true relative-size comparison inside the card, not a claim that CSS pixels equal physical millimetres on the visitor's monitor.
+- The scale card compares canonical lateral views using recorded maximum length, compiled alpha subject bounds, explicit orientation, and one responsive pixels-per-millimetre factor shared by both skulls. Default to the reviewed adult-human reference, allow selection from every eligible published specimen/reference, align both skulls to the primary orientation without rewriting assets, and label approximate reference values honestly. Descriptive notes belong to the selected comparison record and disappear when that record has no note. This is a mathematically true relative-size comparison inside the card, not a claim that CSS pixels equal physical millimetres on the visitor's monitor.
 - Include a searchable keyboard-operable comparison selector and a class-aware difference table. Mammal/mammal uses six rows; bird/bird uses nine; bird/mammal uses six explicitly labelled functional mappings, including orbital width ↔ maximum width and cranium height ↔ skull height. Cross-class mappings are descriptive comparisons between different landmarks, not claims of anatomical homology. Difference wording and ratio always describe the current page specimen relative to the selected comparison; wording, not color alone, communicates direction. Show the approximation explanation only when at least one displayed difference is actually derived from an approximate source value.
 - Put owner, sex, age class, condition, source, date, location, and coordinate precision in the collection record under the `Metadata` kicker. Age and five-level condition definitions open in accessible dialogs; pathology, trauma, teeth-set completeness, and skeleton completeness live under `Show additional recorded data`.
 - Place a `View on map` action near the Collection record for specimens with public coordinates. It focuses the exact specimen through `/map?specimen={id}` while keeping MapLibre isolated to the map route.
@@ -249,7 +250,7 @@ The combined Phase 3.2/4 implementation makes `/species` the operational collect
 - About remains personal and factual: collection purpose, acquisition sources, ethical/legal context, preparation, photography, and project development.
 - The implemented first Methodology section documents the collection's measurement vocabulary without claiming a universal osteometric standard or retroactively redefining stored legacy values. It uses real-skull reference imagery, programmatic annotations, a complete semantic table, and direct links from specimen measurement guides.
 - Later Methodology sections still separate observations from external species facts and explain confidence, taxonomy, date, and coordinate semantics.
-- Rights, Privacy, and Accessibility must reflect actual behavior at release time and are release-blocking content, not boilerplate placeholders.
+- Rights, Privacy, and Accessibility pages must reflect actual behavior when added. For the first technical release they are explicitly deferred rather than published as boilerplate placeholders; their underlying code, data, and verification requirements are not relaxed.
 
 ## 8. Cross-cutting behavior
 
@@ -273,7 +274,7 @@ The combined Phase 3.2/4 implementation makes `/species` the operational collect
 - `taxa.csv` and `specimens.csv` remain the only canonical collection tables; bird measurements do not create a second specimen source.
 - Mammal and bird profiles control applicability, table order, definition guidance, and comparison rows. Unknown future classes use the conservative shared-field fallback until a reviewed profile is added.
 - `not_recorded` means an applicable measurement was not supplied; `not_applicable` is reserved for fields outside the specimen's class profile.
-- The partial exports under `agent_context/metadata_csv/` are migration evidence, not runtime/public files. Phase 3.1 normalized only the accepted 15-taxon/18-specimen review slice and recorded every boundary in `phase_3_1_migration_audit.md`; Phase 6 still performs the complete source-row, rights, note, taxonomy, and publication audit.
+- The exports under `agent_context/metadata_csv/` are ignored migration evidence, not runtime/public files. Phase 6 completed the source-row, rights, note, taxonomy, and publication audit while retaining the accepted 15-taxon/18-specimen public set. The unified canonical CSV includes a validated taxon-plus-owner-label crosswalk beside immutable public IDs.
 
 ### Photography and gallery
 
@@ -329,6 +330,6 @@ The first public release is complete only when:
 
 ## 11. Naming and future change
 
-“Skull Collection” is a neutral working title stored in one central configuration. The final title, domain, public email, and brand mark are release-hardening decisions. Product structure must not depend on the temporary name.
+The owner selected “Skull Collection” as the public v1 name. The first deployment uses its assigned Vercel domain and `rasmus.allesoee@gmail.com` as the public contact. The existing repository-created skull favicon is the no-cost v1 mark; a custom domain or replacement identity can be added later without changing product structure.
 
 The Phase 2.2 specimen-page scale card establishes reusable calibrated comparison primitives. A dedicated public two-select comparison route, overlays/split sliders, 360°, 3D, illustrations, direct contributions, database administration, analytics, localization, and data export remain deferred work. They require their documented prerequisites and a new scope decision; they are not to be smuggled into an earlier phase.

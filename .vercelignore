@@ -1,0 +1,22 @@
+# Vercel deployments contain only production source and curated public media.
+# The repository also has large, ignored owner/staging material that must never
+# be uploaded as deployment input.
+agent_context/
+.git/
+node_modules/
+.next/
+.vercel/
+.env*
+.staging/
+.generated/
+.playwright-cli/
+public/generated/
+.pnpm-store/
+*.tsbuildinfo
+**/.DS_Store
+docs/
+tests/
+coverage/
+playwright-report/
+test-results/
+output/

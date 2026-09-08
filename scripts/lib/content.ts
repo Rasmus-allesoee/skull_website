@@ -45,6 +45,7 @@ export interface ContentBuildResult {
 
 export async function buildContent(options?: {
   writeArtifact?: boolean;
+  specimenSourceText?: string;
 }): Promise<ContentBuildResult> {
   const taxonPath = fromRepositoryRoot("content", "taxa", "taxa.csv");
   const specimenPath = fromRepositoryRoot(
@@ -59,7 +60,7 @@ export async function buildContent(options?: {
     schema: rawTaxonSchema,
   });
   const specimens = parseStrictCsv({
-    text: await readFile(specimenPath, "utf8"),
+    text: options?.specimenSourceText ?? (await readFile(specimenPath, "utf8")),
     source: "content/specimens/specimens.csv",
     headers: specimenHeaders,
     schema: rawSpecimenSchema,
@@ -75,6 +76,7 @@ export async function buildContent(options?: {
   );
   const { assets, comparisonReferences } = await validatePublicMedia({
     writeManifest: true,
+    specimenSourceText: options?.specimenSourceText,
   });
   const {
     reference: measurementReference,

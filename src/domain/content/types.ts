@@ -81,6 +81,13 @@ export const measurementDefinitions = {
     description: "The recorded transverse width of the rostrum.",
     profiles: ["mammal"],
   },
+  postorbitalWidth: {
+    label: "Postorbital constriction",
+    unit: "mm",
+    description:
+      "The minimum transverse width of the cranium immediately posterior to the orbits.",
+    profiles: ["mammal"],
+  },
   maxillaryToothRowLength: {
     label: "Maxillary tooth-row length",
     unit: "mm",
@@ -145,7 +152,7 @@ export const measurementDefinitions = {
     label: "Interorbital width",
     unit: "mm",
     description: "The recorded minimum width between the orbits.",
-    profiles: ["bird"],
+    profiles: ["mammal", "bird"],
   },
   orbitalWidth: {
     label: "Orbital width",
@@ -168,6 +175,8 @@ export const measurementProfileLayouts = {
     additional: [
       "condylobasalLength",
       "rostrumWidth",
+      "postorbitalWidth",
+      "interorbitalWidth",
       "maxillaryToothRowLength",
       "mandibularToothRowLength",
       "mandibleRamusHeight",
@@ -233,9 +242,6 @@ export type AgeClass =
 
 export type SpecimenCondition =
   "excellent" | "good" | "fair" | "poor" | "fragmentary" | "not_recorded";
-
-export type TeethCompleteness =
-  "complete" | "partially_complete" | "incomplete" | "not_recorded";
 
 export type SkeletonCompleteness = "full" | "partial" | "none" | "not_recorded";
 
@@ -329,7 +335,7 @@ export interface SpecimenRecord {
   publicationStatus: PublicationStatus;
   isTypeOrReferenceSpecimen: boolean;
   condition: SpecimenCondition;
-  distinguishingFeatures: string | null;
+  conditionDescription: string | null;
   sex: "female" | "male" | "intersex" | "unknown" | "not_recorded";
   ageClass: AgeClass;
   ageDetail: string | null;
@@ -341,7 +347,7 @@ export interface SpecimenRecord {
     status: ObservationStatus;
     description: string | null;
   };
-  teethCompleteness: TeethCompleteness;
+  missingTeethCount: number | null;
   skeletonCompleteness: SkeletonCompleteness;
   acquisitionSource:
     | "roadkill"
@@ -443,7 +449,7 @@ export interface TaxonProfile {
 }
 
 export interface CompiledCollection {
-  schemaVersion: 4;
+  schemaVersion: 6;
   taxa: TaxonRecord[];
   specimens: SpecimenRecord[];
   media: MediaAsset[];

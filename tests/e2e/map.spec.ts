@@ -334,6 +334,7 @@ test("closing an unfiltered popup preserves the manually explored camera", async
   await result.click();
   const popup = page.locator(".map-popup-card");
   await expect(popup).toBeVisible();
+  await page.waitForTimeout(650);
   const beforeCenter = await frame.getAttribute("data-map-center");
   const beforeZoom = await frame.getAttribute("data-map-zoom");
   await popup.getByRole("button", { name: "Close map popup" }).click();
@@ -368,7 +369,27 @@ test("wheel input over an individual popup does not scroll the page", async ({
   await page.goto("/map?specimen=SPEC-0018");
   const popup = page.locator(".map-popup-card");
   await expect(popup).toBeVisible();
+  await page.waitForTimeout(650);
   await popup.hover();
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        let previous = window.scrollY;
+        let stableFrames = 0;
+        const waitForScrollToSettle = () => {
+          const current = window.scrollY;
+          stableFrames =
+            Math.abs(current - previous) < 0.5 ? stableFrames + 1 : 0;
+          previous = current;
+          if (stableFrames >= 3) {
+            resolve();
+          } else {
+            window.requestAnimationFrame(waitForScrollToSettle);
+          }
+        };
+        window.requestAnimationFrame(waitForScrollToSettle);
+      }),
+  );
   const beforeScroll = await page.evaluate(() => window.scrollY);
   await page.mouse.wheel(0, 480);
   expect(await page.evaluate(() => window.scrollY)).toBe(beforeScroll);
@@ -510,16 +531,25 @@ test("no-WebGL and provider failure retain the semantic collection", async ({
 
   const providerContext = await browser.newContext();
   const providerPage = await providerContext.newPage();
+  const providerConsoleErrors: string[] = [];
+  providerPage.on("console", (message) => {
+    if (message.type() === "error") providerConsoleErrors.push(message.text());
+  });
   await providerPage.route("https://tiles.openfreemap.org/styles/**", (route) =>
     route.abort(),
   );
   await providerPage.goto("/map");
   await expect(
-    providerPage.getByText(/selected basemap style could not be loaded/i),
-  ).toBeVisible();
+    providerPage.getByText(/basemap provider did not respond/i),
+  ).toBeVisible({ timeout: 15_000 });
   await expect(
     providerPage.getByRole("link", { name: "View specimen" }),
   ).toHaveCount(18);
+  expect(
+    providerConsoleErrors.filter((message) =>
+      /AJAXError|openfreemap/i.test(message),
+    ),
+  ).toEqual([]);
   await providerContext.close();
 });
 

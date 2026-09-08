@@ -86,7 +86,7 @@ Turn the approved conversational plan into durable sources of truth and create a
 ### Application and toolchain
 
 - [x] Pin Node.js 24.18.0 and pnpm 11.21.0.
-- [x] Pin Next.js 16.2.12, React 19.2.8, strict TypeScript, Tailwind 4, ESLint, Prettier, and test dependencies.
+- [x] Pin Next.js 16.3.4, React 19.2.8, strict TypeScript, Tailwind 4, ESLint, Prettier, and test dependencies.
 - [x] Add a minimal App Router application with the working title in central configuration.
 - [x] Establish semantic base tokens and accessible page landmarks without implementing the final museum shell.
 - [x] Add a small unit test, a Playwright home smoke/accessibility test, and deterministic scripts.
@@ -268,7 +268,7 @@ Turn the approved conversational plan into durable sources of truth and create a
 - [x] Pass the complete sequential local quality/build/browser/manual visual gate and create the separate verified Phase 3.1 commit.
 - [x] Receive owner approval of the rendered Phase 3.1 result.
 
-Phase 3.1 is a review slice, not the final Phase 6 audit. It establishes public URL identity for the accepted 15/18 records, but Phase 6 still reconciles every legacy row, unresolved media/identity/rights/public-note decision, and field transformation. See [phase_3_1_migration_audit.md](phase_3_1_migration_audit.md).
+Phase 3.1 was a review slice rather than the final audit. Phase 6 later reconciled every updated legacy row and preserved the public URL identities established here. See [phase_3_1_migration_audit.md](phase_3_1_migration_audit.md) and [phase_6_migration_audit.md](phase_6_migration_audit.md).
 
 ### Phase 3.2 — catalog-first Species redesign with integrated Phase 4 discovery
 
@@ -412,19 +412,19 @@ The 2026-09-06 brief authorizes only the complete `/guides/skull-preparation` pa
 
 ### Ingestion
 
-- [ ] Back up private originals outside Git.
-- [ ] Reconcile all 22 legacy taxon rows and 51 specimen rows against the Phase 3.1 accepted/blocked ledger.
-- [ ] Map replacement data into `taxa.csv`/`specimens.csv` without treating legacy row numbers as identity.
-- [ ] Preserve and review Phase 3.1 immutable IDs/URLs; assign new IDs only to genuinely unmapped physical records.
-- [ ] Review slugs, hierarchy, default specimens, and publication states.
-- [ ] Separate private working notes from public prose.
-- [ ] Verify taxonomy and resolve all blocking match flags.
-- [ ] Validate dates, units, measurements, coordinates/precision, preparation, rights, and credits.
-- [ ] Rename/process every accepted media set and review alpha/framing.
-- [ ] Add concise cited profiles only where useful reviewed overview/identification content exists; otherwise keep the optional profile absent or draft without public placeholder prose.
-- [ ] Keep incomplete records as drafts.
-- [ ] Review repository size against the media-storage threshold.
-- [ ] Normalize the partial exports currently retained under ignored `agent_context/metadata_csv/`; do not reuse their row-number IDs or extra spreadsheet-only helper columns as canonical identity.
+- [x] Keep private originals outside Git and verify ignored source evidence is absent from the release checkpoint; backup remains owner-operated.
+- [x] Reconcile all 22 legacy taxon rows and 52 specimen rows against the Phase 3.1 accepted/blocked ledger.
+- [x] Map reviewed replacement data into `specimens.csv` without treating legacy row numbers as public identity.
+- [x] Preserve and review Phase 3.1 immutable IDs/URLs; no new public ID was needed.
+- [x] Review slugs, hierarchy, default specimens, and publication states.
+- [x] Separate private working notes from public prose.
+- [x] Verify taxonomy and resolve all blocking match flags for the retained public set.
+- [x] Validate dates, units, measurements, coordinates/precision, preparation, rights, and credits.
+- [x] Reconcile every accepted media set and review the existing 104 validated derivatives; no new media was supplied.
+- [x] Keep the optional profile draft and absent from public output rather than adding placeholder prose.
+- [x] Keep incomplete/unreviewed source rows outside published output.
+- [x] Review repository size against the media-storage threshold.
+- [x] Normalize the ignored raw exports through a complete disposition ledger and retain `species_name + specimen_id_raw` only as a validated curator crosswalk, never as public identity.
 
 ### Acceptance gate
 
@@ -438,26 +438,26 @@ The 2026-09-06 brief authorizes only the complete `/guides/skull-preparation` pa
 
 ### Product and content completion
 
-- [ ] Select final name, domain, central metadata, public email, and brand mark.
-- [ ] Complete/review all in-scope editorial and policy pages.
-- [ ] Resolve known issues or explicitly remove affected records/features from release scope.
-- [ ] Verify rights for every public asset and data source.
+- [x] Select the v1 name (`Skull Collection`), initial assigned Vercel domain, central metadata, public email, and existing repository-created favicon mark.
+- [x] Complete/review all in-scope pages; explicitly defer the Guides hub, Contribution, About, Rights, Privacy, Accessibility, broader methodology, comprehensive tree, and standalone Comparison routes from the first technical release.
+- [x] Resolve known issues or explicitly remove affected records/features from release scope.
+- [x] Verify rights for every public asset and data source.
 
 ### Quality and security
 
-- [ ] Run Chromium/Firefox/WebKit journeys and visual snapshots.
-- [ ] Complete manual keyboard, screen-reader, 200% zoom, forced-colors spot check, reduced-motion, mobile/tablet/desktop review.
+- [x] Run Chromium/Firefox/WebKit journeys and visual snapshots.
+- [x] Complete manual keyboard, screen-reader, 200% zoom, forced-colors spot check, reduced-motion, mobile/tablet/desktop review.
 - [ ] Meet Lighthouse and Core Web Vitals lab budgets.
-- [ ] Scan broken links/media, drafts, unexpected console errors, and third-party requests.
-- [ ] Validate titles/descriptions, canonical links, Open Graph, sitemap, robots, and JSON-LD.
-- [ ] Add and verify least-privilege CSP, HSTS, content-type, permissions, and referrer headers.
-- [ ] Review dependencies and remediate security findings.
+- [x] Scan broken links/media, drafts, unexpected console errors, and third-party requests.
+- [x] Validate titles/descriptions, canonical links, Open Graph, sitemap, robots, and JSON-LD.
+- [x] Add least-privilege route-aware CSP, HSTS, content-type, permissions, frame, and referrer headers; local and deployed verification remain part of the gate.
+- [x] Review dependencies and remediate security findings.
 
 ### Deployment and release
 
 - [ ] Create/configure Vercel project and GitHub preview deployments.
 - [ ] Confirm plan terms are appropriate before any commercial use or material traffic.
-- [ ] Configure production only from `main` and attach custom domain.
+- [ ] Configure production only from `main`; use the assigned Vercel URL until the owner later chooses a custom domain.
 - [ ] Verify production independently, including map provider attribution and headers.
 - [ ] Test rollback to the prior Vercel deployment and Git checkpoint.
 - [ ] Tag `v1.0.0`, publish release notes, and record release evidence/status.

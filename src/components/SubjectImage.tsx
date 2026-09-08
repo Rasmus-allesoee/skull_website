@@ -43,6 +43,7 @@ export function SubjectImage({
         height={asset.height}
         sizes={sizes}
         priority={priority}
+        fetchPriority={priority ? "high" : "low"}
         quality={90}
       />
     </div>

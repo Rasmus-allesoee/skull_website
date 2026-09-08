@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const port = Number(process.env.PLAYWRIGHT_PORT ?? 3000);
+const runBrowserMatrix = process.env.PLAYWRIGHT_BROWSER_MATRIX === "true";
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -27,9 +28,12 @@ export default defineConfig({
     url: `http://127.0.0.1:${port}`,
   },
   projects: [
-    {
-      name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
-    },
+    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    ...(runBrowserMatrix
+      ? [
+          { name: "firefox", use: { ...devices["Desktop Firefox"] } },
+          { name: "webkit", use: { ...devices["Desktop Safari"] } },
+        ]
+      : []),
   ],
 });

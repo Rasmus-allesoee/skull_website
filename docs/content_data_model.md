@@ -1,6 +1,6 @@
 # Content and data model
 
-**Status:** Approved contract; schema version 4, class-aware measurements, and generated search projection implemented
+**Status:** Approved contract; schema version 6 and the complete Phase 6 migration are implemented
 
 **Last reviewed:** 2026-09-02
 
@@ -8,7 +8,7 @@
 
 This document defines how taxonomic identities, physical specimens, measurements, provenance, preparation, editorial profiles, citations, and media relate. It is the contract between human-maintained content and the application.
 
-The current `agent_context/skulls_meta.csv` is an incomplete illustrative working sheet. The partial `agent_context/metadata_csv/*.csv` exports include useful bird-measurement evidence but also legacy row IDs, helper columns, incomplete taxonomy, and unreviewed publication fields. None is a production input or may dictate identity. Phase 2 used only the user-selected row with source `ID = 1` as evidence for a manually curated representative record; Phase 6 ingests reviewed normalized exports after stable IDs, public notes, rights, and image filenames are complete.
+The current `agent_context/skulls_meta.csv` is an incomplete illustrative working sheet. The `agent_context/metadata_csv/*.csv` exports are retained only as ignored Phase 6 evidence. The owner now edits the unified canonical specimen CSV directly; its validated `species_name` and `specimen_id_raw` crosswalk columns make the owner's per-taxon numbering reviewable without replacing permanent public IDs.
 
 ## 2. Sources of truth
 
@@ -39,7 +39,7 @@ Compiled JSON, search indexes, and GeoJSON are generated views. They are never e
 - Rows have stable explicit IDs; row position is never identity.
 - Unknown extra columns fail validation so misspelled headers are not silently ignored.
 
-Phase 2 fixed the committed header order in `src/domain/content/schemas.ts` and added strict executable validation. Phase 2.1 deliberately extended that order and advanced generated `CompiledCollection.schemaVersion` from 1 to 2. Phase 2.2 advanced the compiled contract to version 3 for lateral orientation and comparison-reference records without changing either CSV header. Phase 3 advances it to version 4 and expands only the canonical `specimens.csv` header with reviewed mammal/bird measurement value-status pairs. Schema/header changes require the change-management process in section 18; do not create ad-hoc production CSV variants or parallel class-specific specimen tables.
+Phase 2 fixed the committed header order in `src/domain/content/schemas.ts` and added strict executable validation. Phase 2.1 advanced the generated contract to version 2; Phase 2.2 advanced it to version 3; and Phase 3 advanced it to version 4 for class-aware measurements. Phase 6 advanced it to version 5 for the curator crosswalk, exact missing-tooth counts, postorbital width, mammal interorbital width, and the final reviewed metadata migration. The release review advances it to version 6 by replacing the mistakenly public `distinguishing_features` field with the purpose-specific `condition_description`. Schema/header changes require the change-management process in section 18; do not create ad-hoc production CSV variants or parallel class-specific specimen tables.
 
 ## 4. Identity, slugs, and references
 
@@ -116,10 +116,12 @@ Hierarchy fields are denormalized deliberately for readable CSV review and fast 
 |---|---|---:|---|
 | `specimen_id` | ID | Yes | Immutable physical specimen identity |
 | `taxon_id` | taxon ID | Yes | Must resolve to one taxon |
+| `species_name` | string | Yes | Review-only readable mirror of the linked taxon identity; genus-level records include `sp.` |
+| `specimen_id_raw` | string | Yes | Owner's per-taxon specimen label; unique only together with `species_name` and never used in public URLs |
 | `publication_status` | enum | Yes | `draft`, `review`, `published`, or `archived` |
 | `is_type_or_reference_specimen` | boolean | No | Descriptive collection flag only; must not imply formal taxonomic type status |
 | `condition` | enum | Yes | `excellent`, `good`, `fair`, `poor`, `fragmentary`, or `not_recorded`; the UI presents the first five as levels 1–5 |
-| `distinguishing_features` | public string | No | Factual visible condition detail; no private notes |
+| `condition_description` | public string | No | Reviewed evidence that explains or qualifies the assigned condition level. Private identification/distinguishing notes remain outside canonical and generated public data. |
 
 ### Biological context
 
@@ -132,7 +134,7 @@ Hierarchy fields are denormalized deliberately for readable CSV review and fast 
 | `pathology_description` | public string | Conditional | Required when pathology is `yes`; otherwise empty |
 | `trauma_status` | enum | No | `yes`, `no`, or `not_recorded`; bite marks, projectile damage, or other observed trauma |
 | `trauma_description` | public string | Conditional | Required when trauma is `yes`; otherwise empty |
-| `teeth_completeness` | enum | No | `complete`, `partially_complete`, `incomplete`, or `not_recorded` |
+| `missing_teeth_count` | non-negative integer | No | Exact observed number of missing teeth; blank means not recorded, and birds display not applicable |
 | `skeleton_completeness` | enum | No | `full`, `partial`, `none`, or `not_recorded` |
 | `body_mass_g` | measurement | No | Animal body mass, separate from skull mass |
 
@@ -178,14 +180,16 @@ All numeric values are non-negative decimal numbers in canonical units. Every fi
 
 | Field | Unit | Profiles | Meaning |
 |---|---|---|---|
-| `skull_length_mm` | mm | All | Approved total skull-length landmark pair |
 | `skull_mass_g` | g | All | Prepared skull/mandible configuration defined in methodology |
+| `skull_length_mm` | mm | All | Approved total skull-length landmark pair |
 | `cranium_width_mm` | mm | All | Approved cranium-width landmark pair |
 | `mandible_length_mm` | mm | All | Approved maximum mandible-length landmark pair |
 | `condylobasal_length_mm` | mm | Mammal | Anterior premaxilla to posterior occipital-condyle landmark pair |
 | `skull_width_mm` | mm | Mammal | Approved maximum skull-width landmark pair |
 | `skull_height_mm` | mm | Mammal | Approved skull-height landmark pair |
 | `rostrum_width_mm` | mm | Mammal | Recorded transverse rostrum width |
+| `postorbital_width_mm` | mm | Mammal | Minimum transverse width immediately posterior to the orbits |
+| `interorbital_width_mm` | mm | Mammal, bird | Recorded minimum width between the orbits |
 | `maxillary_tooth_row_length_mm` | mm | Mammal | Recorded upper-jaw tooth-row length |
 | `mandibular_tooth_row_length_mm` | mm | Mammal | Recorded lower-jaw tooth-row length |
 | `mandible_ramus_height_mm` | mm | Mammal | Straight-line ramus height |
@@ -193,7 +197,6 @@ All numeric values are non-negative decimal numbers in canonical units. Every fi
 | `maxillary_canine_length_mm` | mm | Mammal | Exposed/defined upper-canine measurement |
 | `mandibular_canine_length_mm` | mm | Mammal | Exposed/defined lower-canine measurement |
 | `cranium_height_mm` | mm | Bird | Approved vertical cranium-height record |
-| `interorbital_width_mm` | mm | Bird | Recorded minimum width between the orbits |
 | `orbital_width_mm` | mm | Bird | Recorded transverse orbit width |
 | `bill_length_mm` | mm | Bird | Approved bill-length landmark pair |
 | `bill_width_mm` | mm | Bird | Approved transverse bill-width record |
@@ -260,7 +263,7 @@ interface Specimen {
   condition: "excellent" | "good" | "fair" | "poor" | "fragmentary" | "not_recorded";
   pathology: { status: "yes" | "no" | "not_recorded"; description: string | null };
   trauma: { status: "yes" | "no" | "not_recorded"; description: string | null };
-  teethCompleteness: "complete" | "partially_complete" | "incomplete" | "not_recorded";
+  missingTeethCount: number | null;
   skeletonCompleteness: "full" | "partial" | "none" | "not_recorded";
   measurements: Record<MeasurementKey, Measurement>;
   location: SpecimenLocation;
@@ -533,7 +536,7 @@ The vertical slice intentionally established identities and semantics without tu
 | `Source = Shot` | `acquisition_source = hunting` | Canonical controlled vocabulary preserves the event meaning |
 | sex/body mass `X`; whitening product diluted with water | explicit `not_recorded` states | Missing values are not zero; the product label is not misreported as the final peroxide concentration |
 | age `4` | `age_class = adult`; legacy stage number not displayed as evidence | The source supports the broad class, while the owner's review requires a separately documented age-estimation method rather than an unexplained internal stage |
-| `Ødelagt næsetip` plus owner review of its extent | `condition = good`; public detail `Small chip at the anterior nasal tip.` | The five-level preservation scale distinguishes a minor chip from substantial damage |
+| owner review of overall preservation | `condition = good`; no public condition description recorded | The five-level preservation scale remains public while private identification notes stay outside canonical data |
 | no reviewed staging values for pathology, trauma, teeth completeness, or retained skeleton | explicit `not_recorded` states | Missing observations are not inferred as negative or complete |
 
 The user-provided context establishes private ownership and original photography for this selected slice. Canonical `owner_credit`, `specimen_credit`, and `media_credit` store `Rasmus`; the page renders `Owner: Rasmus`, `Photo: Rasmus`, and the global `© 2026 Rasmus. All rights reserved.` footer. Collection data and media remain reserved under `RIGHTS.md` even though the earlier large rights panel is no longer displayed.
@@ -548,32 +551,23 @@ The supplied `specimens_birds_measurements_raw.csv` demonstrated that mammal-onl
 
 Phase 3.1 deliberately normalized a bounded subset of the same ignored exports after matching them to the owner's cleaned image sets. The result is 15 published taxon identities (13 species-level and two explicit genus-level `sp.` records) linked to 18 published specimens and 104 validated media assets. This is an auditable review expansion, not a declaration that all source rows are complete.
 
-- The accepted `TAX-0002`–`TAX-0015` and `SPEC-0002`–`SPEC-0018` IDs now participate in public URLs and must not be reassigned from row order during Phase 6.
+- The accepted `TAX-0002`–`TAX-0015` and `SPEC-0002`–`SPEC-0018` IDs participate in public URLs and were preserved through Phase 6.
 - `Gavia` and `Larus` are canonical genus names; the separate qualifier renders them as *Gavia* sp. and *Larus* sp. without changing the external taxonomy match.
 - Applicable values copied from a source measurement remain `measured`. Blank applicable fields remain `not_recorded`; out-of-profile fields are `not_applicable`.
-- Ambiguous body-mass units, incompatible raw tooth counts, private-style distinguishing text, and unreviewed preparation durations were not normalized into public facts.
+- Ambiguous body-mass units and numeric tooth counts were initially deferred. Phase 6 later incorporated the owner's explicit gram conversions and modeled the tooth values as exact missing-tooth counts.
 - Explicit coordinates were retained with their supplied uncertainty semantics; no locality or EXIF geocoding occurred.
-- All accepted rows use the repository's reserved rights value and the supplied owner/photographer credit. Phase 6 must still re-audit final rights and public-note decisions.
+- All accepted rows use the repository's reserved rights value and the supplied owner/photographer credit; Phase 6 re-audited those decisions.
 - Four published records legitimately lack an optional frontal view. The compiler reports them as warnings while lateral media remains blocking.
 
 The complete accepted/blocked record matrix and transformation rationale are in [phase_3_1_migration_audit.md](phase_3_1_migration_audit.md).
 
-## 17. Migration from the current draft
+## 17. Phase 6 migration result
 
-The draft metadata, partial `metadata_csv` exports, and staged images are input evidence, not production sources. Phase 3.1 converted only the audited review slice above. Complete migration in Phase 6 will:
+Phase 6 reconciled all 22 raw taxon rows, 52 raw specimen rows, 12 bird-measurement rows, and 104 reviewed source PNGs. The release retains 15 published taxa and 18 published specimens, defers 31 specimen rows lacking reviewed media, and rejects three explicitly unsupported/not-retained rows. No new public ID or URL was assigned.
 
-1. preserve a private backup of the original working sheet and image masters;
-2. reconcile every row against the Phase 3.1 accepted/blocked ledger, preserve its public IDs/URLs, and assign immutable IDs only to genuinely unmapped physical records;
-3. map spreadsheet helper columns and the separate bird-measurement export into the unified reviewed schema without duplicating specimen tables;
-4. convert `X`, blanks, and `N/A` without losing semantics;
-5. separate private notes from curated public notes;
-6. validate dates, units, coordinates, methods, rights, and credits;
-7. verify taxonomy and explicitly review uncertain records;
-8. rename and process images against exact specimen IDs;
-9. select one default specimen per publishable taxon; and
-10. keep incomplete records as drafts until they satisfy publication gates.
+The canonical sheet now includes the validated `species_name + specimen_id_raw` review crosswalk from ADR 0006. The owner can edit this one unified file directly; a new physical specimen receives the next unused collection-wide `SPEC-####` only when it passes review. Dates, names, weights, or row order never determine that ID.
 
-No bulk migration should silently “clean” biologically meaningful values. A migration report records every rejected or transformed field.
+The accepted proposal preserves numeric missing-tooth counts, two owner-confirmed body masses in grams, the owner-classified `SPEC-0014` trauma observation, corrected skull measurements, class applicability, preparation data, locations, rights, and credits. See [phase_6_migration_audit.md](phase_6_migration_audit.md) for exact source fingerprints and dispositions. Raw exports and masters remain ignored evidence, not production inputs.
 
 ## 18. Change management
 

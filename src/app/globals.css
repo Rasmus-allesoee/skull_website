@@ -1,4 +1,10 @@
 @import "tailwindcss";
+@import "@fontsource-variable/newsreader/wght-italic.css";
+@import "@fontsource-variable/newsreader/wght.css";
+@import "@fontsource/ibm-plex-sans/latin-400-italic.css";
+@import "@fontsource/ibm-plex-sans/latin-400.css";
+@import "@fontsource/ibm-plex-sans/latin-500.css";
+@import "@fontsource/ibm-plex-sans/latin-600.css";
 
 :root {
   --color-bg: #0b0d0c;
@@ -35,6 +41,14 @@ html.inspection-open,
 html.inspection-open body {
   overflow: hidden;
   overscroll-behavior: none;
+}
+
+html.inspection-open body {
+  position: fixed;
+  top: var(--inspection-scroll-offset, 0);
+  right: 0;
+  left: 0;
+  width: 100%;
 }
 
 body {
@@ -2143,6 +2157,7 @@ h3 {
   border-radius: 50%;
   background: radial-gradient(circle, rgb(232 225 211 / 8%), transparent 64%);
   filter: blur(1.5rem);
+  pointer-events: none;
 }
 
 .specimen-field-link {
@@ -2459,6 +2474,8 @@ h3 {
   border: 1px solid var(--color-border);
   border-radius: 0.3rem;
   background: var(--color-surface);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 29rem;
 }
 
 .home-hub-card > a,

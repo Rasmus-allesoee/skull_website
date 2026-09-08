@@ -2,7 +2,7 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**Current local milestone:** the preparation guide owner-feedback v1 overhaul plus the final condition-table refinements are implemented, verified, and owner-approved for publication from `agent/skull-prep-release`. The Measurements and Home milestones are merged into `main`; the Preparation pull request is the next publication gate.
+**Current milestone:** Preparation is merged through PR #13. The complete Phase 6 source audit and owner-approved canonical specimen migration are implemented on `agent/v1-release`; release hardening and the first Vercel deployment are the active gate.
 
 Start at `/`, browse the catalog at `/species`, explore public specimen locations at `/map`, inspect the measurement reference at `/methodology`, open the full beginner preparation guide at `/guides/skull-preparation`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`.
 
@@ -22,9 +22,9 @@ The approved scope and experience are specified in [docs/project_overview.md](do
 
 ## Technology baseline
 
-- Node.js `24.18.0` LTS
+- Node.js `24.x` LTS (local validation baseline `24.18.0`)
 - pnpm `11.21.0`
-- Next.js `16.2.12` with the App Router
+- Next.js `16.3.4` with the App Router
 - React `19.2.8`
 - strict TypeScript
 - Orama `3.1.18` for the build-generated, browser-side catalog index
@@ -33,7 +33,7 @@ The approved scope and experience are specified in [docs/project_overview.md](do
 - Zod, csv-parse, gray-matter, and Sharp for the build-time content/media pipeline
 - self-hosted Newsreader and IBM Plex Sans
 - Vitest, Testing Library, axe, and Playwright
-- GitHub Actions CI and a later Vercel deployment
+- GitHub Actions CI and Vercel preview/production deployment
 
 Versions are exact where reproducibility or framework compatibility matters. Dependency updates are reviewed through pull requests rather than silently floating.
 
@@ -96,6 +96,8 @@ On macOS, find the computer's active LAN IPv4 address (commonly with `ipconfig g
 | `pnpm media:verify:methodology-sources` | Verify all five annotated/raw measurement pairs, identity registration, and encoded overlay positions |
 | `pnpm media:process:methodology` | Rebuild and validate the five metadata-stripped measurement-reference WebPs from ignored raw sources |
 | `pnpm media:process:home` | Rebuild and validate the owner-authorized metadata-stripped Home thumbnail WebPs from ignored staging |
+| `pnpm migration:audit` | Verify the reviewed Phase 6 raw-export fingerprints, complete row dispositions, and media coverage |
+| `pnpm migration:prepare` | Generate and fully validate an ignored proposed specimen CSV plus field-level diff without changing canonical content |
 | `pnpm taxonomy:refresh -- --taxon-id TAX-0001 --dry-run` | Query GBIF explicitly without changing curated taxonomy or writing a snapshot |
 | `pnpm lint` | Run ESLint with the Next.js and repository rules |
 | `pnpm typecheck` | Run TypeScript without emitting files |
@@ -142,7 +144,7 @@ The original approved plan remains in `agent_context/website_plan_from_planmode.
 
 `agent_context/skulls_meta.csv` is an incomplete illustrative draft. `agent_context/skull_images_clean/` contains local source/staging images. `agent_context/metadata_csv/` contains partial spreadsheet exports supplied while designing the class-aware measurement model. `agent_context/measurement_page/` contains raw and annotated methodology sources plus migration wording. The owner-authorized Home thumbnail sources remain staging input. These paths and files must not be published directly or read by a normal application build.
 
-Phase 2 established:
+The canonical content system includes:
 
 - `content/taxa/taxa.csv` for taxonomic identities, names, hierarchy, and publication state;
 - `content/specimens/specimens.csv` for physical specimens, provenance, measurements, condition, observation fields, preparation, and rights;
@@ -152,7 +154,7 @@ Phase 2 established:
 - review-gated MDX for future cited editorial profiles and guides; and
 - `public/media/specimens/` for validated derivatives named `{specimen-id}__{view}.webp`, `public/media/references/` for validated comparison assets, `public/media/methodology/` for the five unannotated reference derivatives, and `public/media/home/` for declared Home editorial media.
 
-The first canonical records (`TAX-0001`, `SPEC-0001`) were curated from only the explicitly selected staging row `ID = 1` and six matching raccoon-dog PNGs. Phase 2.2 added a processed adult-human-skull reference and fixed approximate dimensions for the calibrated specimen-page comparison. Phase 3.0 advanced the compiled contract to schema version 4 and expanded the single specimen CSV with explicit mammal/bird measurement applicability. Phase 3.1 then normalized only the 15-taxon/18-specimen subset that could be matched to 104 cleaned images and satisfy the current publication contract; the raw exports/PNG masters remain ignored and the complete Phase 6 audit remains mandatory. Phase 3.2/4 compiles those published records into an ignored 67-document rank/taxon/specimen search artifact. Phase 5 compiles the same published records into an ignored deterministic map projection; neither search nor map reads raw exports or masters. See the [migration audit](docs/phase_3_1_migration_audit.md). The current raccoon-dog profile remains deliberately `draft` and omitted from the public page until useful, cited prose is curated.
+Phase 6 advanced the compiled contract to schema version 5 and completed the audit of 22 taxon, 52 specimen, 12 bird-measurement, and 104 source-image records. The owner-approved canonical sheet retains 15 published taxa and 18 published specimens, exact missing-tooth counts, class-aware measurements, and a validated `species_name + specimen_id_raw` review crosswalk beside immutable public IDs. Thirty-one source specimens remain deferred for missing reviewed media and three are rejected; raw exports/PNG masters remain ignored. The 67-document search and 18-record map projections compile only from canonical content. See the [complete migration audit](docs/phase_6_migration_audit.md).
 
 See [docs/content_data_model.md](docs/content_data_model.md) before editing any future content source.
 
@@ -164,7 +166,7 @@ Do not commit secrets, raw workbooks, archival Affinity/PSD files, private notes
 
 ## Deployment
 
-Vercel is the planned hosting target, connected to GitHub after the release-hardening phase. Pull requests will later receive preview deployments and `main` will become the only production source. No production project, domain, analytics, or runtime service is configured through the current local Measurements checkpoint.
+Vercel is the hosting target. Pull requests receive preview deployments and `main` is the only production source after release setup. The initial release uses the assigned Vercel domain, no analytics/cookies, and `NEXT_PUBLIC_SITE_URL` for canonical public metadata.
 
 ## Rights and licence
 

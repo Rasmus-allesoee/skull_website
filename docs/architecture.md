@@ -21,16 +21,16 @@ The architecture must make a photographically rich catalog feel fast while prote
 
 | Concern | Decision | Why |
 |---|---|---|
-| Runtime | Node.js 24.18.0 LTS | Current approved LTS line; pinned locally and in CI |
+| Runtime | Node.js 24.x LTS | Current approved LTS line; local validation uses 24.18.0 and deployment accepts the Vercel-provided 24.x patch release |
 | Package manager | pnpm 11.21.0 | Exact, reproducible installs and efficient store |
-| Web framework | Next.js 16.2.12 App Router | Static generation, server components, metadata, image pipeline, and Vercel path |
+| Web framework | Next.js 16.3.4 App Router | Static generation, server components, metadata, image pipeline, and Vercel path |
 | UI runtime | React/React DOM 19.2.8 | Compatible pinned stable release |
 | Language | TypeScript 6.0.3, strict mode | Newest release supported by the current Next.js ESLint stack; explicit domain boundaries and early contract failures |
 | Styling | Tailwind CSS 4.3.3 plus CSS variables | Semantic design tokens with small custom museum components |
 | Structured content | Two CSVs plus cited MDX | Familiar editing, Git diffs, schema validation, and suitable prose |
 | Search | Orama 3.1.18 | Browser-side weighted search over deterministic generated documents; pinned exactly |
 | Map | MapLibre GL JS, added in Phase 5 | Provider-independent interactive vector map |
-| Media processing | Sharp 0.35.3 | Deterministic metadata stripping, validation, bounds, and derivatives |
+| Media processing | Sharp 0.35.4 | Deterministic metadata stripping, validation, bounds, and derivatives |
 | Unit/component tests | Vitest, Testing Library, axe | Fast domain and UI feedback |
 | Browser tests | Playwright with axe | Real navigation, responsive, and accessibility smoke coverage |
 | CI | GitHub Actions | Reproducible pull-request gate |
@@ -113,7 +113,7 @@ Rules:
 - Draft rows may be incomplete but must parse safely and remain excluded from public output.
 - Generated paths are ignored and regenerated in CI.
 
-Phase 2 implements this pipeline with `content:build`, `validate:content`, `validate:media`, and committed invalid fixtures. `.generated/collection.json`, `.generated/media-manifest.json`, and `.generated/comparison-reference-manifest.json` are deterministic ignored outputs regenerated before application builds and relevant tests. Phase 2.1 advanced the compiled collection contract to schema version 2 for condition, pathology, trauma, teeth-set, and skeleton fields. Phase 2.2 advanced it to schema version 3 for explicit lateral orientation and typed comparison-reference records. Phase 3 advances it to schema version 4 for unified class-aware measurement fields, profile applicability validation, and hierarchy-name/slug consistency. The Phase 3.2/4 content build also writes the same versioned 67-document search artifact to `.generated/search-documents.json` and `public/generated/catalog-search-v1.json`; both copies are ignored and replaceable. The Measurements milestone adds `.generated/measurement-reference-v1.json`, compiled from the reviewed 21-row definition CSV and five-view coordinate manifest; the client board handles movement-aware tap dismissal and compact, viewport-aware tooltip/detail positioning, while a normal build never reads the ignored annotated/raw staging sources. Generated artifacts are never migrated in place.
+Phase 2 implements this pipeline with `content:build`, `validate:content`, `validate:media`, and committed invalid fixtures. `.generated/collection.json`, `.generated/media-manifest.json`, and `.generated/comparison-reference-manifest.json` are deterministic ignored outputs regenerated before application builds and relevant tests. Phase 2.1 advanced the compiled contract to schema version 2, Phase 2.2 to version 3, and Phase 3 to version 4 for unified class-aware measurements. Phase 6 advanced it to version 5: `species_name + specimen_id_raw` provides a validated curator crosswalk without changing immutable public identity, missing teeth retain their exact count, prepared skull mass leads the skull-measurement columns, and postorbital/interorbital applicability matches the current methodology. The release review advances it to version 6 so only the dedicated `condition_description` field can provide public condition evidence; private distinguishing notes are excluded. The Phase 3.2/4 content build also writes the same versioned 67-document search artifact to `.generated/search-documents.json` and `public/generated/catalog-search-v1.json`; both copies are ignored and replaceable. The Measurements milestone adds `.generated/measurement-reference-v1.json`, compiled from the reviewed 21-row definition CSV and five-view coordinate manifest. Generated artifacts are never migrated in place.
 
 ## 6. Repository boundaries
 
@@ -325,10 +325,10 @@ Security headers are introduced alongside the feature hosts they must permit, th
 |---|---|---|
 | Local | Working branch and local content | Development and authoring |
 | CI | Pull-request commit, clean install | Deterministic checks and production build |
-| Preview | Vercel pull-request deployment, later | Visual/content review against exact commit |
-| Production | Vercel deployment from `main`, later | Public site only |
+| Preview | Vercel pull-request deployment | Visual/content review against exact commit |
+| Production | Vercel deployment from `main` | Public site only |
 
-No Vercel project is created in Phase 0/1. Phase 7 selects the final name/domain and contact address, configures production, verifies headers and metadata, tests rollback, and tags `v1.0.0`.
+Phase 7 uses Git-connected Vercel deployments: feature branches create Preview deployments and only `main` creates Production. The canonical metadata URL resolves from an explicit `NEXT_PUBLIC_SITE_URL` override or Vercel's stable production-domain environment value. The v1 name is `Skull Collection`, the public contact is `rasmus.allesoee@gmail.com`, and the first release uses its assigned Vercel domain. Release completion requires deployed header/metadata checks, a reversible rollback exercise, and tag `v1.0.0`.
 
 For same-network phone/tablet development, `dev:network` binds to `0.0.0.0`, while `next.config.ts` supplies exact loopback and currently detected non-internal IPv4 values to `allowedDevOrigins`. Visitors use the computer's LAN IP, never the bind address. This prevents the Next.js development HMR WebSocket from being rejected and repeatedly reloading the page. `preview:network` is the production-like fallback and has no development HMR channel.
 
@@ -369,5 +369,6 @@ Testing details and phase ownership live in [implementation_plan.md](implementat
 - [ADR 0003: Curated web media in Git](decisions/0003-curated-web-media-in-git.md)
 - [ADR 0004: Build-generated client search and route-lazy map](decisions/0004-client-search-and-route-lazy-map.md)
 - [ADR 0005: Species-first pages with stable specimen URLs](decisions/0005-species-and-specimen-url-model.md)
+- [ADR 0006: Curator-facing specimen crosswalk](decisions/0006-curator-facing-specimen-crosswalk.md)
 
 New ADRs are reserved for decisions that materially change data identity, public URLs, deployment, security, ownership, or cross-cutting technology. Phase 3's static rank routes/catalog queries and optional class-specific columns extend ADR 0001, 0002, and 0005 without changing the accepted source-of-truth, identity, URL, or runtime boundaries, so no new ADR is required. Small implementation choices belong near code or in the relevant canonical document.
