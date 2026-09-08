@@ -21,7 +21,7 @@ The architecture must make a photographically rich catalog feel fast while prote
 
 | Concern | Decision | Why |
 |---|---|---|
-| Runtime | Node.js 24.18.0 LTS | Current approved LTS line; pinned locally and in CI |
+| Runtime | Node.js 24.x LTS | Current approved LTS line; local validation uses 24.18.0 and deployment accepts the Vercel-provided 24.x patch release |
 | Package manager | pnpm 11.21.0 | Exact, reproducible installs and efficient store |
 | Web framework | Next.js 16.3.4 App Router | Static generation, server components, metadata, image pipeline, and Vercel path |
 | UI runtime | React/React DOM 19.2.8 | Compatible pinned stable release |

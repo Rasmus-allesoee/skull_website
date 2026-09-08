@@ -22,7 +22,7 @@ The approved scope and experience are specified in [docs/project_overview.md](do
 
 ## Technology baseline
 
-- Node.js `24.18.0` LTS
+- Node.js `24.x` LTS (local validation baseline `24.18.0`)
 - pnpm `11.21.0`
 - Next.js `16.3.4` with the App Router
 - React `19.2.8`

@@ -54,7 +54,7 @@ The historical approved master plan is `agent_context/website_plan_from_planmode
 
 ## 4. Architecture invariants
 
-- Pinned Node.js 24.18.0, pnpm 11.21.0, Next.js 16.3.4, React 19.2.8, strict TypeScript.
+- Node.js 24.x is required (local validation baseline: 24.18.0), with pnpm 11.21.0, Next.js 16.3.4, React 19.2.8, and strict TypeScript.
 - Next.js App Router and React Server Components by default; client islands only for search/filters, gallery, calibrated comparison, guidance/specimen-chooser dialogs, the preparation contents drawer, a future interactive tree, and MapLibre.
 - Known public routes are statically generated and useful before interactive JavaScript finishes.
 - Canonical structured sources are two UTF-8 linked CSVs (`taxa.csv`, `specimens.csv`), cited MDX, and reviewed media/reference declarations.
