@@ -86,7 +86,7 @@ Turn the approved conversational plan into durable sources of truth and create a
 ### Application and toolchain
 
 - [x] Pin Node.js 24.18.0 and pnpm 11.21.0.
-- [x] Pin Next.js 16.2.12, React 19.2.8, strict TypeScript, Tailwind 4, ESLint, Prettier, and test dependencies.
+- [x] Pin Next.js 16.3.4, React 19.2.8, strict TypeScript, Tailwind 4, ESLint, Prettier, and test dependencies.
 - [x] Add a minimal App Router application with the working title in central configuration.
 - [x] Establish semantic base tokens and accessible page landmarks without implementing the final museum shell.
 - [x] Add a small unit test, a Playwright home smoke/accessibility test, and deterministic scripts.
@@ -438,26 +438,26 @@ The 2026-09-06 brief authorizes only the complete `/guides/skull-preparation` pa
 
 ### Product and content completion
 
-- [ ] Select final name, domain, central metadata, public email, and brand mark.
-- [ ] Complete/review all in-scope editorial and policy pages.
-- [ ] Resolve known issues or explicitly remove affected records/features from release scope.
-- [ ] Verify rights for every public asset and data source.
+- [x] Select the v1 name (`Skull Collection`), initial assigned Vercel domain, central metadata, public email, and existing repository-created favicon mark.
+- [x] Complete/review all in-scope pages; explicitly defer the Guides hub, Contribution, About, Rights, Privacy, Accessibility, broader methodology, comprehensive tree, and standalone Comparison routes from the first technical release.
+- [x] Resolve known issues or explicitly remove affected records/features from release scope.
+- [x] Verify rights for every public asset and data source.
 
 ### Quality and security
 
-- [ ] Run Chromium/Firefox/WebKit journeys and visual snapshots.
-- [ ] Complete manual keyboard, screen-reader, 200% zoom, forced-colors spot check, reduced-motion, mobile/tablet/desktop review.
+- [x] Run Chromium/Firefox/WebKit journeys and visual snapshots.
+- [x] Complete manual keyboard, screen-reader, 200% zoom, forced-colors spot check, reduced-motion, mobile/tablet/desktop review.
 - [ ] Meet Lighthouse and Core Web Vitals lab budgets.
-- [ ] Scan broken links/media, drafts, unexpected console errors, and third-party requests.
-- [ ] Validate titles/descriptions, canonical links, Open Graph, sitemap, robots, and JSON-LD.
-- [ ] Add and verify least-privilege CSP, HSTS, content-type, permissions, and referrer headers.
-- [ ] Review dependencies and remediate security findings.
+- [x] Scan broken links/media, drafts, unexpected console errors, and third-party requests.
+- [x] Validate titles/descriptions, canonical links, Open Graph, sitemap, robots, and JSON-LD.
+- [x] Add least-privilege route-aware CSP, HSTS, content-type, permissions, frame, and referrer headers; local and deployed verification remain part of the gate.
+- [x] Review dependencies and remediate security findings.
 
 ### Deployment and release
 
 - [ ] Create/configure Vercel project and GitHub preview deployments.
 - [ ] Confirm plan terms are appropriate before any commercial use or material traffic.
-- [ ] Configure production only from `main` and attach custom domain.
+- [ ] Configure production only from `main`; use the assigned Vercel URL until the owner later chooses a custom domain.
 - [ ] Verify production independently, including map provider attribution and headers.
 - [ ] Test rollback to the prior Vercel deployment and Git checkpoint.
 - [ ] Tag `v1.0.0`, publish release notes, and record release evidence/status.

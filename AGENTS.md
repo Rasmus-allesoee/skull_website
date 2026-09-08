@@ -22,7 +22,7 @@ Build a fast, visually led online natural-history museum for animal skulls. Phot
 
 Current phase: **Phase 6 migration is applied and locally validated on `agent/v1-release`; release hardening and the owner-authorized first Vercel deployment are active**. Measurements and Home are merged through PRs #11/#12, and Preparation is merged through PR #13 at `0e332ac`. The first technical release deliberately defers the separate About, Contribution, Rights, Privacy, Accessibility, Guides-hub, broader methodology, comprehensive tree, and standalone comparison routes. Consult `docs/project_status.md` for exact evidence and the next action.
 
-Use the neutral working title **Skull Collection** from central site configuration until the final name is selected.
+Use the owner-selected public v1 name **Skull Collection** from central site configuration.
 
 ## 2. Mandatory reading order
 
@@ -54,7 +54,7 @@ The historical approved master plan is `agent_context/website_plan_from_planmode
 
 ## 4. Architecture invariants
 
-- Pinned Node.js 24.18.0, pnpm 11.21.0, Next.js 16.2.12, React 19.2.8, strict TypeScript.
+- Pinned Node.js 24.18.0, pnpm 11.21.0, Next.js 16.3.4, React 19.2.8, strict TypeScript.
 - Next.js App Router and React Server Components by default; client islands only for search/filters, gallery, calibrated comparison, guidance/specimen-chooser dialogs, the preparation contents drawer, a future interactive tree, and MapLibre.
 - Known public routes are statically generated and useful before interactive JavaScript finishes.
 - Canonical structured sources are two UTF-8 linked CSVs (`taxa.csv`, `specimens.csv`), cited MDX, and reviewed media/reference declarations.
@@ -66,7 +66,7 @@ The historical approved master plan is `agent_context/website_plan_from_planmode
 - Home server-renders one complete ten-slot field state and progressively enhances only that field. Three bounded arrangements expose every one of the 18 published physical specimens across the cycle, with deliberate overlap between states and a lateral-dominant mix of canonical alternate views; each placement carries one normalized depth value from which scale, sharpness, brightness, parallax, shadow, and stacking are derived. Semantic specimen links remain stationary while only the visual image responds to focus/parallax; enhanced pointer/touch hit surfaces follow alpha-derived silhouette paths, and the field-level identity card is boundary-aware and clamped inside the field. On small touch viewports, selecting a specimen adds a bounded, distance-weighted visual repulsion to nearby layers while leaving the link geometry unchanged; reduced motion clears that response. Home never loads MapLibre or the catalog search index.
 - Page code consumes typed records and `MediaAsset` interfaces, not constructed filenames or raw CSV rows.
 - True-to-scale comparison uses a canonical lateral-view maximum length, compiled transparent subject bounds, and explicit lateral orientation. Approximate reference measurements must remain labelled as approximate.
-- The schema-version-5 model stays unified in `specimens.csv`: mammal, bird, and fallback profiles control applicability and presentation without parallel specimen tables. The validated `species_name + specimen_id_raw` pair is a curator crosswalk only; immutable `SPEC-####` remains the public identity. Class-specific fields require explicit `not_applicable` status outside their profile.
+- The schema-version-6 model stays unified in `specimens.csv`: mammal, bird, and fallback profiles control applicability and presentation without parallel specimen tables. The validated `species_name + specimen_id_raw` pair is a curator crosswalk only; immutable `SPEC-####` remains the public identity. Public condition evidence belongs only in `condition_description`; private `distinguishing_features` notes never enter canonical or generated public data. Class-specific fields require explicit `not_applicable` status outside their profile.
 - The catalog taxonomy drawer, no-JavaScript nested list, rank pages, search rank documents, and cards are projections of the same published class → order → family → genus → taxon hierarchy. Any comprehensive Phase 3.3 tree must preserve tree/list route parity and cannot invent group characteristics or divergence claims.
 - Catalog query state is URL-backed on `/species`: `q`, `mode`, `class`, `scope`, controlled-value filters, length/mass bounds, and `sort` restore on direct load, reload, and browser history. The generated Orama artifact is replaceable ignored output and loads only after a query is entered.
 - Accessibility targets WCAG 2.2 AA and is part of component/API design, not a later overlay.
@@ -195,3 +195,13 @@ Update documents in the same change as behavior. Do not leave important decision
 Work is done only when it matches active scope, handles relevant mobile/keyboard/missing/error/reduced-motion states, respects rights/privacy/security, passes appropriate checks, updates documentation, preserves source boundaries, contains no unrelated/private files, and leaves `docs/project_status.md` accurate.
 
 If blocked by credentials, missing content decisions, rights, or external state, complete all safe local work, record exact evidence and the smallest required user action, then stop without claiming the phase gate passed.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

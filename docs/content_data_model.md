@@ -1,6 +1,6 @@
 # Content and data model
 
-**Status:** Approved contract; schema version 5 and the complete Phase 6 migration are implemented
+**Status:** Approved contract; schema version 6 and the complete Phase 6 migration are implemented
 
 **Last reviewed:** 2026-09-02
 
@@ -39,7 +39,7 @@ Compiled JSON, search indexes, and GeoJSON are generated views. They are never e
 - Rows have stable explicit IDs; row position is never identity.
 - Unknown extra columns fail validation so misspelled headers are not silently ignored.
 
-Phase 2 fixed the committed header order in `src/domain/content/schemas.ts` and added strict executable validation. Phase 2.1 advanced the generated contract to version 2; Phase 2.2 advanced it to version 3; and Phase 3 advanced it to version 4 for class-aware measurements. Phase 6 advances it to version 5 for the curator crosswalk, exact missing-tooth counts, postorbital width, mammal interorbital width, and the final reviewed metadata migration. Schema/header changes require the change-management process in section 18; do not create ad-hoc production CSV variants or parallel class-specific specimen tables.
+Phase 2 fixed the committed header order in `src/domain/content/schemas.ts` and added strict executable validation. Phase 2.1 advanced the generated contract to version 2; Phase 2.2 advanced it to version 3; and Phase 3 advanced it to version 4 for class-aware measurements. Phase 6 advanced it to version 5 for the curator crosswalk, exact missing-tooth counts, postorbital width, mammal interorbital width, and the final reviewed metadata migration. The release review advances it to version 6 by replacing the mistakenly public `distinguishing_features` field with the purpose-specific `condition_description`. Schema/header changes require the change-management process in section 18; do not create ad-hoc production CSV variants or parallel class-specific specimen tables.
 
 ## 4. Identity, slugs, and references
 
@@ -121,7 +121,7 @@ Hierarchy fields are denormalized deliberately for readable CSV review and fast 
 | `publication_status` | enum | Yes | `draft`, `review`, `published`, or `archived` |
 | `is_type_or_reference_specimen` | boolean | No | Descriptive collection flag only; must not imply formal taxonomic type status |
 | `condition` | enum | Yes | `excellent`, `good`, `fair`, `poor`, `fragmentary`, or `not_recorded`; the UI presents the first five as levels 1–5 |
-| `distinguishing_features` | public string | No | Factual visible condition detail; no private notes |
+| `condition_description` | public string | No | Reviewed evidence that explains or qualifies the assigned condition level. Private identification/distinguishing notes remain outside canonical and generated public data. |
 
 ### Biological context
 
@@ -536,7 +536,7 @@ The vertical slice intentionally established identities and semantics without tu
 | `Source = Shot` | `acquisition_source = hunting` | Canonical controlled vocabulary preserves the event meaning |
 | sex/body mass `X`; whitening product diluted with water | explicit `not_recorded` states | Missing values are not zero; the product label is not misreported as the final peroxide concentration |
 | age `4` | `age_class = adult`; legacy stage number not displayed as evidence | The source supports the broad class, while the owner's review requires a separately documented age-estimation method rather than an unexplained internal stage |
-| owner review of overall preservation | `condition = good`; no public detail recorded | The five-level preservation scale distinguishes a minor defect from substantial damage while keeping identification notes private |
+| owner review of overall preservation | `condition = good`; no public condition description recorded | The five-level preservation scale remains public while private identification notes stay outside canonical data |
 | no reviewed staging values for pathology, trauma, teeth completeness, or retained skeleton | explicit `not_recorded` states | Missing observations are not inferred as negative or complete |
 
 The user-provided context establishes private ownership and original photography for this selected slice. Canonical `owner_credit`, `specimen_credit`, and `media_credit` store `Rasmus`; the page renders `Owner: Rasmus`, `Photo: Rasmus`, and the global `© 2026 Rasmus. All rights reserved.` footer. Collection data and media remain reserved under `RIGHTS.md` even though the earlier large rights panel is no longer displayed.

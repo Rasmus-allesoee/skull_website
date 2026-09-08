@@ -43,7 +43,6 @@ type CsvRow = Record<string, string> & {
 interface PublishedMapping {
   raw_key: string;
   canonical_specimen_id: string;
-  distinguishing_features: string | null;
   age_class: string;
   age_detail: string | null;
   location_label: string;
@@ -253,7 +252,7 @@ const proposed = canonicalSpecimens.map((canonical) => {
   next.is_type_or_reference_specimen =
     canonical.is_type_or_reference_specimen.toLowerCase();
   next.condition = normalizeCondition(raw.condition);
-  next.distinguishing_features = mapping.distinguishing_features ?? "";
+  next.condition_description = canonical.condition_description ?? "";
   next.sex = normalizeSex(raw.sex);
   next.age_class = mapping.age_class;
   next.age_detail = mapping.age_detail ?? "";

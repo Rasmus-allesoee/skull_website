@@ -500,6 +500,20 @@ test("double-clicking a compared specimen opens its exact record", async ({
   await expect(page).toHaveURL("/species/harbour-seal/specimens/SPEC-0014");
 });
 
+test("newly measured secondary specimens expose true-scale comparison", async ({
+  page,
+}) => {
+  await page.goto("/species/harbour-seal/specimens/SPEC-0015");
+  await expect(page.getByText("A sense of scale")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Compare" })).toBeVisible();
+  await expect(
+    page.locator('[data-comparison-id="specimen:SPEC-0015"]'),
+  ).toBeVisible();
+  await expect(
+    page.getByText(/comparison is unavailable without/i),
+  ).toHaveCount(0);
+});
+
 test.describe("mobile touch behavior", () => {
   test.use({
     deviceScaleFactor: devices["Pixel 7"].deviceScaleFactor,
@@ -511,7 +525,9 @@ test.describe("mobile touch behavior", () => {
 
   test("tap, swipe, double-tap, pinch, and landscape thumbnail navigation all work", async ({
     page,
+    browserName,
   }) => {
+    test.skip(browserName !== "chromium", "Pinch emulation requires CDP.");
     await page.goto(taxonPath);
     const gallery = page.getByLabel(/Raccoon dog gallery/);
     const browserSession = await page.context().newCDPSession(page);
@@ -686,7 +702,9 @@ test.describe("mobile touch behavior", () => {
 
   test("the main gallery preserves native page pinch zoom and two-dimensional pan", async ({
     page,
+    browserName,
   }) => {
+    test.skip(browserName !== "chromium", "Pinch emulation requires CDP.");
     await page.goto(taxonPath);
     const gallery = page.getByLabel(/Raccoon dog gallery/);
     await expect(page.getByText("1 / 6 · Lateral")).toBeVisible();

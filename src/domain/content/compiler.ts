@@ -303,7 +303,7 @@ export function compileCollection(input: CompilationInput): CompilationResult {
 
   return {
     collection: {
-      schemaVersion: 5,
+      schemaVersion: 6,
       taxa: taxa.sort((a, b) => a.taxonId.localeCompare(b.taxonId)),
       specimens: specimens.sort((a, b) =>
         a.specimenId.localeCompare(b.specimenId),
@@ -499,7 +499,7 @@ function transformSpecimen(
   }
 
   for (const field of [
-    "distinguishing_features",
+    "condition_description",
     "age_detail",
     "pathology_description",
     "trauma_description",
@@ -800,7 +800,7 @@ function transformSpecimen(
     publicationStatus: raw.publication_status,
     isTypeOrReferenceSpecimen: raw.is_type_or_reference_specimen === "true",
     condition: raw.condition,
-    distinguishingFeatures: nullable(raw.distinguishing_features),
+    conditionDescription: nullable(raw.condition_description),
     sex: raw.sex,
     ageClass: raw.age_class,
     ageDetail: nullable(raw.age_detail),

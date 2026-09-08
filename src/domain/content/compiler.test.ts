@@ -27,8 +27,9 @@ describe("content compiler", () => {
       value: null,
       unit: "g",
     });
-    expect(collection.schemaVersion).toBe(5);
+    expect(collection.schemaVersion).toBe(6);
     expect(specimen.condition).toBe("good");
+    expect(specimen.conditionDescription).toBeNull();
     expect(specimen.ageDetail).toBeNull();
     expect(specimen.pathology).toEqual({
       status: "not_recorded",

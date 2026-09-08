@@ -390,14 +390,6 @@ export function MapCanvas({
           );
         });
     });
-    map.on("error", () => {
-      if (!loaded) {
-        window.clearTimeout(failTimer);
-        setProviderError(
-          "The selected basemap style could not be loaded. Search, filters, and every exact specimen link remain available.",
-        );
-      }
-    });
     map.on("move", updateMapView);
     map.on("resize", updateMapView);
     const updateClusters = () => {
@@ -773,7 +765,10 @@ function pointLayer(
       ? [
           "all",
           ["!", ["has", "point_count"]],
-          ["!in", ["get", "classSlug"], ["literal", ["mammals", "birds"]]],
+          [
+            "!",
+            ["in", ["get", "classSlug"], ["literal", ["mammals", "birds"]]],
+          ],
         ]
       : [
           "all",

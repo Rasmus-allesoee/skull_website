@@ -1,13 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
-import "@fontsource-variable/newsreader/wght-italic.css";
-import "@fontsource-variable/newsreader/wght.css";
-import "@fontsource/ibm-plex-sans/latin-400-italic.css";
-import "@fontsource/ibm-plex-sans/latin-400.css";
-import "@fontsource/ibm-plex-sans/latin-500.css";
-import "@fontsource/ibm-plex-sans/latin-600.css";
-
 import { siteConfig } from "@/config/site";
 
 import "./globals.css";
@@ -49,12 +42,29 @@ type RootLayoutProps = Readonly<{
 }>;
 
 export default function RootLayout({ children }: RootLayoutProps) {
+  const structuredData = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: siteConfig.name,
+    url: siteConfig.url,
+    description: siteConfig.description,
+    creator: {
+      "@type": "Person",
+      name: "Rasmus",
+      email: `mailto:${siteConfig.contactEmail}`,
+    },
+  }).replaceAll("<", "\\u003c");
+
   return (
     <html lang="en">
       <body>
         <a className="skip-link" href="#main-content">
           Skip to main content
         </a>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: structuredData }}
+        />
         {children}
       </body>
     </html>

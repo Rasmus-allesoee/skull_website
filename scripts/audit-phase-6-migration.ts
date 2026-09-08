@@ -27,7 +27,6 @@ const rejectedTaxonSchema = z.strictObject({
 const publishedSpecimenSchema = z.strictObject({
   raw_key: z.string().min(1),
   canonical_specimen_id: z.string().regex(/^SPEC-\d{4,}$/),
-  distinguishing_features: z.string().min(1).nullable(),
   age_class: z.enum([
     "juvenile",
     "subadult",

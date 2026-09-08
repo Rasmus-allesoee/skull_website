@@ -28,62 +28,29 @@
         "scientific_name": "Nyctereutes procyonoides",
         "canonical_taxon_id": "TAX-0001"
       },
-      {
-        "scientific_name": "Alca torda",
-        "canonical_taxon_id": "TAX-0002"
-      },
-      {
-        "scientific_name": "Felis catus",
-        "canonical_taxon_id": "TAX-0003"
-      },
-      {
-        "scientific_name": "Gavia",
-        "canonical_taxon_id": "TAX-0004"
-      },
+      { "scientific_name": "Alca torda", "canonical_taxon_id": "TAX-0002" },
+      { "scientific_name": "Felis catus", "canonical_taxon_id": "TAX-0003" },
+      { "scientific_name": "Gavia", "canonical_taxon_id": "TAX-0004" },
       {
         "scientific_name": "Haematopus ostralegus",
         "canonical_taxon_id": "TAX-0005"
       },
-      {
-        "scientific_name": "Larus",
-        "canonical_taxon_id": "TAX-0006"
-      },
+      { "scientific_name": "Larus", "canonical_taxon_id": "TAX-0006" },
       {
         "scientific_name": "Lepus europaeus",
         "canonical_taxon_id": "TAX-0007"
       },
-      {
-        "scientific_name": "Martes foina",
-        "canonical_taxon_id": "TAX-0008"
-      },
-      {
-        "scientific_name": "Meles meles",
-        "canonical_taxon_id": "TAX-0009"
-      },
-      {
-        "scientific_name": "Morus bassanus",
-        "canonical_taxon_id": "TAX-0010"
-      },
+      { "scientific_name": "Martes foina", "canonical_taxon_id": "TAX-0008" },
+      { "scientific_name": "Meles meles", "canonical_taxon_id": "TAX-0009" },
+      { "scientific_name": "Morus bassanus", "canonical_taxon_id": "TAX-0010" },
       {
         "scientific_name": "Mustela nivalis",
         "canonical_taxon_id": "TAX-0011"
       },
-      {
-        "scientific_name": "Phoca vitulina",
-        "canonical_taxon_id": "TAX-0012"
-      },
-      {
-        "scientific_name": "Talpa europaea",
-        "canonical_taxon_id": "TAX-0013"
-      },
-      {
-        "scientific_name": "Uria aalge",
-        "canonical_taxon_id": "TAX-0014"
-      },
-      {
-        "scientific_name": "Vulpes vulpes",
-        "canonical_taxon_id": "TAX-0015"
-      }
+      { "scientific_name": "Phoca vitulina", "canonical_taxon_id": "TAX-0012" },
+      { "scientific_name": "Talpa europaea", "canonical_taxon_id": "TAX-0013" },
+      { "scientific_name": "Uria aalge", "canonical_taxon_id": "TAX-0014" },
+      { "scientific_name": "Vulpes vulpes", "canonical_taxon_id": "TAX-0015" }
     ],
     "deferred_missing_media": [
       "Cervus elaphus",
@@ -105,7 +72,6 @@
       {
         "raw_key": "Nyctereutes procyonoides#SPEC-0001",
         "canonical_specimen_id": "SPEC-0001",
-        "distinguishing_features": null,
         "age_class": "adult",
         "age_detail": null,
         "location_label": "Wadden Sea region, Denmark"
@@ -113,7 +79,6 @@
       {
         "raw_key": "Alca torda#1",
         "canonical_specimen_id": "SPEC-0002",
-        "distinguishing_features": null,
         "age_class": "indeterminate",
         "age_detail": "Estimated as between young adult and adult.",
         "location_label": "Fanø beach, Denmark"
@@ -121,7 +86,6 @@
       {
         "raw_key": "Felis catus#1",
         "canonical_specimen_id": "SPEC-0003",
-        "distinguishing_features": null,
         "age_class": "adult",
         "age_detail": null,
         "location_label": "Esbjerg, Denmark"
@@ -129,7 +93,6 @@
       {
         "raw_key": "Gavia sp.#1",
         "canonical_specimen_id": "SPEC-0004",
-        "distinguishing_features": null,
         "age_class": "indeterminate",
         "age_detail": "Estimated as between young adult and adult.",
         "location_label": "Fanø beach, Denmark"
@@ -137,7 +100,6 @@
       {
         "raw_key": "Haematopus ostralegus#1",
         "canonical_specimen_id": "SPEC-0005",
-        "distinguishing_features": null,
         "age_class": "indeterminate",
         "age_detail": null,
         "location_label": "Fanø beach, Denmark"
@@ -145,7 +107,6 @@
       {
         "raw_key": "Larus sp.#4",
         "canonical_specimen_id": "SPEC-0006",
-        "distinguishing_features": null,
         "age_class": "indeterminate",
         "age_detail": "Estimated as between young adult and adult.",
         "location_label": "Fanø beach, Denmark"
@@ -153,7 +114,6 @@
       {
         "raw_key": "Lepus europaeus#1",
         "canonical_specimen_id": "SPEC-0007",
-        "distinguishing_features": null,
         "age_class": "adult",
         "age_detail": null,
         "location_label": "Esbjerg Municipality, Denmark"
@@ -161,7 +121,6 @@
       {
         "raw_key": "Martes foina#1",
         "canonical_specimen_id": "SPEC-0008",
-        "distinguishing_features": null,
         "age_class": "adult",
         "age_detail": null,
         "location_label": "Odense, Denmark"
@@ -169,7 +128,6 @@
       {
         "raw_key": "Meles meles#1",
         "canonical_specimen_id": "SPEC-0009",
-        "distinguishing_features": null,
         "age_class": "juvenile",
         "age_detail": null,
         "location_label": "Oksbøl, Denmark"
@@ -177,7 +135,6 @@
       {
         "raw_key": "Meles meles#3",
         "canonical_specimen_id": "SPEC-0010",
-        "distinguishing_features": null,
         "age_class": "old_adult",
         "age_detail": null,
         "location_label": "Henne Kirkeby, Denmark",
@@ -186,7 +143,6 @@
       {
         "raw_key": "Morus bassanus#2",
         "canonical_specimen_id": "SPEC-0011",
-        "distinguishing_features": null,
         "age_class": "adult",
         "age_detail": null,
         "location_label": "Fanø beach, Denmark"
@@ -194,7 +150,6 @@
       {
         "raw_key": "Mustela nivalis#1",
         "canonical_specimen_id": "SPEC-0012",
-        "distinguishing_features": null,
         "age_class": "young_adult",
         "age_detail": null,
         "location_label": "Esbjerg, Denmark"
@@ -202,7 +157,6 @@
       {
         "raw_key": "Phoca vitulina#1",
         "canonical_specimen_id": "SPEC-0013",
-        "distinguishing_features": null,
         "age_class": "juvenile",
         "age_detail": null,
         "location_label": "Sønderho beach, Denmark"
@@ -210,7 +164,6 @@
       {
         "raw_key": "Phoca vitulina#6",
         "canonical_specimen_id": "SPEC-0014",
-        "distinguishing_features": null,
         "age_class": "adult",
         "age_detail": null,
         "location_label": "Rindby beach, Denmark",
@@ -219,7 +172,6 @@
       {
         "raw_key": "Phoca vitulina#7",
         "canonical_specimen_id": "SPEC-0015",
-        "distinguishing_features": null,
         "age_class": "young_adult",
         "age_detail": null,
         "location_label": "Rindby beach, Denmark"
@@ -227,7 +179,6 @@
       {
         "raw_key": "Talpa europaea#1",
         "canonical_specimen_id": "SPEC-0016",
-        "distinguishing_features": null,
         "age_class": "juvenile",
         "age_detail": "Cranial sutures are not fully fused; the teeth show little visible wear.",
         "location_label": "Esbjerg, Denmark"
@@ -235,7 +186,6 @@
       {
         "raw_key": "Uria aalge#1",
         "canonical_specimen_id": "SPEC-0017",
-        "distinguishing_features": null,
         "age_class": "indeterminate",
         "age_detail": "Estimated as between young adult and adult.",
         "location_label": "Fanø beach, Denmark"
@@ -243,7 +193,6 @@
       {
         "raw_key": "Vulpes vulpes#5",
         "canonical_specimen_id": "SPEC-0018",
-        "distinguishing_features": null,
         "age_class": "adult",
         "age_detail": null,
         "location_label": "Ølufvad, Denmark",

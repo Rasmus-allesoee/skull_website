@@ -96,8 +96,8 @@ export function CollectionRecord({
             <span className="record-primary-value">
               {humanizeToken(specimen.condition)}
             </span>
-            {specimen.distinguishingFeatures ? (
-              <small>{specimen.distinguishingFeatures}</small>
+            {specimen.conditionDescription ? (
+              <small>{specimen.conditionDescription}</small>
             ) : null}
             <ConditionGuide />
           </dd>

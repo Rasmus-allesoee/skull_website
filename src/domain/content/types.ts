@@ -335,7 +335,7 @@ export interface SpecimenRecord {
   publicationStatus: PublicationStatus;
   isTypeOrReferenceSpecimen: boolean;
   condition: SpecimenCondition;
-  distinguishingFeatures: string | null;
+  conditionDescription: string | null;
   sex: "female" | "male" | "intersex" | "unknown" | "not_recorded";
   ageClass: AgeClass;
   ageDetail: string | null;
@@ -449,7 +449,7 @@ export interface TaxonProfile {
 }
 
 export interface CompiledCollection {
-  schemaVersion: 5;
+  schemaVersion: 6;
   taxa: TaxonRecord[];
   specimens: SpecimenRecord[];
   media: MediaAsset[];

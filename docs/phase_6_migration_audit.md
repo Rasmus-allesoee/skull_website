@@ -136,7 +136,7 @@ Rejected raw rows are not deleted from the owner's private evidence and their id
 
 The canonical specimen CSV was deliberately replaced with the approved validated candidate. The normal content/media gate confirms:
 
-1. schema version 5 and the exact ordered CSV header;
+1. the current schema version and exact ordered CSV header, including the release-review replacement of private `distinguishing_features` with public `condition_description`;
 2. all 18 published specimens and 15 public taxa compile;
 3. every published record retains reviewed rights, credit, media, taxonomy, default, and permanent URL integrity;
 4. the generated catalog, map, sitemap, Home statistics, and comparison eligibility reflect the corrected fields; and

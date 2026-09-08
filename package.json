@@ -37,6 +37,8 @@
     "test:fixtures": "node --import tsx scripts/verify-invalid-fixtures.ts",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:matrix": "PLAYWRIGHT_BROWSER_MATRIX=true playwright test",
+    "test:e2e:release": "playwright test tests/e2e/release.spec.ts",
     "check": "pnpm format:check && pnpm lint && pnpm validate:media && pnpm validate:content && pnpm typecheck && pnpm test && pnpm test:fixtures",
     "media:process:preparation": "node --import tsx scripts/process-preparation-media.ts"
   },
@@ -47,10 +49,10 @@
     "csv-parse": "7.0.2",
     "gray-matter": "4.0.3",
     "maplibre-gl": "5.7.3",
-    "next": "16.2.12",
+    "next": "16.3.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "sharp": "0.35.3",
+    "sharp": "0.35.4",
     "zod": "4.4.3"
   },
   "devDependencies": {
@@ -67,7 +69,7 @@
     "@vitejs/plugin-react": "6.0.5",
     "axe-core": "4.13.0",
     "eslint": "9.39.5",
-    "eslint-config-next": "16.2.12",
+    "eslint-config-next": "16.3.4",
     "jsdom": "30.0.1",
     "prettier": "3.9.6",
     "prettier-plugin-tailwindcss": "0.8.1",

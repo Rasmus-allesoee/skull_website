@@ -54,6 +54,16 @@ describe("exhibit components", () => {
     (record) => record.isDefault,
   )!.id;
 
+  it("makes every measured published specimen eligible for comparison", () => {
+    const physicalSpecimens = comparisonRecords.filter(
+      (record) => record.kind === "specimen",
+    );
+    expect(physicalSpecimens).toHaveLength(18);
+    expect(physicalSpecimens.map((record) => record.specimenId)).toEqual(
+      expect.arrayContaining(["SPEC-0010", "SPEC-0014", "SPEC-0015"]),
+    );
+  });
+
   it("changes gallery view by buttons and arrow keys, then restores focus after zoom", async () => {
     const user = userEvent.setup();
     render(<Gallery assets={exhibit.media} commonName="Raccoon dog" />);

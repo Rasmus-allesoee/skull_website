@@ -28,15 +28,14 @@ export function getEligibleSkullComparisons(
     }));
 
   const specimens: SkullComparisonRecord[] = [];
-  for (const taxon of collection.taxa) {
-    if (taxon.publicationStatus !== "published") continue;
-    const specimen = collection.specimens.find(
+  for (const specimen of collection.specimens) {
+    if (specimen.publicationStatus !== "published") continue;
+    const taxon = collection.taxa.find(
       (candidate) =>
-        candidate.specimenId === taxon.defaultSpecimenId &&
-        candidate.taxonId === taxon.taxonId &&
+        candidate.taxonId === specimen.taxonId &&
         candidate.publicationStatus === "published",
     );
-    if (!specimen) continue;
+    if (!taxon) continue;
     const length = specimen.measurements.skullLength;
     if (
       (length.status !== "measured" && length.status !== "approximate") ||
@@ -59,7 +58,7 @@ export function getEligibleSkullComparisons(
       id: `specimen:${specimen.specimenId}`,
       kind: "specimen",
       label: taxon.names.english ?? taxon.scientificName,
-      isDefault: false,
+      isDefault: specimen.specimenId === taxon.defaultSpecimenId,
       scientificName: formatScientificIdentification(taxon),
       specimenId: specimen.specimenId,
       href: `/species/${taxon.slug}/specimens/${specimen.specimenId}`,
@@ -88,6 +87,11 @@ export function getEligibleSkullComparisons(
 
   return [
     ...references,
-    ...specimens.sort((a, b) => a.label.localeCompare(b.label, "en")),
+    ...specimens.sort(
+      (a, b) =>
+        a.label.localeCompare(b.label, "en") ||
+        Number(b.isDefault) - Number(a.isDefault) ||
+        (a.specimenId ?? "").localeCompare(b.specimenId ?? "", "en"),
+    ),
   ];
 }

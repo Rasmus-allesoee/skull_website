@@ -5,6 +5,48 @@ import { networkInterfaces } from "node:os";
 const projectRoot = fileURLToPath(new URL(".", import.meta.url));
 const developmentScriptSources =
   process.env.NODE_ENV === "development" ? ["'unsafe-eval'"] : [];
+const commonSecurityHeaders = [
+  {
+    key: "Strict-Transport-Security",
+    value: "max-age=63072000; includeSubDomains; preload",
+  },
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "X-Frame-Options", value: "DENY" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  {
+    key: "Permissions-Policy",
+    value:
+      "browsing-topics=(), camera=(), geolocation=(), microphone=(), payment=(), usb=()",
+  },
+];
+const defaultContentSecurityPolicy = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+  "frame-src 'none'",
+  "img-src 'self' data: blob:",
+  "font-src 'self' data:",
+  "style-src 'self' 'unsafe-inline'",
+  ["script-src 'self' 'unsafe-inline'", ...developmentScriptSources].join(" "),
+  "worker-src 'none'",
+  "connect-src 'self'",
+].join("; ");
+const mapContentSecurityPolicy = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+  "frame-src 'none'",
+  "img-src 'self' data: blob:",
+  "font-src 'self' data: https://tiles.openfreemap.org",
+  "style-src 'self' 'unsafe-inline'",
+  ["script-src 'self' 'unsafe-inline'", ...developmentScriptSources].join(" "),
+  "worker-src 'self' blob:",
+  "connect-src 'self' https://tiles.openfreemap.org",
+].join("; ");
 const localDevelopmentOrigins = new Set(["127.0.0.1", "0.0.0.0"]);
 for (const addresses of Object.values(networkInterfaces())) {
   for (const address of addresses ?? []) {
@@ -29,24 +71,17 @@ const nextConfig: NextConfig = {
       {
         source: "/map/:path*",
         headers: [
+          ...commonSecurityHeaders,
+          { key: "Content-Security-Policy", value: mapContentSecurityPolicy },
+        ],
+      },
+      {
+        source: "/((?!map(?:/|$)).*)",
+        headers: [
+          ...commonSecurityHeaders,
           {
             key: "Content-Security-Policy",
-            value: [
-              "default-src 'self'",
-              "base-uri 'self'",
-              "object-src 'none'",
-              "frame-ancestors 'none'",
-              "form-action 'self'",
-              "img-src 'self' data: blob:",
-              "font-src 'self' data: https://tiles.openfreemap.org",
-              "style-src 'self' 'unsafe-inline'",
-              [
-                "script-src 'self' 'unsafe-inline'",
-                ...developmentScriptSources,
-              ].join(" "),
-              "worker-src 'self' blob:",
-              "connect-src 'self' https://tiles.openfreemap.org",
-            ].join("; "),
+            value: defaultContentSecurityPolicy,
           },
         ],
       },

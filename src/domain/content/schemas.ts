@@ -42,7 +42,7 @@ export const specimenHeaders = [
   "publication_status",
   "is_type_or_reference_specimen",
   "condition",
-  "distinguishing_features",
+  "condition_description",
   "sex",
   "age_class",
   "age_detail",
@@ -186,7 +186,7 @@ export const rawSpecimenSchema = z.strictObject({
     "fragmentary",
     "not_recorded",
   ]),
-  distinguishing_features: cell,
+  condition_description: cell,
   sex: z.enum(["female", "male", "intersex", "unknown", "not_recorded"]),
   age_class: z.enum([
     "juvenile",

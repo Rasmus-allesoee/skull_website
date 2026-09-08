@@ -24,7 +24,7 @@ The approved scope and experience are specified in [docs/project_overview.md](do
 
 - Node.js `24.18.0` LTS
 - pnpm `11.21.0`
-- Next.js `16.2.12` with the App Router
+- Next.js `16.3.4` with the App Router
 - React `19.2.8`
 - strict TypeScript
 - Orama `3.1.18` for the build-generated, browser-side catalog index

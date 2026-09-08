@@ -133,13 +133,15 @@ test("measurement reference renders canonical content, geometry, and accessible 
         ).touchAction,
       };
     });
-  expect(overlayGeometry).toEqual({
+  expect(overlayGeometry).toMatchObject({
     markerUnits: "strokeWidth",
     markerWidth: "6.5",
     ringRadius: "135",
     textSize: "142px",
-    touchAction: "manipulation",
   });
+  expect(["manipulation", "pan-x pan-y pinch-zoom"]).toContain(
+    overlayGeometry.touchAction,
+  );
 
   const layout = await page.locator(".measurement-board").evaluate(() => {
     const box = (id: string) =>
@@ -318,7 +320,9 @@ test("touch uses preview before details and narrow layouts contain scrolling dia
     geometry.figureWidths.every((width) => width <= geometry.boardWidth),
   ).toBe(true);
   expect(
-    geometry.diagramTouchActions.every((value) => value === "manipulation"),
+    geometry.diagramTouchActions.every((value) =>
+      ["manipulation", "pan-x pan-y pinch-zoom"].includes(value),
+    ),
   ).toBe(true);
 
   await page.setViewportSize({ width: 360, height: 800 });
@@ -342,6 +346,7 @@ test("touch uses preview before details and narrow layouts contain scrolling dia
 
 test("measurement reference reflows at effective 200% width and respects reduced motion and forced colors", async ({
   page,
+  browserName,
 }) => {
   await page.setViewportSize({ width: 720, height: 900 });
   await page.emulateMedia({ reducedMotion: "reduce", forcedColors: "active" });
@@ -357,6 +362,8 @@ test("measurement reference reflows at effective 200% width and respects reduced
   expect(geometry.overflow).toBeLessThanOrEqual(0);
   expect(geometry.columns.trim().split(/\s+/)).toHaveLength(1);
   expect(Number.parseFloat(geometry.transition)).toBeLessThanOrEqual(0.00001);
+
+  if (browserName !== "chromium") return;
 
   await page
     .locator(
