@@ -531,6 +531,10 @@ test("no-WebGL and provider failure retain the semantic collection", async ({
 
   const providerContext = await browser.newContext();
   const providerPage = await providerContext.newPage();
+  const providerConsoleErrors: string[] = [];
+  providerPage.on("console", (message) => {
+    if (message.type() === "error") providerConsoleErrors.push(message.text());
+  });
   await providerPage.route("https://tiles.openfreemap.org/styles/**", (route) =>
     route.abort(),
   );
@@ -541,6 +545,11 @@ test("no-WebGL and provider failure retain the semantic collection", async ({
   await expect(
     providerPage.getByRole("link", { name: "View specimen" }),
   ).toHaveCount(18);
+  expect(
+    providerConsoleErrors.filter((message) =>
+      /AJAXError|openfreemap/i.test(message),
+    ),
+  ).toEqual([]);
   await providerContext.close();
 });
 

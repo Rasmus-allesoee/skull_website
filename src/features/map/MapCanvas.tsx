@@ -320,6 +320,7 @@ export function MapCanvas({
     if (!container) return;
     const savedCamera = cameraRef.current;
     let loaded = false;
+    let disposed = false;
     setReady(false);
     setProviderError(null);
     setCanvasContainer(null);
@@ -359,8 +360,18 @@ export function MapCanvas({
         "Interactive specimen map. Use the adjacent specimen list for complete keyboard access.",
       );
 
+    map.on("error", () => {
+      // MapLibre reports aborted requests from a Strict Mode teardown and
+      // transient provider failures through this event. Binding the event is
+      // important: without a listener MapLibre writes the error to the
+      // console, which becomes a Next.js development error overlay. The
+      // timeout below still owns the user-facing failure state and allows a
+      // later request/load event to recover normally.
+      if (disposed || loaded || mapRef.current !== map) return;
+    });
+
     const failTimer = window.setTimeout(() => {
-      if (!loaded) {
+      if (!loaded && !disposed && mapRef.current === map) {
         setProviderError(
           "The basemap provider did not respond. Search, filters, and every exact specimen link remain available.",
         );
@@ -416,6 +427,7 @@ export function MapCanvas({
     const clusterRefreshTimer = window.setInterval(updateClusters, 250);
 
     return () => {
+      disposed = true;
       window.clearTimeout(failTimer);
       window.clearInterval(clusterRefreshTimer);
       map.remove();
