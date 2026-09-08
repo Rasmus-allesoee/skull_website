@@ -489,7 +489,7 @@ test("double-clicking a compared specimen opens its exact record", async ({
     name: "Search skulls",
   });
   await search.fill("harbour seal");
-  await comparisonDialog.getByRole("option", { name: /Harbour seal/ }).click();
+  await comparisonDialog.getByRole("option", { name: /SPEC-0014$/ }).click();
 
   const comparedSpecimen = page.locator("a.scaled-skull-link");
   await expect(comparedSpecimen).toHaveAttribute(
