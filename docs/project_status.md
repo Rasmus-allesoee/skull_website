@@ -2,11 +2,11 @@
 
 **Snapshot date:** 2026-09-09
 
-**Current phase:** v1.0.1 production-only Web Analytics, dependency remediation, and MapLibre reliability fix ready for PR landing
+**Current phase:** v1.0.1 production-only Web Analytics, dependency remediation, and MapLibre reliability fix released
 
-**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, and release hardening are merged into `main`. PR #14 merged normally at `61964d1`; the canonical collection remains 15 public taxa, 18 public specimens, and 104 specimen images, with 31 source specimens deferred for missing reviewed media and three rejected. v1.0.0 remains live on Vercel at `https://skullwebsite-xi.vercel.app`; the approved v1.0.1 Web Analytics/privacy integration and patched production dependency baseline are pushed on `agent/vercel-analytics` with a Ready Preview deployment.
+**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. PR #14 merged normally at `61964d1`; PR #16 merged normally at `7abfc642`. The canonical collection remains 15 public taxa, 18 public specimens, and 104 specimen images, with 31 source specimens deferred for missing reviewed media and three rejected. Production is live on Vercel at `https://skullwebsite-xi.vercel.app`; the v1.0.1 tag records the verified production state.
 
-**Next action:** Open/review the branch PR and merge it normally into `main`; then verify first-entry/reload map behavior and production page-view data before tagging `v1.0.1`.
+**Next action:** Continue post-release work from a short-lived branch based on the updated `main`; production changes should continue to land through reviewed pull requests.
 
 ## 0.5 MapLibre first-entry reliability correction (2026-09-09)
 
@@ -14,7 +14,9 @@
 - Root cause of the v6 branch's solid-color map: the generated same-origin module worker was served under the default CSP with `connect-src 'self'`, blocking its OpenFreeMap vector-tile fetches. The style background rendered, but vector details never became available.
 - Fixed the boundary by applying the map CSP to `/maplibre/*` worker assets and entering `/map` from shared header/Home/specimen links through native document navigation. MapLibre now waits for a non-zero `ResizeObserver` measurement, retains a late-loading instance behind a retryable fallback, and adds local marker fallbacks without awaiting optional image decoding.
 - Focused browser verification on the rebuilt branch: direct `/map` entry and Home → Map entry both reached `data-map-ready="true"`, displayed the basemap/vector details and collection markers, and showed no `Basemap unavailable` surface. The worker response returned JavaScript with the map CSP. The production build prerendered 78/78 routes.
-- This correction is still local on `agent/vercel-analytics` until its PR is opened and merged; production verification and the `v1.0.1` tag remain pending.
+- PR #16 merged normally at `7abfc642` after all three required checks passed. Production first-entry navigation from Home to `/map` reached `data-map-ready="true"` in a real browser, showed the vector basemap, attribution, and collection markers, and displayed no `Basemap unavailable` surface. Direct production `/map` and the generated worker both returned 200; the worker response was JavaScript and carried the route-scoped OpenFreeMap/worker CSP.
+- The connected Vercel production deployment served the merged map build at `https://skullwebsite-xi.vercel.app`; the Vercel Web Analytics dashboard showed **1 visitor, 5 page views, and 0% bounce rate** in the Production / Last 7 Days view after the production verification visits.
+- The annotated `v1.0.1` tag is the verified release checkpoint for this follow-up. The map's external OpenFreeMap provider remains an operational dependency, while the semantic specimen list remains the outage fallback.
 
 ## 0.4 v1.0.1 production-only Web Analytics follow-up (2026-09-09)
 
@@ -24,7 +26,7 @@
 - Added the public `/privacy` notice, global-footer link, sitemap route, focused analytics boundary tests, and ADR 0007. The existing same-origin CSP remains the applicable analytics boundary; no wildcard provider or custom event was added.
 - Local verification now passes: `CI=true pnpm check` completed formatting, lint, media/content validation, strict TypeScript, 85/85 unit/component tests, and six expected invalid-fixture failures; the default production build prerendered 78/78 routes. A real-browser check rendered `/privacy` at 200 with the expected title/footer link, same-origin CSP, no `Set-Cookie` response, and no analytics request in the normal local build. A separate `VERCEL=1 VERCEL_ENV=production` build injected the expected same-origin `/_vercel/insights/script.js` request; its local 404 is expected because Vercel serves that route only after the project is enabled/deployed.
 - The production dependency findings are now remediated in the same focused follow-up: `maplibre-gl` is pinned to patched `6.4.1`, the v6 ESM worker/shared-module pair is generated before `dev`/`build`, and the gray-matter-compatible `js-yaml` resolution is overridden to patched `3.15.2`. `CI=true pnpm audit --prod --json` now reports zero vulnerabilities; ADR 0008 records the compatibility decision.
-- Web Analytics is enabled in the connected Vercel project (the Analytics actions menu now offers `Disable Web Analytics`). The pushed branch has Ready Preview deployment `skullwebsite-rmosnjxmf-rasmus-allesoee.vercel.app` for `77cd41f`; `/privacy` renders correctly there. The Preview is protected by Vercel Authentication, so its worker/map request is not a public-browser verification signal. Production deployment, dashboard data verification, PR, merge, `v1.0.1` tag, and the public production analytics claim remain pending.
+- Web Analytics is enabled in the connected Vercel project (the Analytics actions menu now offers `Disable Web Analytics`). The Preview deployment `skullwebsite-rmosnjxmf-rasmus-allesoee.vercel.app` for `77cd41f` rendered `/privacy` correctly; it remains protected by Vercel Authentication and is not used as a public-browser map signal. The merged production deployment and dashboard data were verified in the release checkpoint above.
 
 ## 0.3 v1.0.0 deployment and release verification (2026-09-09)
 
