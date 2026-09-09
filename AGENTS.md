@@ -160,7 +160,8 @@ Before a checkpoint:
 - `main` is the stable, deployable integration branch. For this solo project, do not create a permanent `dev` branch; use short-lived task branches instead.
 - After bootstrap, branch from the latest `main` using `agent/<short-description>` and use focused draft pull requests.
 - Keep each branch and pull request focused on one phase, coherent feature, or independent fix. If an unrelated bug or improvement is discovered during a phase, record it separately, create a new branch from the latest `main`, and merge that fix into `main` before merging the updated `main` back into the phase branch. A change may remain in the phase branch when it is genuinely required for that phase.
-- Use conventional commit prefixes such as `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`, and `ci:`.
+- Use a conventional commit title with a prefix such as `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`, or `ci:`. The title should summarize the main change without trying to describe every edited file.
+- A title-only commit is appropriate only for a small, single-purpose change whose title fully explains what changed. When a commit changes several meaningful things, or when its title does not provide enough information, include a structured commit body after a blank line; this will usually apply to most non-trivial commits. Explain the important implementation changes that are not obvious from the title and why they were chosen; do not turn the body into a file-by-file change list. A useful structure is `What changed:` followed by the non-obvious points and `Why:` followed by the rationale.
 - Never stage unrelated user files silently. Audit the complete scope before commit/push.
 - One coherent verified checkpoint closes each phase; do not mark status complete on code presence alone.
 - Stage and commit each coherent implementation or fix as its own checkpoint; do not accumulate unrelated changes into one giant commit.

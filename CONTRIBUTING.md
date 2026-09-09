@@ -26,9 +26,19 @@ pnpm dev
 - Name branches `agent/<short-description>`.
 - Keep changes focused on one coherent issue or vertical sub-slice.
 - If an unrelated issue appears during a feature, track it separately, create a separate branch from `main`, and merge that fix into `main` before updating the original feature branch from `main`.
-- Use conventional commit prefixes: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`, or `ci:`.
+- Use a conventional commit title with a prefix such as `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`, or `ci:`. The title should communicate the main change, not enumerate edited files.
+- A title-only commit is appropriate only for a small, single-purpose change whose title fully explains what changed. When a commit changes several meaningful things, or when its title does not provide enough information, add a structured body after a blank line; this will usually apply to most non-trivial commits. Use the body to explain important changes that the title cannot make clear and why they were made, rather than listing every edited file. Prefer this shape:
+
+  ```text
+  What changed:
+  - Explain the important non-obvious implementation changes.
+
+  Why:
+  - Explain the problem, constraint, or rationale behind them.
+  ```
+
 - Do not mix formatting sweeps or unrelated user changes into a feature commit.
-- After a pull request is merged, delete its merged local and remote branch and create the next branch from the updated `main`.
+- After a pull request is merged, update local `main` and create the next branch from the updated `main`; preserve merged feature branches locally and remotely by default, and delete one only when explicitly requested.
 - Preserve coherent commit history by using a normal merge commit rather than squash merging; do not rewrite a published review branch without explicit agreement.
 
 ## Required checks

@@ -33,5 +33,6 @@ List exact commands, environments, and relevant results:
 - [ ] `AGENTS.md` is updated if commands, important rules, plans, or context changed.
 - [ ] `docs/project_status.md` reflects material phase evidence or blockers.
 - [ ] Deferred/follow-up work is explicit and not partially smuggled into this PR.
+- [ ] Commit titles use a conventional commit prefix, and commits that change several meaningful things or whose titles do not provide enough information include a body explaining the important non-obvious changes and rationale.
 
 Closes #

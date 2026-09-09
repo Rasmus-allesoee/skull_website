@@ -160,7 +160,7 @@ See [docs/content_data_model.md](docs/content_data_model.md) before editing any 
 
 ## Git and GitHub workflow
 
-The initial foundation is bootstrapped on `main`. Subsequent work uses focused branches named `agent/<short-description>`, conventional commit prefixes, and draft pull requests. Every phase ends with its acceptance gate verified and a checkpoint recorded in `docs/project_status.md`.
+The initial foundation is bootstrapped on `main`. Subsequent work uses focused branches named `agent/<short-description>`, conventional commit titles with prefixes, and draft pull requests. Title-only commits are reserved for small, single-purpose changes whose titles fully explain them; commits that change several meaningful things or need more explanation include a body describing the important non-obvious changes and why. Every phase ends with its acceptance gate verified and a checkpoint recorded in `docs/project_status.md`. See [CONTRIBUTING.md](CONTRIBUTING.md) for the commit-body guidance.
 
 Do not commit secrets, raw workbooks, archival Affinity/PSD files, private notes, EXIF/GPS-bearing masters, generated build output, or dependency folders.
 
