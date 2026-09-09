@@ -32,6 +32,9 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     images: [siteConfig.defaultOgImage],
   },
+  verification: {
+    google: "ODlKwghZiViS1rt0BR26wR8hbFN9IoK0QFybKUTI5RU",
+  },
 };
 
 export const viewport: Viewport = {
