@@ -2,11 +2,11 @@
 
 **Snapshot date:** 2026-09-09
 
-**Current phase:** v1.0.1 production-only Web Analytics and dependency-remediation work locally verified on `agent/vercel-analytics`
+**Current phase:** v1.0.1 production-only Web Analytics and dependency-remediation branch pushed; Vercel Preview is ready
 
-**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, and release hardening are merged into `main`. PR #14 merged normally at `61964d1`; the canonical collection remains 15 public taxa, 18 public specimens, and 104 specimen images, with 31 source specimens deferred for missing reviewed media and three rejected. v1.0.0 remains live on Vercel at `https://skullwebsite-xi.vercel.app`; the approved v1.0.1 Web Analytics/privacy integration and patched production dependency baseline are locally verified and await the remote branch workflow.
+**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, and release hardening are merged into `main`. PR #14 merged normally at `61964d1`; the canonical collection remains 15 public taxa, 18 public specimens, and 104 specimen images, with 31 source specimens deferred for missing reviewed media and three rejected. v1.0.0 remains live on Vercel at `https://skullwebsite-xi.vercel.app`; the approved v1.0.1 Web Analytics/privacy integration and patched production dependency baseline are pushed on `agent/vercel-analytics` with a Ready Preview deployment.
 
-**Next action:** Push `agent/vercel-analytics` and enable Web Analytics in the connected Vercel project. Then create the Preview/Production workflow, verify the dashboard signal, and merge/tag `v1.0.1` only after the owner reviews the deployment.
+**Next action:** Open and review the branch PR, then merge to `main` when approved so Vercel can create the Production deployment. Verify page-view data on the live domain before tagging `v1.0.1`.
 
 ## 0.4 v1.0.1 production-only Web Analytics follow-up (2026-09-09)
 
@@ -16,7 +16,7 @@
 - Added the public `/privacy` notice, global-footer link, sitemap route, focused analytics boundary tests, and ADR 0007. The existing same-origin CSP remains the applicable analytics boundary; no wildcard provider or custom event was added.
 - Local verification now passes: `CI=true pnpm check` completed formatting, lint, media/content validation, strict TypeScript, 85/85 unit/component tests, and six expected invalid-fixture failures; the default production build prerendered 78/78 routes. A real-browser check rendered `/privacy` at 200 with the expected title/footer link, same-origin CSP, no `Set-Cookie` response, and no analytics request in the normal local build. A separate `VERCEL=1 VERCEL_ENV=production` build injected the expected same-origin `/_vercel/insights/script.js` request; its local 404 is expected because Vercel serves that route only after the project is enabled/deployed.
 - The production dependency findings are now remediated in the same focused follow-up: `maplibre-gl` is pinned to patched `6.4.1`, the v6 ESM worker/shared-module pair is generated before `dev`/`build`, and the gray-matter-compatible `js-yaml` resolution is overridden to patched `3.15.2`. `CI=true pnpm audit --prod --json` now reports zero vulnerabilities; ADR 0008 records the compatibility decision.
-- Vercel Dashboard enablement, Preview/Production deployment, dashboard data verification, PR, merge, `v1.0.1` tag, and public production analytics claim remain pending. The local Map browser check confirms the patched worker path reaches `data-map-ready=true` with deep-link popups; one sequential provider-dependent cluster journey remained flaky in the full run and is being rerun before the remote gate.
+- Web Analytics is enabled in the connected Vercel project (the Analytics actions menu now offers `Disable Web Analytics`). The pushed branch has Ready Preview deployment `skullwebsite-rmosnjxmf-rasmus-allesoee.vercel.app` for `77cd41f`; `/privacy` renders correctly there. The Preview is protected by Vercel Authentication, so its worker/map request is not a public-browser verification signal. Production deployment, dashboard data verification, PR, merge, `v1.0.1` tag, and the public production analytics claim remain pending.
 
 ## 0.3 v1.0.0 deployment and release verification (2026-09-09)
 
