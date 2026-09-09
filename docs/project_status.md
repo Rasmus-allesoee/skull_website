@@ -6,12 +6,12 @@
 
 **Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. PR #14 merged normally at `61964d1`; PR #16 merged normally at `7abfc642`. The canonical collection remains 15 public taxa, 18 public specimens, and 104 specimen images, with 31 source specimens deferred for missing reviewed media and three rejected. Production is live on Vercel at `https://skullwebsite-xi.vercel.app`; the v1.0.1 tag records the verified production state.
 
-**Next action:** Continue post-release work from a short-lived branch based on the updated `main`; production changes should continue to land through reviewed pull requests.
+**Next action:** Verify the Google Search Console URL-prefix property and submit `sitemap.xml`; then continue post-release work from short-lived branches based on the updated `main`.
 
 ## 0.6 Google Search Console verification (2026-09-09)
 
 - Added the owner-provided Google Search Console HTML-tag verification token to the root metadata and regression coverage. It is ready to deploy through the normal branch/PR workflow.
-- After the production deployment is live, the owner should click **Verify** in the URL-prefix property for `https://skullwebsite-xi.vercel.app/`, then submit `sitemap.xml` in Search Console. Indexing is controlled by Google after the sitemap is accepted; no additional application code is required for routine sitemap updates.
+- PR #17 merged normally at `611ed3a`; the production HTML now contains the verification tag. The owner should click **Verify** in the URL-prefix property for `https://skullwebsite-xi.vercel.app/`, then submit `sitemap.xml` in Search Console. Indexing is controlled by Google after the sitemap is accepted; no additional application code is required for routine sitemap updates.
 
 ## 0.5 MapLibre first-entry reliability correction (2026-09-09)
 
