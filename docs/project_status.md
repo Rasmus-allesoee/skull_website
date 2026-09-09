@@ -8,6 +8,11 @@
 
 **Next action:** Continue post-release work from a short-lived branch based on the updated `main`; production changes should continue to land through reviewed pull requests.
 
+## 0.6 Google Search Console verification (2026-09-09)
+
+- Added the owner-provided Google Search Console HTML-tag verification token to the root metadata and regression coverage. It is ready to deploy through the normal branch/PR workflow.
+- After the production deployment is live, the owner should click **Verify** in the URL-prefix property for `https://skullwebsite-xi.vercel.app/`, then submit `sitemap.xml` in Search Console. Indexing is controlled by Google after the sitemap is accepted; no additional application code is required for routine sitemap updates.
+
 ## 0.5 MapLibre first-entry reliability correction (2026-09-09)
 
 - Root cause of the production `main` first-entry failure: a client-side App Router transition retained the previous document's default CSP, so the map's route-only worker/tile allowance was never applied. The map client could also be constructed while its grid container measured `0 × 0`.

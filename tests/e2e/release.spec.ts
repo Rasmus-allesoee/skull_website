@@ -58,6 +58,9 @@ test("metadata, structured data, robots, and every sitemap route are valid", asy
     "content",
     /^https?:\/\//,
   );
+  await expect(
+    page.locator('meta[name="google-site-verification"]'),
+  ).toHaveAttribute("content", "ODlKwghZiViS1rt0BR26wR8hbFN9IoK0QFybKUTI5RU");
 
   const structuredData = await page
     .locator('script[type="application/ld+json"]')
