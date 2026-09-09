@@ -16,6 +16,7 @@ export function SiteFooter({ context }: { context?: string }) {
         <Link href="/species">Browse species</Link>
         <Link href="/methodology">Measurements</Link>
         <Link href="/guides/skull-preparation">Preparation guide</Link>
+        <Link href="/privacy">Privacy and analytics</Link>
         <a href={`mailto:${siteConfig.contactEmail}`}>Contact</a>
       </nav>
       <p className="footer-rights">{siteConfig.copyright}</p>

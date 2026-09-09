@@ -2,7 +2,7 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**Current milestone:** v1.0.0 is released and deployed at <https://skullwebsite-xi.vercel.app>. Phase 6 migration and release hardening merged through PR #14; Web Analytics is not installed yet and remains an explicit follow-up choice.
+**Current milestone:** v1.0.0 is released and deployed at <https://skullwebsite-xi.vercel.app>; the focused v1.0.1 production-only Web Analytics/privacy follow-up is implemented locally on `agent/vercel-analytics` and awaits its PR, production verification, and release tag.
 
 Start at `/`, browse the catalog at `/species`, explore public specimen locations at `/map`, inspect the measurement reference at `/methodology`, open the full beginner preparation guide at `/guides/skull-preparation`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`.
 
@@ -166,7 +166,7 @@ Do not commit secrets, raw workbooks, archival Affinity/PSD files, private notes
 
 ## Deployment
 
-Vercel is the hosting target. Pull requests receive preview deployments and `main` is the only production source after release setup. The initial release uses the assigned Vercel domain, no analytics/cookies, and `NEXT_PUBLIC_SITE_URL` for canonical public metadata.
+Vercel is the hosting target. Pull requests receive Preview deployments and `main` is the only production source. The v1.0.1 release adds production-only Vercel Web Analytics page views through `@vercel/analytics`; local and Preview builds do not send analytics, no custom events or advertising are configured, and query parameters are removed from tracked URLs. The assigned Vercel domain remains the public URL, with `NEXT_PUBLIC_SITE_URL` controlling canonical public metadata. See the public [privacy and analytics notice](/privacy).
 
 ## Rights and licence
 

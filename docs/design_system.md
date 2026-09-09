@@ -141,7 +141,7 @@ Responsive checkpoints are content-derived, with explicit QA at:
 
 - **Skip link:** first focusable item, visibly enters above navigation.
 - **Site header:** working title, only real primary destinations, one active-page state, and a native responsive mobile menu inside a labelled navigation landmark. Catalog search remains scoped to `/species`; a global-header search is added only if later evidence justifies it.
-- **Footer:** a quiet global copyright notice, links only to implemented destinations, and the owner-approved public email contact.
+- **Footer:** a quiet global copyright notice, links only to implemented destinations (including the current privacy/analytics notice), and the owner-approved public email contact.
 - **Page intro:** eyebrow/breadcrumb, title, concise purpose, optional actions.
 
 ### Discovery

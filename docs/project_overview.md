@@ -69,6 +69,8 @@ The shared museum shell, redesigned Home hub, class/order/family/genus routes, r
 - Measurements, specimen biology, provenance, preparation, rights, and citations.
 - A Denmark-first interactive map with an equivalent result list.
 - A public contact action in the global footer, without forms or uploads.
+- Production-only Vercel Web Analytics for aggregated automatic page views; no custom events or advertising.
+- A concise public privacy and analytics notice.
 - Static metadata, sitemap, Open Graph imagery, and structured data.
 
 ### Explicitly excluded from v1
@@ -76,12 +78,12 @@ The shared museum shell, redesigned Home hub, class/order/family/genus routes, r
 - Accounts, authentication, saved collections, or user profiles.
 - Direct uploads, moderation dashboards, or a public submission database.
 - Runtime database or headless CMS.
-- Analytics, advertising, cookies, or behavioral tracking.
+- Custom event analytics, advertising, and behavioral tracking. Production-only automatic page-view analytics is included in v1.0.1 without third-party cookies.
 - 360° turntables, 3D models, and animal-around-skull illustrations.
 - Full Danish interface translation.
 - A public API or licensed dataset download.
 - E-commerce or monetization.
-- The Guides hub, Contribution protocol, About, Rights, Privacy, Accessibility, broader methodology sections, comprehensive taxonomy tree, and standalone Comparison page. The owner explicitly deferred these supporting routes so the first technical release can prove deployment; existing rights/privacy/accessibility behavior remains enforced in code and repository documentation.
+- The Guides hub, Contribution protocol, About, Rights, Accessibility, broader methodology sections, comprehensive taxonomy tree, and standalone Comparison page. The owner explicitly deferred these supporting routes so the first technical release can prove deployment; the concise Privacy notice is now included in v1.0.1 because production analytics is enabled.
 
 Exclusion from v1 does not mean rejection. Each feature remains in the deferred backlog with prerequisites in [implementation_plan.md](implementation_plan.md).
 
@@ -101,7 +103,7 @@ Exclusion from v1 does not mean rejection. Each feature remains in the deferred 
 | `/about` | Collector and project story | Deferred after the first technical release |
 | `/methodology` | Measurement reference; later broader data transparency | Implemented five-view cropped diagram board, 21 exact definition rows, compact non-blocking details, diagram-targeting table actions with return-to-row behavior, and semantic static fallback; identification confidence, taxonomy, missing-data, coordinate, and update sections remain later scope |
 | `/rights` | Rights summary | Deferred page; the repository `RIGHTS.md`, per-record rights, credits, and footer notice remain authoritative |
-| `/privacy` | Privacy statement | Deferred page; v1 has no analytics, cookies, accounts, forms, or user-data collection by the application |
+| `/privacy` | Privacy statement | Current v1.0.1 public notice for production-only Vercel Web Analytics and the site's limited visitor-data behavior |
 | `/accessibility` | Accessibility statement | Deferred page; WCAG-oriented implementation and release checks remain required |
 
 “Guides” replaces the ambiguous working label “Other Stuff.”
@@ -250,7 +252,7 @@ The combined Phase 3.2/4 implementation makes `/species` the operational collect
 - About remains personal and factual: collection purpose, acquisition sources, ethical/legal context, preparation, photography, and project development.
 - The implemented first Methodology section documents the collection's measurement vocabulary without claiming a universal osteometric standard or retroactively redefining stored legacy values. It uses real-skull reference imagery, programmatic annotations, a complete semantic table, and direct links from specimen measurement guides.
 - Later Methodology sections still separate observations from external species facts and explain confidence, taxonomy, date, and coordinate semantics.
-- Rights, Privacy, and Accessibility pages must reflect actual behavior when added. For the first technical release they are explicitly deferred rather than published as boilerplate placeholders; their underlying code, data, and verification requirements are not relaxed.
+- Rights and Accessibility pages remain deferred. The Privacy page was added with v1.0.1 because the approved production analytics integration changes the site's visitor-data behavior; it must remain synchronized with the actual provider/configuration.
 
 ## 8. Cross-cutting behavior
 
@@ -332,4 +334,4 @@ The first public release is complete only when:
 
 The owner selected “Skull Collection” as the public v1 name. The first deployment uses its assigned Vercel domain and `rasmus.allesoee@gmail.com` as the public contact. The existing repository-created skull favicon is the no-cost v1 mark; a custom domain or replacement identity can be added later without changing product structure.
 
-The Phase 2.2 specimen-page scale card establishes reusable calibrated comparison primitives. A dedicated public two-select comparison route, overlays/split sliders, 360°, 3D, illustrations, direct contributions, database administration, analytics, localization, and data export remain deferred work. They require their documented prerequisites and a new scope decision; they are not to be smuggled into an earlier phase.
+The Phase 2.2 specimen-page scale card establishes reusable calibrated comparison primitives. A dedicated public two-select comparison route, overlays/split sliders, 360°, 3D, illustrations, direct contributions, database administration, custom-event analytics, localization, and data export remain deferred work. They require their documented prerequisites and a new scope decision; they are not to be smuggled into an earlier phase.

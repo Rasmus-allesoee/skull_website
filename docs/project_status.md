@@ -2,11 +2,21 @@
 
 **Snapshot date:** 2026-09-09
 
-**Current phase:** v1.0.0 production release complete; analytics follow-up pending owner decision
+**Current phase:** v1.0.1 production-only Web Analytics implementation committed locally on `agent/vercel-analytics`
 
-**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, and release hardening are merged into `main`. PR #14 merged normally at `61964d1`; the canonical collection remains 15 public taxa, 18 public specimens, and 104 specimen images, with 31 source specimens deferred for missing reviewed media and three rejected. v1.0.0 is live on Vercel at `https://skullwebsite-xi.vercel.app`. Web Analytics has not been added to the tagged release.
+**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, and release hardening are merged into `main`. PR #14 merged normally at `61964d1`; the canonical collection remains 15 public taxa, 18 public specimens, and 104 specimen images, with 31 source specimens deferred for missing reviewed media and three rejected. v1.0.0 remains live on Vercel at `https://skullwebsite-xi.vercel.app`; the approved v1.0.1 Web Analytics/privacy change is committed locally as `5a42d5d` and awaits the remote PR/release workflow.
 
-**Next action:** Decide whether to add Vercel Web Analytics. If approved, create a separate branch from updated `main`, install `@vercel/analytics`, add the App Router `<Analytics />` component, update the privacy/publication documentation, validate the production CSP and browser behavior, and release it separately.
+**Next action:** Push `agent/vercel-analytics` and open the approved PR when remote work is authorized. After Vercel Web Analytics is enabled and the Preview/Production deployment reports data correctly, merge and tag `v1.0.1`.
+
+## 0.4 v1.0.1 production-only Web Analytics follow-up (2026-09-09)
+
+- Created `agent/vercel-analytics` from the released `main` baseline and added the exact `@vercel/analytics@2.0.1` dependency.
+- Added a small client-only Analytics island. The root layout renders it only when Vercel build/runtime variables identify the Production environment (`VERCEL=1`, `VERCEL_ENV=production`); local and Preview builds render no component and send no analytics requests.
+- Limited the integration to automatic page views in production mode. A `beforeSend` boundary removes query parameters and fragments from tracked URLs so free-form catalog searches and URL-backed map/measurement state are not sent.
+- Added the public `/privacy` notice, global-footer link, sitemap route, focused analytics boundary tests, and ADR 0007. The existing same-origin CSP remains the applicable analytics boundary; no wildcard provider or custom event was added.
+- Local verification now passes: `CI=true pnpm check` completed formatting, lint, media/content validation, strict TypeScript, 85/85 unit/component tests, and six expected invalid-fixture failures; the default production build prerendered 78/78 routes. A real-browser check rendered `/privacy` at 200 with the expected title/footer link, same-origin CSP, no `Set-Cookie` response, and no analytics request in the normal local build. A separate `VERCEL=1 VERCEL_ENV=production` build injected the expected same-origin `/_vercel/insights/script.js` request; its local 404 is expected because Vercel serves that route only after the project is enabled/deployed.
+- A final `pnpm audit --prod` now reports two newly surfaced advisories in unchanged pre-existing dependencies (`maplibre-gl@5.7.3` critical, `gray-matter -> js-yaml@3.15.1` high); neither appears in the analytics dependency diff. The v1.0.1 production gate remains blocked until those security findings are handled in a separate dependency-security change or deliberately dispositioned.
+- Vercel Dashboard enablement, Preview/Production deployment, dashboard data verification, PR, merge, `v1.0.1` tag, and public production analytics claim remain pending; the verified local implementation commit is the current `agent/vercel-analytics` HEAD.
 
 ## 0.3 v1.0.0 deployment and release verification (2026-09-09)
 
@@ -28,7 +38,7 @@
 
 ## 0.1 Phase 7 local release hardening (2026-09-08)
 
-- Finalized the owner-selected v1 identity and boundary: `Skull Collection`, public contact `rasmus.allesoee@gmail.com`, the existing repository favicon, and the assigned Vercel domain until a custom domain is chosen. The first technical release explicitly defers the separate Guides hub, Contribution, About, Rights, Privacy, Accessibility, broader-methodology, comprehensive-tree, and standalone-Comparison routes without weakening their underlying code/data requirements.
+- Finalized the owner-selected v1 identity and boundary: `Skull Collection`, public contact `rasmus.allesoee@gmail.com`, the existing repository favicon, and the assigned Vercel domain until a custom domain is chosen. The first technical release explicitly deferred the separate Guides hub, Contribution, About, Rights, Privacy, Accessibility, broader-methodology, comprehensive-tree, and standalone-Comparison routes without weakening their underlying code/data requirements; v1.0.1 now adds only the concise Privacy and analytics notice required by the approved telemetry integration.
 - Added environment-aware canonical URL resolution, WebSite structured data, the public footer contact, complete sitemap-route checks, and route-aware least-privilege security headers. The Map CSP alone permits the reviewed OpenFreeMap tile/style endpoints and workers; all other routes retain the stricter default policy.
 - Upgraded Next.js and its ESLint configuration from 16.2.12 to 16.3.4 and Sharp from 0.35.3 to 0.35.4 after the production audit identified patched transitive Sharp/libvips and PostCSS advisories. `pnpm audit --prod` now reports no known vulnerabilities.
 - Consolidated self-hosted font declarations into the route stylesheet, prioritized only the Home LCP specimen image, lowered noncritical image priority, and deferred offscreen Home-card rendering. The final local Lighthouse 13.4.1 mobile samples are: Species 93/100/100/100 with 2.6 s LCP and 0.001 CLS; Home 85/100/96/100 with 4.1 s LCP and 0.001 CLS; Map 71/100/100/100 with 3.9 s LCP and 0 CLS. Accessibility, Best Practices, and SEO meet their budgets; Home/Map performance and LCP remain below target in the simulated local profile and must be re-measured on Vercel Preview/CDN before the release gate can pass. The interactive Map was not replaced with a click-to-load shell solely to improve a synthetic score.
@@ -525,7 +535,7 @@ Package-manager gates must run sequentially with `CI=true` in non-interactive en
 ## 12. Known limitations and controls
 
 - The 15/18 Phase 3.1 review slice is public and inspectable, but 33 raw specimen rows remain blocked migration candidates. Phase 6 still owns the complete audited migration, not a blind append of the remaining rows.
-- The focused interactive map and bounded Measurements page are complete. The comprehensive tree (Phase 3.3), age/condition methodology, other supporting/editorial routes removed from Phase 5, complete migration (Phase 6), deployment/release checks (Phase 7), analytics, 360°, 3D, uploads, and AI overlays remain unstarted.
+- The focused interactive map and bounded Measurements page are complete. The comprehensive tree (Phase 3.3), age/condition methodology, other supporting/editorial routes removed from Phase 5, complete migration (Phase 6), deployment/release checks (Phase 7), custom-event analytics, 360°, 3D, uploads, and AI overlays remain unstarted; automatic production page-view analytics is being released separately as v1.0.1.
 - Home keeps a lightweight non-cartographic geographic preview and links to `/map`; it deliberately does not duplicate MapLibre or the map control surface. Coordinate-bearing specimen records expose `View on map` deep links.
 - OpenFreeMap is a public vector-style dependency without a project-owned uptime guarantee. Provider or WebGL failure therefore preserves the full semantic list and all exact record links. Satellite, Hybrid, and Terrain are absent because the selected provider integration does not support them under the approved contract.
 - All 18 records in the current public slice have valid points. The list-only `Not mapped` path is projection- and browser-tested with fixtures so future unknown-coordinate records remain publishable without fabricated coordinates.
