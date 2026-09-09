@@ -366,7 +366,7 @@ These items were explicitly removed from the focused map milestone. They require
 - [ ] Add age-estimation and specimen-condition methodology using owner-supplied/reviewed real-skull imagery and appropriate citations/species caveats.
 - [ ] Add Contribution photography/metadata/rights protocol and reviewed contact link.
 - [ ] Add About and Methodology.
-- [ ] Add accurate Rights, Privacy, and Accessibility statements.
+- [ ] Add accurate Rights and Accessibility statements; the concise Privacy and analytics notice is implemented in v1.0.1.
 - [ ] Add article table of contents, figures, citations, callouts, and responsive prose components.
 
 ### Map acceptance gate
@@ -439,7 +439,7 @@ The 2026-09-06 brief authorizes only the complete `/guides/skull-preparation` pa
 ### Product and content completion
 
 - [x] Select the v1 name (`Skull Collection`), initial assigned Vercel domain, central metadata, public email, and existing repository-created favicon mark.
-- [x] Complete/review all in-scope pages; explicitly defer the Guides hub, Contribution, About, Rights, Privacy, Accessibility, broader methodology, comprehensive tree, and standalone Comparison routes from the first technical release.
+- [x] Complete/review all in-scope pages; explicitly defer the Guides hub, Contribution, About, Rights, Accessibility, broader methodology, comprehensive tree, and standalone Comparison routes from the first technical release. The v1.0.1 Privacy and analytics notice is an approved follow-up.
 - [x] Resolve known issues or explicitly remove affected records/features from release scope.
 - [x] Verify rights for every public asset and data source.
 
@@ -465,6 +465,14 @@ The 2026-09-06 brief authorizes only the complete `/guides/skull-preparation` pa
 ### Acceptance gate
 
 All product acceptance criteria in [project_overview.md](project_overview.md) and automated/manual release checks pass. Rollback is tested. Production matches the tagged commit with no private/staging content.
+
+### v1.0.1 production analytics follow-up
+
+- [x] Add the exact `@vercel/analytics` dependency and mount the App Router component only in the Vercel production environment.
+- [x] Keep analytics to automatic page views, force production mode, and remove query parameters/fragments before transmission.
+- [x] Publish a concise `/privacy` notice, link it from the global footer, and include it in the sitemap.
+- [x] Retain the existing same-origin CSP boundary; verify the analytics script/request path and absence of Preview/local tracking in browser checks.
+- [ ] Merge the verified branch into `main`, create the `v1.0.1` tag/release, and record the production dashboard/deployment evidence.
 
 ## 11. Cross-cutting test matrix
 
@@ -544,9 +552,9 @@ Requires object storage, signed uploads, submission state, structured consent/ri
 
 Consider only when CSV/Git review measurably fails for collection scale or curator workflow. Requires migration/rollback, authentication, authorization, audit log, backups, preview/publication states, and new operational ownership.
 
-### Analytics
+### Custom-event analytics
 
-Requires explicit questions, minimal event design, provider/privacy assessment, consent decision, retention, policy update, and measurable benefit. Hosting/synthetic checks remain enough for v1.
+Automatic production page views are implemented in v1.0.1. Custom events remain deferred until there are explicit questions, a minimal event design, provider/privacy assessment, consent decision, retention understanding, and a measurable benefit.
 
 ### Full Danish interface
 

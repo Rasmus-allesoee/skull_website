@@ -76,7 +76,17 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/((?!map(?:/|$)).*)",
+        // MapLibre v6 loads its module worker as a same-origin public asset.
+        // The worker fetches the OpenFreeMap vector tiles itself, so it needs
+        // the same route-scoped CSP allowance as the /map document.
+        source: "/maplibre/:path*",
+        headers: [
+          ...commonSecurityHeaders,
+          { key: "Content-Security-Policy", value: mapContentSecurityPolicy },
+        ],
+      },
+      {
+        source: "/((?!map(?:/|$)|maplibre(?:/|$)).*)",
         headers: [
           ...commonSecurityHeaders,
           {

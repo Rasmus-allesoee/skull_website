@@ -50,6 +50,7 @@ export function getPublicRoutePaths(): string[] {
     "/map",
     "/methodology",
     "/guides/skull-preparation",
+    "/privacy",
     ...catalog.taxonomyNodes.map((node) => taxonomyHref(node.rank, node.slug)),
     ...catalog.taxa.map(({ href }) => href),
     ...specimenPaths,

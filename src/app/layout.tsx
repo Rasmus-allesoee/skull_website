@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
+import { ProductionAnalytics } from "@/components/ProductionAnalytics";
+import { isProductionAnalyticsDeployment } from "@/config/analytics";
 import { siteConfig } from "@/config/site";
 
 import "./globals.css";
@@ -66,6 +68,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
           dangerouslySetInnerHTML={{ __html: structuredData }}
         />
         {children}
+        {isProductionAnalyticsDeployment(process.env) ? (
+          <ProductionAnalytics />
+        ) : null}
       </body>
     </html>
   );

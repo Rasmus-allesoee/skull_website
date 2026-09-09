@@ -1,8 +1,8 @@
 # Architecture
 
-**Status:** Accepted baseline; measurement-reference compilation and route-scoped interaction architecture implemented
+**Status:** Accepted baseline; measurement-reference compilation, route-scoped interaction architecture, and v1.0.1 production analytics implemented
 
-**Last reviewed:** 2026-09-02
+**Last reviewed:** 2026-09-09
 
 ## 1. Architectural goals
 
@@ -35,6 +35,7 @@ The architecture must make a photographically rich catalog feel fast while prote
 | Browser tests | Playwright with axe | Real navigation, responsive, and accessibility smoke coverage |
 | CI | GitHub Actions | Reproducible pull-request gate |
 | Hosting | Vercel, configured in Phase 7 | Preview deployments and Next.js production integration |
+| Observability | `@vercel/analytics` 2.0.1 | Production-only aggregated page views; no custom events |
 
 Patch dependencies are pinned in `package.json`/`pnpm-lock.yaml` and updated through reviewed Dependabot pull requests. Major or architecture-changing upgrades require an ADR.
 
@@ -225,6 +226,7 @@ Search never creates a second classification model. Filters and suggestions use 
 Phase 5 emits `.generated/map-records-v2.json` deterministically from the compiled published collection. It contains one sorted semantic record per published specimen plus point GeoJSON only for valid exact/approximate coordinates. The v2 projection keeps canonical latitude/longitude unchanged and adds deterministic presentation-only plot coordinates for coincident approximate records, so each uncertain point can remain selectable at high zoom without changing the represented location or its uncertainty area. Location labels, coordinate precision, uncertainty radii, lateral `MediaAsset` references, and exact record URLs remain canonical specimen-derived fields; unknown coordinates stay list-only and are never geocoded.
 
 - The statically generated `/map` route server-renders the operational shell and complete specimen list. A client loader capability-checks WebGL and dynamically imports the MapLibre canvas chunk only on this route.
+- The map pins patched `maplibre-gl@6.4.1`. Because MapLibre v6 is ESM-only and loads its worker separately, `scripts/copy-maplibre-worker.mjs` recreates the pinned worker/shared-module pair under ignored `public/maplibre/` before `dev` and `build`, and the client sets the same-origin worker URL before constructing a map. The map island waits for a non-zero `ResizeObserver` measurement before construction and keeps marker fallbacks synchronous so client transitions cannot strand a zero-sized or partially initialized map.
 - `provider.ts` is the replaceable OpenFreeMap adapter for Fiord, Dark, Positron, Liberty, and Bright style URLs. The provider owns only basemap presentation; collection state and identity never leave the application model.
 - URL-backed map state reuses catalog query/scope/facet/range vocabulary and adds exact `specimen`, supported `style`, and explicit `uncertainty` state. Camera center/zoom remain transient.
 - MapLibre clusters the filtered point projection. The screen-space radius stays close to the marker footprint, and clustering remains available through zoom 16 so coincident uncertain points do not silently collapse into one selectable point before their presentation offsets separate. Every rendered cluster also has a synchronized DOM button with an accessible count; complete membership comes from `getClusterLeaves`, with no top-N truncation.
@@ -237,7 +239,7 @@ Phase 5 emits `.generated/map-records-v2.json` deterministically from the compil
 - Specimen Collection records link to `/map?specimen={id}` when a public point exists. Home remains a lightweight non-cartographic preview but now links to the functioning central map.
 - Home's map preview is a committed owner-supplied static thumbnail selected to communicate the dedicated map's reviewed locations and specimen-detail affordances. It has no basemap provider request, controls, MapLibre runtime, or independent geographic state; the interactive map remains route-local to `/map`.
 
-The `/map/:path*` security header permits only same-origin application assets, blob workers/images, and `https://tiles.openfreemap.org`; it does not add wildcard providers, analytics, cookies, or tracking. Development adds `unsafe-eval` only for React/Turbopack diagnostics; the production header never includes it.
+The `/map/:path*` and generated `/maplibre/:path*` security headers permit only same-origin application assets, blob workers/images, and `https://tiles.openfreemap.org`; they do not add a wildcard analytics provider. Because CSP belongs to the current document, shared header/Home/specimen links enter `/map` through a native document navigation so the map policy is applied on first entry as well as reload. Production Web Analytics uses the already-allowed same-origin Vercel insights path, while map tiles remain the only route-specific external connection. Development adds `unsafe-eval` only for React/Turbopack diagnostics; the production header never includes it.
 
 ## 12. Media architecture
 
@@ -310,11 +312,14 @@ The v1 threat surface is intentionally small.
 
 - No secrets are required for a normal local build.
 - No untrusted HTML is rendered; MDX components are allowlisted and repository-reviewed.
-- No uploads, accounts, cookies, behavioral analytics, or runtime content mutations.
+- No uploads, accounts, application cookie state, advertising, custom events, or runtime content mutations. Vercel Web Analytics is mounted only in the Vercel production environment and records automatic page views without third-party cookies.
+- The analytics `beforeSend` boundary removes query parameters and fragments before a page-view URL is sent, keeping free-form catalog searches and URL-backed selection state out of telemetry.
+- The public `/privacy` route describes the provider, data categories, production-only boundary, and contact path. Changes to analytics scope require updating that notice and this architecture record.
 - EXIF/GPS is stripped from published image derivatives.
 - Public coordinates are explicit reviewed data, never read from image metadata.
 - Production headers include a least-privilege CSP, HSTS, `X-Content-Type-Options`, restrictive `Permissions-Policy`, and `Referrer-Policy`.
 - Dependency changes are pinned, reviewed, and scanned by GitHub/Dependabot.
+- The production dependency graph currently clears `pnpm audit --prod`; the gray-matter-compatible `js-yaml@3.15.2` security override and the MapLibre maintenance decision are recorded in ADR 0008.
 - Draft notes and staging files are Git-ignored and excluded by schema publication state.
 
 Security headers are introduced alongside the feature hosts they must permit, then verified in release hardening.
@@ -328,7 +333,7 @@ Security headers are introduced alongside the feature hosts they must permit, th
 | Preview | Vercel pull-request deployment | Visual/content review against exact commit |
 | Production | Vercel deployment from `main` | Public site only |
 
-Phase 7 uses Git-connected Vercel deployments: feature branches create Preview deployments and only `main` creates Production. The canonical metadata URL resolves from an explicit `NEXT_PUBLIC_SITE_URL` override or Vercel's stable production-domain environment value. The v1 name is `Skull Collection`, the public contact is `rasmus.allesoee@gmail.com`, and the first release uses the assigned production domain `https://skullwebsite-xi.vercel.app`. Release completion requires deployed header/metadata checks, a reversible rollback exercise, and tag `v1.0.0`; Web Analytics is intentionally not part of the tagged release until its privacy and content-boundary implications are reviewed.
+Phase 7 uses Git-connected Vercel deployments: feature branches create Preview deployments and only `main` creates Production. The canonical metadata URL resolves from an explicit `NEXT_PUBLIC_SITE_URL` override or Vercel's stable production-domain environment value. The v1 name is `Skull Collection`, the public contact is `rasmus.allesoee@gmail.com`, and the first release uses the assigned production domain `https://skullwebsite-xi.vercel.app`. Release completion requires deployed header/metadata checks, a reversible rollback exercise, and tag `v1.0.0`. The v1.0.1 follow-up adds `@vercel/analytics` in a small client island rendered only when `VERCEL=1` and `VERCEL_ENV=production`; the component forces production mode and redacts query parameters/fragments before sending page views. Local and Preview builds render no analytics component, and the privacy notice is part of the public route/sitemap.
 
 For same-network phone/tablet development, `dev:network` binds to `0.0.0.0`, while `next.config.ts` supplies exact loopback and currently detected non-internal IPv4 values to `allowedDevOrigins`. Visitors use the computer's LAN IP, never the bind address. This prevents the Next.js development HMR WebSocket from being rejected and repeatedly reloading the page. `preview:network` is the production-like fallback and has no development HMR channel.
 

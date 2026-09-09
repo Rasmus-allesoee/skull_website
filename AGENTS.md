@@ -20,7 +20,7 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **v1.0.0 is released from `main` and deployed to Vercel at `https://skullwebsite-xi.vercel.app`; analytics remains an explicit follow-up choice**. Measurements and Home are merged through PRs #11/#12, Preparation through PR #13 at `0e332ac`, and the audited migration/release hardening through PR #14 at merge commit `61964d1`. The first technical release deliberately defers the separate About, Contribution, Rights, Privacy, Accessibility, Guides-hub, broader methodology, comprehensive tree, and standalone comparison routes. Consult `docs/project_status.md` for exact evidence and the next action.
+Current phase: **v1.0.1 production-only Web Analytics integration is active on `agent/vercel-analytics` from the released `main` baseline at `https://skullwebsite-xi.vercel.app`**. Measurements and Home are merged through PRs #11/#12, Preparation through PR #13 at `0e332ac`, and the audited migration/release hardening through PR #14 at merge commit `61964d1`. The first technical release deliberately deferred the separate About, Contribution, Rights, Accessibility, Guides-hub, broader methodology, comprehensive tree, and standalone comparison routes; v1.0.1 adds only the small public privacy/analytics notice required by the approved telemetry integration. Consult `docs/project_status.md` for exact evidence and the next action.
 
 Use the owner-selected public v1 name **Skull Collection** from central site configuration.
 
@@ -46,7 +46,7 @@ The historical approved master plan is `agent_context/website_plan_from_planmode
 - Uncertain and genus-level identifications are permitted only with explicit rank/qualifier/confidence labels.
 - Missing data never becomes zero or a fabricated date. Use “Not recorded” and “Not applicable” semantics.
 - Exact public coordinates are used when explicitly known; approximate and unknown precision remain explicit. Never infer points from locality text or image EXIF.
-- v1 has no accounts, direct uploads, runtime database/CMS, analytics/cookies, 360°, 3D, or AI animal overlays.
+- The current release has no accounts, direct uploads, runtime database/CMS, advertising, custom events, 360°, 3D, or AI animal overlays. Vercel Web Analytics is limited to automatic page views from the public production deployment; the application does not use tracking-cookie state.
 - Contribution v1 is requirements guidance plus contact only.
 - The public repository contains curated public assets only.
 - Code is MIT; photographs, written content, and collection data remain separately reserved under `RIGHTS.md`.

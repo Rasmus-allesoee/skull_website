@@ -29,6 +29,18 @@ test("public pages expose release security headers and route-scoped CSP", async 
   expect(map.headers()["content-security-policy"]).toContain(
     "worker-src 'self' blob:",
   );
+
+  const mapWorker = await request.get("/maplibre/maplibre-gl-worker.mjs");
+  expect(mapWorker.ok()).toBe(true);
+  expect(mapWorker.headers()["content-type"]).toContain(
+    "application/javascript",
+  );
+  expect(mapWorker.headers()["content-security-policy"]).toContain(
+    "connect-src 'self' https://tiles.openfreemap.org",
+  );
+
+  const privacy = await request.get("/privacy");
+  expect(privacy.ok()).toBe(true);
 });
 
 test("metadata, structured data, robots, and every sitemap route are valid", async ({
@@ -71,6 +83,9 @@ test("metadata, structured data, robots, and every sitemap route are valid", asy
     ...(await sitemap.text()).matchAll(/<loc>(.*?)<\/loc>/g),
   ].map(([, location]) => location!);
   expect(locations.length).toBeGreaterThan(60);
+  expect(
+    locations.some((location) => new URL(location).pathname === "/privacy"),
+  ).toBe(true);
   for (const location of locations) {
     const route = new URL(location).pathname;
     const response = await request.get(route);

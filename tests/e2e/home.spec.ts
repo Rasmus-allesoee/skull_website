@@ -806,6 +806,7 @@ test("sitemap, robots, and unknown taxonomy routes reflect the static public sur
   expect(sitemap.ok()).toBe(true);
   const sitemapBody = await sitemap.text();
   expect(sitemapBody).toContain("/methodology");
+  expect(sitemapBody).toContain("/privacy");
   expect(sitemapBody).toContain("/taxonomy/class/mammals");
   expect(sitemapBody).toContain("/species/raccoon-dog/specimens/SPEC-0001");
 

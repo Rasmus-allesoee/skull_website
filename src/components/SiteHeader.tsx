@@ -36,12 +36,22 @@ function NavigationLinks({ activePath }: { activePath: string }) {
           (item.href !== "/" && activePath.startsWith(`${item.href}/`));
         return (
           <li key={item.href}>
-            <Link
-              href={item.href}
-              aria-current={isCurrent ? "page" : undefined}
-            >
-              {item.label}
-            </Link>
+            {item.href === "/map" ? (
+              // /map has a route-specific CSP for MapLibre/OpenFreeMap. A
+              // native document navigation applies that header when entering
+              // from another page instead of retaining the previous route's
+              // stricter policy during an App Router transition.
+              <a href={item.href} aria-current={isCurrent ? "page" : undefined}>
+                {item.label}
+              </a>
+            ) : (
+              <Link
+                href={item.href}
+                aria-current={isCurrent ? "page" : undefined}
+              >
+                {item.label}
+              </Link>
+            )}
           </li>
         );
       })}

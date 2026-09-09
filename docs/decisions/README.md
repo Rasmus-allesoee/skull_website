@@ -21,7 +21,10 @@ Each ADR contains context, decision, consequences, considered alternatives, and 
 - [0004 — Build-generated client search and route-lazy map](0004-client-search-and-route-lazy-map.md)
 - [0005 — Species-first pages with stable specimen URLs](0005-species-and-specimen-url-model.md)
 - [0006 — Curator-facing specimen crosswalk in the canonical CSV](0006-curator-facing-specimen-crosswalk.md)
+- [0007 — Production-only Web Analytics](0007-production-only-web-analytics.md)
+- [0008 — Production dependency advisory remediation](0008-production-dependency-advisory-remediation.md)
+- [0009 — MapLibre first-navigation and worker CSP boundary](0009-maplibre-first-navigation-and-worker-csp.md)
 
 ## Most recent decision audit
 
-Phase 6 accepted ADR 0006 so the canonical specimen sheet can retain the owner's per-taxon labels without weakening collection-wide `SPEC-####` identity or URL stability. Earlier Phase 3.1 implementation choices remain extensions of ADRs 0001–0005.
+Phase 6 accepted ADR 0006 so the canonical specimen sheet can retain the owner's per-taxon labels without weakening collection-wide `SPEC-####` identity or URL stability. v1.0.1 accepted ADR 0007 for the production-only Web Analytics boundary and ADR 0008 for the patched production dependency baseline. Earlier Phase 3.1 implementation choices remain extensions of ADRs 0001–0005.
