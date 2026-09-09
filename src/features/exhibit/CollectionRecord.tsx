@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import {
   formatCoordinate,
   formatPartialDate,
@@ -67,12 +65,12 @@ export function CollectionRecord({
               </small>
             ) : null}
             {isMappable ? (
-              <Link
+              <a
                 className="record-map-link"
                 href={`/map?specimen=${specimen.specimenId}`}
               >
                 View on map
-              </Link>
+              </a>
             ) : null}
           </dd>
         </div>

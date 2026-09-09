@@ -116,7 +116,7 @@ export default function Home() {
           </article>
 
           <article className="home-hub-card home-hub-card-map">
-            <Link href="/map" aria-label="Open the collection map">
+            <a href="/map" aria-label="Open the collection map">
               <div className="home-hub-copy">
                 <p className="card-overline">Geographic records</p>
                 <h3>Collection map</h3>
@@ -127,7 +127,7 @@ export default function Home() {
                 <span className="home-card-action">Open collection map →</span>
               </div>
               <HomeMapPreview asset={mapThumbnail} />
-            </Link>
+            </a>
           </article>
 
           <article className="home-hub-card home-hub-card-measurements">

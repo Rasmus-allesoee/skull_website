@@ -23,6 +23,7 @@ Each ADR contains context, decision, consequences, considered alternatives, and 
 - [0006 — Curator-facing specimen crosswalk in the canonical CSV](0006-curator-facing-specimen-crosswalk.md)
 - [0007 — Production-only Web Analytics](0007-production-only-web-analytics.md)
 - [0008 — Production dependency advisory remediation](0008-production-dependency-advisory-remediation.md)
+- [0009 — MapLibre first-navigation and worker CSP boundary](0009-maplibre-first-navigation-and-worker-csp.md)
 
 ## Most recent decision audit
 

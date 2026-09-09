@@ -30,6 +30,15 @@ test("public pages expose release security headers and route-scoped CSP", async 
     "worker-src 'self' blob:",
   );
 
+  const mapWorker = await request.get("/maplibre/maplibre-gl-worker.mjs");
+  expect(mapWorker.ok()).toBe(true);
+  expect(mapWorker.headers()["content-type"]).toContain(
+    "application/javascript",
+  );
+  expect(mapWorker.headers()["content-security-policy"]).toContain(
+    "connect-src 'self' https://tiles.openfreemap.org",
+  );
+
   const privacy = await request.get("/privacy");
   expect(privacy.ok()).toBe(true);
 });

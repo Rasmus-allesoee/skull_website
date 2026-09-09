@@ -321,119 +321,149 @@ export function MapCanvas({
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const savedCamera = cameraRef.current;
     let loaded = false;
     let disposed = false;
+    let map: MapLibreMap | null = null;
+    let failTimer: number | null = null;
+    let clusterRefreshTimer: number | null = null;
     setReady(false);
     setProviderError(null);
     setCanvasContainer(null);
-    const map = new maplibregl.Map({
-      container,
-      style: getMapStyle(styleKey).styleUrl,
-      center: savedCamera?.center ?? defaultMapCenter,
-      zoom: savedCamera?.zoom ?? defaultMapZoom,
-      bearing: savedCamera?.bearing ?? 0,
-      pitch: savedCamera?.pitch ?? 0,
-      attributionControl: false,
-      maxPitch: 0,
-      pitchWithRotate: false,
-      dragRotate: false,
-      touchPitch: false,
-      cooperativeGestures: false,
-    });
-    mapRef.current = map;
-    setCanvasContainer(map.getCanvasContainer());
-    map.setMissingStyleImageResolver((id) => {
-      if (!map.hasImage(id)) {
-        map.addImage(id, transparentImage());
-      }
-    });
-    map.addControl(
-      new maplibregl.NavigationControl({ showCompass: false }),
-      "top-left",
-    );
-    map.addControl(
-      new maplibregl.AttributionControl({ compact: false }),
-      "bottom-left",
-    );
-    map
-      .getCanvas()
-      .setAttribute(
-        "aria-label",
-        "Interactive specimen map. Use the adjacent specimen list for complete keyboard access.",
+
+    const initializeMap = () => {
+      if (disposed || map) return;
+      const bounds = container.getBoundingClientRect();
+      // Client-side route transitions can render the map island before the
+      // grid has assigned its track height. Constructing MapLibre against a
+      // zero-sized container prevents the initial style load from completing;
+      // wait for the first real measurement instead.
+      if (bounds.width <= 0 || bounds.height <= 0) return;
+
+      const savedCamera = cameraRef.current;
+      const instance = new maplibregl.Map({
+        container,
+        style: getMapStyle(styleKey).styleUrl,
+        center: savedCamera?.center ?? defaultMapCenter,
+        zoom: savedCamera?.zoom ?? defaultMapZoom,
+        bearing: savedCamera?.bearing ?? 0,
+        pitch: savedCamera?.pitch ?? 0,
+        attributionControl: false,
+        maxPitch: 0,
+        pitchWithRotate: false,
+        dragRotate: false,
+        touchPitch: false,
+        cooperativeGestures: false,
+      });
+      map = instance;
+      mapRef.current = instance;
+      setCanvasContainer(instance.getCanvasContainer());
+      instance.setMissingStyleImageResolver((id) => {
+        if (!instance.hasImage(id)) {
+          instance.addImage(id, transparentImage());
+        }
+      });
+      instance.addControl(
+        new maplibregl.NavigationControl({ showCompass: false }),
+        "top-left",
       );
-
-    map.on("error", () => {
-      // MapLibre reports aborted requests from a Strict Mode teardown and
-      // transient provider failures through this event. Binding the event is
-      // important: without a listener MapLibre writes the error to the
-      // console, which becomes a Next.js development error overlay. The
-      // timeout below still owns the user-facing failure state and allows a
-      // later request/load event to recover normally.
-      if (disposed || loaded || mapRef.current !== map) return;
-    });
-
-    const failTimer = window.setTimeout(() => {
-      if (!loaded && !disposed && mapRef.current === map) {
-        setProviderError(
-          "The basemap provider did not respond. Search, filters, and every exact specimen link remain available.",
+      instance.addControl(
+        new maplibregl.AttributionControl({ compact: false }),
+        "bottom-left",
+      );
+      instance
+        .getCanvas()
+        .setAttribute(
+          "aria-label",
+          "Interactive specimen map. Use the adjacent specimen list for complete keyboard access.",
         );
-      }
-    }, 12_000);
 
-    map.on("load", () => {
-      loaded = true;
-      window.clearTimeout(failTimer);
-      void addCollectionLayers(
-        map,
-        buildPointCollection(recordsRef.current),
-        emptyPolygons(),
-      )
-        .then(() => {
-          if (mapRef.current !== map) return;
-          attachMapInteractions(map, openCluster, onSelectRef);
-          appliedRecordSignatureRef.current = recordSignatureRef.current;
-          setReady(true);
-          if (!savedCamera) fitRecords(map, recordsRef.current, false);
-          updateMapView();
-        })
-        .catch(() => {
-          if (mapRef.current !== map) return;
+      instance.on("error", () => {
+        // MapLibre reports aborted requests from a Strict Mode teardown and
+        // transient provider failures through this event. Binding the event is
+        // important: without a listener MapLibre writes the error to the
+        // console, which becomes a Next.js development error overlay. The
+        // timeout below still owns the user-facing failure state and allows a
+        // later request/load event to recover normally.
+        if (disposed || loaded || mapRef.current !== instance) return;
+      });
+
+      failTimer = window.setTimeout(() => {
+        if (!loaded && !disposed && mapRef.current === instance) {
           setProviderError(
-            "The collection map could not render its specimen layer. Search, filters, and every exact specimen link remain available.",
+            "The basemap provider did not respond. Search, filters, and every exact specimen link remain available.",
           );
-        });
-    });
-    map.on("move", updateMapView);
-    map.on("resize", updateMapView);
-    const updateClusters = () => {
-      const clusters = renderedClusters(map);
-      const signature = clusters
-        .map(
-          (cluster) =>
-            `${cluster.id}:${cluster.count}:${cluster.x}:${cluster.y}`,
+        }
+      }, 12_000);
+
+      instance.on("load", () => {
+        loaded = true;
+        if (failTimer !== null) window.clearTimeout(failTimer);
+        setProviderError(null);
+        void addCollectionLayers(
+          instance,
+          buildPointCollection(recordsRef.current),
+          emptyPolygons(),
         )
-        .join("|");
-      if (signature === accessibleClusterSignatureRef.current) return;
-      accessibleClusterSignatureRef.current = signature;
-      setAccessibleClusters(clusters);
+          .then(() => {
+            if (mapRef.current !== instance) return;
+            attachMapInteractions(instance, openCluster, onSelectRef);
+            appliedRecordSignatureRef.current = recordSignatureRef.current;
+            setReady(true);
+            if (!savedCamera) fitRecords(instance, recordsRef.current, false);
+            updateMapView();
+          })
+          .catch(() => {
+            if (mapRef.current !== instance) return;
+            setProviderError(
+              "The collection map could not render its specimen layer. Search, filters, and every exact specimen link remain available.",
+            );
+          });
+      });
+      instance.on("move", updateMapView);
+      instance.on("resize", updateMapView);
+      const updateClusters = () => {
+        const clusters = renderedClusters(instance);
+        const signature = clusters
+          .map(
+            (cluster) =>
+              `${cluster.id}:${cluster.count}:${cluster.x}:${cluster.y}`,
+          )
+          .join("|");
+        if (signature === accessibleClusterSignatureRef.current) return;
+        accessibleClusterSignatureRef.current = signature;
+        setAccessibleClusters(clusters);
+      };
+      const clearClusters = () => {
+        accessibleClusterSignatureRef.current = "";
+        setAccessibleClusters([]);
+      };
+      instance.on("idle", updateClusters);
+      instance.on("render", updateClusters);
+      instance.on("sourcedata", updateClusters);
+      instance.on("movestart", clearClusters);
+      instance.on("moveend", updateClusters);
+      clusterRefreshTimer = window.setInterval(updateClusters, 250);
     };
-    const clearClusters = () => {
-      accessibleClusterSignatureRef.current = "";
-      setAccessibleClusters([]);
-    };
-    map.on("idle", updateClusters);
-    map.on("render", updateClusters);
-    map.on("sourcedata", updateClusters);
-    map.on("movestart", clearClusters);
-    map.on("moveend", updateClusters);
-    const clusterRefreshTimer = window.setInterval(updateClusters, 250);
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (disposed) return;
+      if (!map) {
+        initializeMap();
+        return;
+      }
+      const bounds = container.getBoundingClientRect();
+      if (bounds.width > 0 && bounds.height > 0) map.resize();
+    });
+    resizeObserver.observe(container);
+    initializeMap();
 
     return () => {
       disposed = true;
-      window.clearTimeout(failTimer);
-      window.clearInterval(clusterRefreshTimer);
-      map.remove();
+      resizeObserver.disconnect();
+      if (failTimer !== null) window.clearTimeout(failTimer);
+      if (clusterRefreshTimer !== null)
+        window.clearInterval(clusterRefreshTimer);
+      map?.remove();
       mapRef.current = null;
       setCanvasContainer(null);
       accessibleClusterSignatureRef.current = "";
@@ -556,19 +586,6 @@ export function MapCanvas({
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [closeRecordPopup, popup, restorePopupFocus]);
 
-  if (providerError) {
-    return (
-      <div className="map-unavailable" role="alert">
-        <p className="card-overline">Basemap unavailable</p>
-        <h2>The collection list is still available.</h2>
-        <p>{providerError}</p>
-        <button type="button" onClick={() => setRetryKey((value) => value + 1)}>
-          Retry map
-        </button>
-      </div>
-    );
-  }
-
   const side = "left" as const;
   const clusterAccessibilityControls = (
     <div
@@ -608,6 +625,19 @@ export function MapCanvas({
       data-cluster-max-zoom={mapClusterMaxZoom}
     >
       <div ref={containerRef} className="map-canvas" />
+      {providerError ? (
+        <div className="map-unavailable" role="alert">
+          <p className="card-overline">Basemap unavailable</p>
+          <h2>The collection list is still available.</h2>
+          <p>{providerError}</p>
+          <button
+            type="button"
+            onClick={() => setRetryKey((value) => value + 1)}
+          >
+            Retry map
+          </button>
+        </div>
+      ) : null}
       {canvasContainer?.isConnected
         ? createPortal(clusterAccessibilityControls, canvasContainer)
         : null}
@@ -695,7 +725,10 @@ async function addCollectionLayers(
     clusterMaxZoom: mapClusterMaxZoom,
     clusterRadius: mapClusterRadius,
   });
-  await addClassMarkerImages(map);
+  // Add local fallbacks synchronously so a slow image decode cannot hold the
+  // whole collection layer (and its readiness state) hostage. The reviewed
+  // WebP marker replaces each fallback when it finishes loading.
+  addClassMarkerImages(map);
   map.addLayer({
     id: clusterLayerId,
     type: "circle",
@@ -805,35 +838,34 @@ function pointLayer(
   };
 }
 
-async function addClassMarkerImages(map: MapLibreMap) {
-  await Promise.all(
-    (
-      [
-        {
-          id: "mammal-marker",
-          path: "/media/map/mammal-marker.webp",
-          fallback: "mammal",
-        },
-        {
-          id: "bird-marker",
-          path: "/media/map/bird-marker.webp",
-          fallback: "bird",
-        },
-      ] as const
-    ).map(async ({ id, path, fallback }) => {
-      if (map.hasImage(id)) return;
-      try {
-        const response = await map.loadImage(path);
-        if (!map.hasImage(id)) {
-          map.addImage(id, response.data, { pixelRatio: 4 });
-        }
-      } catch {
-        if (!map.hasImage(id)) {
-          map.addImage(id, markerImage(fallback), { pixelRatio: 2 });
-        }
-      }
-    }),
-  );
+function addClassMarkerImages(map: MapLibreMap) {
+  const definitions = [
+    {
+      id: "mammal-marker",
+      path: "/media/map/mammal-marker.webp",
+      fallback: "mammal",
+    },
+    {
+      id: "bird-marker",
+      path: "/media/map/bird-marker.webp",
+      fallback: "bird",
+    },
+  ] as const;
+
+  for (const { id, path, fallback } of definitions) {
+    if (!map.hasImage(id)) {
+      map.addImage(id, markerImage(fallback), { pixelRatio: 2 });
+    }
+    void map
+      .loadImage(path)
+      .then((response) => {
+        if (map.hasImage(id)) map.updateImage(id, response.data);
+      })
+      .catch(() => {
+        // The synchronous fallback remains available when the optional
+        // reviewed marker asset cannot be decoded or fetched.
+      });
+  }
   if (!map.hasImage("other-marker")) {
     map.addImage("other-marker", markerImage("other"), { pixelRatio: 2 });
   }

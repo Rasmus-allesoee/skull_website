@@ -14,6 +14,11 @@ test("map-first desktop layout renders the provider map and complete synchronize
   await expect(
     page.getByRole("heading", { level: 1, name: "Explore the collection map" }),
   ).toBeVisible();
+  await expect(page.locator(".map-canvas-frame")).toHaveAttribute(
+    "data-map-ready",
+    "true",
+    { timeout: 15_000 },
+  );
   await expect(page.locator(".maplibregl-canvas")).toBeVisible();
   await expect(
     page.getByRole("heading", { level: 2, name: "18 matching specimens" }),
@@ -30,6 +35,22 @@ test("map-first desktop layout renders the provider map and complete synchronize
   expect(canvas!.height).toBeGreaterThan(workspace!.height * 0.95);
   expect(canvas!.width).toBeGreaterThan(workspace!.width * 0.6);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+});
+
+test("client navigation waits for the map container before initializing", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.locator('a[href="/map"]').first().click();
+  await expect(page).toHaveURL(/\/map$/);
+  await expect(page.locator(".map-canvas-frame")).toHaveAttribute(
+    "data-map-ready",
+    "true",
+    { timeout: 15_000 },
+  );
+  const canvas = await page.locator(".maplibregl-canvas").boundingBox();
+  expect(canvas?.width).toBeGreaterThan(0);
+  expect(canvas?.height).toBeGreaterThan(0);
 });
 
 test("desktop result rail can be hidden and restored", async ({ page }) => {

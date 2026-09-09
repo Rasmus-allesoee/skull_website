@@ -2,11 +2,19 @@
 
 **Snapshot date:** 2026-09-09
 
-**Current phase:** v1.0.1 production-only Web Analytics and dependency-remediation branch pushed; Vercel Preview is ready
+**Current phase:** v1.0.1 production-only Web Analytics, dependency remediation, and MapLibre reliability fix ready for PR landing
 
 **Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, and release hardening are merged into `main`. PR #14 merged normally at `61964d1`; the canonical collection remains 15 public taxa, 18 public specimens, and 104 specimen images, with 31 source specimens deferred for missing reviewed media and three rejected. v1.0.0 remains live on Vercel at `https://skullwebsite-xi.vercel.app`; the approved v1.0.1 Web Analytics/privacy integration and patched production dependency baseline are pushed on `agent/vercel-analytics` with a Ready Preview deployment.
 
-**Next action:** Open and review the branch PR, then merge to `main` when approved so Vercel can create the Production deployment. Verify page-view data on the live domain before tagging `v1.0.1`.
+**Next action:** Open/review the branch PR and merge it normally into `main`; then verify first-entry/reload map behavior and production page-view data before tagging `v1.0.1`.
+
+## 0.5 MapLibre first-entry reliability correction (2026-09-09)
+
+- Root cause of the production `main` first-entry failure: a client-side App Router transition retained the previous document's default CSP, so the map's route-only worker/tile allowance was never applied. The map client could also be constructed while its grid container measured `0 × 0`.
+- Root cause of the v6 branch's solid-color map: the generated same-origin module worker was served under the default CSP with `connect-src 'self'`, blocking its OpenFreeMap vector-tile fetches. The style background rendered, but vector details never became available.
+- Fixed the boundary by applying the map CSP to `/maplibre/*` worker assets and entering `/map` from shared header/Home/specimen links through native document navigation. MapLibre now waits for a non-zero `ResizeObserver` measurement, retains a late-loading instance behind a retryable fallback, and adds local marker fallbacks without awaiting optional image decoding.
+- Focused browser verification on the rebuilt branch: direct `/map` entry and Home → Map entry both reached `data-map-ready="true"`, displayed the basemap/vector details and collection markers, and showed no `Basemap unavailable` surface. The worker response returned JavaScript with the map CSP. The production build prerendered 78/78 routes.
+- This correction is still local on `agent/vercel-analytics` until its PR is opened and merged; production verification and the `v1.0.1` tag remain pending.
 
 ## 0.4 v1.0.1 production-only Web Analytics follow-up (2026-09-09)
 
