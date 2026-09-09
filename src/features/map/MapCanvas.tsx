@@ -10,15 +10,16 @@ import {
   type WheelEvent,
 } from "react";
 import { createPortal } from "react-dom";
-import maplibregl, {
-  type FilterSpecification,
-  type GeoJSONSource,
-  type LngLatLike,
-  type MapLayerMouseEvent,
-  type MapLayerTouchEvent,
-  type Map as MapLibreMap,
-  type MapTouchEvent,
-  type SymbolLayerSpecification,
+import * as maplibregl from "maplibre-gl";
+import type {
+  FilterSpecification,
+  GeoJSONSource,
+  LngLatLike,
+  MapLayerMouseEvent,
+  MapLayerTouchEvent,
+  Map as MapLibreMap,
+  MapTouchEvent,
+  SymbolLayerSpecification,
 } from "maplibre-gl";
 
 import {
@@ -33,6 +34,8 @@ import type {
 
 import { ClusterMapPopup, IndividualMapPopup } from "./MapPopup";
 import { getMapStyle, type MapStyleKey } from "./provider";
+
+maplibregl.setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
 
 export interface MapCanvasProps {
   records: MapRecord[];
@@ -340,9 +343,9 @@ export function MapCanvas({
     });
     mapRef.current = map;
     setCanvasContainer(map.getCanvasContainer());
-    map.on("styleimagemissing", (event) => {
-      if (!map.hasImage(event.id)) {
-        map.addImage(event.id, transparentImage());
+    map.setMissingStyleImageResolver((id) => {
+      if (!map.hasImage(id)) {
+        map.addImage(id, transparentImage());
       }
     });
     map.addControl(

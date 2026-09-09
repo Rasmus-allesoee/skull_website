@@ -226,6 +226,7 @@ Search never creates a second classification model. Filters and suggestions use 
 Phase 5 emits `.generated/map-records-v2.json` deterministically from the compiled published collection. It contains one sorted semantic record per published specimen plus point GeoJSON only for valid exact/approximate coordinates. The v2 projection keeps canonical latitude/longitude unchanged and adds deterministic presentation-only plot coordinates for coincident approximate records, so each uncertain point can remain selectable at high zoom without changing the represented location or its uncertainty area. Location labels, coordinate precision, uncertainty radii, lateral `MediaAsset` references, and exact record URLs remain canonical specimen-derived fields; unknown coordinates stay list-only and are never geocoded.
 
 - The statically generated `/map` route server-renders the operational shell and complete specimen list. A client loader capability-checks WebGL and dynamically imports the MapLibre canvas chunk only on this route.
+- The map pins patched `maplibre-gl@6.4.1`. Because MapLibre v6 is ESM-only and loads its worker separately, `scripts/copy-maplibre-worker.mjs` recreates the pinned worker/shared-module pair under ignored `public/maplibre/` before `dev` and `build`, and the client sets the same-origin worker URL before constructing a map.
 - `provider.ts` is the replaceable OpenFreeMap adapter for Fiord, Dark, Positron, Liberty, and Bright style URLs. The provider owns only basemap presentation; collection state and identity never leave the application model.
 - URL-backed map state reuses catalog query/scope/facet/range vocabulary and adds exact `specimen`, supported `style`, and explicit `uncertainty` state. Camera center/zoom remain transient.
 - MapLibre clusters the filtered point projection. The screen-space radius stays close to the marker footprint, and clustering remains available through zoom 16 so coincident uncertain points do not silently collapse into one selectable point before their presentation offsets separate. Every rendered cluster also has a synchronized DOM button with an accessible count; complete membership comes from `getClusterLeaves`, with no top-N truncation.
@@ -318,6 +319,7 @@ The v1 threat surface is intentionally small.
 - Public coordinates are explicit reviewed data, never read from image metadata.
 - Production headers include a least-privilege CSP, HSTS, `X-Content-Type-Options`, restrictive `Permissions-Policy`, and `Referrer-Policy`.
 - Dependency changes are pinned, reviewed, and scanned by GitHub/Dependabot.
+- The production dependency graph currently clears `pnpm audit --prod`; the gray-matter-compatible `js-yaml@3.15.2` security override and the MapLibre maintenance decision are recorded in ADR 0008.
 - Draft notes and staging files are Git-ignored and excluded by schema publication state.
 
 Security headers are introduced alongside the feature hosts they must permit, then verified in release hardening.

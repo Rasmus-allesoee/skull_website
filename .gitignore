@@ -9,6 +9,7 @@ dist/
 .generated/
 .staging/
 public/generated/
+public/maplibre/
 *.tsbuildinfo
 
 # Tests and reports

@@ -16,6 +16,7 @@ export default defineConfig([
     "coverage/**",
     "next-env.d.ts",
     "out/**",
+    "public/maplibre/**",
     "playwright-report/**",
     "test-results/**",
   ]),
