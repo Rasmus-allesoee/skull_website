@@ -1,15 +1,15 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { parseGuide } from "./guide";
+import { extractGuideMediaIds, parseGuide } from "./guide";
 const source = readFileSync("content/guides/skull-preparation.mdx", "utf8");
 describe("preparation guide publication contract", () => {
   it("compiles all stages, stable method targets, comparisons, and citations", () => {
     const guide = parseGuide(source);
     expect(guide.metadata.stages).toHaveLength(5);
     expect(guide.blocks.filter((b) => b.kind === "table")).toHaveLength(5);
-    expect(guide.metadata.citations).toHaveLength(20);
+    expect(guide.metadata.citations).toHaveLength(22);
     expect(guide.blocks.filter((b) => b.kind === "disclosure")).toHaveLength(
-      13,
+      14,
     );
     expect(guide.headings.map((h) => h.id)).toEqual(
       expect.arrayContaining([
@@ -37,6 +37,9 @@ describe("preparation guide publication contract", () => {
     expect(table.rows[0]?.[0]).toContain("asset:condition-fresh-body");
     expect(table.rows[0]?.[1]).toContain("#separation");
     expect(table.rows[5]?.[1]).toContain("#assembly");
+    expect(extractGuideMediaIds(source)).toEqual(
+      expect.arrayContaining(["brain-gunk", "adipocere"]),
+    );
   });
   it.each([
     ["unresolved citation", source.replace("[cite:hendry]", "[cite:missing]")],

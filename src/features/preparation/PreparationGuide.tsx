@@ -8,6 +8,7 @@ import type {
 import { CitationList } from "@/components/Citations";
 import { GuideContents } from "./GuideContents";
 import { PreparationConditionThumbnail } from "./PreparationConditionThumbnail";
+import { PreparationImageLightbox } from "./PreparationImageLightbox";
 export function PreparationGuide({ guide }: { guide: Guide }) {
   const numbers = new Map(
     guide.metadata.citations.map((c, i) => [c.key, i + 1]),
@@ -17,7 +18,7 @@ export function PreparationGuide({ guide }: { guide: Guide }) {
     const nodes: ReactNode[] = [];
     let cursor = 0;
     const tokens =
-      /\[cite:([a-z0-9-]+)\]|!\[([^\]\n]+)\]\(asset:([a-z][a-z0-9-]*)\)|\[([^\]\n]+)\]\(#([a-z][a-z0-9-]*)\)/g;
+      /\[cite:([a-z0-9-]+)\]|!\[([^\]\n]+)\]\(asset:([a-z][a-z0-9-]*)\)|\[([^\]\n]+)\]\(asset:([a-z][a-z0-9-]*)\)|\[([^\]\n]+)\]\(#([a-z][a-z0-9-]*)\)/g;
     for (const match of text.matchAll(tokens)) {
       const index = match.index ?? 0;
       nodes.push(text.slice(cursor, index));
@@ -61,14 +62,22 @@ export function PreparationGuide({ guide }: { guide: Guide }) {
             asset={asset(match[3])}
           />,
         );
+      } else if (match[5]) {
+        nodes.push(
+          <PreparationImageLightbox
+            key={`prep-image-${match[5]}-${index}`}
+            asset={asset(match[5])}
+            label={match[4]!}
+          />,
+        );
       } else {
         nodes.push(
           <a
-            key={`prep-link-${match[5]}-${index}`}
+            key={`prep-link-${match[7]}-${index}`}
             className="prep-inline-link"
-            href={`#${match[5]}`}
+            href={`#${match[7]}`}
           >
-            {match[4]}
+            {match[6]}
           </a>,
         );
       }

@@ -6,6 +6,7 @@ import type { MediaAsset } from "../content/types";
 const id = z.string().regex(/^[a-z][a-z0-9-]*$/);
 const internalLinkPattern = /\[([^\]\n]+)\]\(#([a-z][a-z0-9-]*)\)/g;
 const mediaPattern = /!\[([^\]\n]+)\]\(asset:([a-z][a-z0-9-]*)\)/g;
+const mediaLinkPattern = /(?<!\!)\[([^\]\n]+)\]\(asset:([a-z][a-z0-9-]*)\)/g;
 const reference = citationSchema.extend({
   year: citationSchema.shape.year.nullable(),
 });
@@ -73,7 +74,10 @@ export function extractGuideAnchorIds(text: string): string[] {
 
 /** Return preparation-media IDs authored in a text node. */
 export function extractGuideMediaIds(text: string): string[] {
-  return [...text.matchAll(mediaPattern)].map((match) => match[2]!);
+  return [
+    ...[...text.matchAll(mediaPattern)].map((match) => match[2]!),
+    ...[...text.matchAll(mediaLinkPattern)].map((match) => match[2]!),
+  ];
 }
 
 /** Parse a deliberately restricted MDX dialect; never compile or execute JSX. */
@@ -249,6 +253,7 @@ function validateText(text: string) {
   const plain = text
     .replace(/\[cite:[a-z0-9-]+\]/g, "")
     .replace(mediaPattern, "")
+    .replace(mediaLinkPattern, "")
     .replace(internalLinkPattern, "");
   if (/[<>{}\[\]`#]/.test(plain) || /^(?:import|export)\s/.test(plain))
     throw new Error(`Unsupported guide syntax: ${text.slice(0, 80)}`);

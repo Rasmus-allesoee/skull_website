@@ -447,7 +447,8 @@
   text-decoration-thickness: 1px;
   text-underline-offset: 0.16em;
 }
-.prep-condition-lightbox {
+.prep-condition-lightbox,
+.prep-image-lightbox {
   width: min(48rem, calc(100vw - 2rem));
   max-width: calc(100vw - 2rem);
   max-height: calc(100dvh - 2rem);
@@ -458,31 +459,37 @@
   color: var(--color-text);
   box-shadow: 0 1.25rem 4rem rgb(0 0 0 / 45%);
 }
-.prep-condition-lightbox::backdrop {
+.prep-condition-lightbox::backdrop,
+.prep-image-lightbox::backdrop {
   background: rgb(0 0 0 / 62%);
 }
-.prep-condition-lightbox-frame {
+.prep-condition-lightbox-frame,
+.prep-image-lightbox-frame {
   position: relative;
   display: grid;
   gap: 0.75rem;
 }
-.prep-condition-lightbox-frame form {
+.prep-condition-lightbox-frame form,
+.prep-image-lightbox-frame form {
   justify-self: end;
 }
-.prep-condition-lightbox h2 {
+.prep-condition-lightbox h2,
+.prep-image-lightbox h2 {
   margin: 0;
   color: var(--color-accent);
   font-size: 1.1rem;
   font-weight: 600;
 }
-.prep-condition-lightbox-image {
+.prep-condition-lightbox-image,
+.prep-image-lightbox-image {
   display: block;
   width: 100%;
   max-height: min(68dvh, 36rem);
   object-fit: contain;
   background: var(--color-surface);
 }
-.prep-condition-lightbox p {
+.prep-condition-lightbox p,
+.prep-image-lightbox p {
   margin: 0;
   color: var(--color-text-muted);
   font-size: 0.8125rem;

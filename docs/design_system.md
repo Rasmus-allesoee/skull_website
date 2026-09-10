@@ -2,7 +2,7 @@
 
 **Status:** Combined Phase 3.2 catalog-first and Phase 4 discovery system implemented; owner review pending
 
-**Last reviewed:** 2026-09-02
+**Last reviewed:** 2026-09-10
 
 ## 1. Design intent
 
@@ -198,7 +198,9 @@ Responsive checkpoints are content-derived, with explicit QA at:
 - **Callout:** information, caution, or safety state with explicit heading/icon/text.
 - **Preparation workflow:** five bounded stage cards with internal method dividers, an explicit `Move on when` label, and a separate basic-route callout. On phones the same cards stack without losing their image, method links or outcome hierarchy.
 - **Preparation method disclosure:** native summary plus brass italic H3 or brass H4, explicit open/close text, bordered body and stable deep-link ID. Hash navigation progressively opens the target; without JavaScript the native summary remains the complete control. Shared preliminary steps remain visible while method-dependent instructions stay collapsed by default.
+- **Preparation troubleshooting cases:** the maceration troubleshooting block is an outer native disclosure whose body presents only case summaries by default. Each case is a nested native `details` panel, so a reader can open one diagnosis at a time without losing the direct method context or no-JavaScript behavior.
 - **Preparation citation card:** the brass inline reference number is a button that opens one small native popover with author, title and external source action. The complete numbered reference list remains below the article for scanning and fallback.
+- **Preparation media link/lightbox:** a brass underlined descriptive phrase is an ordinary direct WebP link first. JavaScript progressively enhances it to a native body-level lightbox with an explicit “Close image” control, backdrop dismissal, caption/credit, and focus restoration; the image itself is not required in the prose flow.
 
 ## 10. Interaction states
 

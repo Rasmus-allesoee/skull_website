@@ -1,12 +1,32 @@
 # Project status
 
-**Snapshot date:** 2026-09-09
+**Snapshot date:** 2026-09-10
 
-**Current phase:** v1.0.1 production-only Web Analytics, dependency remediation, and MapLibre reliability fix released
+**Current phase:** v1.0.1 production-only Web Analytics, dependency remediation, and MapLibre reliability fix released; local preparation-guide refinement pending owner review
 
-**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. PR #14 merged normally at `61964d1`; PR #16 merged normally at `7abfc642`. The canonical collection remains 15 public taxa, 18 public specimens, and 104 specimen images, with 31 source specimens deferred for missing reviewed media and three rejected. Production is live on Vercel at `https://skullwebsite-xi.vercel.app`; the v1.0.1 tag records the verified production state.
+**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. PR #14 merged normally at `61964d1`; PR #16 merged normally at `7abfc642`. The canonical collection remains 15 public taxa, 18 public specimens, and 104 specimen images, with 31 source specimens deferred for missing reviewed media and three rejected. Production is live on Vercel at `https://skullwebsite-xi.vercel.app`; the v1.0.1 tag records the verified production state. A bounded preparation-guide refinement is currently local on `preparation_guide_refinement` and changes only the guide’s reviewed media, parser, prose and interaction contract.
 
-**Next action:** Verify the Google Search Console URL-prefix property and submit `sitemap.xml`; then continue post-release work from short-lived branches based on the updated `main`.
+**Next action:** Review the local preparation-guide refinement on desktop and mobile. If approved, decide whether to request its normal publication workflow; independently verify the Google Search Console URL-prefix property and submit `sitemap.xml`.
+
+## 0.7 Owner-directed Preparation guide refinement (2026-09-10)
+
+### Implementation and content
+
+- Created the local branch `preparation_guide_refinement` from `main`. The existing static-first guide remains the only route in scope; no collection CSV, stable ID, specimen URL or route was changed.
+- Added descriptive `[label](asset:asset-id)` media links to the restricted guide dialect. The brain-material phrase in Water maceration and the adipocere photograph link progressively enhance to native body-level lightboxes with captions, credits, backdrop/Close controls and focus restoration; direct WebP links remain the no-JavaScript fallback.
+- Added the owner sources `prep_skull_brain_gunk.png` and `prep_skull_adipocere.jpg` to the maintenance-only source map and promoted only their metadata-stripped `brain-gunk.webp` and `adipocere.webp` derivatives. The preparation manifest now contains 16 validated assets: nine owner photographs, one generated degreasing illustration and six generated condition cues.
+- Rebuilt Troubleshooting maceration as an outer native disclosure with five collapsed case details. The existing dark-bone, persistent-tendon, lower-jaw and mummified-tissue guidance remains available; the new adipocere case explains what it is, why it forms, practical prevention and a cautious removal sequence. Reviewed practitioner context comes from the [OddArticulations maceration page](https://oddarticulations.com/maceration101/) and [adipocere page](https://oddarticulations.com/adipocere101/), alongside the existing guide sources.
+
+### Local verification
+
+- `pnpm media:process:preparation` passed with **16 validated preparation WebPs** and metadata stripping; the two ignored owner masters remain outside the public checkpoint.
+- `pnpm content:build` passed with 15 published taxa, 18 specimens, 104 specimen assets, 67 search documents, 18 map records, 21 measurement definitions, five preparation stages and 22 guide references.
+- `vitest run src/domain/guides/guide.test.ts` passed **10/10**. `CI=true pnpm build` passed and prerendered **78/78 routes**.
+- The focused Chromium preparation suite passed **7/7 without retries**, covering the two new lightboxes, nested troubleshooting details, desktop/mobile reflow, axe, no-JavaScript direct links, deep links, reduced motion, forced colors, failed images and overflow. The complete `CI=true pnpm check` passed formatting, lint, media/content validation, strict TypeScript, **85/85 unit/component tests** and six expected invalid-fixture failures. The complete Chromium regression passed **82/82 without retries** in 3.7 minutes.
+
+### Boundary
+
+This refinement is local only. No push, pull request, merge, deployment, analytics configuration or later editorial phase was started. Owner desktop/mobile review is required before any publication decision.
 
 ## 0.6 Google Search Console verification (2026-09-09)
 
