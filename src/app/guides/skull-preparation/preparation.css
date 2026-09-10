@@ -312,12 +312,18 @@
   border-block: 1px solid var(--color-border);
 }
 .prep-details-row {
-  position: relative;
-  max-width: 76ch;
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  max-width: calc(76ch + 4rem);
   margin-block: 1.75rem;
 }
 .prep-details-row > .prep-details {
+  grid-column: 2;
+  min-width: 0;
   margin-block: 0;
+  max-width: none;
 }
 .prep-method {
   max-width: 76ch;
@@ -365,7 +371,16 @@
 .prep-method[open] .prep-method-close {
   display: inline;
 }
-.prep-details summary,
+.prep-details summary {
+  cursor: pointer;
+  box-sizing: border-box;
+  min-height: 4.25rem;
+  padding: 0.75rem 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
 .prep-static-contents summary {
   cursor: pointer;
   padding: 0.85rem 0.5rem;
@@ -380,24 +395,28 @@
 }
 .prep-details-title {
   min-width: 0;
-}
-.prep-details-with-thumbnail > .prep-details > summary {
-  padding-block: 0.35rem;
-  padding-right: 5.25rem;
+  font-size: 1.05rem;
+  line-height: 1.35;
 }
 .prep-details-with-thumbnail > .prep-image-thumbnail-link {
-  position: absolute;
-  top: 0.35rem;
-  right: 0.5rem;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin-top: 0.5rem;
 }
-.prep-details-heading {
+.prep-article .prep-details-heading {
   margin: 1.25rem 0 0.45rem;
-  color: var(--color-accent);
-  font-family: var(--font-display);
-  font-size: 1rem;
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
   font-weight: 600;
+  font-style: normal;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
 }
-.prep-details-heading:first-child {
+.prep-article .prep-details-heading:first-child {
   margin-top: 0;
 }
 .prep-details > div {
@@ -410,8 +429,8 @@
 .prep-image-thumbnail-link {
   display: block;
   flex: none;
-  width: 4.5rem;
-  height: 4.5rem;
+  width: 3.25rem;
+  height: 3.25rem;
   border: 1px solid var(--color-border);
   background: var(--color-surface-elevated);
   line-height: 0;
@@ -758,14 +777,13 @@
     padding: 1rem 0.9rem 0.25rem;
   }
   .prep-image-thumbnail-link {
-    width: 4rem;
-    height: 4rem;
-  }
-  .prep-details-with-thumbnail > .prep-details > summary {
-    padding-right: 4.75rem;
+    width: 3rem;
+    height: 3rem;
   }
   .prep-details-with-thumbnail > .prep-image-thumbnail-link {
-    top: 0.35rem;
+    width: 3rem;
+    height: 3rem;
+    margin-top: 0.5rem;
   }
   .prep-method.prep-submethod {
     margin-left: 0.65rem;

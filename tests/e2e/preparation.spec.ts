@@ -61,6 +61,45 @@ test("preparation guide exposes all methods, sources and working workflow links"
       name: "Show image: White, waxy material — adipocere",
     }),
   ).toHaveAttribute("href", /adipocere\.webp\?v=\d+$/);
+  const caseLayout = await page
+    .locator("#maceration-troubleshooting")
+    .evaluate((element) => {
+      const details = [...element.querySelectorAll(".prep-details")];
+      return {
+        summaryHeights: details.map((detail) =>
+          Math.round(
+            detail.querySelector("summary")!.getBoundingClientRect().height,
+          ),
+        ),
+        thumbnailRows: details
+          .map((detail) => {
+            const thumbnail = detail.parentElement?.querySelector(
+              ".prep-image-thumbnail-link",
+            );
+            if (!thumbnail) return null;
+            const summary = detail
+              .querySelector("summary")!
+              .getBoundingClientRect();
+            const detailBox = detail.getBoundingClientRect();
+            const thumbnailBox = thumbnail.getBoundingClientRect();
+            return {
+              thumbnailRight: thumbnailBox.right,
+              detailLeft: detailBox.left,
+              thumbnailHeight: thumbnailBox.height,
+              summaryHeight: summary.height,
+            };
+          })
+          .filter((row): row is NonNullable<typeof row> => row !== null),
+      };
+    });
+  expect(new Set(caseLayout.summaryHeights)).toEqual(new Set([68]));
+  expect(
+    caseLayout.thumbnailRows.every(
+      (row) =>
+        row.thumbnailRight < row.detailLeft &&
+        row.thumbnailHeight < row.summaryHeight,
+    ),
+  ).toBe(true);
   for (const title of [
     "What it is",
     "Why it forms",
@@ -70,6 +109,21 @@ test("preparation guide exposes all methods, sources and working workflow links"
     await expect(
       page.getByRole("heading", { name: title, exact: true }),
     ).toBeVisible();
+  const subheadingStyles = await page
+    .getByRole("heading", { name: "What it is", exact: true })
+    .evaluate((heading) => {
+      const style = getComputedStyle(heading);
+      const body = getComputedStyle(heading.closest(".prep-details")!);
+      return {
+        fontFamily: style.fontFamily,
+        fontSize: Number.parseFloat(style.fontSize),
+        color: style.color,
+        bodyFontSize: Number.parseFloat(body.fontSize),
+      };
+    });
+  expect(subheadingStyles.fontFamily).toContain("IBM Plex Sans");
+  expect(subheadingStyles.fontSize).toBeLessThan(subheadingStyles.bodyFontSize);
+  expect(subheadingStyles.color).not.toBe("rgb(183, 154, 104)");
   await expect(
     page.locator(
       '.prep-condition-thumbnail a[href*="condition-partly-decomposed-head.webp?v="]',

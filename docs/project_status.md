@@ -8,6 +8,24 @@
 
 **Next action:** Review the local preparation-guide refinement on desktop and mobile. If approved, decide whether to request its normal publication workflow; independently verify the Google Search Console URL-prefix property and submit `sitemap.xml`.
 
+## 0.9 Owner-directed troubleshooting layout correction (2026-09-10)
+
+### Implementation
+
+- Kept the `1.1. Troubleshooting maceration` hierarchy and moved the dark-bone and adipocere thumbnails into a compact left gutter outside each case's divider lines. The thumbnails now stay aligned with the summary row while the native summary remains the only disclosure control.
+- Restored one shared minimum summary height for all four troubleshooting cases so image-bearing rows no longer collapse or let their thumbnails overlap the body text. The responsive size is smaller on phones and the layout remains free of horizontal overflow.
+- Reworked the adipocere subheadings to use the same IBM Plex Sans family as the case and method titles, with a smaller muted treatment below the body/title hierarchy. Added browser assertions for the left-gutter geometry, equal desktop summary heights and heading typography.
+
+### Local verification
+
+- `CI=true pnpm check` passed formatting, lint, media/content validation, strict TypeScript, **86/86 unit/component tests** and six expected invalid-fixture failures. `CI=true pnpm build` passed with **78/78 static routes**.
+- The focused Chromium preparation suite passed **7/7 without retries** against the rebuilt artifact, including the new left-gutter geometry and heading-style assertions, lightbox focus restoration, mobile reflow, axe, no-JavaScript links, deep links, reduced motion, forced colors, failed images and overflow.
+- Playwright CLI screenshots at 1280 × 720 and 390 × 844 confirmed compact thumbnails outside the case divider lines, equal desktop summary spacing, centered mobile thumbnails and the smaller muted sans-serif adipocere subheadings.
+
+### Boundary
+
+This layout correction remains local on `preparation_guide_refinement`. No push, pull request, merge, deployment, analytics configuration or later editorial phase was started. Owner desktop/mobile review is required before any publication decision.
+
 ## 0.8 Owner-directed Preparation guide feedback refinement (2026-09-10)
 
 ### Implementation and content

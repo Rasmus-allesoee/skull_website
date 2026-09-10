@@ -61,7 +61,7 @@ export function PreparationImageLightbox({
             height={asset.height}
             alt=""
             unoptimized
-            sizes="4rem"
+            sizes="(max-width: 42rem) 3rem, 3.25rem"
           />
         ) : (
           label
