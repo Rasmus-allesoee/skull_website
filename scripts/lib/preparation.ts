@@ -92,6 +92,7 @@ export async function loadPreparationGuide(): Promise<PreparationGuide> {
   function visit(blocks: GuideBlock[]) {
     for (const b of blocks) {
       if (b.kind === "figure") used.add(b.asset);
+      if (b.kind === "details" && b.asset) used.add(b.asset);
       if (b.kind === "paragraph") addTextMedia(b.text);
       if (b.kind === "list") b.items.forEach(addTextMedia);
       if (b.kind === "table") {

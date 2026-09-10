@@ -178,4 +178,4 @@ Repository development guidance is in [CONTRIBUTING.md](CONTRIBUTING.md). Public
 
 ### Preparation guide maintenance
 
-The full page system and source decisions are documented in [docs/skull_preparation_guide.md](docs/skull_preparation_guide.md). Edit its reviewed MDX and media declaration under `content/guides/`. Run `pnpm media:process:preparation` only when deliberately promoting the owner-authorized ignored source images; `pnpm check` and `pnpm build` validate/use the curated public derivatives without those masters.
+The full page system and source decisions are documented in [docs/skull_preparation_guide.md](docs/skull_preparation_guide.md). Edit its reviewed MDX and media declaration under `content/guides/`. Run `pnpm media:process:preparation` only when deliberately promoting the owner-authorized ignored source images; the command applies deterministic size/quality fallbacks and writes only curated public derivatives. `pnpm check` and `pnpm build` validate/use those derivatives without the ignored masters.

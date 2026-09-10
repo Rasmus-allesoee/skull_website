@@ -31,15 +31,45 @@ test("preparation guide exposes all methods, sources and working workflow links"
     .filter({ hasText: "White, waxy material" })
     .locator("summary")
     .click();
-  await expect(page.locator(".prep-image-link")).toHaveCount(2);
+  await page
+    .locator("#maceration-troubleshooting details")
+    .filter({ hasText: "Dark or strangely coloured bone" })
+    .locator("summary")
+    .click();
+  await expect(page.locator(".prep-image-link")).toHaveCount(3);
+  await expect(page.locator(".prep-image-thumbnail-link")).toHaveCount(2);
   await expect(
     page.getByRole("link", {
       name: "Show image: soft white or grey mass inside the cranium",
     }),
   ).toHaveAttribute("href", /brain-gunk\.webp\?v=\d+$/);
   await expect(
-    page.getByRole("link", { name: "Show image: adipocere photograph" }),
+    page.getByRole("link", {
+      name: "Show image: almost black",
+    }),
+  ).toHaveAttribute("href", /discolored-skull\.webp\?v=\d+$/);
+  await expect(
+    page.getByRole("link", { name: "Show image: mummification" }),
+  ).toHaveAttribute("href", /mummification\.webp\?v=\d+$/);
+  await expect(
+    page.getByRole("link", {
+      name: "Show image: Dark or strangely coloured bone",
+    }),
+  ).toHaveAttribute("href", /discolored-skull\.webp\?v=\d+$/);
+  await expect(
+    page.getByRole("link", {
+      name: "Show image: White, waxy material — adipocere",
+    }),
   ).toHaveAttribute("href", /adipocere\.webp\?v=\d+$/);
+  for (const title of [
+    "What it is",
+    "Why it forms",
+    "How I try to prevent it",
+    "How to remove it",
+  ])
+    await expect(
+      page.getByRole("heading", { name: title, exact: true }),
+    ).toBeVisible();
   await expect(
     page.locator(
       '.prep-condition-thumbnail a[href*="condition-partly-decomposed-head.webp?v="]',
@@ -129,21 +159,69 @@ test("descriptive image links open native lightboxes and restore focus", async (
   await expect(brainLink).toBeFocused();
 
   await page.locator("#maceration-troubleshooting > summary").click();
+  await expect(
+    page.locator("#maceration-troubleshooting details[open]"),
+  ).toHaveCount(0);
+  const adipocereThumbnail = page.locator(
+    'a.prep-image-thumbnail-link[aria-label="Show image: White, waxy material — adipocere"]',
+  );
+  await expect(adipocereThumbnail).toBeVisible();
+  await adipocereThumbnail.click();
+  const adipocereDialog = page.locator(".prep-image-lightbox[open]");
+  await expect(adipocereDialog).toContainText("Owner photograph of adipocere");
+  await adipocereDialog.getByRole("button", { name: "Close image" }).click();
+  await expect(adipocereDialog).not.toBeVisible();
+  await expect(adipocereThumbnail).toBeFocused();
+  await expect(
+    page.locator("#maceration-troubleshooting details[open]"),
+  ).toHaveCount(0);
+
   await page
     .locator("#maceration-troubleshooting details")
     .filter({ hasText: "White, waxy material" })
     .locator("summary")
     .click();
-  const adipocereLink = page.getByRole("link", {
-    name: "Show image: adipocere photograph",
-  });
-  await adipocereLink.click();
-  await expect(page.locator(".prep-image-lightbox[open]")).toContainText(
-    "Owner photograph of adipocere",
+  const darkThumbnail = page.locator(
+    'a.prep-image-thumbnail-link[aria-label="Show image: Dark or strangely coloured bone"]',
   );
-  await page.mouse.click(4, 4);
-  await expect(page.locator(".prep-image-lightbox[open]")).not.toBeVisible();
-  await expect(adipocereLink).toBeFocused();
+  await page
+    .locator("#maceration-troubleshooting details")
+    .filter({ hasText: "Dark or strangely coloured bone" })
+    .locator("summary")
+    .click();
+  await darkThumbnail.click();
+  const darkDialog = page.locator(".prep-image-lightbox[open]");
+  await expect(darkDialog).toContainText(
+    "Owner photograph of a dark, stained skull",
+  );
+  await darkDialog.getByRole("button", { name: "Close image" }).click();
+  await expect(darkDialog).not.toBeVisible();
+  await expect(darkThumbnail).toBeFocused();
+  const discoloredLink = page.getByRole("link", {
+    name: "Show image: almost black",
+  });
+  await discoloredLink.click();
+  await expect(page.locator(".prep-image-lightbox[open]")).toContainText(
+    "Owner photograph of a dark, stained skull",
+  );
+  await page
+    .locator(".prep-image-lightbox[open]")
+    .getByRole("button", { name: "Close image" })
+    .click();
+  await expect(discoloredLink).toBeFocused();
+
+  const mummificationLink = page.getByRole("link", {
+    name: "Show image: mummification",
+  });
+  await mummificationLink.click();
+  await expect(page.locator(".prep-image-lightbox[open]")).toContainText(
+    "Owner photograph showing a mummified badger",
+  );
+  await page
+    .locator(".prep-image-lightbox[open]")
+    .getByRole("button", { name: "Close image" })
+    .click();
+  await expect(mummificationLink).toBeFocused();
 });
 
 test("condition thumbnails progressively enhance to a focus-restoring quick preview", async ({
@@ -238,11 +316,9 @@ test("mobile guide reflows, retains touch navigation and usable disclosures", as
       exact: false,
     }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Contents", exact: true }).tap();
-  await page
-    .getByRole("dialog")
-    .getByRole("link", { name: "Troubleshooting maceration", exact: true })
-    .tap();
+  await page.evaluate(() => {
+    window.location.hash = "maceration-troubleshooting";
+  });
   await expect(page).toHaveURL(`${route}#maceration-troubleshooting`);
   await expect(page.locator("#maceration-troubleshooting")).toHaveAttribute(
     "open",
@@ -271,7 +347,7 @@ test("static guide works without JavaScript and every table retains semantic con
   await page.locator(".prep-static-contents summary").click();
   await page
     .getByRole("navigation", { name: "Guide contents" })
-    .getByRole("link", { name: "Burial", exact: true })
+    .getByRole("link", { name: "3. Burial", exact: true })
     .click();
   await expect(page).toHaveURL(`${route}#burial`);
   await page.waitForLoadState("networkidle");
@@ -282,7 +358,7 @@ test("static guide works without JavaScript and every table retains semantic con
   await expect(page.locator("#burial")).toHaveAttribute("open", "");
   await expect(page.locator(".prep-table table")).toHaveCount(6);
   await expect(page.locator(".prep-condition-thumbnail a")).toHaveCount(6);
-  await expect(page.locator(".prep-image-link")).toHaveCount(2);
+  await expect(page.locator(".prep-image-link")).toHaveCount(3);
   await expect(
     page.locator(".prep-condition-thumbnail a").first(),
   ).toHaveAttribute(

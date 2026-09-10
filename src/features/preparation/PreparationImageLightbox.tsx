@@ -12,9 +12,11 @@ const getServerHydrationSnapshot = () => false;
 export function PreparationImageLightbox({
   asset,
   label,
+  thumbnail = false,
 }: {
   asset: GuideMediaAsset;
   label: string;
+  thumbnail?: boolean;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLAnchorElement>(null);
@@ -30,6 +32,7 @@ export function PreparationImageLightbox({
     const dialog = dialogRef.current;
     if (!dialog || typeof dialog.showModal !== "function") return;
     event.preventDefault();
+    event.stopPropagation();
     dialog.showModal();
   }
 
@@ -41,12 +44,28 @@ export function PreparationImageLightbox({
     <>
       <a
         ref={triggerRef}
-        className="prep-inline-link prep-image-link"
+        className={
+          thumbnail
+            ? "prep-image-thumbnail-link"
+            : "prep-inline-link prep-image-link"
+        }
         href={imageSrc}
         aria-label={`Show image: ${label}`}
         onClick={openPreview}
       >
-        {label}
+        {thumbnail ? (
+          <Image
+            className="prep-image-thumbnail"
+            src={imageSrc}
+            width={asset.width}
+            height={asset.height}
+            alt=""
+            unoptimized
+            sizes="4rem"
+          />
+        ) : (
+          label
+        )}
       </a>
       {mounted &&
         createPortal(

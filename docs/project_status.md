@@ -8,6 +8,27 @@
 
 **Next action:** Review the local preparation-guide refinement on desktop and mobile. If approved, decide whether to request its normal publication workflow; independently verify the Google Search Console URL-prefix property and submit `sitemap.xml`.
 
+## 0.8 Owner-directed Preparation guide feedback refinement (2026-09-10)
+
+### Implementation and content
+
+- Continued the local `preparation_guide_refinement` branch without changing collection CSVs, stable IDs, specimen URLs or routes. This batch responds to the follow-up troubleshooting feedback rather than opening a new editorial page.
+- Numbered the five defleshing methods in the workflow, comparison table and disclosure titles. Troubleshooting is now `1.1. Troubleshooting maceration`, a smaller level-4 disclosure indented beneath `1. Water maceration`; its four case details remain collapsed until selected.
+- Added square owner-photo thumbnails beside the dark-bone and adipocere case titles. The dark-bone paragraph links “almost black” to the same lightbox, and the above-ground comparison table links “mummification” to the new mummified-badger photograph. Thumbnail controls sit beside their native summaries rather than nesting an interactive link inside a summary.
+- Reorganized adipocere into direct “What it is”, “Why it forms”, “How I try to prevent it” and “How to remove it” subheadings. The removal sequence now starts with scraping fresh wax, then warm soapy scrubbing, detergent degreasing, a second scrub, a specified 2.5% clear aqueous ammonia solution for stubborn patches, and optional experienced-only nylon brushing. The mummified-tissue troubleshooting case was removed because mummification is a starting condition or above-ground outcome, not a maceration outcome.
+- Promoted the two new ignored owner sources `prep_black_discolored_skull.jpg` and `prep_mummified_badger.jpg` as metadata-stripped public derivatives. The preparation manifest now contains **18 assets**: 11 owner photographs, one generated degreasing illustration and six generated condition cues. The processor uses deterministic size/quality fallback for large photographs while preserving the existing 750 kB contract.
+
+### Local verification
+
+- `pnpm media:process:preparation` passed with **18 validated preparation WebPs** and metadata stripping; all four owner preparation-photo masters remain ignored staging input.
+- `pnpm content:build` passed with 15 published taxa, 18 specimens, 104 specimen assets, 67 search documents, 18 map records, 21 measurement definitions, five preparation stages and 22 guide references. The focused guide unit file passed **11/11**.
+- `CI=true pnpm build` passed and prerendered **78/78 routes**. The focused Chromium preparation suite passed **7/7 without retries**, covering the case thumbnails, all four image/lightbox paths, mobile reflow, axe, no-JavaScript direct links, deep links, reduced motion, forced colors, failed images and overflow.
+- Playwright CLI visual checks at 1280 × 720 and 390 × 844 confirmed the smaller indented `1.1` treatment, visible square thumbnails while cases are collapsed, and the body-level adipocere lightbox. The complete `CI=true pnpm check` passed formatting, lint, media/content validation, strict TypeScript, **86/86 unit/component tests** and six expected invalid-fixture failures.
+
+### Boundary
+
+This second feedback batch is local only. No push, pull request, merge, deployment, analytics configuration or later editorial phase was started. Owner desktop/mobile review is required before any publication decision.
+
 ## 0.7 Owner-directed Preparation guide refinement (2026-09-10)
 
 ### Implementation and content

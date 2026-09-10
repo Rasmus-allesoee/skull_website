@@ -92,6 +92,24 @@
       "provenance": "owner-photograph"
     },
     {
+      "asset_id": "discolored-skull",
+      "public_path": "/media/preparation/discolored-skull.webp",
+      "alt": "Dark, almost black animal skull with green and brown staining.",
+      "caption": "Owner photograph of a dark, stained skull recovered after maceration.",
+      "credit": "Rasmus",
+      "rights": "all_rights_reserved",
+      "provenance": "owner-photograph"
+    },
+    {
+      "asset_id": "mummification",
+      "public_path": "/media/preparation/mummification.webp",
+      "alt": "Mummified badger carcass lying among leaves and grass.",
+      "caption": "Owner photograph showing a mummified badger as an above-ground starting condition.",
+      "credit": "Rasmus",
+      "rights": "all_rights_reserved",
+      "provenance": "owner-photograph"
+    },
+    {
       "asset_id": "condition-fresh-body",
       "public_path": "/media/preparation/condition-fresh-body.webp",
       "alt": "AI-generated red fox body shown as a fresh starting condition.",

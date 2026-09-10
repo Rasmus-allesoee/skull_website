@@ -38,8 +38,62 @@ describe("preparation guide publication contract", () => {
     expect(table.rows[0]?.[1]).toContain("#separation");
     expect(table.rows[5]?.[1]).toContain("#assembly");
     expect(extractGuideMediaIds(source)).toEqual(
-      expect.arrayContaining(["brain-gunk", "adipocere"]),
+      expect.arrayContaining([
+        "brain-gunk",
+        "discolored-skull",
+        "mummification",
+      ]),
     );
+  });
+
+  it("keeps numbered defleshing methods and structured troubleshooting cases", () => {
+    const guide = parseGuide(source);
+    const troubleshooting = guide.blocks.find(
+      (block) =>
+        block.kind === "disclosure" &&
+        block.id === "maceration-troubleshooting",
+    );
+    expect(troubleshooting?.kind).toBe("disclosure");
+    if (troubleshooting?.kind !== "disclosure") return;
+    expect(troubleshooting.level).toBe(4);
+    expect(troubleshooting.title).toBe("1.1. Troubleshooting maceration");
+    const cases = troubleshooting.blocks.filter(
+      (block) => block.kind === "details",
+    );
+    expect(cases).toHaveLength(4);
+    expect(cases.map((block) => block.title)).toEqual([
+      "Dark or strangely coloured bone",
+      "White, waxy material — adipocere",
+      "Persistent tendons",
+      "Waxy debris in the lower jaw",
+    ]);
+    expect(cases[0]?.kind === "details" && cases[0].asset).toBe(
+      "discolored-skull",
+    );
+    const adipocere = cases[1];
+    expect(adipocere?.kind === "details" && adipocere.asset).toBe("adipocere");
+    expect(
+      adipocere?.kind === "details"
+        ? adipocere.blocks
+            .filter((block) => block.kind === "subheading")
+            .map((block) => block.text)
+        : [],
+    ).toEqual([
+      "What it is",
+      "Why it forms",
+      "How I try to prevent it",
+      "How to remove it",
+    ]);
+    expect(
+      guide.metadata.stages[1]?.methods.map((method) => method.title),
+    ).toEqual([
+      "1. Water maceration",
+      "2. Dermestid beetles",
+      "3. Burial",
+      "4. Above-ground decay",
+      "5. Controlled simmering",
+    ]);
+    expect(source).not.toContain('<Details title="Mummified tissue">');
   });
   it.each([
     ["unresolved citation", source.replace("[cite:hendry]", "[cite:missing]")],

@@ -1,4 +1,4 @@
-import { mkdir, readFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import sharp from "sharp";
 import { z } from "zod";
 import { fromRepositoryRoot } from "./lib/paths";
@@ -45,21 +45,42 @@ if (
 await mkdir(fromRepositoryRoot("public/media/preparation"), {
   recursive: true,
 });
+const dimensions = [1600, 1400, 1200];
+const qualities = [86, 80, 74, 68, 62];
 for (const entry of source.entries) {
   const asset = declaration.assets.find((a) => a.asset_id === entry.asset_id)!;
-  await sharp(fromRepositoryRoot(source.source_root, entry.source_file), {
-    failOn: "error",
-  })
-    .rotate()
-    .toColourspace("srgb")
-    .resize({
-      width: 1600,
-      height: 1600,
-      fit: "inside",
-      withoutEnlargement: true,
-    })
-    .webp({ quality: 86, alphaQuality: 100, smartSubsample: true })
-    .toFile(fromRepositoryRoot("public", asset.public_path.slice(1)));
+  let derivative: Buffer | undefined;
+  for (const size of dimensions) {
+    for (const quality of qualities) {
+      const candidate = await sharp(
+        fromRepositoryRoot(source.source_root, entry.source_file),
+        { failOn: "error" },
+      )
+        .rotate()
+        .toColourspace("srgb")
+        .resize({
+          width: size,
+          height: size,
+          fit: "inside",
+          withoutEnlargement: true,
+        })
+        .webp({ quality, alphaQuality: 100, smartSubsample: true })
+        .toBuffer();
+      if (candidate.byteLength <= 750000) {
+        derivative = candidate;
+        break;
+      }
+    }
+    if (derivative) break;
+  }
+  if (!derivative)
+    throw new Error(
+      `Could not fit preparation derivative: ${asset.public_path}`,
+    );
+  await writeFile(
+    fromRepositoryRoot("public", asset.public_path.slice(1)),
+    derivative,
+  );
 }
 const media = await loadPreparationMedia();
 console.log(

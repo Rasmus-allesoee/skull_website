@@ -108,6 +108,12 @@ export function PreparationGuide({ guide }: { guide: Guide }) {
       }
       case "figure":
         return <GuideFigure key={index} asset={asset(block.asset)} />;
+      case "subheading":
+        return (
+          <h4 key={index} className="prep-details-heading">
+            {block.text}
+          </h4>
+        );
       case "list": {
         const L = block.ordered ? "ol" : "ul";
         return (
@@ -179,10 +185,28 @@ export function PreparationGuide({ guide }: { guide: Guide }) {
         );
       case "details":
         return (
-          <details key={index} className="prep-details">
-            <summary>{block.title}</summary>
-            <div>{block.blocks.map(render)}</div>
-          </details>
+          <div
+            key={index}
+            className={
+              block.asset
+                ? "prep-details-row prep-details-with-thumbnail"
+                : undefined
+            }
+          >
+            <details className="prep-details">
+              <summary>
+                <span className="prep-details-title">{block.title}</span>
+              </summary>
+              <div>{block.blocks.map(render)}</div>
+            </details>
+            {block.asset && (
+              <PreparationImageLightbox
+                asset={asset(block.asset)}
+                label={block.title}
+                thumbnail
+              />
+            )}
+          </div>
         );
       case "disclosure": {
         const H = `h${block.level}` as "h3" | "h4";
@@ -190,7 +214,11 @@ export function PreparationGuide({ guide }: { guide: Guide }) {
           <details
             key={index}
             id={block.id}
-            className="prep-method"
+            className={
+              block.id === "maceration-troubleshooting"
+                ? "prep-method prep-submethod"
+                : "prep-method"
+            }
             data-guide-disclosure
           >
             <summary>
