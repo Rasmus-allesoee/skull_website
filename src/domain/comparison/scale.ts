@@ -47,24 +47,24 @@ const directionWords: Record<
 };
 
 const mammalRows: ComparisonDifferenceRow[] = [
-  row("skullLength", "Max length"),
-  row("skullWidth", "Max width"),
-  row("skullHeight", "Max height"),
-  row("craniumWidth", "Cranium width"),
-  row("mandibleLength", "Max mandible length"),
-  row("skullMass", "Prepared skull mass"),
+  row("skullLength", "Max length", ["mammal"]),
+  row("skullWidth", "Max width", ["mammal"]),
+  row("skullHeight", "Max height", ["mammal"]),
+  row("craniumWidth", "Cranium width", ["mammal"]),
+  row("mandibleLength", "Max mandible length", ["mammal"]),
+  row("skullMass", "Prepared skull mass", ["mammal"]),
 ];
 
 const birdRows: ComparisonDifferenceRow[] = [
-  row("skullLength", "Max length"),
-  row("billLength", "Bill length"),
-  row("billWidth", "Bill width"),
-  row("billHeight", "Bill height"),
-  row("craniumWidth", "Cranium width"),
-  row("craniumHeight", "Cranium height"),
-  row("orbitalWidth", "Orbital width"),
-  row("mandibleLength", "Max mandible length"),
-  row("skullMass", "Prepared skull mass"),
+  row("skullLength", "Max length", ["bird"]),
+  row("billLength", "Bill length", ["bird"]),
+  row("billWidth", "Bill width", ["bird"]),
+  row("billHeight", "Bill height", ["bird"]),
+  row("craniumWidth", "Cranium width", ["bird"]),
+  row("craniumHeight", "Cranium height", ["bird"]),
+  row("orbitalWidth", "Orbital width", ["bird"]),
+  row("mandibleLength", "Max mandible length", ["bird"]),
+  row("skullMass", "Prepared skull mass", ["bird"]),
 ];
 
 const sharedRows: ComparisonDifferenceRow[] = [
@@ -96,12 +96,20 @@ export function getComparisonDifferenceRows(
         label: "Width (orbital ↔ max)",
         primaryKey: birdIsPrimary ? "orbitalWidth" : "skullWidth",
         comparisonKey: birdIsPrimary ? "skullWidth" : "orbitalWidth",
+        measurementKeys: {
+          mammal: "skullWidth",
+          bird: "orbitalWidth",
+        },
       },
       {
         key: "crossHeight",
         label: "Height (cranium ↔ skull)",
         primaryKey: birdIsPrimary ? "craniumHeight" : "skullHeight",
         comparisonKey: birdIsPrimary ? "skullHeight" : "craniumHeight",
+        measurementKeys: {
+          mammal: "skullHeight",
+          bird: "craniumHeight",
+        },
       },
       row("craniumWidth", "Cranium width"),
       row("mandibleLength", "Max mandible length"),
@@ -212,8 +220,24 @@ export function calculateMeasurementDifference(
 function row(
   key: ComparisonMeasurementKey,
   label: string,
+  profiles: MeasurementProfile[] = ["mammal", "bird", "other"],
 ): ComparisonDifferenceRow {
-  return { key, label, primaryKey: key, comparisonKey: key };
+  return {
+    key,
+    label,
+    primaryKey: key,
+    comparisonKey: key,
+    measurementKeys: Object.fromEntries(
+      profiles.map((profile) => [profile, key]),
+    ),
+  };
+}
+
+export function getComparisonRowMeasurementKey(
+  rowDefinition: ComparisonDifferenceRow,
+  profile: MeasurementProfile,
+): ComparisonMeasurementKey | null {
+  return rowDefinition.measurementKeys[profile] ?? null;
 }
 
 export function comparisonSearchText(record: SkullComparisonRecord): string {

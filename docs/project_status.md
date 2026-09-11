@@ -22,6 +22,12 @@
 - `pnpm comparison:audit` reports **87 calibrated and eligible views** (86 specimen views plus the adult-human lateral reference) and **8 explicit media-missing states** (four specimen frontal views and four unsupported alternate reference views), with no calibration-missing or measurement-invalid states.
 - `CI=true pnpm check` passes formatting, lint, media/content validation, strict TypeScript, **89/89 unit/component tests**, and the six expected invalid-fixture failures.
 
+### Shared comparison-domain checkpoint
+
+- Generalized each eligible comparison record from one lateral image to an ordered set of calibrated lateral/frontal/dorsal/ventral/mandible views while preserving the existing lateral-image property consumed by specimen pages.
+- Kept all 18 published physical specimens eligible rather than restricting selection to taxon defaults. Added taxon/genus identity for deterministic suggestions and profile-aware row-to-measurement mappings for future one-to-five-subject tables.
+- Focused comparison/calibration/data tests pass **9/9**, the existing specimen-page component regression passes **8/8**, strict TypeScript passes, and `CI=true pnpm build` prerenders the unchanged **78/78 routes** successfully.
+
 ## 0.6 Google Search Console verification (2026-09-09)
 
 - Added the owner-provided Google Search Console HTML-tag verification token to the root metadata and regression coverage. It is ready to deploy through the normal branch/PR workflow.

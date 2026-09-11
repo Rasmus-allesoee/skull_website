@@ -33,6 +33,9 @@ const record = (
   isDefault: false,
   scientificName: null,
   specimenId: id,
+  taxonId: null,
+  genusName: null,
+  genusSlug: null,
   href: null,
   aliases: [],
   note: null,
@@ -50,12 +53,19 @@ const record = (
     craniumHeight: notApplicable(),
     orbitalWidth: notApplicable(),
   },
+  views: [],
   image: {
+    view: "lateral",
     publicPath: `/${id}.webp`,
     width: canvasWidth,
     height: 500,
     subjectBounds: { x: subjectX, y: 50, width: subjectWidth, height: 400 },
     orientation: "right",
+    calibration: {
+      measurementKey: "skullLength",
+      span: { kind: "subject-bounds-width" },
+      pixelSpan: subjectWidth,
+    },
     alt: id,
     credit: "Test",
   },
@@ -166,5 +176,9 @@ describe("true-scale comparison", () => {
         comparisonKey: "craniumHeight",
       }),
     );
+    expect(mammalToBird[1]?.measurementKeys).toEqual({
+      mammal: "skullWidth",
+      bird: "orbitalWidth",
+    });
   });
 });
