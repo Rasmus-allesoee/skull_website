@@ -3,10 +3,15 @@ import { describe, expect, it } from "vitest";
 import { getEligibleSkullComparisons } from "@/data/comparison";
 
 import {
+  addComparisonSubject,
+  addComparisonView,
+  getComparisonLayerCount,
   getDefaultComparisonState,
   maximumComparisonLayers,
   maximumComparisonSubjects,
   parseComparisonState,
+  removeComparisonSubject,
+  removeComparisonView,
   serializeComparisonState,
   type ComparisonWorkbenchState,
 } from "./workbenchState";
@@ -64,5 +69,72 @@ describe("comparison workbench URL state", () => {
       ),
     ).toBe(maximumComparisonLayers);
     expect(parsed.warnings.length).toBeGreaterThan(0);
+  });
+
+  it("applies view and subject lifecycle with difference fallback atomically", () => {
+    const initial = getDefaultComparisonState(records);
+    const withView = addComparisonView(initial, "specimen:SPEC-0001", "dorsal");
+    expect(getComparisonLayerCount(withView)).toBe(3);
+    const withoutView = removeComparisonView(
+      withView,
+      "specimen:SPEC-0001",
+      "dorsal",
+    );
+    expect(withoutView.subjects[0]?.views).toEqual(["lateral"]);
+
+    const lastViewRemoved = removeComparisonView(
+      withoutView,
+      "specimen:SPEC-0001",
+      "lateral",
+    );
+    expect(lastViewRemoved.subjects.map(({ id }) => id)).toEqual([
+      "reference:adult-human-skull",
+    ]);
+    expect(lastViewRemoved.difference).toBeNull();
+
+    const restored = addComparisonSubject(
+      lastViewRemoved,
+      "specimen:SPEC-0002",
+      "lateral",
+    );
+    expect(restored.difference).toEqual([
+      "reference:adult-human-skull",
+      "specimen:SPEC-0002",
+    ]);
+    expect(
+      removeComparisonSubject(restored, "reference:adult-human-skull")
+        .difference,
+    ).toBeNull();
+  });
+
+  it("rejects additions at the ten-layer boundary", () => {
+    const initial = getDefaultComparisonState(records);
+    const fiveViews = [
+      "lateral",
+      "frontal",
+      "dorsal",
+      "ventral",
+      "mandible-dorsal",
+    ] as const;
+    const saturated: ComparisonWorkbenchState = {
+      ...initial,
+      subjects: initial.subjects.map((subject) => ({
+        ...subject,
+        views: [...fiveViews],
+      })),
+    };
+    expect(getComparisonLayerCount(saturated)).toBe(maximumComparisonLayers);
+    expect(
+      addComparisonSubject(saturated, "specimen:SPEC-0002", "lateral"),
+    ).toBe(saturated);
+  });
+
+  it("warns about unknown state versions while retaining valid settings", () => {
+    const parsed = parseComparisonState(
+      "v=99&subjects=specimen%3ASPEC-0001&views=specimen%3ASPEC-0001%40lateral",
+      records,
+    );
+    expect(parsed.state.subjects[0]?.id).toBe("specimen:SPEC-0001");
+    expect(parsed.warnings[0]).toContain("version 99");
   });
 });

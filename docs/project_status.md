@@ -35,6 +35,14 @@
 - Preserved a useful server-rendered/no-JavaScript default and added stable methodology anchors for measurement-definition links.
 - Focused URL-state tests pass **3/3**, strict TypeScript passes, and `CI=true pnpm build` prerenders **79/79 routes**, including static `/compare`. Chromium desktop and 390 px mobile checks show the default subjects and table, no development overlay or console errors, no document overflow, and intentional internal horizontal scrolling for the subject rail and measurement table.
 
+### Interactive workbench checkpoint
+
+- Replaced the static field layout with one calibrated world-coordinate system. Layers retain shared physical scale while visitors freely translate and stack them; the shared camera provides 25–300% field zoom, pointer-centred modified-wheel zoom, background pan, `100%`, `Fit all`, five deterministic arrangements, a 100 mm relative scale bar, reset, and clear recovery.
+- Added alpha-path pointer targets, pointer capture and animation-frame transform updates, deterministic keyboard layer order, Arrow/Shift+Arrow movement, explicit forward/back/remove controls, selected outlines, image-failure placeholders, reduced-motion/forced-color support, and transient per-subject opacity that applies to every view of that subject while preserving controls at 0%.
+- Added the searchable one-to-five-subject picker, lateral-on-add behavior, compact per-subject view/opacity menus, all five calibrated view types when available, explicit five-subject/ten-layer boundaries, atomic final-view subject removal, difference-pair ID preservation/fallback, and deterministic quick comparisons/contextual additions derived from canonical taxonomy and recorded lengths.
+- The semantic table now supports all selected subjects plus any directed difference pair, cross-class limitation copy, comparable-only filtering, stable methodology links, red/green-plus-text direction, ratio output, and a narrow-screen card presentation without changing table semantics.
+- Pure URL/transition/layout/suggestion tests pass **11/11**, the existing specimen-page comparison component regression passes **8/8**, strict TypeScript passes, and the production build prerenders **79/79 routes** with static `/compare`. Real Chromium checks exercised alternate-view addition, three-subject selection, URL updates, mammal-to-bird pair switching, 0% multi-layer opacity, keyboard movement, pointer dragging, and the 390 × 844 card table; the document retained zero horizontal overflow and the development overlay/console reported no errors.
+
 ## 0.6 Google Search Console verification (2026-09-09)
 
 - Added the owner-provided Google Search Console HTML-tag verification token to the root metadata and regression coverage. It is ready to deploy through the normal branch/PR workflow.

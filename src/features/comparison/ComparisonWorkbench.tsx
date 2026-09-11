@@ -1,20 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import {
-  type CSSProperties,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import { getCalibratedCanvasSize } from "@/domain/comparison/calibration";
 import {
   calculateMeasurementDifference,
   getComparisonDifferenceRows,
   getComparisonRowMeasurementKey,
+  isCrossClassMeasurementPair,
 } from "@/domain/comparison/scale";
 import type {
   ComparisonDifferenceRow,
@@ -27,8 +20,24 @@ import type {
 } from "@/domain/content/types";
 
 import {
+  ComparisonField,
+  type SelectedComparisonSubject,
+} from "./ComparisonField";
+import { WorkbenchSubjectPicker } from "./WorkbenchSubjectPicker";
+import {
+  getComparisonStartingPoints,
+  getContextualComparisonSuggestions,
+} from "./comparisonSuggestions";
+import {
+  addComparisonSubject,
+  addComparisonView,
+  getComparisonLayerCount,
   getDefaultComparisonState,
+  maximumComparisonLayers,
+  maximumComparisonSubjects,
   parseComparisonState,
+  removeComparisonSubject,
+  removeComparisonView,
   serializeComparisonState,
   type ComparisonWorkbenchState,
 } from "./workbenchState";
@@ -52,9 +61,20 @@ export function ComparisonWorkbench({
   const [state, setState] = useState<ComparisonWorkbenchState>(defaults);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [copyStatus, setCopyStatus] = useState("");
+  const [actionStatus, setActionStatus] = useState("");
+  const [activeSubjectId, setActiveSubjectId] = useState(
+    defaults.subjects[0]?.id ?? null,
+  );
+  const [opacityBySubject, setOpacityBySubject] = useState<
+    Record<string, number>
+  >(() => Object.fromEntries(defaults.subjects.map(({ id }) => [id, 100])));
   const hydrated = useRef(false);
   const recordsById = useMemo(
     () => new Map(records.map((record) => [record.id, record])),
+    [records],
+  );
+  const startingPoints = useMemo(
+    () => getComparisonStartingPoints(records),
     [records],
   );
 
@@ -63,6 +83,12 @@ export function ComparisonWorkbench({
       const parsed = parseComparisonState(window.location.search, records);
       setState(parsed.state);
       setWarnings(parsed.warnings);
+      setActiveSubjectId(parsed.state.subjects[0]?.id ?? null);
+      setOpacityBySubject((current) =>
+        Object.fromEntries(
+          parsed.state.subjects.map(({ id }) => [id, current[id] ?? 100]),
+        ),
+      );
     };
     restore();
     hydrated.current = true;
@@ -70,10 +96,21 @@ export function ComparisonWorkbench({
     return () => window.removeEventListener("popstate", restore);
   }, [records]);
 
-  const selected = state.subjects.flatMap((subject) => {
-    const record = recordsById.get(subject.id);
-    return record ? [{ subject, record }] : [];
-  });
+  const selected: SelectedComparisonSubject[] = state.subjects.flatMap(
+    (subject) => {
+      const record = recordsById.get(subject.id);
+      return record ? [{ subject, record }] : [];
+    },
+  );
+  const layerCount = getComparisonLayerCount(state);
+  const contextualSuggestions = useMemo(
+    () =>
+      getContextualComparisonSuggestions(
+        records,
+        state.subjects.map(({ id }) => id),
+      ),
+    [records, state.subjects],
+  );
   const pair = state.difference
     ? ([
         recordsById.get(state.difference[0]),
@@ -91,12 +128,121 @@ export function ComparisonWorkbench({
     ? rows.filter((row) => isComparableRow(row, pair?.[0], pair?.[1]))
     : rows;
 
-  function commit(next: ComparisonWorkbenchState) {
+  function commit(next: ComparisonWorkbenchState, message = "") {
     setState(next);
     setWarnings([]);
+    setActionStatus(message);
     if (!hydrated.current) return;
     const query = serializeComparisonState(next);
     window.history.pushState(null, "", `${window.location.pathname}?${query}`);
+  }
+
+  function addSubject(id: string) {
+    if (
+      state.subjects.length >= maximumComparisonSubjects ||
+      layerCount >= maximumComparisonLayers ||
+      state.subjects.some((subject) => subject.id === id)
+    ) {
+      setActionStatus("That skull cannot be added to the current field.");
+      return;
+    }
+    const record = recordsById.get(id);
+    const initialView =
+      record?.views.find(({ view }) => view === "lateral")?.view ??
+      record?.views[0]?.view;
+    if (!record || !initialView) {
+      setActionStatus("No calibrated view is available for that skull.");
+      return;
+    }
+    const next = addComparisonSubject(state, id, initialView);
+    if (next === state) return;
+    setOpacityBySubject((current) => ({ ...current, [id]: 100 }));
+    setActiveSubjectId(id);
+    commit(
+      next,
+      `Skull ${next.subjects.length} added with its ${formatViewLabel(initialView)} view.`,
+    );
+  }
+
+  function removeSubject(id: string) {
+    const next = removeComparisonSubject(state, id);
+    if (next === state) return;
+    setOpacityBySubject((current) => {
+      const remaining = { ...current };
+      delete remaining[id];
+      return remaining;
+    });
+    setActiveSubjectId(next.subjects[0]?.id ?? null);
+    commit(
+      next,
+      next.difference && state.difference !== next.difference
+        ? "Skull removed. Difference pair reset to the first two skulls."
+        : "Skull removed.",
+    );
+  }
+
+  function addView(id: string, view: SkullComparisonView["view"]) {
+    if (layerCount >= maximumComparisonLayers) {
+      setActionStatus(
+        "10-view field limit reached. Remove a view to add another.",
+      );
+      return;
+    }
+    const next = addComparisonView(state, id, view);
+    if (next === state) return;
+    commit(next, `${formatViewLabel(view)} view added.`);
+  }
+
+  function removeView(id: string, view: SkullComparisonView["view"]) {
+    const subject = state.subjects.find((candidate) => candidate.id === id);
+    if (!subject) return;
+    const removesSubject = subject.views.length === 1;
+    const next = removeComparisonView(state, id, view);
+    if (removesSubject) {
+      setOpacityBySubject((current) => {
+        const remaining = { ...current };
+        delete remaining[id];
+        return remaining;
+      });
+      setActiveSubjectId(next.subjects[0]?.id ?? null);
+    }
+    commit(
+      next,
+      removesSubject
+        ? "Final view removed; its skull was also deselected."
+        : `${formatViewLabel(view)} view removed.`,
+    );
+  }
+
+  function clearAll() {
+    setOpacityBySubject({});
+    setActiveSubjectId(null);
+    commit(
+      { ...state, subjects: [], difference: null },
+      "Comparison field cleared.",
+    );
+  }
+
+  function applyStartingPoint(ids: string[], label: string) {
+    const subjects = ids.slice(0, maximumComparisonSubjects).flatMap((id) => {
+      const record = recordsById.get(id);
+      const view =
+        record?.views.find((candidate) => candidate.view === "lateral")?.view ??
+        record?.views[0]?.view;
+      return record && view ? [{ id, views: [view] }] : [];
+    });
+    const difference =
+      subjects.length >= 2
+        ? ([subjects[0]!.id, subjects[1]!.id] as [string, string])
+        : null;
+    setOpacityBySubject(
+      Object.fromEntries(subjects.map(({ id }) => [id, 100])),
+    );
+    setActiveSubjectId(subjects[0]?.id ?? null);
+    commit(
+      { ...state, subjects, difference, arrangement: "by-specimen" },
+      `${label} loaded.`,
+    );
   }
 
   async function copyLink() {
@@ -169,10 +315,19 @@ export function ComparisonWorkbench({
         <aside className="compare-subject-rail" aria-label="Selected skulls">
           <div className="compare-rail-heading">
             <p className="data-label">Selected skulls</p>
-            <span>{selected.length}/5</span>
+            <span>
+              {selected.length}/{maximumComparisonSubjects} · {layerCount}/
+              {maximumComparisonLayers} views
+            </span>
           </div>
           {selected.map(({ record, subject }, index) => (
-            <article className="compare-subject-card" key={record.id}>
+            <article
+              className={`compare-subject-card marker-${index + 1}`}
+              key={record.id}
+              data-active={activeSubjectId === record.id ? "true" : undefined}
+              onFocus={() => setActiveSubjectId(record.id)}
+              onPointerDown={() => setActiveSubjectId(record.id)}
+            >
               <header>
                 <span
                   className={`subject-marker marker-${index + 1}`}
@@ -194,67 +349,143 @@ export function ComparisonWorkbench({
                 aria-label={`Active views for Skull ${index + 1}`}
               >
                 {subject.views.map((view) => (
-                  <li key={view}>{formatViewLabel(view)}</li>
+                  <li key={view}>
+                    <span>{formatViewLabel(view)}</span>
+                    <button
+                      type="button"
+                      aria-label={`Remove Skull ${index + 1} ${formatViewLabel(view)} view`}
+                      onClick={() => removeView(record.id, view)}
+                    >
+                      ×
+                    </button>
+                  </li>
                 ))}
               </ul>
-              {record.href ? (
-                <Link href={record.href}>Open specimen record</Link>
-              ) : null}
+              <div className="compare-subject-controls">
+                <details className="compare-view-menu">
+                  <summary>Add view</summary>
+                  <div>
+                    {record.views.map((view) => {
+                      const active = subject.views.includes(view.view);
+                      return (
+                        <button
+                          type="button"
+                          key={view.view}
+                          disabled={
+                            active || layerCount >= maximumComparisonLayers
+                          }
+                          onClick={() => addView(record.id, view.view)}
+                        >
+                          {formatViewLabel(view.view)}
+                          <small>{active ? "Active" : "Add"}</small>
+                        </button>
+                      );
+                    })}
+                    {layerCount >= maximumComparisonLayers ? (
+                      <p>10-view field limit reached.</p>
+                    ) : null}
+                  </div>
+                </details>
+                <details className="compare-opacity-control">
+                  <summary title="Adjust opacity">Opacity</summary>
+                  <label>
+                    <span>Skull {index + 1} opacity</span>
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={5}
+                      value={opacityBySubject[record.id] ?? 100}
+                      onChange={(event) => {
+                        const value = Number(event.currentTarget.value);
+                        setOpacityBySubject((current) => ({
+                          ...current,
+                          [record.id]: value,
+                        }));
+                        setActionStatus(
+                          value === 0
+                            ? `Skull ${index + 1} hidden in field.`
+                            : `Skull ${index + 1} opacity ${value}%.`,
+                        );
+                      }}
+                    />
+                    <output>{opacityBySubject[record.id] ?? 100}%</output>
+                  </label>
+                </details>
+                <button
+                  type="button"
+                  className="compare-remove-skull"
+                  aria-label={`Remove Skull ${index + 1}: ${record.label}`}
+                  onClick={() => removeSubject(record.id)}
+                >
+                  Remove
+                </button>
+              </div>
+              {record.href ? <Link href={record.href}>Open record</Link> : null}
             </article>
           ))}
-          <button type="button" className="compare-add-skull" disabled>
-            Add skull
-            <span>Available in the interactive controls</span>
-          </button>
+          <WorkbenchSubjectPicker
+            records={records}
+            selectedIds={state.subjects.map(({ id }) => id)}
+            disabled={state.subjects.length >= maximumComparisonSubjects}
+            onSelect={addSubject}
+          />
+          <details className="compare-suggestions">
+            <summary>Quick comparisons</summary>
+            <div>
+              <p>Starting points</p>
+              {startingPoints.map((suggestion) => (
+                <button
+                  type="button"
+                  key={suggestion.id}
+                  onClick={() =>
+                    applyStartingPoint(suggestion.subjectIds, suggestion.label)
+                  }
+                >
+                  {suggestion.label}
+                </button>
+              ))}
+              {contextualSuggestions.length > 0 &&
+              state.subjects.length < maximumComparisonSubjects ? (
+                <>
+                  <p>Suggested additions</p>
+                  {contextualSuggestions
+                    .slice(0, maximumComparisonSubjects - state.subjects.length)
+                    .map((record) => (
+                      <button
+                        type="button"
+                        key={record.id}
+                        onClick={() => addSubject(record.id)}
+                      >
+                        {record.label}
+                        <small>{record.specimenId ?? "Reference"}</small>
+                      </button>
+                    ))}
+                </>
+              ) : null}
+            </div>
+          </details>
+          <p className="compare-rail-status" aria-live="polite">
+            {actionStatus}
+          </p>
         </aside>
 
-        <section
-          className="compare-field-panel"
-          aria-labelledby="comparison-field-title"
-        >
-          <div className="compare-field-toolbar">
-            <div>
-              <p className="data-label">Shared physical scale</p>
-              <h2 id="comparison-field-title">Comparison field</h2>
-            </div>
-            <p>Field controls activate in the next workbench stage.</p>
-          </div>
-          <div
-            className="comparison-field is-static"
-            data-arrangement={state.arrangement}
-          >
-            {selected.length > 0 ? (
-              <div className="comparison-static-layers">
-                {selected.flatMap(({ subject, record }, subjectIndex) =>
-                  subject.views.flatMap((viewName) => {
-                    const view = record.views.find(
-                      (candidate) => candidate.view === viewName,
-                    );
-                    return view ? (
-                      <StaticComparisonLayer
-                        key={`${record.id}:${view.view}`}
-                        record={record}
-                        view={view}
-                        subjectIndex={subjectIndex}
-                      />
-                    ) : (
-                      []
-                    );
-                  }),
-                )}
-              </div>
-            ) : (
-              <div className="comparison-empty-state">
-                <h2>Add a skull to begin</h2>
-                <p>Select up to five calibrated specimens or references.</p>
-              </div>
-            )}
-          </div>
-          <p className="comparison-scale-note">
-            Calibrated relative scale; screen pixels are not physical
-            millimetres.
-          </p>
-        </section>
+        <ComparisonField
+          selected={selected}
+          arrangement={state.arrangement}
+          difference={state.difference}
+          opacityBySubject={opacityBySubject}
+          onArrangementChange={(arrangement) =>
+            commit({ ...state, arrangement })
+          }
+          onRemoveView={removeView}
+          onResetOpacity={() =>
+            setOpacityBySubject(
+              Object.fromEntries(state.subjects.map(({ id }) => [id, 100])),
+            )
+          }
+          onClear={clearAll}
+        />
       </section>
 
       <section
@@ -281,12 +512,61 @@ export function ComparisonWorkbench({
           </label>
         </div>
         {pair?.[0] && pair[1] ? (
-          <ComparisonTable
-            selected={selected.map(({ record }) => record)}
-            rows={visibleRows}
-            primary={pair[0]}
-            comparison={pair[1]}
-          />
+          <>
+            <div className="comparison-pair-control">
+              <label htmlFor="comparison-difference-pair">
+                Difference pair
+              </label>
+              <select
+                id="comparison-difference-pair"
+                value={state.difference?.join("|") ?? ""}
+                onChange={(event) => {
+                  const [primaryId, comparisonId] =
+                    event.currentTarget.value.split("|");
+                  if (!primaryId || !comparisonId) return;
+                  commit(
+                    {
+                      ...state,
+                      difference: [primaryId, comparisonId],
+                    },
+                    "Difference pair updated.",
+                  );
+                }}
+              >
+                {selected.flatMap(({ record: primaryRecord }, primaryIndex) =>
+                  selected.flatMap(
+                    ({ record: comparisonRecord }, comparisonIndex) =>
+                      primaryRecord.id === comparisonRecord.id
+                        ? []
+                        : [
+                            <option
+                              value={`${primaryRecord.id}|${comparisonRecord.id}`}
+                              key={`${primaryRecord.id}|${comparisonRecord.id}`}
+                            >
+                              Skull {primaryIndex + 1} − Skull{" "}
+                              {comparisonIndex + 1}
+                            </option>,
+                          ],
+                  ),
+                )}
+              </select>
+            </div>
+            {isCrossClassMeasurementPair(
+              pair[0].measurementProfile,
+              pair[1].measurementProfile,
+            ) ? (
+              <p className="comparison-cross-class-note">
+                Width and height rows name different mammal and bird landmarks;
+                they are functional mappings, not claims of anatomical homology.
+              </p>
+            ) : null}
+            <ComparisonTable
+              selected={selected.map(({ record }) => record)}
+              rows={visibleRows}
+              primary={pair[0]}
+              comparison={pair[1]}
+            />
+          </>
         ) : (
           <p className="comparison-table-empty">
             Add another skull to compare.
@@ -305,53 +585,6 @@ export function ComparisonWorkbench({
         </p>
       </noscript>
     </>
-  );
-}
-
-function StaticComparisonLayer({
-  record,
-  view,
-  subjectIndex,
-}: {
-  record: SkullComparisonRecord;
-  view: SkullComparisonView;
-  subjectIndex: number;
-}) {
-  const measurement = record.measurements[view.calibration.measurementKey];
-  const size = getCalibratedCanvasSize({
-    sourceWidth: view.width,
-    sourceHeight: view.height,
-    calibration: view.calibration,
-    measurement,
-    worldPixelsPerMillimetre: 1,
-  });
-  if (!size) return null;
-  const style = {
-    "--layer-width": `${size.width}px`,
-    "--layer-height": `${size.height}px`,
-  } as CSSProperties;
-  return (
-    <figure className="comparison-static-layer" style={style}>
-      <div className="comparison-static-image">
-        <Image
-          src={view.publicPath}
-          alt={view.alt}
-          fill
-          sizes="(max-width: 48rem) 70vw, 32rem"
-          unoptimized
-          draggable={false}
-        />
-      </div>
-      <figcaption>
-        <span
-          className={`subject-marker marker-${subjectIndex + 1}`}
-          aria-hidden="true"
-        >
-          {subjectMarkers[subjectIndex]}
-        </span>
-        Skull {subjectIndex + 1} · {formatViewLabel(view.view)}
-      </figcaption>
-    </figure>
   );
 }
 
@@ -385,7 +618,7 @@ function ComparisonTable({
             <th scope="col" className="comparison-difference-heading">
               <span>Difference</span>
               <small>
-                S{selected.indexOf(primary) + 1} ↔ S
+                S{selected.indexOf(primary) + 1} − S
                 {selected.indexOf(comparison) + 1}
               </small>
               <details>
@@ -434,7 +667,7 @@ function ComparisonTable({
                   return (
                     <td
                       key={record.id}
-                      data-label={record.specimenId ?? record.label}
+                      data-label={`Skull ${selected.indexOf(record) + 1} · ${record.specimenId ?? record.label}`}
                     >
                       {key
                         ? formatComparisonMeasurement(record.measurements[key])

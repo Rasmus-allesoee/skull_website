@@ -34,6 +34,86 @@ export interface ParsedComparisonState {
   warnings: string[];
 }
 
+export function getComparisonLayerCount(state: ComparisonWorkbenchState) {
+  return state.subjects.reduce(
+    (total, subject) => total + subject.views.length,
+    0,
+  );
+}
+
+export function addComparisonSubject(
+  state: ComparisonWorkbenchState,
+  id: string,
+  initialView: ComparisonView,
+): ComparisonWorkbenchState {
+  if (
+    state.subjects.some((subject) => subject.id === id) ||
+    state.subjects.length >= maximumComparisonSubjects ||
+    getComparisonLayerCount(state) >= maximumComparisonLayers
+  ) {
+    return state;
+  }
+  const subjects = [...state.subjects, { id, views: [initialView] }];
+  return {
+    ...state,
+    subjects,
+    difference:
+      state.difference ??
+      (subjects.length >= 2 ? [subjects[0]!.id, subjects[1]!.id] : null),
+  };
+}
+
+export function removeComparisonSubject(
+  state: ComparisonWorkbenchState,
+  id: string,
+): ComparisonWorkbenchState {
+  const subjects = state.subjects.filter((subject) => subject.id !== id);
+  if (subjects.length === state.subjects.length) return state;
+  return {
+    ...state,
+    subjects,
+    difference: getValidDifferencePair(subjects, state.difference),
+  };
+}
+
+export function addComparisonView(
+  state: ComparisonWorkbenchState,
+  id: string,
+  view: ComparisonView,
+): ComparisonWorkbenchState {
+  if (getComparisonLayerCount(state) >= maximumComparisonLayers) return state;
+  let changed = false;
+  const subjects = state.subjects.map((subject) => {
+    if (subject.id !== id || subject.views.includes(view)) return subject;
+    changed = true;
+    return { ...subject, views: [...subject.views, view] };
+  });
+  return changed ? { ...state, subjects } : state;
+}
+
+export function removeComparisonView(
+  state: ComparisonWorkbenchState,
+  id: string,
+  view: ComparisonView,
+): ComparisonWorkbenchState {
+  const subject = state.subjects.find((candidate) => candidate.id === id);
+  if (!subject || !subject.views.includes(view)) return state;
+  if (subject.views.length === 1) return removeComparisonSubject(state, id);
+  return {
+    ...state,
+    subjects: state.subjects.map((candidate) =>
+      candidate.id === id
+        ? {
+            ...candidate,
+            views: candidate.views.filter(
+              (candidateView) => candidateView !== view,
+            ),
+          }
+        : candidate,
+    ),
+  };
+}
+
 export function getDefaultComparisonState(
   records: SkullComparisonRecord[],
 ): ComparisonWorkbenchState {
@@ -76,6 +156,15 @@ export function parseComparisonState(
   }
 
   const warnings: string[] = [];
+  const requestedVersion = params.get("v");
+  if (
+    requestedVersion !== null &&
+    requestedVersion !== String(comparisonStateVersion)
+  ) {
+    warnings.push(
+      `Unknown comparison-link version ${requestedVersion}; valid settings were restored with the current version.`,
+    );
+  }
   const recordsById = new Map(records.map((record) => [record.id, record]));
   const requestedIds = splitList(params.get("subjects"));
   const subjectIds: string[] = [];
@@ -174,6 +263,15 @@ export function serializeComparisonState(
   params.set("arrange", state.arrangement);
   if (state.comparableOnly) params.set("comparable", "1");
   return params.toString();
+}
+
+function getValidDifferencePair(
+  subjects: ComparisonSubjectState[],
+  current: [string, string] | null,
+): [string, string] | null {
+  const ids = new Set(subjects.map(({ id }) => id));
+  if (current?.every((id) => ids.has(id))) return current;
+  return subjects.length >= 2 ? [subjects[0]!.id, subjects[1]!.id] : null;
 }
 
 function splitList(value: string | null): string[] {

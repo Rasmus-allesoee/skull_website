@@ -246,6 +246,9 @@
 }
 
 .compare-view-chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
   padding: 0.17rem 0.42rem;
   border: 1px solid var(--color-border);
   border-radius: 999px;
@@ -254,9 +257,115 @@
   line-height: 1.4;
 }
 
-.compare-add-skull {
+.compare-view-chips button {
   display: grid;
+  width: 1.25rem;
+  min-height: 1.25rem;
+  padding: 0;
+  place-content: center;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  line-height: 1;
+}
+
+.compare-subject-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.3rem;
+  margin-bottom: 0.55rem;
+}
+
+.compare-subject-controls summary,
+.compare-remove-skull {
+  display: grid;
+  min-height: 2rem;
+  padding: 0.3rem 0.42rem;
+  place-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: 0.16rem;
+  background: var(--color-surface-elevated);
+  font-size: 0.67rem;
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+}
+
+.compare-subject-controls summary::-webkit-details-marker {
+  display: none;
+}
+
+.compare-view-menu,
+.compare-opacity-control {
+  position: relative;
+}
+
+.compare-view-menu > div,
+.compare-opacity-control > label {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 0.3rem);
+  left: 0;
+  width: 14rem;
+  padding: 0.55rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-elevated);
+  box-shadow: 0 0.8rem 2rem rgb(0 0 0 / 40%);
+}
+
+.compare-view-menu > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.compare-view-menu > div button {
+  display: flex;
+  min-height: 2rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.3rem 0.45rem;
+  text-align: left;
+}
+
+.compare-view-menu > div small,
+.compare-view-menu > div p {
+  color: var(--color-text-muted);
+  font-size: 0.65rem;
+}
+
+.compare-view-menu > div p {
+  margin: 0.3rem 0 0;
+}
+
+.compare-opacity-control > label {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.4rem;
+}
+
+.compare-opacity-control > label span {
+  grid-column: 1 / -1;
+  font-size: 0.68rem;
+}
+
+.compare-opacity-control input {
   width: 100%;
+  accent-color: var(--color-accent);
+}
+
+.compare-opacity-control output {
+  min-width: 2.5rem;
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.compare-add-skull {
+  display: flex;
+  width: 100%;
+  min-height: 3.2rem;
+  align-items: center;
+  gap: 0.55rem;
   margin-top: 0.65rem;
   padding: 0.55rem;
   border-style: dashed;
@@ -264,9 +373,69 @@
   line-height: 1.3;
 }
 
-.compare-add-skull span {
+.compare-add-skull > span:first-child {
+  font-size: 1.2rem;
+}
+
+.compare-add-skull > span:last-child {
+  display: grid;
+}
+
+.compare-add-skull small,
+.compare-rail-status {
   color: var(--color-text-muted);
   font-size: 0.67rem;
+}
+
+.compare-rail-status {
+  min-height: 1rem;
+  margin: 0.55rem 0 0;
+}
+
+.compare-suggestions {
+  position: relative;
+  margin-top: 0.45rem;
+}
+
+.compare-suggestions > summary {
+  min-height: 2rem;
+  padding: 0.35rem 0;
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.compare-suggestions > div {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.45rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.compare-suggestions p {
+  margin: 0.35rem 0 0.1rem;
+  color: var(--color-text-muted);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.compare-suggestions button {
+  display: flex;
+  min-height: 2rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.45rem;
+  text-align: left;
+}
+
+.compare-suggestions button small {
+  margin-left: 0.5rem;
+  color: var(--color-text-muted);
+  font-size: 0.6rem;
 }
 
 .compare-field-panel {
@@ -275,6 +444,7 @@
 
 .compare-field-toolbar {
   min-height: 4.35rem;
+  flex-wrap: wrap;
   padding: 0.65rem 0.9rem;
   border-bottom: 1px solid var(--color-border);
 }
@@ -291,15 +461,118 @@
   letter-spacing: 0;
 }
 
-.compare-field-toolbar > p {
+.compare-field-title {
+  flex: 0 0 auto;
+}
+
+.compare-field-controls {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+
+.compare-field-controls > button,
+.compare-field-controls summary,
+.compare-arrangement-control select,
+.compare-zoom-control button {
+  min-height: 2.35rem;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.16rem;
+  background: var(--color-surface-elevated);
+  color: var(--color-text);
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.compare-arrangement-control,
+.compare-zoom-control {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.compare-arrangement-control > span,
+.compare-zoom-control > span {
   color: var(--color-text-muted);
-  font-size: 0.72rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+.compare-arrangement-control select {
+  max-width: 8.5rem;
+}
+
+.compare-zoom-control input {
+  width: clamp(4rem, 8vw, 7rem);
+  accent-color: var(--color-accent);
+}
+
+.compare-zoom-control button {
+  display: grid;
+  width: 2.35rem;
+  padding: 0;
+  place-content: center;
+  font-size: 1rem;
+}
+
+.compare-zoom-control output {
+  min-width: 2.8rem;
+  font-size: 0.65rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.compare-field-more {
+  position: relative;
+}
+
+.compare-field-more summary {
+  display: grid;
+  width: 2.4rem;
+  padding: 0;
+  place-content: center;
+  list-style: none;
+  cursor: pointer;
+}
+
+.compare-field-more summary::-webkit-details-marker {
+  display: none;
+}
+
+.compare-field-more > div {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  display: grid;
+  width: 13rem;
+  padding: 0.55rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-elevated);
+  box-shadow: 0 0.8rem 2rem rgb(0 0 0 / 40%);
+}
+
+.compare-field-more label,
+.compare-field-more button {
+  min-height: 2.4rem;
+  padding: 0.45rem;
+  font-size: 0.7rem;
+  text-align: left;
+}
+
+.compare-field-more label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .comparison-field {
   position: relative;
   min-height: clamp(30rem, 63vh, 43rem);
-  overflow: auto;
+  overflow: hidden;
   overscroll-behavior: contain;
   background:
     linear-gradient(rgb(255 255 255 / 2%) 1px, transparent 1px),
@@ -311,46 +584,229 @@
     2.5rem 2.5rem,
     auto,
     auto;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
 }
 
-.comparison-static-layers {
-  display: flex;
-  width: max-content;
-  min-width: 100%;
-  min-height: inherit;
-  align-items: flex-end;
-  justify-content: center;
-  gap: clamp(1.25rem, 4vw, 4rem);
-  padding: 3rem;
+.comparison-field[data-panning="true"] {
+  cursor: grabbing;
 }
 
-.comparison-static-layer {
-  flex: 0 0 auto;
-  width: var(--layer-width);
-  margin: 0;
+.comparison-camera {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform: translate3d(var(--camera-x), var(--camera-y), 0)
+    scale(var(--camera-zoom));
+  transform-origin: 0 0;
+  will-change: transform;
 }
 
-.comparison-static-image {
+.comparison-world {
   position: relative;
+  width: var(--comparison-world-width);
+  height: var(--comparison-world-height);
+  transform: translate(-50%, -50%);
+}
+
+.comparison-layer {
+  position: absolute;
+  z-index: var(--layer-z);
+  top: 0;
+  left: 0;
   width: var(--layer-width);
   height: var(--layer-height);
+  margin: 0;
+  transform: translate3d(var(--layer-x), var(--layer-y), 0);
+  will-change: transform;
 }
 
-.comparison-static-image img {
+.comparison-layer-image {
+  position: absolute;
+  inset: 0;
+  opacity: var(--layer-opacity);
+}
+
+.comparison-layer-image img {
   object-fit: contain;
+  pointer-events: none;
 }
 
-.comparison-static-layer figcaption {
+.comparison-layer-image-fallback {
+  position: absolute;
+  inset: var(--subject-top)
+    calc(100% - var(--subject-left) - var(--subject-width))
+    calc(100% - var(--subject-top) - var(--subject-height)) var(--subject-left);
+  display: grid;
+  place-content: center;
+  border: 1px dashed rgb(255 255 255 / 35%);
+  background: rgb(13 16 15 / 90%);
+  color: #d6d9d7;
+  font-size: 0.65rem;
+  text-align: center;
+}
+
+.comparison-layer-hit {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: none;
+  touch-action: none;
+}
+
+.comparison-layer-hit svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.comparison-layer-hit path {
+  cursor: grab;
+}
+
+.comparison-layer-hit:active path {
+  cursor: grabbing;
+}
+
+.comparison-layer-outline {
+  position: absolute;
+  z-index: 2;
+  top: var(--subject-top);
+  left: var(--subject-left);
+  width: var(--subject-width);
+  height: var(--subject-height);
+  border: 1px solid transparent;
+  border-radius: 0.2rem;
+  pointer-events: none;
+}
+
+.comparison-layer[data-selected="true"] .comparison-layer-outline,
+.comparison-layer-hit:focus-visible ~ .comparison-layer-outline {
+  border-color: var(--color-text);
+  outline: 2px solid rgb(255 255 255 / 35%);
+  outline-offset: 3px;
+}
+
+.comparison-layer figcaption {
+  position: absolute;
+  z-index: 4;
+  top: calc(var(--subject-top) + var(--subject-height) + 0.35rem);
+  left: var(--subject-left);
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.4rem;
-  min-height: 2rem;
-  color: var(--color-text-muted);
+  width: max-content;
+  max-width: 13rem;
+  padding: 0.2rem 0.4rem;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 999px;
+  background: rgb(13 16 15 / 82%);
+  color: #d6d9d7;
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.comparison-layer-toolbar {
+  position: absolute;
+  z-index: 8;
+  top: max(0px, calc(var(--subject-top) - 2.35rem));
+  left: var(--subject-left);
+  display: flex;
+  width: max-content;
+  max-width: max(12rem, var(--subject-width));
+  min-height: 2rem;
+  align-items: center;
+  border: 1px solid rgb(255 255 255 / 22%);
+  border-radius: 0.18rem;
+  background: rgb(13 16 15 / 94%);
+  box-shadow: 0 0.45rem 1.2rem rgb(0 0 0 / 35%);
+}
+
+.comparison-layer-toolbar strong {
+  max-width: 10rem;
+  overflow: hidden;
+  padding: 0.3rem 0.5rem;
+  color: #f3f4f3;
+  font-size: 0.62rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.comparison-layer-toolbar button {
+  display: grid;
+  width: 2rem;
+  min-height: 2rem;
+  padding: 0;
+  place-content: center;
+  border: 0;
+  border-left: 1px solid rgb(255 255 255 / 18%);
+  background: transparent;
+  color: #f3f4f3;
+}
+
+.comparison-layer-hidden-note {
+  position: absolute;
+  z-index: 4;
+  top: var(--subject-top);
+  left: var(--subject-left);
+  padding: 0.2rem 0.35rem;
+  background: #0d100f;
+  color: #fff;
+  font-size: 0.65rem;
+  pointer-events: none;
+}
+
+.comparison-scale-bar {
+  position: absolute;
+  bottom: 2rem;
+  left: 2rem;
+  display: grid;
+  color: #f3f4f3;
+  font-size: 0.7rem;
+}
+
+.comparison-scale-bar > span {
+  width: var(--scale-bar-width);
+  height: 0.5rem;
+  border: 1px solid currentColor;
+  border-top: 0;
+}
+
+.comparison-scale-bar small {
+  color: #b8bfbc;
+  font-size: 0.55rem;
+}
+
+.comparison-field-footer {
+  display: flex;
+  min-height: 2.2rem;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.45rem 0.9rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+}
+
+.comparison-field-footer p {
+  margin: 0;
+}
+
+.comparison-field-status {
+  text-align: right;
 }
 
 .comparison-empty-state {
@@ -370,12 +826,50 @@
   color: var(--color-text-muted);
 }
 
-.comparison-scale-note {
-  margin: 0;
-  padding: 0.45rem 0.9rem;
-  border-top: 1px solid var(--color-border);
+.comparison-pair-control {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin: -0.3rem 0 0.7rem;
+  font-size: 0.72rem;
+}
+
+.comparison-pair-control select {
+  min-height: 2.35rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.72rem;
+}
+
+.comparison-cross-class-note {
+  max-width: 68rem;
+  margin: 0 0 0.7rem;
   color: var(--color-text-muted);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
+}
+
+.workbench-subject-dialog {
+  width: min(46rem, calc(100vw - 2rem));
+}
+
+.workbench-subject-options button {
+  grid-template-columns: 3.2rem 1fr auto;
+}
+
+.workbench-subject-option-image {
+  position: relative;
+  display: block;
+  width: 2.6rem;
+  height: 1.8rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.workbench-subject-option-image img {
+  object-fit: contain;
 }
 
 .comparison-measurements {
@@ -585,6 +1079,20 @@
     min-width: 10rem;
     margin-top: 0;
   }
+
+  .compare-suggestions {
+    min-width: 10rem;
+    margin-top: 0;
+  }
+
+  .compare-suggestions > div {
+    position: absolute;
+    z-index: 35;
+    top: calc(100% + 0.3rem);
+    right: 0;
+    width: 17rem;
+    box-shadow: 0 0.8rem 2rem rgb(0 0 0 / 40%);
+  }
 }
 
 @media (max-width: 48rem) {
@@ -632,19 +1140,41 @@
     min-height: 3.8rem;
   }
 
-  .compare-field-toolbar > p {
-    max-width: 12rem;
-    text-align: right;
+  .compare-field-controls {
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+  }
+
+  .compare-arrangement-control > span,
+  .compare-zoom-control > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .compare-field-controls > button,
+  .compare-field-controls summary,
+  .compare-arrangement-control select,
+  .compare-zoom-control button {
+    min-height: 2.75rem;
   }
 
   .comparison-field {
     min-height: 22rem;
   }
 
-  .comparison-static-layers {
-    justify-content: flex-start;
-    gap: 1rem;
-    padding: 2rem 1.25rem;
+  .comparison-field-footer {
+    display: block;
+  }
+
+  .comparison-field-status {
+    min-height: 1rem;
+    margin-top: 0.25rem !important;
+    text-align: left;
   }
 
   .comparison-measurements-heading {
@@ -653,7 +1183,98 @@
   }
 
   .comparison-table {
-    min-width: 46rem;
+    min-width: 0;
+  }
+
+  .comparison-table-wrap {
+    overflow: visible;
+    border: 0;
+  }
+
+  .comparison-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .comparison-table tbody {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  .comparison-table tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .comparison-table tbody th,
+  .comparison-table tbody td {
+    position: static;
+    display: grid;
+    min-width: 0;
+    padding: 0.6rem 0.7rem;
+    border-right: 0;
+    white-space: normal;
+  }
+
+  .comparison-table tbody th {
+    grid-column: 1 / -1;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface-elevated);
+    font-size: 0.82rem;
+  }
+
+  .comparison-table tbody td::before {
+    margin-bottom: 0.2rem;
+    color: var(--color-text-muted);
+    content: attr(data-label);
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+  }
+
+  .comparison-table tbody .comparison-difference {
+    grid-column: 1 / -1;
+    grid-template-columns: 1fr auto;
+    border-top: 1px solid var(--color-border);
+    border-left-width: 0.2rem;
+  }
+
+  .comparison-table tbody .comparison-difference::before {
+    grid-column: 1 / -1;
+  }
+
+  .comparison-pair-control {
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .comparison-camera,
+  .comparison-layer,
+  .comparison-layer-image {
+    transition: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .comparison-field,
+  .comparison-layer-toolbar,
+  .comparison-layer figcaption,
+  .comparison-layer-image-fallback {
+    border-color: CanvasText;
+    background: Canvas;
+    color: CanvasText;
+  }
+
+  .comparison-layer[data-selected="true"] .comparison-layer-outline {
+    border: 2px solid Highlight;
+    outline: 2px solid CanvasText;
   }
 }
 
@@ -665,6 +1286,11 @@
   .compare-page-actions,
   .compare-recovery,
   .compare-add-skull,
+  .compare-suggestions,
+  .compare-subject-controls,
+  .compare-field-controls,
+  .comparison-field-footer,
+  .comparison-layer-toolbar,
   .comparison-measurements-heading label,
   .comparison-difference-heading details,
   .compare-no-script {
@@ -684,6 +1310,10 @@
     min-height: 20rem;
     overflow: hidden;
     background: #fff;
+  }
+
+  .comparison-layer-image {
+    opacity: 1;
   }
 
   .comparison-table {

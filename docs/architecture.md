@@ -288,6 +288,8 @@ The specimen-page comparison is a route-independent feature under `src/features/
 
 The static `/compare` route now composes the same records, scaling engine, image primitive, selector, and difference renderer inside one client workbench island. Its Server Component loads canonical comparison subjects directly and prerenders the approved default pair, calibrated views, and semantic measurement table. The island restores versioned query state through `window.location` and `popstate`, leaving the route free of API handlers, runtime databases, Orama, MapLibre, and external data requests.
 
+Inside that island, every active view is projected into one 1,480 × 900 world from its reviewed image calibration and a shared pixels-per-millimetre factor. Deterministic arrangement helpers own initial positions and fitted-camera recovery. Layer translation and stacking, per-subject opacity, selected-layer state, and the field camera remain transient; only subjects, views, the directed pair, arrangement, and comparable-only mode enter the URL. Pointer movement writes layer transforms through animation frames and commits state on release, while keyboard arrows, explicit z-order/removal controls, zoom buttons/slider, `Fit all`, and `Reset layout` provide complete non-pointer recovery.
+
 ## 13. Styling and component architecture
 
 Tailwind utilities operate on semantic CSS variables defined in the global token layer. Components use domain-oriented names and small variants rather than a generic theme library. Native HTML is preferred; accessible Radix primitives are permitted only where native elements cannot provide robust dialog/popover behavior.
