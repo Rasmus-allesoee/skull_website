@@ -83,7 +83,7 @@ The shared museum shell, redesigned Home hub, class/order/family/genus routes, r
 - Full Danish interface translation.
 - A public API or licensed dataset download.
 - E-commerce or monetization.
-- The Guides hub, Contribution protocol, About, Rights, Accessibility, broader methodology sections, comprehensive taxonomy tree, and standalone Comparison page. The owner explicitly deferred these supporting routes so the first technical release can prove deployment; the concise Privacy notice is now included in v1.0.1 because production analytics is enabled.
+- The Guides hub, Contribution protocol, About, Rights, Accessibility, broader methodology sections, comprehensive taxonomy tree, and standalone Comparison page. The owner explicitly deferred these supporting routes from v1 so the first technical release could prove deployment; the Comparison workbench was approved as a focused post-v1 addition on 2026-09-11, and the concise Privacy notice is included in v1.0.1 because production analytics is enabled.
 
 Exclusion from v1 does not mean rejection. Each feature remains in the deferred backlog with prerequisites in [implementation_plan.md](implementation_plan.md).
 
@@ -97,6 +97,7 @@ Exclusion from v1 does not mean rejection. Each feature remains in the deferred 
 | `/species/{taxon-slug}` | Canonical taxon display | Default specimen gallery, specimen selector, taxonomy, measurements, collection record, preparation, and reviewed editorial content when available |
 | `/species/{taxon-slug}/specimens/{specimen-id}` | Exact specimen display | Same composition focused on one physical specimen, with unique metadata and canonical relationship |
 | `/map` | Geographic exploration | Clustered map, filters, selected-specimen popup, synchronized accessible result list |
+| `/compare` | Skull comparison workbench | One-to-five calibrated subjects, movable multi-view layers, a directed difference pair, and a class-aware measurement table |
 | `/guides` | Editorial guide hub | Deferred after the first technical release |
 | `/guides/skull-preparation` | Preparation guide | Implemented illustrated five-phase guide, method comparisons, contents drawer, preparation photographs, source-checked practical text and one reference list |
 | `/contribute` | Contribution protocol | Deferred after the first technical release; public contact remains in the footer |
@@ -334,4 +335,4 @@ The first public release is complete only when:
 
 The owner selected “Skull Collection” as the public v1 name. The first deployment uses its assigned Vercel domain and `rasmus.allesoee@gmail.com` as the public contact. The existing repository-created skull favicon is the no-cost v1 mark; a custom domain or replacement identity can be added later without changing product structure.
 
-The Phase 2.2 specimen-page scale card establishes reusable calibrated comparison primitives. A dedicated public two-select comparison route, overlays/split sliders, 360°, 3D, illustrations, direct contributions, database administration, custom-event analytics, localization, and data export remain deferred work. They require their documented prerequisites and a new scope decision; they are not to be smuggled into an earlier phase.
+The Phase 2.2 specimen-page scale card established the reusable calibrated comparison primitives now composed by the approved post-v1 `/compare` workbench. The workbench supports up to five selected subjects and ten calibrated view layers while retaining one explicit directed measurement-difference pair. Split sliders, 360°, 3D, illustrations, direct contributions, database administration, custom-event analytics, localization, and data export remain deferred work and require their documented prerequisites and a new scope decision.

@@ -6,7 +6,7 @@
 
 **Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. The owner approved all eight standalone-comparison decisions on 2026-09-11. Implementation has started in an isolated worktree on `skull_comparison_page` from `main`; the unfinished `preparation_guide_refinement` branch remains separate, intact, and unmerged.
 
-**Next action:** Complete and verify the comparison calibration/data-contract checkpoint, then proceed through the approved workbench stages with coherent commits. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
+**Next action:** Continue the approved workbench interactions, multi-subject controls, measurement pairing, site entry points, and final regression verification through coherent local checkpoints. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
 
 ## 0.7 Standalone Skull Comparison authorization and branch boundary (2026-09-11)
 
@@ -27,6 +27,13 @@
 - Generalized each eligible comparison record from one lateral image to an ordered set of calibrated lateral/frontal/dorsal/ventral/mandible views while preserving the existing lateral-image property consumed by specimen pages.
 - Kept all 18 published physical specimens eligible rather than restricting selection to taxon defaults. Added taxon/genus identity for deterministic suggestions and profile-aware row-to-measurement mappings for future one-to-five-subject tables.
 - Focused comparison/calibration/data tests pass **9/9**, the existing specimen-page component regression passes **8/8**, strict TypeScript passes, and `CI=true pnpm build` prerenders the unchanged **78/78 routes** successfully.
+
+### Static comparison-route checkpoint
+
+- Added the static `/compare` route with the approved SPEC-0001/adult-human default, a compact selected-subject rail, calibrated shared-scale field, semantic class-aware measurement table, directed-difference explanation, comparable-only filter, copy-link action, and low-prominence print action.
+- Added resilient versioned URL state for subjects, active views, difference pair, arrangement, and comparable-only filtering. Duplicate, unavailable, malformed, and over-limit values recover to valid state with an explicit notice rather than breaking the route.
+- Preserved a useful server-rendered/no-JavaScript default and added stable methodology anchors for measurement-definition links.
+- Focused URL-state tests pass **3/3**, strict TypeScript passes, and `CI=true pnpm build` prerenders **79/79 routes**, including static `/compare`. Chromium desktop and 390 px mobile checks show the default subjects and table, no development overlay or console errors, no document overflow, and intentional internal horizontal scrolling for the subject rail and measurement table.
 
 ## 0.6 Google Search Console verification (2026-09-09)
 

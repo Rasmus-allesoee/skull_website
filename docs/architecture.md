@@ -286,7 +286,7 @@ The specimen-page comparison is a route-independent feature under `src/features/
 - Human-reference values are explicitly approximate. A selected record's descriptive note is rendered from that record, not a component literal, and the difference-level approximation explanation appears only when at least one available result uses an approximate source. Fully measured specimen pairs do not inherit human-reference wording. The comparison is physically proportional between subjects, not a monitor calibration or universal human average.
 - A selected collection specimen carries its exact nested specimen route into the comparison view and is exposed as a double-clickable, keyboard-accessible link; reference records carry no route and remain non-navigable.
 
-The future public comparison route may compose the same records, scaling engine, image primitive, selector, and difference renderer with both sides independently selectable. It must not duplicate these calculations.
+The static `/compare` route now composes the same records, scaling engine, image primitive, selector, and difference renderer inside one client workbench island. Its Server Component loads canonical comparison subjects directly and prerenders the approved default pair, calibrated views, and semantic measurement table. The island restores versioned query state through `window.location` and `popstate`, leaving the route free of API handlers, runtime databases, Orama, MapLibre, and external data requests.
 
 ## 13. Styling and component architecture
 
