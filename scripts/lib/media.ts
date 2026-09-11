@@ -14,6 +14,7 @@ import {
 import type {
   ComparisonMeasurementKey,
   ComparisonReferenceRecord,
+  ComparisonViewCalibration,
   Diagnostic,
   Measurement,
   LateralOrientation,
@@ -157,6 +158,7 @@ export async function validatePublicMedia(options?: {
         alt: sourceAsset.alt,
         orientation:
           sourceAsset.view === "lateral" ? sourceAsset.orientation : null,
+        comparisonCalibration: sourceAsset.comparison_calibration ?? null,
         credit: rights.credit,
         diagnostics,
       });
@@ -232,6 +234,7 @@ async function inspectPublicAsset(options: {
   view: MediaAsset["view"];
   alt: string;
   orientation: LateralOrientation | null;
+  comparisonCalibration: ComparisonCalibrationSource | null;
   credit: string;
   diagnostics: Diagnostic[];
 }): Promise<MediaAsset | null> {
@@ -242,6 +245,7 @@ async function inspectPublicAsset(options: {
     view,
     alt,
     orientation,
+    comparisonCalibration,
     credit,
     diagnostics,
   } = options;
@@ -261,6 +265,10 @@ async function inspectPublicAsset(options: {
     view,
     ...inspected,
     orientation,
+    comparisonCalibration: compileComparisonCalibration(
+      comparisonCalibration,
+      inspected,
+    ),
     alt,
     credit,
     rights: "all_rights_reserved",
@@ -409,6 +417,10 @@ async function validateComparisonReferences(
       media: {
         ...inspected,
         orientation: source.asset.orientation,
+        comparisonCalibration: compileComparisonCalibration(
+          source.asset.comparison_calibration,
+          inspected,
+        )!,
         alt: source.asset.alt,
         credit: source.asset.credit,
         rights: source.asset.rights,
@@ -451,6 +463,58 @@ interface InspectedTransparentWebp {
   subjectBounds: SubjectBounds;
   publicPath: string;
   hitPath?: string;
+}
+
+interface ComparisonCalibrationSource {
+  measurement:
+    | "skull_length_mm"
+    | "skull_width_mm"
+    | "cranium_width_mm"
+    | "mandible_length_mm";
+  span:
+    | { kind: "subject-bounds-width" }
+    | { kind: "subject-bounds-height" }
+    | {
+        kind: "landmark-span";
+        start: { x: number; y: number };
+        end: { x: number; y: number };
+      };
+}
+
+function compileComparisonCalibration(
+  source: ComparisonCalibrationSource | null,
+  asset: InspectedTransparentWebp,
+): ComparisonViewCalibration | null {
+  if (!source) return null;
+
+  const measurementKeys: Record<
+    ComparisonCalibrationSource["measurement"],
+    ComparisonViewCalibration["measurementKey"]
+  > = {
+    skull_length_mm: "skullLength",
+    skull_width_mm: "skullWidth",
+    cranium_width_mm: "craniumWidth",
+    mandible_length_mm: "mandibleLength",
+  };
+  const measurementKey = measurementKeys[source.measurement];
+
+  let pixelSpan: number;
+  if (source.span.kind === "subject-bounds-width") {
+    pixelSpan = asset.subjectBounds.width;
+  } else if (source.span.kind === "subject-bounds-height") {
+    pixelSpan = asset.subjectBounds.height;
+  } else {
+    pixelSpan = Math.hypot(
+      (source.span.end.x - source.span.start.x) * asset.width,
+      (source.span.end.y - source.span.start.y) * asset.height,
+    );
+  }
+
+  return {
+    measurementKey,
+    span: source.span,
+    pixelSpan,
+  };
 }
 
 async function inspectTransparentWebp(options: {

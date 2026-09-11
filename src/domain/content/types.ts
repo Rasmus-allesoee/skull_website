@@ -379,6 +379,24 @@ export interface SubjectBounds {
   height: number;
 }
 
+export type ComparisonCalibrationMeasurementKey =
+  "skullLength" | "skullWidth" | "craniumWidth" | "mandibleLength";
+
+export type ComparisonCalibrationSpan =
+  | { kind: "subject-bounds-width" }
+  | { kind: "subject-bounds-height" }
+  | {
+      kind: "landmark-span";
+      start: { x: number; y: number };
+      end: { x: number; y: number };
+    };
+
+export interface ComparisonViewCalibration {
+  measurementKey: ComparisonCalibrationMeasurementKey;
+  span: ComparisonCalibrationSpan;
+  pixelSpan: number;
+}
+
 export interface MediaAsset {
   specimenId: string;
   view: CanonicalView;
@@ -393,6 +411,7 @@ export interface MediaAsset {
    */
   hitPath?: string;
   orientation: LateralOrientation | null;
+  comparisonCalibration: ComparisonViewCalibration | null;
   alt: string;
   credit: string;
   rights: "all_rights_reserved";
@@ -416,6 +435,7 @@ export interface ComparisonReferenceRecord {
     bytes: number;
     subjectBounds: SubjectBounds;
     orientation: LateralOrientation;
+    comparisonCalibration: ComparisonViewCalibration;
     alt: string;
     credit: string;
     rights: "all_rights_reserved";
@@ -449,7 +469,7 @@ export interface TaxonProfile {
 }
 
 export interface CompiledCollection {
-  schemaVersion: 6;
+  schemaVersion: 7;
   taxa: TaxonRecord[];
   specimens: SpecimenRecord[];
   media: MediaAsset[];

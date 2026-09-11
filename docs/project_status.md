@@ -14,6 +14,14 @@
 - Created `skull_comparison_page` from released `main` in a separate worktree. The local `preparation_guide_refinement` branch and its uncommitted guide content were neither merged nor copied.
 - The first checkpoint owns the approved plan and ADR. Feature implementation, verification evidence, and later checkpoints will be recorded below as they become true.
 
+### Calibration/data-contract implementation in progress
+
+- Advanced specimen-media and reference declarations to schema version 3 and the compiled collection to schema version 7.
+- Added explicit reviewed calibration for 86 eligible specimen views plus the adult-human lateral reference: bounds-based spans for lateral, frontal, dorsal and ventral views, and normalized diagonal landmark spans along one hemimandible for all 18 mandible-dorsal views. Oblique remains uncalibrated and unavailable.
+- Added blocking compiler checks for published lateral calibration, view/profile measurement basis, positive source measurements, and the mandible landmark-span requirement. Added a reusable calibration calculation module, focused tests, and `pnpm comparison:audit`.
+- `pnpm comparison:audit` reports **87 calibrated and eligible views** (86 specimen views plus the adult-human lateral reference) and **8 explicit media-missing states** (four specimen frontal views and four unsupported alternate reference views), with no calibration-missing or measurement-invalid states.
+- `CI=true pnpm check` passes formatting, lint, media/content validation, strict TypeScript, **89/89 unit/component tests**, and the six expected invalid-fixture failures.
+
 ## 0.6 Google Search Console verification (2026-09-09)
 
 - Added the owner-provided Google Search Console HTML-tag verification token to the root metadata and regression coverage. It is ready to deploy through the normal branch/PR workflow.

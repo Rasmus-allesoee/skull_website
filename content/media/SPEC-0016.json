@@ -1,11 +1,15 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "specimen_id": "SPEC-0016",
   "assets": [
     {
       "view": "lateral",
       "alt": "Lateral view of European mole skull specimen SPEC-0016.",
-      "orientation": "right"
+      "orientation": "right",
+      "comparison_calibration": {
+        "measurement": "skull_length_mm",
+        "span": { "kind": "subject-bounds-width" }
+      }
     },
     {
       "view": "oblique",
@@ -13,19 +17,39 @@
     },
     {
       "view": "frontal",
-      "alt": "Frontal view of European mole skull specimen SPEC-0016."
+      "alt": "Frontal view of European mole skull specimen SPEC-0016.",
+      "comparison_calibration": {
+        "measurement": "skull_width_mm",
+        "span": { "kind": "subject-bounds-width" }
+      }
     },
     {
       "view": "dorsal",
-      "alt": "Dorsal view of European mole skull specimen SPEC-0016."
+      "alt": "Dorsal view of European mole skull specimen SPEC-0016.",
+      "comparison_calibration": {
+        "measurement": "skull_length_mm",
+        "span": { "kind": "subject-bounds-height" }
+      }
     },
     {
       "view": "ventral",
-      "alt": "Ventral view of European mole skull specimen SPEC-0016."
+      "alt": "Ventral view of European mole skull specimen SPEC-0016.",
+      "comparison_calibration": {
+        "measurement": "skull_length_mm",
+        "span": { "kind": "subject-bounds-height" }
+      }
     },
     {
       "view": "mandible-dorsal",
-      "alt": "Dorsal view of the separated mandibles from European mole skull specimen SPEC-0016."
+      "alt": "Dorsal view of the separated mandibles from European mole skull specimen SPEC-0016.",
+      "comparison_calibration": {
+        "measurement": "mandible_length_mm",
+        "span": {
+          "kind": "landmark-span",
+          "start": { "x": 0.498, "y": 0.115 },
+          "end": { "x": 0.37, "y": 0.8 }
+        }
+      }
     }
   ]
 }

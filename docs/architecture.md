@@ -114,7 +114,7 @@ Rules:
 - Draft rows may be incomplete but must parse safely and remain excluded from public output.
 - Generated paths are ignored and regenerated in CI.
 
-Phase 2 implements this pipeline with `content:build`, `validate:content`, `validate:media`, and committed invalid fixtures. `.generated/collection.json`, `.generated/media-manifest.json`, and `.generated/comparison-reference-manifest.json` are deterministic ignored outputs regenerated before application builds and relevant tests. Phase 2.1 advanced the compiled contract to schema version 2, Phase 2.2 to version 3, and Phase 3 to version 4 for unified class-aware measurements. Phase 6 advanced it to version 5: `species_name + specimen_id_raw` provides a validated curator crosswalk without changing immutable public identity, missing teeth retain their exact count, prepared skull mass leads the skull-measurement columns, and postorbital/interorbital applicability matches the current methodology. The release review advances it to version 6 so only the dedicated `condition_description` field can provide public condition evidence; private distinguishing notes are excluded. The Phase 3.2/4 content build also writes the same versioned 67-document search artifact to `.generated/search-documents.json` and `public/generated/catalog-search-v1.json`; both copies are ignored and replaceable. The Measurements milestone adds `.generated/measurement-reference-v1.json`, compiled from the reviewed 21-row definition CSV and five-view coordinate manifest. Generated artifacts are never migrated in place.
+Phase 2 implements this pipeline with `content:build`, `validate:content`, `validate:media`, and committed invalid fixtures. `.generated/collection.json`, `.generated/media-manifest.json`, and `.generated/comparison-reference-manifest.json` are deterministic ignored outputs regenerated before application builds and relevant tests. Phase 2.1 advanced the compiled contract to schema version 2, Phase 2.2 to version 3, and Phase 3 to version 4 for unified class-aware measurements. Phase 6 advanced it to version 5: `species_name + specimen_id_raw` provides a validated curator crosswalk without changing immutable public identity, missing teeth retain their exact count, prepared skull mass leads the skull-measurement columns, and postorbital/interorbital applicability matches the current methodology. The release review advanced it to version 6 so only the dedicated `condition_description` field can provide public condition evidence; private distinguishing notes are excluded. The standalone comparison milestone advances it to version 7 with reviewed per-image calibration spans and compiled pixel-span values. The Phase 3.2/4 content build also writes the same versioned 67-document search artifact to `.generated/search-documents.json` and `public/generated/catalog-search-v1.json`; both copies are ignored and replaceable. The Measurements milestone adds `.generated/measurement-reference-v1.json`, compiled from the reviewed 21-row definition CSV and five-view coordinate manifest. Generated artifacts are never migrated in place.
 
 ## 6. Repository boundaries
 
@@ -252,6 +252,7 @@ The Phase 2/2.2 Sharp workflow, reused for the Phase 3.1 104-image review slice:
 - strips EXIF, GPS, and unnecessary metadata;
 - verifies dimensions, alpha channel/edges, linked IDs, expected views, and file size;
 - calculates transparent subject bounds used by the gallery and calibrated comparison;
+- compiles explicit reviewed comparison spans into positive pixel lengths;
 - derives a normalized alpha hit path for precise Home specimen interaction; and
 - writes a transparent WebP master up to 3200 px, quality 90, alpha quality 100.
 
@@ -275,9 +276,10 @@ Page code consumes `MediaAsset` records rather than constructing filenames. That
 
 The specimen-page comparison is a route-independent feature under `src/features/comparison/`, backed by pure calculations in `src/domain/comparison/` and eligible-record queries in `src/data/comparison.ts`.
 
-- An eligible specimen is its taxon's published default specimen and has a valid lateral asset plus measured maximum skull length.
+- Every published specimen with a valid calibrated lateral asset and positive measured or explicitly approximate maximum skull length is eligible; taxon-default status affects labels/order only.
 - The current specimen stays primary. The default adult-human reference is first in the selector; the current specimen is excluded.
 - Each lateral declaration records `left` or `right`; the comparison image flips in presentation when necessary and source pixels remain unchanged.
+- Each comparison-enabled view declares a reviewed measurement basis and pixel span. Bounds may represent verified lateral/frontal/transverse or dorsal/ventral/longitudinal spans; mandible dorsal uses normalized landmark endpoints along one hemimandible. Oblique remains gallery-only.
 - The shared scale is derived once from the available visual width and the larger recorded skull length. For each image, transparent-canvas offsets are calculated from `subjectBounds`, so the visible subject—not the file canvas—occupies `length_mm × shared_pixels_per_mm`.
 - The same scale factor applies at every responsive size; morphology, aspect ratio, and anatomical endpoints are preserved.
 - Difference rows are selected from typed measurement profiles, never display literals: mammal/mammal has six rows, bird/bird nine, and bird/mammal six explicitly labelled functional mappings. Absolute wording and the primary/comparison ratio remain readable without semantic color. Cross-class width/height rows state that their landmarks differ and are not homologous claims.
