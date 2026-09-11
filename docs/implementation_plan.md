@@ -2,9 +2,9 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Skull Preparation guide phase — branch `agent/skull-prep-page` created; implementation not started
+**Current phase:** Standalone Skull Comparison workbench implementation on `skull_comparison_page`; the unfinished preparation refinement remains separate
 
-**Last reviewed:** 2026-09-06
+**Last reviewed:** 2026-09-11
 
 ## 1. How to use this plan
 
@@ -526,7 +526,9 @@ After Phase 0/1:
 
 ### Skull comparison
 
-Phase 2.2 completed the reusable calibrated foundation on the specimen page: explicit lateral orientation, generated transparent subject bounds, one shared maximum-length scale, a reference/specimen selector, approximate-value labels, and semantic measurement differences. A dedicated public comparison route with two independent selectors, overlays, split-slider, opacity controls, shareable state, and non-calibrated-record handling remains deferred until enough reviewed specimens exist and keyboard-equivalent behavior is designed.
+Phase 2.2 completed the reusable calibrated foundation on the specimen page: explicit lateral orientation, generated transparent subject bounds, one shared maximum-length scale, a reference/specimen selector, approximate-value labels, and semantic measurement differences. On 2026-09-11 the owner approved the dedicated `/compare` workbench with up to five selected subjects, ten calibrated orthogonal-view layers, free placement, shared field zoom/pan, compact per-subject opacity, a selectable directed difference pair, methodology links, quick comparisons, URL-backed analytical state, low-prominence print support, and site-wide entry points.
+
+The binding product, calibration, architecture, responsive, accessibility, performance, test, and staged-delivery contract is [skull_comparison_page.md](skull_comparison_page.md). Implementation proceeds through coherent verified checkpoints on `skull_comparison_page`; the separate `preparation_guide_refinement` branch remains unmerged.
 
 ### Specimen-location map action
 

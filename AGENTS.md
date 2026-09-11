@@ -20,7 +20,7 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **v1.0.1 production-only Web Analytics integration is active on `agent/vercel-analytics` from the released `main` baseline at `https://skullwebsite-xi.vercel.app`**. Measurements and Home are merged through PRs #11/#12, Preparation through PR #13 at `0e332ac`, and the audited migration/release hardening through PR #14 at merge commit `61964d1`. The first technical release deliberately deferred the separate About, Contribution, Rights, Accessibility, Guides-hub, broader methodology, comprehensive tree, and standalone comparison routes; v1.0.1 adds only the small public privacy/analytics notice required by the approved telemetry integration. Consult `docs/project_status.md` for exact evidence and the next action.
+Current phase: **the owner-approved standalone Skull Comparison workbench is being implemented locally on `skull_comparison_page` from the released `main` baseline**. The unfinished `preparation_guide_refinement` branch remains separate and unmerged. The approved comparison contract lives in `docs/skull_comparison_page.md`; implementation does not authorize push, pull request, merge, deployment, or publication. Consult `docs/project_status.md` for exact evidence and the next action.
 
 Use the owner-selected public v1 name **Skull Collection** from central site configuration.
 
@@ -100,6 +100,7 @@ Local context paths:
 - `agent_context/home_page/hero_too_big_hitboxes.png` and `agent_context/home_page/hero_too_big_hitboxes_v2.png` — owner visual evidence for broad/overlapping Home hero hitboxes; context only, never runtime assets.
 - `agent_context/home_page/hero_mobile_big_pop_up_error.png` — owner visual evidence for oversized mobile Home identity cards; context only, never a runtime asset.
 - `agent_context/measurement_page_plan.md` — owner-authored measurement-page product specification covering the `/methodology` reference page, programmatic SVG overlays, supplied measurement definitions, interaction, and acceptance criteria.
+- `prompt_comparison_page_plan.md` — owner feedback and expanded product direction for the standalone comparison workspace; the approved implementation contract is `docs/skull_comparison_page.md`.
 - `agent_context/measurement_page_feedback_v1.md` — bounded owner review of the first `/methodology` implementation; owns the refined geometry, compact detail surface, diagram order/cropping, mobile preview, and table-linking requirements.
 - `agent_context/mobile_tooltip_too_large_hide_skull.png` — owner visual evidence for the v3 mobile preview refinement; context only, never a runtime asset.
 - `agent_context/preparation_page/` — ignored owner preparation brief/photographs, the feedback-supplied oily-patch source and generated degreasing master; maintenance-only input. The canonical page system is `docs/skull_preparation_guide.md`; reviewed content/media live under `content/guides/`, and `pnpm media:process:preparation` creates the validated public derivatives.
@@ -184,6 +185,7 @@ Before a checkpoint:
 | `docs/project_status.md` | Current truth, verification, blockers, next actions, checkpoint log |
 | `docs/phase_3_1_migration_audit.md` | Accepted/blocked review-slice records, normalization decisions, Phase 6 obligations |
 | `docs/skull_preparation_guide.md` | Preparation page structure, components, source/media contracts, content decisions and verification intent |
+| `docs/skull_comparison_page.md` | Approved standalone comparison layout, multi-subject/multi-view calibration contract, interactions, architecture, and acceptance gate |
 | `docs/interactive_taxonomic_tree.md` | Phase 3.1/tree-drawer foundations and comprehensive Phase 3.3 requirements |
 | `docs/decisions/*.md` | Historical material architecture decisions |
 | `CONTRIBUTING.md` | Contributor branch/PR and quality workflow |

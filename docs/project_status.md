@@ -2,11 +2,17 @@
 
 **Snapshot date:** 2026-09-09
 
-**Current phase:** v1.0.1 production-only Web Analytics, dependency remediation, and MapLibre reliability fix released
+**Current phase:** owner-approved standalone Skull Comparison implementation on `skull_comparison_page`
 
-**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. PR #14 merged normally at `61964d1`; PR #16 merged normally at `7abfc642`. The canonical collection remains 15 public taxa, 18 public specimens, and 104 specimen images, with 31 source specimens deferred for missing reviewed media and three rejected. Production is live on Vercel at `https://skullwebsite-xi.vercel.app`; the v1.0.1 tag records the verified production state.
+**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. The owner approved all eight standalone-comparison decisions on 2026-09-11. Implementation has started in an isolated worktree on `skull_comparison_page` from `main`; the unfinished `preparation_guide_refinement` branch remains separate, intact, and unmerged.
 
-**Next action:** Verify the Google Search Console URL-prefix property and submit `sitemap.xml`; then continue post-release work from short-lived branches based on the updated `main`.
+**Next action:** Complete and verify the comparison calibration/data-contract checkpoint, then proceed through the approved workbench stages with coherent commits. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
+
+## 0.7 Standalone Skull Comparison authorization and branch boundary (2026-09-11)
+
+- The owner confirmed all eight decisions in `docs/skull_comparison_page.md`, including `/compare`, five subjects, ten active layers, per-subject opacity, explicit alternate-view calibration, a directed difference pair, analytical URL state, unobtrusive print support, and the default SPEC-0001/adult-human comparison.
+- Created `skull_comparison_page` from released `main` in a separate worktree. The local `preparation_guide_refinement` branch and its uncommitted guide content were neither merged nor copied.
+- The first checkpoint owns the approved plan and ADR. Feature implementation, verification evidence, and later checkpoints will be recorded below as they become true.
 
 ## 0.6 Google Search Console verification (2026-09-09)
 
