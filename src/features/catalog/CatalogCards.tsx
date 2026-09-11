@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { ScientificIdentification } from "@/components/ScientificIdentification";
 import { SubjectImage } from "@/components/SubjectImage";
+import { buildComparisonHref } from "@/domain/comparison/link";
 import type {
   ClassEntry,
   SpecimenCardRecord,
@@ -87,6 +88,7 @@ export function TaxonCard({
   const metricLength = metricLengthSpecimen?.specimen.measurements.skullLength;
   const metricMass = metricMassSpecimen?.specimen.measurements.skullMass;
   const cardHref = displayHref ?? card.href;
+  const comparisonSpecimen = representative?.specimen ?? card.defaultSpecimen;
   return (
     <article
       className={[
@@ -151,6 +153,15 @@ export function TaxonCard({
             />
           </dl>
         </div>
+      </Link>
+      <Link
+        className="collection-card-compare"
+        href={buildComparisonHref([
+          { id: `specimen:${comparisonSpecimen.specimenId}` },
+        ])}
+        aria-label={`Compare skull ${comparisonSpecimen.specimenId}`}
+      >
+        Compare {comparisonSpecimen.specimenId} →
       </Link>
       {card.specimenCount > 1 ? (
         <SpecimenQuickView
@@ -242,6 +253,15 @@ export function SpecimenCard({ card }: { card: SpecimenCardRecord }) {
             />
           </dl>
         </div>
+      </Link>
+      <Link
+        className="collection-card-compare"
+        href={buildComparisonHref([
+          { id: `specimen:${card.specimen.specimenId}` },
+        ])}
+        aria-label={`Compare skull ${card.specimen.specimenId}`}
+      >
+        Compare {card.specimen.specimenId} →
       </Link>
     </article>
   );

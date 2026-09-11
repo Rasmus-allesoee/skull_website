@@ -90,7 +90,14 @@ export function ComparisonField({
   const viewportRef = useRef<HTMLDivElement>(null);
   const layerRefs = useRef(new Map<string, HTMLElement>());
   const activeGesture = useRef<ActiveGesture | null>(null);
+  const touchPointers = useRef(new Map<number, { x: number; y: number }>());
+  const pinchGesture = useRef<{
+    distance: number;
+    midpoint: { x: number; y: number };
+    camera: ComparisonCamera;
+  } | null>(null);
   const animationFrame = useRef<number | null>(null);
+  const prePrintCamera = useRef<ComparisonCamera | null>(null);
   const hasInitialFit = useRef(false);
   const previousArrangement = useRef(arrangement);
   const previousDifference = useRef(difference?.join("|") ?? "");
@@ -114,6 +121,7 @@ export function ComparisonField({
   const [placements, setPlacements] =
     useState<Record<string, ComparisonLayerPlacement>>(initialPlacements);
   const [status, setStatus] = useState("");
+  const printState = useRef({ camera, layers, placements, viewportSize });
 
   useEffect(() => {
     const viewport = viewportRef.current;
@@ -128,6 +136,7 @@ export function ComparisonField({
     return () => observer.disconnect();
   }, []);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- The URL-controlled layer and arrangement props must reconcile the field's transient placements and camera after browser-history or responsive viewport changes. */
   useEffect(() => {
     const arranged = arrangeComparisonLayers(layers, arrangement, difference);
     const overlayPairChanged =
@@ -174,6 +183,7 @@ export function ComparisonField({
     hasInitialFit.current = true;
     setCamera(getFittedComparisonCamera(layers, placements, viewportSize));
   }, [layers, placements, viewportSize]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(
     () => () => {
@@ -183,6 +193,38 @@ export function ComparisonField({
     },
     [],
   );
+
+  useEffect(() => {
+    printState.current = { camera, layers, placements, viewportSize };
+  }, [camera, layers, placements, viewportSize]);
+
+  useEffect(() => {
+    function fitForPrint() {
+      const current = printState.current;
+      prePrintCamera.current = current.camera;
+      setCamera(
+        getFittedComparisonCamera(
+          current.layers,
+          current.placements,
+          current.viewportSize,
+        ),
+      );
+    }
+
+    function restoreAfterPrint() {
+      if (prePrintCamera.current) {
+        setCamera(prePrintCamera.current);
+      }
+      prePrintCamera.current = null;
+    }
+
+    window.addEventListener("beforeprint", fitForPrint);
+    window.addEventListener("afterprint", restoreAfterPrint);
+    return () => {
+      window.removeEventListener("beforeprint", fitForPrint);
+      window.removeEventListener("afterprint", restoreAfterPrint);
+    };
+  }, []);
 
   function fitAll(message = "All active views fitted in the field.") {
     setCamera(getFittedComparisonCamera(layers, placements, viewportSize));
@@ -224,6 +266,25 @@ export function ComparisonField({
   function beginCameraPan(event: PointerEvent<HTMLDivElement>) {
     if (event.button !== 0) return;
     if ((event.target as Element).closest("[data-comparison-layer]")) return;
+    if (event.pointerType === "touch") {
+      touchPointers.current.set(event.pointerId, {
+        x: event.clientX,
+        y: event.clientY,
+      });
+      event.currentTarget.setPointerCapture(event.pointerId);
+      if (touchPointers.current.size === 2) {
+        const [first, second] = [...touchPointers.current.values()];
+        if (first && second) {
+          pinchGesture.current = {
+            distance: pointDistance(first, second),
+            midpoint: pointMidpoint(first, second),
+            camera,
+          };
+          event.currentTarget.dataset.panning = "true";
+        }
+      }
+      return;
+    }
     event.currentTarget.setPointerCapture(event.pointerId);
     activeGesture.current = {
       mode: "camera",
@@ -263,6 +324,43 @@ export function ComparisonField({
   }
 
   function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
+    if (
+      event.pointerType === "touch" &&
+      touchPointers.current.has(event.pointerId)
+    ) {
+      touchPointers.current.set(event.pointerId, {
+        x: event.clientX,
+        y: event.clientY,
+      });
+      const pinch = pinchGesture.current;
+      const [first, second] = [...touchPointers.current.values()];
+      if (pinch && first && second) {
+        event.preventDefault();
+        const bounds = event.currentTarget.getBoundingClientRect();
+        const midpoint = pointMidpoint(first, second);
+        const distance = Math.max(1, pointDistance(first, second));
+        const zoom = clamp(
+          pinch.camera.zoom * (distance / Math.max(1, pinch.distance)),
+          minimumFieldZoom,
+          maximumFieldZoom,
+        );
+        const ratio = zoom / pinch.camera.zoom;
+        const initialFocal = {
+          x: pinch.midpoint.x - bounds.left - bounds.width / 2,
+          y: pinch.midpoint.y - bounds.top - bounds.height / 2,
+        };
+        const currentFocal = {
+          x: midpoint.x - bounds.left - bounds.width / 2,
+          y: midpoint.y - bounds.top - bounds.height / 2,
+        };
+        setCamera({
+          x: currentFocal.x - (initialFocal.x - pinch.camera.x) * ratio,
+          y: currentFocal.y - (initialFocal.y - pinch.camera.y) * ratio,
+          zoom,
+        });
+      }
+      return;
+    }
     const gesture = activeGesture.current;
     if (!gesture || gesture.pointerId !== event.pointerId) return;
     if (gesture.mode === "camera") {
@@ -291,6 +389,16 @@ export function ComparisonField({
   }
 
   function endPointerGesture(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType === "touch") {
+      touchPointers.current.delete(event.pointerId);
+      if (touchPointers.current.size < 2) {
+        pinchGesture.current = null;
+        delete event.currentTarget.dataset.panning;
+        if (touchPointers.current.size === 1) {
+          setStatus("Field pan and zoom updated.");
+        }
+      }
+    }
     const gesture = activeGesture.current;
     if (!gesture || gesture.pointerId !== event.pointerId) return;
     if (gesture.mode === "layer") {
@@ -493,6 +601,14 @@ export function ComparisonField({
           {status}
         </p>
       </div>
+      <ul className="comparison-print-credits" aria-label="Photograph credits">
+        {layers.map((layer) => (
+          <li key={layer.key}>
+            Skull {layer.subjectIndex + 1} · {formatViewLabel(layer.media.view)}{" "}
+            · Photograph: {layer.media.credit}
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -719,4 +835,18 @@ function formatViewLabel(view: ComparisonView) {
   return view === "mandible-dorsal"
     ? "Mandible — dorsal"
     : `${view.charAt(0).toUpperCase()}${view.slice(1)}`;
+}
+
+function pointDistance(
+  first: { x: number; y: number },
+  second: { x: number; y: number },
+) {
+  return Math.hypot(second.x - first.x, second.y - first.y);
+}
+
+function pointMidpoint(
+  first: { x: number; y: number },
+  second: { x: number; y: number },
+) {
+  return { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };
 }

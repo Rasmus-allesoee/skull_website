@@ -427,7 +427,15 @@ export function ComparisonWorkbench({
           <WorkbenchSubjectPicker
             records={records}
             selectedIds={state.subjects.map(({ id }) => id)}
-            disabled={state.subjects.length >= maximumComparisonSubjects}
+            disabled={
+              state.subjects.length >= maximumComparisonSubjects ||
+              layerCount >= maximumComparisonLayers
+            }
+            disabledReason={
+              state.subjects.length >= maximumComparisonSubjects
+                ? "5-skull limit reached"
+                : "10-view field limit reached"
+            }
             onSelect={addSubject}
           />
           <details className="compare-suggestions">

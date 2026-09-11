@@ -2,9 +2,9 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**Current milestone:** v1.0.0 is released and deployed at <https://skullwebsite-xi.vercel.app>; the focused v1.0.1 production-only Web Analytics/privacy follow-up is implemented locally on `agent/vercel-analytics` and awaits its PR, production verification, and release tag.
+**Current milestone:** v1.0.1 is released and deployed at <https://skullwebsite-xi.vercel.app>. The standalone Skull Comparison workbench is implemented and verified locally on `skull_comparison_page`, pending owner review; it is not yet published.
 
-Start at `/`, browse the catalog at `/species`, explore public specimen locations at `/map`, inspect the measurement reference at `/methodology`, open the full beginner preparation guide at `/guides/skull-preparation`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`.
+Start at `/`, browse the catalog at `/species`, compare calibrated skull views at `/compare`, explore public specimen locations at `/map`, inspect the measurement reference at `/methodology`, open the full beginner preparation guide at `/guides/skull-preparation`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`.
 
 ## Project principles
 
@@ -97,6 +97,7 @@ On macOS, find the computer's active LAN IPv4 address (commonly with `ipconfig g
 | `pnpm media:process:methodology` | Rebuild and validate the five metadata-stripped measurement-reference WebPs from ignored raw sources |
 | `pnpm media:process:home` | Rebuild and validate the owner-authorized metadata-stripped Home thumbnail WebPs from ignored staging |
 | `pnpm migration:audit` | Verify the reviewed Phase 6 raw-export fingerprints, complete row dispositions, and media coverage |
+| `pnpm comparison:audit` | Report calibrated comparison eligibility and explicit missing-view reasons |
 | `pnpm migration:prepare` | Generate and fully validate an ignored proposed specimen CSV plus field-level diff without changing canonical content |
 | `pnpm taxonomy:refresh -- --taxon-id TAX-0001 --dry-run` | Query GBIF explicitly without changing curated taxonomy or writing a snapshot |
 | `pnpm lint` | Run ESLint with the Next.js and repository rules |

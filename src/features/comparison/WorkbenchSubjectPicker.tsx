@@ -10,11 +10,13 @@ export function WorkbenchSubjectPicker({
   records,
   selectedIds,
   disabled,
+  disabledReason,
   onSelect,
 }: {
   records: SkullComparisonRecord[];
   selectedIds: string[];
   disabled: boolean;
+  disabledReason?: string;
   onSelect: (id: string) => void;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -90,9 +92,7 @@ export function WorkbenchSubjectPicker({
         <span aria-hidden="true">＋</span>
         <span>
           <strong>Add skull</strong>
-          <small>
-            {disabled ? "5-skull limit reached" : "Search collection"}
-          </small>
+          <small>{disabled ? disabledReason : "Search collection"}</small>
         </span>
       </button>
       <dialog

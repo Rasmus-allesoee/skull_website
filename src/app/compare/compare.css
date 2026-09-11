@@ -602,6 +602,9 @@
   transform: translate3d(var(--camera-x), var(--camera-y), 0)
     scale(var(--camera-zoom));
   transform-origin: 0 0;
+}
+
+.comparison-field[data-panning="true"] .comparison-camera {
   will-change: transform;
 }
 
@@ -621,6 +624,9 @@
   height: var(--layer-height);
   margin: 0;
   transform: translate3d(var(--layer-x), var(--layer-y), 0);
+}
+
+.comparison-layer:has(.comparison-layer-hit:active) {
   will-change: transform;
 }
 
@@ -807,6 +813,10 @@
 
 .comparison-field-status {
   text-align: right;
+}
+
+.comparison-print-credits {
+  display: none;
 }
 
 .comparison-empty-state {
@@ -1314,6 +1324,17 @@
 
   .comparison-layer-image {
     opacity: 1;
+  }
+
+  .comparison-print-credits {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.45rem 0.9rem 0;
+    margin: 0;
+    border-top: 1px solid #777;
+    color: #111;
+    font-size: 7pt;
+    list-style: none;
   }
 
   .comparison-table {

@@ -530,6 +530,8 @@ Phase 2.2 completed the reusable calibrated foundation on the specimen page: exp
 
 The binding product, calibration, architecture, responsive, accessibility, performance, test, and staged-delivery contract is [skull_comparison_page.md](skull_comparison_page.md). Implementation proceeds through coherent verified checkpoints on `skull_comparison_page`; the separate `preparation_guide_refinement` branch remains unmerged.
 
+The local implementation now includes the calibrated data contract, generalized comparison domain, static `/compare` baseline, interactive multi-subject/multi-view field, responsive directed measurement table, quick comparisons, print treatment, and approved site-wide entry points. The complete local gate passes: 102/102 unit/component tests, 79/79 prerendered routes, and 90/90 Chromium journeys. Owner review remains required before any push, pull request, merge, deployment, or publication.
+
 ### Specimen-location map action
 
 Phase 5 completed the concise `View on map` action beside Collection record location data when a valid public point exists. It opens the accessible `/map?specimen={id}` route with the corresponding marker, popup, and list row selected. An embedded specimen-page modal remains deliberately deferred; it must not duplicate map state or violate the route-only MapLibre bundle boundary without an explicit architecture revision.

@@ -48,6 +48,7 @@ export function getPublicRoutePaths(): string[] {
     "/",
     "/species",
     "/map",
+    "/compare",
     "/methodology",
     "/guides/skull-preparation",
     "/privacy",

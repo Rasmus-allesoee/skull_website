@@ -43,10 +43,10 @@ describe("museum home", () => {
     expect(
       screen.getByRole("heading", { name: "Skull Comparison" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Coming soon")).toBeInTheDocument();
     expect(
-      screen.queryByRole("link", { name: /Skull Comparison/i }),
-    ).toBeNull();
+      screen.getByRole("link", { name: "Open Skull Comparison" }),
+    ).toHaveAttribute("href", "/compare");
+    expect(screen.queryByText("Coming soon")).toBeNull();
   });
 
   it("server-renders ten exact specimen links and removes the retired Home sections", () => {

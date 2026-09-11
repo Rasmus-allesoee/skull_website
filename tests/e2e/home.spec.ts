@@ -51,10 +51,10 @@ test("home and catalog expose published records with metadata and no detectable 
     "src",
     /skull-comparison-thumbnail/,
   );
-  await expect(page.getByText("Coming soon")).toBeVisible();
   await expect(
-    page.getByRole("link", { name: /Skull Comparison/i }),
-  ).toHaveCount(0);
+    page.getByRole("link", { name: "Open Skull Comparison" }),
+  ).toHaveAttribute("href", "/compare");
+  await expect(page.getByText("Coming soon")).toHaveCount(0);
   await expect(page.locator(".maplibregl-map")).toHaveCount(0);
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
     "content",
@@ -685,7 +685,8 @@ test("family galleries form a three-column desktop grid and the compact specimen
     .click();
   const dialog = page.getByRole("dialog", { name: "Choose a specimen" });
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole("link")).toHaveCount(3);
+  await expect(dialog.locator(".specimen-quick-record-link")).toHaveCount(3);
+  await expect(dialog.locator(".specimen-quick-compare")).toHaveCount(3);
   await expect(dialog.getByText("Age", { exact: true }).first()).toBeVisible();
   await expect(dialog.getByText("Sex", { exact: true }).first()).toBeVisible();
   await expect(
@@ -705,7 +706,9 @@ test("family galleries form a three-column desktop grid and the compact specimen
   expect(Math.abs(dialogBox!.x + dialogBox!.width / 2 - 720)).toBeLessThan(2);
   expect(Math.abs(dialogBox!.y + dialogBox!.height / 2 - 450)).toBeLessThan(2);
 
-  await dialog.getByRole("link", { name: /SPEC-0013/i }).click();
+  await dialog
+    .locator(".specimen-quick-record-link", { hasText: "SPEC-0013" })
+    .click();
   await expect(page).toHaveURL("/species/harbour-seal/specimens/SPEC-0013");
   await expect(page.getByText("Exact specimen record")).toBeVisible();
 });
@@ -776,7 +779,9 @@ test("Home, taxonomy, and exact specimen routes remain useful without JavaScript
   await expect(
     page.getByRole("link", { name: "Open the collection map" }),
   ).toHaveAttribute("href", "/map");
-  await expect(page.getByText("Coming soon")).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Open Skull Comparison" }),
+  ).toHaveAttribute("href", "/compare");
 
   await page.goto("/taxonomy/family/canidae");
   await expect(
@@ -806,6 +811,7 @@ test("sitemap, robots, and unknown taxonomy routes reflect the static public sur
   expect(sitemap.ok()).toBe(true);
   const sitemapBody = await sitemap.text();
   expect(sitemapBody).toContain("/methodology");
+  expect(sitemapBody).toContain("/compare");
   expect(sitemapBody).toContain("/privacy");
   expect(sitemapBody).toContain("/taxonomy/class/mammals");
   expect(sitemapBody).toContain("/species/raccoon-dog/specimens/SPEC-0001");

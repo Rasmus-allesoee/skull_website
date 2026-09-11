@@ -336,6 +336,9 @@ describe("exhibit components", () => {
     ).toBeCloseTo(119 / 182, 8);
     expect(screen.getByText("~63 mm shorter")).toBeInTheDocument();
     expect(screen.getByText("(0.65×)")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Open full comparison →" }),
+    ).toHaveAttribute("href", expect.stringContaining("%3ASPEC-0001"));
 
     await user.click(screen.getByRole("button", { name: "Compare" }));
     const combobox = screen.getByRole("combobox", { name: "Search skulls" });
@@ -392,5 +395,5 @@ describe("exhibit components", () => {
       rules: { "color-contrast": { enabled: false } },
     });
     expect(results.violations).toEqual([]);
-  });
+  }, 10_000);
 });

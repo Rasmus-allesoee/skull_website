@@ -1,12 +1,12 @@
 # Project status
 
-**Snapshot date:** 2026-09-09
+**Snapshot date:** 2026-09-11
 
-**Current phase:** owner-approved standalone Skull Comparison implementation on `skull_comparison_page`
+**Current phase:** locally complete standalone Skull Comparison implementation on `skull_comparison_page`, pending owner review
 
-**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. The owner approved all eight standalone-comparison decisions on 2026-09-11. Implementation has started in an isolated worktree on `skull_comparison_page` from `main`; the unfinished `preparation_guide_refinement` branch remains separate, intact, and unmerged.
+**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. The owner approved all eight standalone-comparison decisions on 2026-09-11. The workbench is implemented and fully verified in the isolated comparison worktree on `skull_comparison_page`; the unfinished `preparation_guide_refinement` branch remains separate, intact, and unmerged.
 
-**Next action:** Continue the approved workbench interactions, multi-subject controls, measurement pairing, site entry points, and final regression verification through coherent local checkpoints. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
+**Next action:** Owner review of the locally complete `/compare` workbench and its site entry points. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
 
 ## 0.7 Standalone Skull Comparison authorization and branch boundary (2026-09-11)
 
@@ -42,6 +42,13 @@
 - Added the searchable one-to-five-subject picker, lateral-on-add behavior, compact per-subject view/opacity menus, all five calibrated view types when available, explicit five-subject/ten-layer boundaries, atomic final-view subject removal, difference-pair ID preservation/fallback, and deterministic quick comparisons/contextual additions derived from canonical taxonomy and recorded lengths.
 - The semantic table now supports all selected subjects plus any directed difference pair, cross-class limitation copy, comparable-only filtering, stable methodology links, red/green-plus-text direction, ratio output, and a narrow-screen card presentation without changing table semantics.
 - Pure URL/transition/layout/suggestion tests pass **11/11**, the existing specimen-page comparison component regression passes **8/8**, strict TypeScript passes, and the production build prerenders **79/79 routes** with static `/compare`. Real Chromium checks exercised alternate-view addition, three-subject selection, URL updates, mammal-to-bird pair switching, 0% multi-layer opacity, keyboard movement, pointer dragging, and the 390 × 844 card table; the document retained zero horizontal overflow and the development overlay/console reported no errors.
+
+### Site-entry and acceptance integration checkpoint
+
+- Added Compare to the global header/footer and sitemap; converted the existing Home Comparison preview into a real whole-card route link; added a preselected `Open full comparison` action to the specimen-page scale card; and added exact-ID Compare actions to taxon/specimen cards and multi-specimen quick views. These remain explicit links rather than a persistent global basket.
+- Added focused URL-link, Home, catalog, and specimen-comparison regressions plus a dedicated Chromium workbench suite covering axe, ten mixed-view layers, free pointer movement, directed cross-class semantics, opacity, invalid URL/history recovery, mobile cards, site entry points, two-finger camera gestures, print output/credits, 320 px forced-color/reduced-motion/failed-image recovery, and no-JavaScript output.
+- `CI=true pnpm check` passes formatting, lint, media/content validation, strict TypeScript, **102/102 unit/component tests**, and the six expected invalid-fixture failures. `CI=true pnpm build` prerenders **79/79 routes**, including static `/compare`; `pnpm test:e2e` passes **90/90 Chromium journeys** in one clean full rerun. The first full browser attempt exposed one stale three-link specimen-chooser assertion after each row gained its Compare action; the corrected test now asserts three record links and three comparison links and passes in isolation and in the complete suite.
+- Work remains local. Nothing was pushed, merged, deployed, or published, and the separate `preparation_guide_refinement` worktree was not modified.
 
 ## 0.6 Google Search Console verification (2026-09-09)
 
