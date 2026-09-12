@@ -1,12 +1,30 @@
 # Project status
 
-**Snapshot date:** 2026-09-11
+**Snapshot date:** 2026-09-13
 
-**Current phase:** locally complete standalone Skull Comparison implementation on `skull_comparison_page`, pending owner review
+**Current phase:** locally complete owner-feedback refinement of the standalone Skull Comparison implementation on `skull_comparison_page`, pending owner review
 
-**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. The owner approved all eight standalone-comparison decisions on 2026-09-11. The workbench is implemented and fully verified in the isolated comparison worktree on `skull_comparison_page`; the unfinished `preparation_guide_refinement` branch remains separate, intact, and unmerged.
+**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. The owner approved all eight standalone-comparison decisions on 2026-09-11. The owner-directed desktop comparison feedback is implemented and fully verified in the isolated comparison worktree on `skull_comparison_page`; the unfinished `preparation_guide_refinement` branch remains separate, intact, and unmerged.
 
 **Next action:** Owner review of the locally complete `/compare` workbench and its site entry points. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
+
+## 0.8 Owner-directed comparison review refinement (2026-09-13)
+
+- Repaired the comparison field interaction model: desktop mouse-wheel and touchpad input pans the field, modified wheel input zooms around the pointer, mobile one-finger vertical gestures remain page scrolling, and two-finger gestures pan/pinch the field. Direct validated WebP sources are used in the field so high zoom does not introduce an additional optimizer blur; the zoom ceiling is now 2,000% so the smallest calibrated lateral views can be inspected at useful size.
+- Made the 100 mm scale bar a viewport overlay that opens at the current field's lower-left view position, remains visible while the camera moves, and can be dragged or keyboard-nudged. Re-selecting the active arrangement now reapplies its deterministic layout and resets the camera/opacity state just like Reset layout.
+- Reworked automatic placement and overlay behavior: adding or removing any skull/view rebuilds deterministic non-overlapping placements and fits all active views; overlay-pair groups every active matching view across every selected subject rather than only a two-skull lateral pair; layer selection clears from transparent field clicks or Escape; hover no longer paints a frame-sized rectangle; compact labels can be toggled from More and remain screen-sized while zooming.
+- Rebuilt the selected-skull rail for dense use: cards are compact, vertically scrollable on desktop at the field-panel height, horizontally scrollable on narrow screens, and support common-name record links, per-card view/opacity controls, card reordering, safe last-card menus, and automatic outside dismissal for open details/dropdowns. Measurement-table headers are human-readable and draggable, with the same order controlling the difference pair.
+- Expanded the class-aware table to all recorded measurements. Mixed mammal/bird primary rows consistently use the shared skull-width/skull-height mappings, additional rows expose the selected-profile union, the direction text follows the conditional divider color, and measurement names retain stable methodology links with the calculation explanation in a tooltip.
+- Added regression coverage for desktop wheel/pan/selection/scale-bar/arrangement behavior, 1100 px toolbar alignment, 5-subject card/table reorder, all-view overlay, mixed-class rows, full measurement expansion, touch gestures, failed images, print output, no-JavaScript output, site entry points, and accessible/reduced-motion/forced-color states.
+- Updated the canonical comparison, design-system, architecture, project-overview, implementation-plan, and status documentation. The original `skull_website` worktree and the separate `preparation_guide_refinement` worktree were not modified; no remote operation was performed.
+
+### Verification
+
+- `CI=true corepack pnpm check` passes formatting, ESLint, media/content validation, strict TypeScript, **105/105 unit/component tests**, and the six expected invalid-fixture failures. The existing four missing-optional-frontal-view warnings remain unchanged.
+- `CI=true corepack pnpm build` passes and prerenders **79/79 static routes**, including `/compare`.
+- `CI=true PLAYWRIGHT_PORT=3000 corepack pnpm test:e2e` passes **94/94 Chromium journeys** against a clean production server, including all **13 comparison journeys**, in 3.7 minutes. A preliminary non-CI run reused a dev server whose asset graph had been overwritten by the production build; after the exact server was restarted, the affected catalog/Home checks passed and the canonical production run passed in full.
+- Manual visual/responsive review covered the comparison page at 1440, 1280, 1100, 1024, 390, and iPhone 11 emulation. The 1100 px desktop rail/panel heights differ only by subpixel rounding, the 1024 px breakpoint switches to the horizontal subject strip, document overflow remains zero, and the desktop/mobile screenshots show the compact workbench and field controls. The field's direct specimen image probe reported the original 3200 px source width.
+- Work remains local on `skull_comparison_page` in `/Users/rasmusallesoeenielsen/Documents/skull_website_comparison`; owner review is required before push, pull request, merge, deployment, or publication.
 
 ## 0.7 Standalone Skull Comparison authorization and branch boundary (2026-09-11)
 
