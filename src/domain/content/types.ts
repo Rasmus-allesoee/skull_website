@@ -208,16 +208,27 @@ export const measurementProfileLayouts = {
 
 export const comparisonMeasurementKeys = [
   "skullLength",
+  "condylobasalLength",
+  "maxillaryToothRowLength",
+  "mandibleLength",
+  "mandibularToothRowLength",
+  "mandibleRamusHeight",
+  "mandibleBodyHeight",
   "skullWidth",
+  "craniumWidth",
+  "postorbitalWidth",
+  "interorbitalWidth",
+  "rostrumWidth",
   "skullHeight",
+  "maxillaryCanineLength",
+  "mandibularCanineLength",
+  "skullMass",
+  "bodyMass",
   "billLength",
   "billWidth",
   "billHeight",
-  "craniumWidth",
   "craniumHeight",
   "orbitalWidth",
-  "mandibleLength",
-  "skullMass",
 ] as const;
 
 export type PublicationStatus = (typeof publicationStatuses)[number];

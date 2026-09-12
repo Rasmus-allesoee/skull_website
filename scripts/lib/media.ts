@@ -375,26 +375,39 @@ async function validateComparisonReferences(
     });
     if (!inspected) continue;
 
-    const sourceFields: Record<
-      ComparisonMeasurementKey,
-      keyof typeof source.measurements
+    const sourceFields: Partial<
+      Record<ComparisonMeasurementKey, keyof typeof source.measurements>
     > = {
       skullLength: "skull_length_mm",
+      condylobasalLength: "condylobasal_length_mm",
+      maxillaryToothRowLength: "maxillary_tooth_row_length_mm",
+      mandibleLength: "mandible_length_mm",
+      mandibularToothRowLength: "mandibular_tooth_row_length_mm",
+      mandibleRamusHeight: "mandible_ramus_height_mm",
+      mandibleBodyHeight: "mandible_body_height_mm",
       skullWidth: "skull_width_mm",
+      craniumWidth: "cranium_width_mm",
+      postorbitalWidth: "postorbital_width_mm",
+      interorbitalWidth: "interorbital_width_mm",
+      rostrumWidth: "rostrum_width_mm",
       skullHeight: "skull_height_mm",
+      maxillaryCanineLength: "maxillary_canine_length_mm",
+      mandibularCanineLength: "mandibular_canine_length_mm",
+      skullMass: "skull_mass_g",
+      bodyMass: "body_mass_g",
       billLength: "bill_length_mm",
       billWidth: "bill_width_mm",
       billHeight: "bill_height_mm",
-      skullMass: "skull_mass_g",
-      craniumWidth: "cranium_width_mm",
       craniumHeight: "cranium_height_mm",
       orbitalWidth: "orbital_width_mm",
-      mandibleLength: "mandible_length_mm",
     };
     const measurements = Object.fromEntries(
       comparisonMeasurementKeys.map((key) => {
-        const unit = key === "skullMass" ? "g" : "mm";
-        const value = source.measurements[sourceFields[key]];
+        const unit = key === "skullMass" || key === "bodyMass" ? "g" : "mm";
+        const sourceField = sourceFields[key];
+        const value = sourceField
+          ? source.measurements[sourceField]
+          : undefined;
         let measurement: Measurement;
         if (!isMeasurementApplicable(key, source.measurement_profile)) {
           measurement = { status: "not_applicable", value: null, unit };

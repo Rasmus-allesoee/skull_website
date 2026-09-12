@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type DragEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   calculateMeasurementDifference,
-  getComparisonDifferenceRows,
+  getComparisonMeasurementSections,
   getComparisonRowMeasurementKey,
   isCrossClassMeasurementPair,
 } from "@/domain/comparison/scale";
@@ -38,16 +38,27 @@ import {
   parseComparisonState,
   removeComparisonSubject,
   removeComparisonView,
+  reorderComparisonSubjects,
   serializeComparisonState,
   type ComparisonWorkbenchState,
 } from "./workbenchState";
 
 const methodologyNumbers: Partial<Record<ComparisonMeasurementKey, number>> = {
   skullLength: 1,
+  condylobasalLength: 2,
+  maxillaryToothRowLength: 3,
+  mandibularToothRowLength: 10,
   mandibleLength: 9,
   skullWidth: 12,
   craniumWidth: 13,
+  postorbitalWidth: 14,
+  interorbitalWidth: 15,
+  rostrumWidth: 16,
   skullHeight: 17,
+  mandibleRamusHeight: 18,
+  mandibleBodyHeight: 19,
+  maxillaryCanineLength: 20,
+  mandibularCanineLength: 21,
 };
 
 const subjectMarkers = ["●", "■", "▲", "◆", "⬟"] as const;
@@ -62,6 +73,7 @@ export function ComparisonWorkbench({
   const [warnings, setWarnings] = useState<string[]>([]);
   const [copyStatus, setCopyStatus] = useState("");
   const [actionStatus, setActionStatus] = useState("");
+  const [showAllMeasurements, setShowAllMeasurements] = useState(false);
   const [activeSubjectId, setActiveSubjectId] = useState(
     defaults.subjects[0]?.id ?? null,
   );
@@ -69,6 +81,7 @@ export function ComparisonWorkbench({
     Record<string, number>
   >(() => Object.fromEntries(defaults.subjects.map(({ id }) => [id, 100])));
   const hydrated = useRef(false);
+  const draggedSubjectId = useRef<string | null>(null);
   const recordsById = useMemo(
     () => new Map(records.map((record) => [record.id, record])),
     [records],
@@ -96,6 +109,20 @@ export function ComparisonWorkbench({
     return () => window.removeEventListener("popstate", restore);
   }, [records]);
 
+  useEffect(() => {
+    function closeOpenDetails(event: PointerEvent) {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      document
+        .querySelectorAll<HTMLDetailsElement>(".compare-page details[open]")
+        .forEach((details) => {
+          if (!details.contains(target)) details.open = false;
+        });
+    }
+    document.addEventListener("pointerdown", closeOpenDetails);
+    return () => document.removeEventListener("pointerdown", closeOpenDetails);
+  }, []);
+
   const selected: SelectedComparisonSubject[] = state.subjects.flatMap(
     (subject) => {
       const record = recordsById.get(subject.id);
@@ -117,13 +144,16 @@ export function ComparisonWorkbench({
         recordsById.get(state.difference[1]),
       ] as const)
     : null;
-  const rows =
-    pair?.[0] && pair[1]
-      ? getComparisonDifferenceRows(
-          pair[0].measurementProfile,
-          pair[1].measurementProfile,
-        )
-      : [];
+  const measurementSections = useMemo(
+    () =>
+      getComparisonMeasurementSections(
+        selected.map(({ record }) => record.measurementProfile),
+      ),
+    [selected],
+  );
+  const rows = showAllMeasurements
+    ? [...measurementSections.primary, ...measurementSections.additional]
+    : measurementSections.primary;
   const visibleRows = state.comparableOnly
     ? rows.filter((row) => isComparableRow(row, pair?.[0], pair?.[1]))
     : rows;
@@ -143,7 +173,11 @@ export function ComparisonWorkbench({
       layerCount >= maximumComparisonLayers ||
       state.subjects.some((subject) => subject.id === id)
     ) {
-      setActionStatus("That skull cannot be added to the current field.");
+      setActionStatus(
+        state.subjects.length >= maximumComparisonSubjects
+          ? "5-skull limit reached. Remove a skull to add another."
+          : "10-view field limit reached. Remove a view to add another skull.",
+      );
       return;
     }
     const record = recordsById.get(id);
@@ -179,6 +213,35 @@ export function ComparisonWorkbench({
         ? "Skull removed. Difference pair reset to the first two skulls."
         : "Skull removed.",
     );
+  }
+
+  function reorderSubjects(sourceId: string, targetId: string) {
+    const next = reorderComparisonSubjects(state, sourceId, targetId);
+    if (next === state) return;
+    setActiveSubjectId(sourceId);
+    commit(next, "Skull order updated; table columns reordered.");
+  }
+
+  function beginSubjectDrag(event: DragEvent<HTMLElement>, id: string) {
+    const target = event.target;
+    if (
+      target instanceof HTMLElement &&
+      target.closest("button, a, input, summary")
+    ) {
+      event.preventDefault();
+      return;
+    }
+    draggedSubjectId.current = id;
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", id);
+    setActiveSubjectId(id);
+  }
+
+  function dropSubject(event: DragEvent<HTMLElement>, targetId: string) {
+    event.preventDefault();
+    const sourceId = draggedSubjectId.current;
+    draggedSubjectId.current = null;
+    if (sourceId) reorderSubjects(sourceId, targetId);
   }
 
   function addView(id: string, view: SkullComparisonView["view"]) {
@@ -324,6 +387,13 @@ export function ComparisonWorkbench({
             <article
               className={`compare-subject-card marker-${index + 1}`}
               key={record.id}
+              draggable
+              onDragStart={(event) => beginSubjectDrag(event, record.id)}
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={(event) => dropSubject(event, record.id)}
+              onDragEnd={() => {
+                draggedSubjectId.current = null;
+              }}
               data-active={activeSubjectId === record.id ? "true" : undefined}
               onFocus={() => setActiveSubjectId(record.id)}
               onPointerDown={() => setActiveSubjectId(record.id)}
@@ -337,12 +407,56 @@ export function ComparisonWorkbench({
                 </span>
                 <div>
                   <p>Skull {index + 1}</p>
-                  <h2>{record.label}</h2>
+                  <h2>
+                    {record.href ? (
+                      <Link href={record.href}>{record.label}</Link>
+                    ) : (
+                      record.label
+                    )}
+                  </h2>
+                  {record.scientificName ? (
+                    <i className="compare-subject-scientific">
+                      {record.scientificName}
+                    </i>
+                  ) : null}
+                </div>
+                <div className="compare-subject-order-controls">
+                  <button
+                    type="button"
+                    disabled={index === 0}
+                    aria-label={`Move Skull ${index + 1} before Skull ${index}`}
+                    title="Move earlier"
+                    onClick={() =>
+                      reorderSubjects(
+                        record.id,
+                        selected[index - 1]?.record.id ?? record.id,
+                      )
+                    }
+                  >
+                    ←
+                  </button>
+                  <button
+                    type="button"
+                    disabled={index === selected.length - 1}
+                    aria-label={`Move Skull ${index + 1} after Skull ${index + 2}`}
+                    title="Move later"
+                    onClick={() =>
+                      reorderSubjects(
+                        record.id,
+                        selected[index + 1]?.record.id ?? record.id,
+                      )
+                    }
+                  >
+                    →
+                  </button>
                 </div>
               </header>
-              {record.scientificName ? <i>{record.scientificName}</i> : null}
               <p className="compare-subject-meta">
                 {record.specimenId ?? "Reviewed reference"}
+                {record.measurements.skullLength.status !== "not_applicable" &&
+                record.measurements.skullLength.value !== null
+                  ? ` · ${formatComparisonMeasurement(record.measurements.skullLength)}`
+                  : null}
               </p>
               <ul
                 className="compare-view-chips"
@@ -374,7 +488,12 @@ export function ComparisonWorkbench({
                           disabled={
                             active || layerCount >= maximumComparisonLayers
                           }
-                          onClick={() => addView(record.id, view.view)}
+                          onClick={(event) => {
+                            addView(record.id, view.view);
+                            event.currentTarget
+                              .closest("details")
+                              ?.removeAttribute("open");
+                          }}
                         >
                           {formatViewLabel(view.view)}
                           <small>{active ? "Active" : "Add"}</small>
@@ -421,7 +540,6 @@ export function ComparisonWorkbench({
                   Remove
                 </button>
               </div>
-              {record.href ? <Link href={record.href}>Open record</Link> : null}
             </article>
           ))}
           <WorkbenchSubjectPicker
@@ -505,19 +623,33 @@ export function ComparisonWorkbench({
             <p className="section-kicker">Recorded dimensions</p>
             <h2 id="comparison-measurements-title">Measurements</h2>
           </div>
-          <label>
-            <input
-              type="checkbox"
-              checked={state.comparableOnly}
-              onChange={(event) =>
-                commit({
-                  ...state,
-                  comparableOnly: event.currentTarget.checked,
-                })
-              }
-            />
-            Show only comparable measurements
-          </label>
+          <div className="comparison-measurement-actions">
+            <label>
+              <input
+                type="checkbox"
+                checked={state.comparableOnly}
+                onChange={(event) =>
+                  commit({
+                    ...state,
+                    comparableOnly: event.currentTarget.checked,
+                  })
+                }
+              />
+              Show only comparable measurements
+            </label>
+            {measurementSections.additional.length > 0 ? (
+              <button
+                type="button"
+                className="comparison-more-measurements"
+                aria-expanded={showAllMeasurements}
+                onClick={() => setShowAllMeasurements((current) => !current)}
+              >
+                {showAllMeasurements
+                  ? "Show primary measurements"
+                  : `Show all measurements (+${measurementSections.additional.length})`}
+              </button>
+            ) : null}
+          </div>
         </div>
         {pair?.[0] && pair[1] ? (
           <>
@@ -573,6 +705,7 @@ export function ComparisonWorkbench({
               rows={visibleRows}
               primary={pair[0]}
               comparison={pair[1]}
+              onReorderSubjects={reorderSubjects}
             />
           </>
         ) : (
@@ -581,7 +714,10 @@ export function ComparisonWorkbench({
           </p>
         )}
         <p className="comparison-row-status" aria-live="polite">
-          {visibleRows.length} measurement rows shown.
+          {visibleRows.length} measurement rows shown
+          {measurementSections.additional.length > 0 && !showAllMeasurements
+            ? ` · ${measurementSections.additional.length} more available.`
+            : "."}
         </p>
       </section>
 
@@ -601,12 +737,35 @@ function ComparisonTable({
   rows,
   primary,
   comparison,
+  onReorderSubjects,
 }: {
   selected: SkullComparisonRecord[];
   rows: ComparisonDifferenceRow[];
   primary: SkullComparisonRecord;
   comparison: SkullComparisonRecord;
+  onReorderSubjects: (sourceId: string, targetId: string) => void;
 }) {
+  const draggedTableSubjectId = useRef<string | null>(null);
+
+  function beginTableColumnDrag(
+    event: DragEvent<HTMLTableCellElement>,
+    id: string,
+  ) {
+    draggedTableSubjectId.current = id;
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", id);
+  }
+
+  function dropTableColumn(
+    event: DragEvent<HTMLTableCellElement>,
+    targetId: string,
+  ) {
+    event.preventDefault();
+    const sourceId = draggedTableSubjectId.current;
+    draggedTableSubjectId.current = null;
+    if (sourceId) onReorderSubjects(sourceId, targetId);
+  }
+
   return (
     <div className="comparison-table-wrap">
       <table className="comparison-table">
@@ -618,9 +777,23 @@ function ComparisonTable({
           <tr>
             <th scope="col">Measurement</th>
             {selected.map((record, index) => (
-              <th scope="col" key={record.id}>
-                <span>Skull {index + 1}</span>
-                <small>{record.specimenId ?? record.label}</small>
+              <th
+                scope="col"
+                key={record.id}
+                draggable
+                onDragStart={(event) => beginTableColumnDrag(event, record.id)}
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={(event) => dropTableColumn(event, record.id)}
+                onDragEnd={() => {
+                  draggedTableSubjectId.current = null;
+                }}
+                title="Drag to change skull order"
+              >
+                <span>
+                  Skull {index + 1} · <strong>{record.label}</strong>
+                </span>
+                {record.scientificName ? <i>{record.scientificName}</i> : null}
+                <small>{record.specimenId ?? "Reviewed reference"}</small>
               </th>
             ))}
             <th scope="col" className="comparison-difference-heading">
@@ -675,7 +848,7 @@ function ComparisonTable({
                   return (
                     <td
                       key={record.id}
-                      data-label={`Skull ${selected.indexOf(record) + 1} · ${record.specimenId ?? record.label}`}
+                      data-label={`Skull ${selected.indexOf(record) + 1} · ${formatComparisonRecordIdentity(record)}`}
                     >
                       {key
                         ? formatComparisonMeasurement(record.measurements[key])
@@ -741,6 +914,16 @@ function formatComparisonMeasurement(measurement: Measurement) {
     maximumFractionDigits: 2,
   }).format(measurement.value ?? 0);
   return `${measurement.status === "approximate" ? "~" : ""}${value} ${measurement.unit}`;
+}
+
+function formatComparisonRecordIdentity(record: SkullComparisonRecord) {
+  return [
+    record.label,
+    record.scientificName,
+    record.specimenId ?? "Reviewed reference",
+  ]
+    .filter((value): value is string => Boolean(value))
+    .join(" · ");
 }
 
 function getMethodologyHref(key: ComparisonMeasurementKey | null) {

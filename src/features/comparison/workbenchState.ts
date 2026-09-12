@@ -76,6 +76,22 @@ export function removeComparisonSubject(
   };
 }
 
+export function reorderComparisonSubjects(
+  state: ComparisonWorkbenchState,
+  sourceId: string,
+  targetId: string,
+): ComparisonWorkbenchState {
+  if (sourceId === targetId) return state;
+  const sourceIndex = state.subjects.findIndex(({ id }) => id === sourceId);
+  const targetIndex = state.subjects.findIndex(({ id }) => id === targetId);
+  if (sourceIndex < 0 || targetIndex < 0) return state;
+  const subjects = [...state.subjects];
+  const source = subjects.splice(sourceIndex, 1)[0];
+  if (!source) return state;
+  subjects.splice(Math.min(targetIndex, subjects.length), 0, source);
+  return { ...state, subjects };
+}
+
 export function addComparisonView(
   state: ComparisonWorkbenchState,
   id: string,

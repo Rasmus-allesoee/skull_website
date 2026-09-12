@@ -4,7 +4,11 @@ export const comparisonWorldWidth = 1_480;
 export const comparisonWorldHeight = 900;
 export const comparisonWorldPixelsPerMillimetre = 1.35;
 export const minimumFieldZoom = 0.25;
-export const maximumFieldZoom = 3;
+// The previous 300% ceiling left a 36 mm mole skull at roughly 50% of its
+// useful desktop field width.  2,000% makes the smallest published lateral
+// views inspectable while still staying within the source-pixel budget of the
+// reviewed high-resolution derivatives.
+export const maximumFieldZoom = 20;
 
 export interface ComparisonLayerGeometry {
   key: string;
@@ -44,7 +48,7 @@ export function arrangeComparisonLayers(
     return placeGrouped(layers, (layer) => layer.view);
   }
   if (arrangement === "overlay-pair") {
-    return placeOverlayPair(layers, difference);
+    return placeOverlayGroups(layers, difference);
   }
   return placeGrouped(layers, (layer) => layer.subjectId);
 }
@@ -190,11 +194,11 @@ function placeGrouped(
   return result;
 }
 
-function placeOverlayPair(
+function placeOverlayGroups(
   layers: ComparisonLayerGeometry[],
-  difference: [string, string] | null,
+  _difference: [string, string] | null,
 ) {
-  if (!difference) return placeWrapped(layers, 28);
+  void _difference;
   const preferredViews = [
     "lateral",
     "dorsal",
@@ -202,34 +206,70 @@ function placeOverlayPair(
     "frontal",
     "mandible-dorsal",
   ];
-  const overlayView = preferredViews.find((view) =>
-    difference.every((subjectId) =>
-      layers.some(
-        (layer) => layer.subjectId === subjectId && layer.view === view,
+  const groups = preferredViews
+    .map((view) => ({
+      view,
+      layers: layers.filter((layer) => layer.view === view),
+    }))
+    .filter(({ layers: groupLayers }) => groupLayers.length > 0);
+  if (groups.length === 0) return {};
+
+  const groupGap = 44;
+  const rowGap = 54;
+  const targetWidth = comparisonWorldWidth - 120;
+  const rows: (typeof groups)[] = [];
+  let row: typeof groups = [];
+  let rowWidth = 0;
+  for (const group of groups) {
+    const groupWidth = Math.max(...group.layers.map(({ width }) => width));
+    const nextWidth = rowWidth + (row.length > 0 ? groupGap : 0) + groupWidth;
+    if (row.length > 0 && nextWidth > targetWidth) {
+      rows.push(row);
+      row = [];
+      rowWidth = 0;
+    }
+    row.push(group);
+    rowWidth += (row.length > 1 ? groupGap : 0) + groupWidth;
+  }
+  if (row.length > 0) rows.push(row);
+
+  const rowHeights = rows.map((items) =>
+    Math.max(
+      ...items.map(({ layers: groupLayers }) =>
+        Math.max(...groupLayers.map(({ height }) => height)),
       ),
     ),
   );
-  const overlayLayers = overlayView
-    ? difference.flatMap((subjectId) => {
-        const match = layers.find(
-          (layer) =>
-            layer.subjectId === subjectId && layer.view === overlayView,
-        );
-        return match ? [match] : [];
-      })
-    : [];
-  if (overlayLayers.length !== 2) return placeWrapped(layers, 28);
-
-  const result = placeWrapped(
-    layers.filter((layer) => !overlayLayers.includes(layer)),
-    24,
-  );
-  overlayLayers.forEach((layer, index) => {
-    result[layer.key] = {
-      x: comparisonWorldWidth / 2 - layer.width / 2,
-      y: comparisonWorldHeight / 2 - layer.height / 2,
-      z: layers.length + index + 1,
-    };
+  const totalHeight =
+    rowHeights.reduce((sum, height) => sum + height, 0) +
+    rowGap * (rows.length - 1);
+  let y = (comparisonWorldHeight - totalHeight) / 2;
+  const result: Record<string, ComparisonLayerPlacement> = {};
+  let z = 1;
+  rows.forEach((items, rowIndex) => {
+    const widths = items.map(({ layers: groupLayers }) =>
+      Math.max(...groupLayers.map(({ width }) => width)),
+    );
+    const totalWidth =
+      widths.reduce((sum, width) => sum + width, 0) +
+      groupGap * (items.length - 1);
+    let x = (comparisonWorldWidth - totalWidth) / 2;
+    items.forEach((group, groupIndex) => {
+      const groupWidth = widths[groupIndex]!;
+      const groupLayers = group.layers;
+      const groupHeight = Math.max(...groupLayers.map(({ height }) => height));
+      const groupTop = y + (rowHeights[rowIndex]! - groupHeight) / 2;
+      groupLayers.forEach((layer) => {
+        result[layer.key] = {
+          x: x + (groupWidth - layer.width) / 2,
+          y: groupTop + (groupHeight - layer.height) / 2,
+          z,
+        };
+        z += 1;
+      });
+      x += groupWidth + groupGap;
+    });
+    y += rowHeights[rowIndex]! + rowGap;
   });
   return result;
 }

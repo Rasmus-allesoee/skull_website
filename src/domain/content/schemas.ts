@@ -415,16 +415,27 @@ const optionalPositiveMeasurement = positiveMeasurement.optional();
 
 const comparisonReferenceMeasurementSchema = z.strictObject({
   skull_length_mm: optionalPositiveMeasurement,
+  condylobasal_length_mm: optionalPositiveMeasurement,
+  maxillary_tooth_row_length_mm: optionalPositiveMeasurement,
+  mandible_length_mm: optionalPositiveMeasurement,
+  mandibular_tooth_row_length_mm: optionalPositiveMeasurement,
+  mandible_ramus_height_mm: optionalPositiveMeasurement,
+  mandible_body_height_mm: optionalPositiveMeasurement,
   skull_width_mm: optionalPositiveMeasurement,
+  cranium_width_mm: optionalPositiveMeasurement,
+  postorbital_width_mm: optionalPositiveMeasurement,
+  interorbital_width_mm: optionalPositiveMeasurement,
+  rostrum_width_mm: optionalPositiveMeasurement,
   skull_height_mm: optionalPositiveMeasurement,
+  maxillary_canine_length_mm: optionalPositiveMeasurement,
+  mandibular_canine_length_mm: optionalPositiveMeasurement,
+  skull_mass_g: optionalPositiveMeasurement,
+  body_mass_g: optionalPositiveMeasurement,
   bill_length_mm: optionalPositiveMeasurement,
   bill_width_mm: optionalPositiveMeasurement,
   bill_height_mm: optionalPositiveMeasurement,
-  skull_mass_g: optionalPositiveMeasurement,
-  cranium_width_mm: optionalPositiveMeasurement,
   cranium_height_mm: optionalPositiveMeasurement,
   orbital_width_mm: optionalPositiveMeasurement,
-  mandible_length_mm: optionalPositiveMeasurement,
 });
 
 export const comparisonReferenceSourceSchema = z

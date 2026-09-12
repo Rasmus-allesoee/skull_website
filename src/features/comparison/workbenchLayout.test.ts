@@ -27,6 +27,34 @@ const layers: ComparisonLayerGeometry[] = [
   },
 ];
 
+const multiViewLayers: ComparisonLayerGeometry[] = [
+  ...layers,
+  {
+    key: "a:frontal",
+    subjectId: "a",
+    subjectIndex: 0,
+    view: "frontal",
+    width: 120,
+    height: 180,
+  },
+  {
+    key: "b:frontal",
+    subjectId: "b",
+    subjectIndex: 1,
+    view: "frontal",
+    width: 150,
+    height: 210,
+  },
+  {
+    key: "c:lateral",
+    subjectId: "c",
+    subjectIndex: 2,
+    view: "lateral",
+    width: 220,
+    height: 130,
+  },
+];
+
 describe("comparison workbench layout", () => {
   it("builds deterministic in-world placements for every arrangement", () => {
     for (const arrangement of [
@@ -56,6 +84,30 @@ describe("comparison workbench layout", () => {
     );
   });
 
+  it("overlays every subject within each matching view group", () => {
+    const result = arrangeComparisonLayers(multiViewLayers, "overlay-pair", [
+      "a",
+      "b",
+    ]);
+    expect(result["a:lateral"]?.x).toBe(
+      result["b:lateral"]!.x +
+        (multiViewLayers[1]!.width - multiViewLayers[0]!.width) / 2,
+    );
+    expect(result["a:lateral"]?.x).toBe(
+      result["c:lateral"]!.x +
+        (multiViewLayers[4]!.width - multiViewLayers[0]!.width) / 2,
+    );
+    expect(result["a:frontal"]?.x).toBe(
+      result["b:frontal"]!.x +
+        (multiViewLayers[3]!.width - multiViewLayers[2]!.width) / 2,
+    );
+    expect(result["a:frontal"]?.y).toBe(
+      result["b:frontal"]!.y +
+        (multiViewLayers[3]!.height - multiViewLayers[2]!.height) / 2,
+    );
+    expect(result["a:lateral"]?.y).not.toBe(result["a:frontal"]?.y);
+  });
+
   it("fits the arrangement within the camera zoom limits", () => {
     const placements = arrangeComparisonLayers(layers, "side-by-side", null);
     const camera = getFittedComparisonCamera(layers, placements, {
@@ -63,7 +115,7 @@ describe("comparison workbench layout", () => {
       height: 500,
     });
     expect(camera.zoom).toBeGreaterThanOrEqual(0.25);
-    expect(camera.zoom).toBeLessThanOrEqual(3);
+    expect(camera.zoom).toBeLessThanOrEqual(20);
     expect(Number.isFinite(camera.x)).toBe(true);
     expect(Number.isFinite(camera.y)).toBe(true);
   });

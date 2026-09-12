@@ -2,9 +2,9 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** Standalone Skull Comparison workbench implementation on `skull_comparison_page`; the unfinished preparation refinement remains separate
+**Current phase:** Standalone Skull Comparison owner-feedback refinement and final local verification on `skull_comparison_page`; the unfinished preparation refinement remains separate
 
-**Last reviewed:** 2026-09-11
+**Last reviewed:** 2026-09-13
 
 ## 1. How to use this plan
 

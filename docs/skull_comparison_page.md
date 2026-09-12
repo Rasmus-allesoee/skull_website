@@ -1,8 +1,8 @@
 # Skull Comparison page plan
 
-**Status:** Approved for implementation on `skull_comparison_page`
+**Status:** Implemented locally on `skull_comparison_page`; owner-feedback refinement under final verification
 
-**Last reviewed:** 2026-09-11
+**Last reviewed:** 2026-09-13
 
 **Proposed public route:** `/compare`
 
@@ -30,6 +30,64 @@ This plan records the owner's accepted feedback and the approved resolution of
 the two new ideas. The owner confirmed all eight decisions in section 21 on
 2026-09-11 and authorized implementation on `skull_comparison_page`. The
 unfinished `preparation_guide_refinement` branch remains separate and unmerged.
+
+## Post-implementation owner review refinement (2026-09-13)
+
+The first desktop review exposed interaction and density problems that are now
+part of this contract:
+
+- The field remains a genuine shared-scale workbench. Unmodified desktop
+  mousewheel/touchpad input pans the field and is consumed inside the field;
+  Ctrl/Command plus wheel and the visible slider change field zoom. The zoom
+  range is 25–2,000%. The ceiling was chosen from the smallest published
+  calibrated lateral view (SPEC-0016): at 2,000% its subject can nearly fill a
+  desktop field while all layers still use one camera scale.
+- Comparison layers load the validated full public WebP directly instead of a
+  small responsive optimizer variant. This preserves the available source
+  detail during inspection and does not create a second media source or weaken
+  the metadata/rights pipeline.
+- The scale bar is a viewport overlay whose 100 mm span still grows with field
+  zoom. It opens at the bottom-left of the current visible field, can be
+  dragged or nudged with Arrow keys, and does not disappear when the camera is
+  panned or zoomed.
+- Reapplying the active arrangement is an explicit reset action. Adding or
+  removing a subject/view deterministically lays out every active layer again
+  and fits the camera to the new set. `Overlay pair` now overlays every active
+  layer by matching view token (lateral with lateral, frontal with frontal,
+  and so on) across all selected subjects; it is not restricted to the
+  difference pair or lateral view.
+- On touch screens, one-finger vertical movement remains native document
+  scrolling. A deliberate horizontal single-finger movement on a layer can
+  still move that layer; two fingers claim the field for camera pan/pinch.
+  Empty-field activation clears a selected layer, and Escape dismisses its
+  toolbar. The transparent alpha hit surface has no hover rectangle; its
+  native tooltip identifies the species/view.
+- Field labels are compact `Skull N · View` labels. Species identity remains
+  available from the hover tooltip, selected-card/table identity, and
+  accessible layer name. Labels can be hidden under the field's More menu;
+  selected controls use inverse camera scaling so they remain compact and
+  usable at high zoom.
+- The selected-subject rail is a fixed-height desktop scroll surface matched
+  to the actual field panel row. Cards combine Skull number, common name,
+  scientific name, ID, and length densely; the common name opens the exact
+  record. Cards and table subject headers can be reordered by drag, with arrow
+  buttons on cards as a keyboard alternative. Add-view menus close after an
+  action and on outside activation, and the last card opens its menu upward
+  when needed so every option remains visible.
+- The measurement matrix uses the union of every selected profile's primary
+  and additional recorded measurements. Mixed mammal/bird primary rows always
+  use the reviewed width/height mappings, even when the selected difference
+  pair is mammal-to-mammal; a Show all measurements control reveals the
+  remaining class-specific and additional rows without changing missing-data
+  semantics. Human-readable common/scientific names are used in table headers,
+  while the Difference header keeps its compact pair label and explanatory
+  tooltip. Difference text and its divider share the direction color.
+
+These refinements preserve the original boundaries: no freehand composition,
+opacity, or camera values enter the share URL; no oblique calibration is added;
+and the original preparation-guide worktree is not touched. The new behavior is
+covered by focused domain tests and Chromium browser checks at desktop and
+touch sizes before owner publication review.
 
 ## 2. Recommended product decisions
 
@@ -211,8 +269,10 @@ MEASUREMENTS                       [Show only comparable]
   height of roughly 30rem, growing toward 65–72vh on ordinary desktops.
 - The table spans the full page width beneath the workbench, preventing the
   seven-column maximum from being squeezed beside the field.
-- The rail and field stay in normal document flow; avoid nested page-height
-  scrolling surfaces unless real browser testing proves it necessary.
+- The rail and field stay in normal document flow. On wide desktop, the rail is
+  a compact vertical scroll surface with the same height as the complete field
+  panel, so five cards never push the field or measurement table downward. At
+  the tested tablet/phone breakpoints it becomes the existing horizontal strip.
 
 ### 5.2 Tablet and narrow laptop
 
@@ -266,11 +326,17 @@ Each card contains:
 - scientific identification when applicable;
 - immutable specimen ID for physical specimens;
 - maximum skull length and inline measured/approximate status;
-- an `Open specimen record` link for collection specimens;
+- a clickable common-name link to the exact specimen record when available;
 - one labelled subject-opacity slider with a numeric percentage;
 - chips for every active view, each with a full accessible label;
 - `Add view`; and
 - a labelled `Remove skull` action that removes all its layers.
+
+Cards are compact rather than one metadata row per identity field. Dragging a
+card changes the ordered Skull 1–5 sequence; adjacent Arrow buttons provide the
+same operation without a drag gesture. The table subject headers expose the
+same drag reorder operation so users can manage the Difference pair from the
+analytical surface as well.
 
 Color is supplementary. Every subject remains identifiable by Skull number,
 name, ID, and repeated marker shape in the field and table.
@@ -334,17 +400,21 @@ Label the control **Field zoom**. Provide:
 - `100%`; and
 - `Fit all`.
 
-Recommended manual range: 25–300%. `Fit all` computes a bounded value and pan
-offset that places every active layer inside the field with safe padding.
+Recommended manual range: 25–2,000%. `Fit all` computes a bounded value and pan
+offset that places every active layer inside the field with safe padding. The
+upper bound is a view-inspection ceiling, not a claim that the source contains
+unlimited detail.
 
 Interaction:
 
 - mouse/pen dragging an image layer moves that layer;
 - dragging empty field background pans the field;
 - trackpad pinch or Ctrl/Command + wheel over the field zooms around the pointer;
-- an ordinary unmodified wheel continues to scroll the page;
-- two-finger touch pans and pinches the field;
-- one-finger touch on a layer moves that selected layer; and
+- an ordinary unmodified desktop wheel/touchpad pans the field; it does not
+  scroll the document while the pointer is inside the field;
+- one-finger vertical touch remains available for document scrolling;
+- a deliberate horizontal single-finger touch can move a layer, while
+  two-finger touch pans and pinches the field; and
 - all operations have visible button/slider alternatives.
 
 Clamp only the camera enough that the complete arrangement can always be
@@ -355,7 +425,10 @@ visible viewport. `Fit all` and `Reset layout` are the primary rescue actions.
 
 - Use the existing generated alpha hit path so transparent canvas does not
   block lower overlapping layers.
-- Pointer down selects a layer and captures the pointer for smooth dragging.
+- Pointer down selects a layer and captures the pointer for smooth mouse/pen
+  dragging. Touch uses a direction-aware threshold so vertical movement is
+  left to document scrolling while deliberate horizontal movement becomes a
+  layer drag.
 - Update CSS transform variables through `requestAnimationFrame` during pointer
   movement rather than rerendering the entire React tree for every event.
 - Commit the final normalized world position to state on pointer release.
@@ -377,7 +450,9 @@ Keyboard equivalent:
 - Delete/Backspace may remove a selected view only when focus is on the layer
   and after browser testing proves it cannot conflict with navigation. The
   labelled toolbar action remains the primary removal path.
-- Escape dismisses the layer toolbar and restores focus to the layer.
+- Escape, or a primary click/tap outside the layer and its controls, dismisses
+  the layer toolbar. Focus remains available through the layer's keyboard
+  target.
 
 ### 7.4 Opacity
 
@@ -397,24 +472,30 @@ layers. Recommended choices:
 - **By specimen:** one column/group per subject, with its views clustered.
 - **By view:** matching views align in rows across subjects.
 - **Side by side:** all layers laid out in a compact reading sequence.
-- **Overlay pair:** center matching views from the current difference pair,
-  preferring lateral when both have it.
+- **Overlay pair:** center every active layer with another layer of the same
+  view token, across all selected subjects. Distinct view groups are tiled so
+  alternate views remain inspectable instead of being silently omitted.
 - **Vertical stack:** retains the familiar specimen-page arrangement.
 
 `Reset layout` restores deterministic positions, stacking, 100% opacity, and a
 fitted field camera while preserving selected subjects and active views.
 `Clear all` removes all subjects and returns to the empty invitation state.
 
-When a subject or view is added, preserve the user's existing free layout where
-possible. Place the new layer in unused visible space and run a minimal fit only
-if it would otherwise be unreachable; never rearrange every layer silently.
+When a subject or view is added or removed, rebuild the current deterministic
+arrangement and fit all active layers. This deliberately prioritizes an
+immediately usable, non-overlapping field over preserving stale positions that
+would leave new layers outside the camera. Manual movement remains free until
+the next explicit arrangement, add/remove lifecycle action, or reset.
 
 ### 7.6 Scale bar
 
-Offer a restrained `Show scale bar` toggle. The bar belongs to world space, so a
-100 mm bar grows and shrinks with field zoom exactly like the skulls. Its label
-remains readable and includes an accessible explanation that the page compares
-relative dimensions and is not a monitor calibration tool.
+Offer a restrained `Show 100 mm scale bar` toggle in More controls. The bar is a
+viewport overlay positioned from the current visible bottom-left corner, while
+its line width is derived from the same world scale and field zoom as the skulls.
+It remains visible during camera movement, is freely draggable, and supports
+Arrow-key nudging. Its label remains readable and includes an accessible
+explanation that the page compares relative dimensions and is not a monitor
+calibration tool.
 
 ## 8. Measurement table
 
@@ -431,8 +512,9 @@ Render one semantic table with these columns:
 7. Difference
 
 Use tabular numerals and canonical units. Subject headers use the compact Skull
-number/marker and specimen ID; the complete identity remains in the subject
-rail and an accessible header description.
+number/marker, common name, scientific name when available, and specimen
+ID/reference status. The complete identity remains in the subject rail and the
+table's accessible header association.
 
 ### 8.2 Difference pair and calculation
 
@@ -466,8 +548,9 @@ Color expresses direction only, never quality, normality, or biological value.
 
 ### 8.3 Dynamic measurement matrix
 
-The selected difference pair determines the table's row matrix, preserving the
-existing class-aware rules:
+The selected subjects determine the visible measurement matrix, while the
+selected difference pair determines only which two values feed the Difference
+column. The primary section preserves the existing class-aware rules:
 
 - mammal ↔ mammal: six mammal comparison rows;
 - bird ↔ bird: nine bird comparison rows;
@@ -477,16 +560,21 @@ existing class-aware rules:
 Every additional selected subject displays the measurement appropriate to the
 row's profile mapping. In cross-class width and height rows, mammals use maximum
 skull width/skull height and birds use orbital width/cranium height exactly as
-the current engine defines. A subject for which the row has no valid profile
-mapping displays `Not applicable`.
+the current engine defines, regardless of which class the Difference pair
+happens to use. The optional full section is the union of selected profiles'
+primary and additional keys after those mapped keys are represented;
+class-specific values may honestly display `Not applicable` for profiles where
+the definition does not apply.
 
-Changing the difference pair may therefore change the row matrix. Announce the
-new pair and row count; keep focus on the pair control and do not jump the page.
+Changing the difference pair changes only the directed Difference values and
+its compact header labels; changing the selected profile mix changes the row
+matrix. Announce pair/row updates without jumping the page.
 
 ### 8.4 Measurement links and source status
 
 - Measurement names are real links to the corresponding stable definition on
-  `/methodology`.
+  `/methodology`; the full additional vocabulary uses the same link fallback
+  to the methodology measurement table when no numbered illustration exists.
 - Cross-class mapped rows link to both relevant definitions through a compact
   labelled disclosure rather than pretending they are one homologous landmark.
 - Measured values render normally.

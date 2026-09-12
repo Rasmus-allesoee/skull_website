@@ -2,6 +2,12 @@ import type {
   ComparisonMeasurementKey,
   Measurement,
   MeasurementProfile,
+  MeasurementKey,
+} from "@/domain/content/types";
+import {
+  isMeasurementApplicable,
+  measurementDefinitions,
+  measurementProfileLayouts,
 } from "@/domain/content/types";
 
 import type {
@@ -14,10 +20,45 @@ import type {
 const equalityTolerance = 0.05;
 
 const directionWords: Record<
-  ComparisonMeasurementKey,
+  MeasurementKey,
   { smaller: string; larger: string; equal: string }
 > = {
   skullLength: { smaller: "shorter", larger: "longer", equal: "Same length" },
+  condylobasalLength: {
+    smaller: "shorter",
+    larger: "longer",
+    equal: "Same length",
+  },
+  maxillaryToothRowLength: {
+    smaller: "shorter",
+    larger: "longer",
+    equal: "Same length",
+  },
+  mandibularToothRowLength: {
+    smaller: "shorter",
+    larger: "longer",
+    equal: "Same length",
+  },
+  mandibleRamusHeight: {
+    smaller: "lower",
+    larger: "higher",
+    equal: "Same height",
+  },
+  mandibleBodyHeight: {
+    smaller: "lower",
+    larger: "higher",
+    equal: "Same height",
+  },
+  maxillaryCanineLength: {
+    smaller: "shorter",
+    larger: "longer",
+    equal: "Same length",
+  },
+  mandibularCanineLength: {
+    smaller: "shorter",
+    larger: "longer",
+    equal: "Same length",
+  },
   skullWidth: { smaller: "narrower", larger: "wider", equal: "Same width" },
   skullHeight: { smaller: "lower", larger: "higher", equal: "Same height" },
   skullMass: { smaller: "lighter", larger: "heavier", equal: "Same mass" },
@@ -40,6 +81,22 @@ const directionWords: Record<
     equal: "Same height",
   },
   orbitalWidth: {
+    smaller: "narrower",
+    larger: "wider",
+    equal: "Same width",
+  },
+  bodyMass: { smaller: "lighter", larger: "heavier", equal: "Same mass" },
+  interorbitalWidth: {
+    smaller: "narrower",
+    larger: "wider",
+    equal: "Same width",
+  },
+  rostrumWidth: {
+    smaller: "narrower",
+    larger: "wider",
+    equal: "Same width",
+  },
+  postorbitalWidth: {
     smaller: "narrower",
     larger: "wider",
     equal: "Same width",
@@ -74,6 +131,33 @@ const sharedRows: ComparisonDifferenceRow[] = [
   row("skullMass", "Prepared skull mass"),
 ];
 
+const mixedRows: ComparisonDifferenceRow[] = [
+  row("skullLength", "Max length"),
+  {
+    key: "crossWidth",
+    label: "Width (orbital ↔ max)",
+    primaryKey: "skullWidth",
+    comparisonKey: "skullWidth",
+    measurementKeys: {
+      mammal: "skullWidth",
+      bird: "orbitalWidth",
+    },
+  },
+  {
+    key: "crossHeight",
+    label: "Height (cranium ↔ skull)",
+    primaryKey: "skullHeight",
+    comparisonKey: "skullHeight",
+    measurementKeys: {
+      mammal: "skullHeight",
+      bird: "craniumHeight",
+    },
+  },
+  row("craniumWidth", "Cranium width"),
+  row("mandibleLength", "Max mandible length"),
+  row("skullMass", "Prepared skull mass"),
+];
+
 export function getComparisonDifferenceRows(
   primaryProfile: MeasurementProfile,
   comparisonProfile: MeasurementProfile,
@@ -88,35 +172,56 @@ export function getComparisonDifferenceRows(
     (primaryProfile === "mammal" && comparisonProfile === "bird") ||
     (primaryProfile === "bird" && comparisonProfile === "mammal")
   ) {
-    const birdIsPrimary = primaryProfile === "bird";
-    return [
-      row("skullLength", "Max length"),
-      {
-        key: "crossWidth",
-        label: "Width (orbital ↔ max)",
-        primaryKey: birdIsPrimary ? "orbitalWidth" : "skullWidth",
-        comparisonKey: birdIsPrimary ? "skullWidth" : "orbitalWidth",
-        measurementKeys: {
-          mammal: "skullWidth",
-          bird: "orbitalWidth",
-        },
-      },
-      {
-        key: "crossHeight",
-        label: "Height (cranium ↔ skull)",
-        primaryKey: birdIsPrimary ? "craniumHeight" : "skullHeight",
-        comparisonKey: birdIsPrimary ? "skullHeight" : "craniumHeight",
-        measurementKeys: {
-          mammal: "skullHeight",
-          bird: "craniumHeight",
-        },
-      },
-      row("craniumWidth", "Cranium width"),
-      row("mandibleLength", "Max mandible length"),
-      row("skullMass", "Prepared skull mass"),
-    ];
+    return mixedRows.map((rowDefinition) => ({
+      ...rowDefinition,
+      primaryKey:
+        rowDefinition.measurementKeys[primaryProfile] ??
+        rowDefinition.primaryKey,
+      comparisonKey:
+        rowDefinition.measurementKeys[comparisonProfile] ??
+        rowDefinition.comparisonKey,
+    }));
   }
   return sharedRows;
+}
+
+export function getComparisonMeasurementSections(
+  profiles: MeasurementProfile[],
+): {
+  primary: ComparisonDifferenceRow[];
+  additional: ComparisonDifferenceRow[];
+} {
+  const uniqueProfiles = [...new Set(profiles)];
+  if (uniqueProfiles.length === 0) return { primary: [], additional: [] };
+
+  const hasMammal = uniqueProfiles.includes("mammal");
+  const hasBird = uniqueProfiles.includes("bird");
+  const primary =
+    hasMammal && hasBird
+      ? mixedRows
+      : getComparisonDifferenceRows(uniqueProfiles[0]!, uniqueProfiles[0]!);
+  const primaryKeys = new Set(
+    primary.flatMap((rowDefinition) =>
+      Object.values(rowDefinition.measurementKeys),
+    ),
+  );
+  const additionalKeys = uniqueProfiles
+    .flatMap((profile) => [
+      ...measurementProfileLayouts[profile].primary,
+      ...measurementProfileLayouts[profile].additional,
+    ])
+    .filter(
+      (key, index, keys) =>
+        !primaryKeys.has(key) && keys.indexOf(key) === index,
+    );
+  const additional = additionalKeys.map((key) =>
+    row(
+      key,
+      measurementDefinitions[key].label.replace(/^Maximum /, "Max "),
+      uniqueProfiles,
+    ),
+  );
+  return { primary, additional };
 }
 
 export function isCrossClassMeasurementPair(
@@ -218,7 +323,7 @@ export function calculateMeasurementDifference(
 }
 
 function row(
-  key: ComparisonMeasurementKey,
+  key: MeasurementKey,
   label: string,
   profiles: MeasurementProfile[] = ["mammal", "bird", "other"],
 ): ComparisonDifferenceRow {
@@ -228,7 +333,9 @@ function row(
     primaryKey: key,
     comparisonKey: key,
     measurementKeys: Object.fromEntries(
-      profiles.map((profile) => [profile, key]),
+      profiles
+        .filter((profile) => isMeasurementApplicable(key, profile))
+        .map((profile) => [profile, key]),
     ),
   };
 }

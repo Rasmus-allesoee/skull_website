@@ -12,6 +12,7 @@ import {
   parseComparisonState,
   removeComparisonSubject,
   removeComparisonView,
+  reorderComparisonSubjects,
   serializeComparisonState,
   type ComparisonWorkbenchState,
 } from "./workbenchState";
@@ -105,6 +106,27 @@ describe("comparison workbench URL state", () => {
       removeComparisonSubject(restored, "reference:adult-human-skull")
         .difference,
     ).toBeNull();
+  });
+
+  it("swaps selected subject order without changing the directed pair", () => {
+    const initial = getDefaultComparisonState(records);
+    const withThird = addComparisonSubject(
+      initial,
+      "specimen:SPEC-0003",
+      "lateral",
+    );
+    const reordered = reorderComparisonSubjects(
+      withThird,
+      "specimen:SPEC-0003",
+      "specimen:SPEC-0001",
+    );
+
+    expect(reordered.subjects.map(({ id }) => id)).toEqual([
+      "specimen:SPEC-0003",
+      "specimen:SPEC-0001",
+      "reference:adult-human-skull",
+    ]);
+    expect(reordered.difference).toEqual(withThird.difference);
   });
 
   it("rejects additions at the ten-layer boundary", () => {

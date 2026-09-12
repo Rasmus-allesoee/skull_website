@@ -66,6 +66,14 @@ type ActiveGesture =
       startClientX: number;
       startClientY: number;
       origin: ComparisonCamera;
+    }
+  | {
+      mode: "scale-bar";
+      pointerId: number;
+      startClientX: number;
+      startClientY: number;
+      origin: { x: number; y: number };
+      latest: { x: number; y: number };
     };
 
 export function ComparisonField({
@@ -98,11 +106,20 @@ export function ComparisonField({
   } | null>(null);
   const animationFrame = useRef<number | null>(null);
   const prePrintCamera = useRef<ComparisonCamera | null>(null);
+  const pendingTouchLayer = useRef<{
+    pointerId: number;
+    key: string;
+    startClientX: number;
+    startClientY: number;
+    origin: ComparisonLayerPlacement;
+  } | null>(null);
   const hasInitialFit = useRef(false);
   const previousArrangement = useRef(arrangement);
   const previousDifference = useRef(difference?.join("|") ?? "");
   const [selectedLayerKey, setSelectedLayerKey] = useState<string | null>(null);
+  const [showLayerLabels, setShowLayerLabels] = useState(true);
   const [showScaleBar, setShowScaleBar] = useState(false);
+  const [scaleBarPosition, setScaleBarPosition] = useState({ x: 24, y: 24 });
   const [camera, setCamera] = useState<ComparisonCamera>({
     x: 0,
     y: 0,
@@ -111,6 +128,7 @@ export function ComparisonField({
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   const layers = useMemo(() => buildFieldLayers(selected), [selected]);
   const layerSignature = layers.map(({ key }) => key).join("|");
+  const previousLayerSignature = useRef(layerSignature);
   const differenceSignature = difference?.join("|") ?? "";
   const initialPlacements = useMemo(
     () => arrangeComparisonLayers(layers, arrangement, difference),
@@ -139,18 +157,30 @@ export function ComparisonField({
   /* eslint-disable react-hooks/set-state-in-effect -- The URL-controlled layer and arrangement props must reconcile the field's transient placements and camera after browser-history or responsive viewport changes. */
   useEffect(() => {
     const arranged = arrangeComparisonLayers(layers, arrangement, difference);
+    const layersChanged = previousLayerSignature.current !== layerSignature;
+    previousLayerSignature.current = layerSignature;
     const overlayPairChanged =
       arrangement === "overlay-pair" &&
       previousDifference.current !== differenceSignature;
     previousDifference.current = differenceSignature;
-    if (previousArrangement.current !== arrangement || overlayPairChanged) {
+    if (
+      layersChanged ||
+      previousArrangement.current !== arrangement ||
+      overlayPairChanged
+    ) {
+      const arrangementMessage = layersChanged
+        ? "Field updated and fitted to all active views."
+        : `${formatArrangement(arrangement)} arrangement applied.`;
       previousArrangement.current = arrangement;
       setPlacements(arranged);
       setSelectedLayerKey(null);
       if (viewportSize.width > 0) {
         setCamera(getFittedComparisonCamera(layers, arranged, viewportSize));
+        hasInitialFit.current = true;
+      } else {
+        hasInitialFit.current = false;
       }
-      setStatus(`${formatArrangement(arrangement)} arrangement applied.`);
+      setStatus(arrangementMessage);
       return;
     }
     setPlacements((current) => {
@@ -184,6 +214,14 @@ export function ComparisonField({
     setCamera(getFittedComparisonCamera(layers, placements, viewportSize));
   }, [layers, placements, viewportSize]);
   /* eslint-enable react-hooks/set-state-in-effect */
+
+  useEffect(() => {
+    function clearSelection(event: globalThis.KeyboardEvent) {
+      if (event.key === "Escape") setSelectedLayerKey(null);
+    }
+    window.addEventListener("keydown", clearSelection);
+    return () => window.removeEventListener("keydown", clearSelection);
+  }, []);
 
   useEffect(
     () => () => {
@@ -254,27 +292,63 @@ export function ComparisonField({
   }
 
   function handleWheel(event: WheelEvent<HTMLDivElement>) {
-    if (!event.ctrlKey && !event.metaKey) return;
     event.preventDefault();
-    const bounds = event.currentTarget.getBoundingClientRect();
-    setZoom(camera.zoom * Math.exp(-event.deltaY * 0.003), {
-      x: event.clientX - bounds.left - bounds.width / 2,
-      y: event.clientY - bounds.top - bounds.height / 2,
-    });
+    if (event.ctrlKey || event.metaKey) {
+      const bounds = event.currentTarget.getBoundingClientRect();
+      setZoom(camera.zoom * Math.exp(-event.deltaY * 0.003), {
+        x: event.clientX - bounds.left - bounds.width / 2,
+        y: event.clientY - bounds.top - bounds.height / 2,
+      });
+      return;
+    }
+    setCamera((current) => ({
+      ...current,
+      x: current.x - event.deltaX,
+      y: current.y - event.deltaY,
+    }));
+    setStatus("Field position updated.");
+  }
+
+  function beginScaleBarDrag(event: PointerEvent<HTMLDivElement>) {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const position = scaleBarPosition;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    activeGesture.current = {
+      mode: "scale-bar",
+      pointerId: event.pointerId,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      origin: position,
+      latest: position,
+    };
+    event.currentTarget.dataset.dragging = "true";
   }
 
   function beginCameraPan(event: PointerEvent<HTMLDivElement>) {
     if (event.button !== 0) return;
-    if ((event.target as Element).closest("[data-comparison-layer]")) return;
+    const target = event.target;
+    const layerHit =
+      target instanceof Element && target.closest(".comparison-layer-hit");
+    if (
+      target instanceof Element &&
+      (target.closest(".comparison-layer-toolbar") ||
+        target.closest("[data-comparison-scale-bar]"))
+    ) {
+      return;
+    }
     if (event.pointerType === "touch") {
       touchPointers.current.set(event.pointerId, {
         x: event.clientX,
         y: event.clientY,
       });
-      event.currentTarget.setPointerCapture(event.pointerId);
       if (touchPointers.current.size === 2) {
+        pendingTouchLayer.current = null;
         const [first, second] = [...touchPointers.current.values()];
         if (first && second) {
+          event.preventDefault();
+          event.currentTarget.setPointerCapture(event.pointerId);
           pinchGesture.current = {
             distance: pointDistance(first, second),
             midpoint: pointMidpoint(first, second),
@@ -285,6 +359,8 @@ export function ComparisonField({
       }
       return;
     }
+    if (layerHit) return;
+    setSelectedLayerKey(null);
     event.currentTarget.setPointerCapture(event.pointerId);
     activeGesture.current = {
       mode: "camera",
@@ -301,10 +377,21 @@ export function ComparisonField({
     layer: FieldLayer,
   ) {
     if (event.button !== 0) return;
-    event.preventDefault();
-    event.stopPropagation();
     const placement = placements[layer.key];
     if (!placement) return;
+    if (event.pointerType === "touch") {
+      setSelectedLayerKey(layer.key);
+      pendingTouchLayer.current = {
+        pointerId: event.pointerId,
+        key: layer.key,
+        startClientX: event.clientX,
+        startClientY: event.clientY,
+        origin: placement,
+      };
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
     event.currentTarget.setPointerCapture(event.pointerId);
     const raised = {
       ...placement,
@@ -324,6 +411,24 @@ export function ComparisonField({
   }
 
   function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
+    const gesture = activeGesture.current;
+    if (
+      gesture?.mode === "scale-bar" &&
+      gesture.pointerId === event.pointerId
+    ) {
+      event.preventDefault();
+      const latest = clampScaleBarPosition(
+        {
+          x: gesture.origin.x + event.clientX - gesture.startClientX,
+          y: gesture.origin.y + event.clientY - gesture.startClientY,
+        },
+        viewportSize,
+        camera.zoom,
+      );
+      gesture.latest = latest;
+      setScaleBarPosition(latest);
+      return;
+    }
     if (
       event.pointerType === "touch" &&
       touchPointers.current.has(event.pointerId)
@@ -358,10 +463,65 @@ export function ComparisonField({
           y: currentFocal.y - (initialFocal.y - pinch.camera.y) * ratio,
           zoom,
         });
+        return;
+      }
+      const pending = pendingTouchLayer.current;
+      if (
+        pending &&
+        touchPointers.current.size === 1 &&
+        pending.pointerId === event.pointerId
+      ) {
+        const deltaX = event.clientX - pending.startClientX;
+        const deltaY = event.clientY - pending.startClientY;
+        if (Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
+          const raised = {
+            ...pending.origin,
+            z: getNextLayerZ(placements),
+          };
+          activeGesture.current = {
+            mode: "layer",
+            pointerId: event.pointerId,
+            key: pending.key,
+            startClientX: pending.startClientX,
+            startClientY: pending.startClientY,
+            origin: raised,
+            latest: raised,
+          };
+          pendingTouchLayer.current = null;
+          event.preventDefault();
+          event.currentTarget.setPointerCapture(event.pointerId);
+          setPlacements((current) => ({
+            ...current,
+            [pending.key]: raised,
+          }));
+        }
+      }
+      const active = activeGesture.current;
+      if (active?.mode === "layer" && active.pointerId === event.pointerId) {
+        event.preventDefault();
+        const latest = {
+          ...active.origin,
+          x:
+            active.origin.x +
+            (event.clientX - active.startClientX) / camera.zoom,
+          y:
+            active.origin.y +
+            (event.clientY - active.startClientY) / camera.zoom,
+        };
+        active.latest = latest;
+        if (animationFrame.current !== null) return;
+        animationFrame.current = requestAnimationFrame(() => {
+          animationFrame.current = null;
+          const current = activeGesture.current;
+          if (!current || current.mode !== "layer") return;
+          applyLayerPosition(
+            layerRefs.current.get(current.key),
+            current.latest,
+          );
+        });
       }
       return;
     }
-    const gesture = activeGesture.current;
     if (!gesture || gesture.pointerId !== event.pointerId) return;
     if (gesture.mode === "camera") {
       setCamera({
@@ -391,6 +551,9 @@ export function ComparisonField({
   function endPointerGesture(event: PointerEvent<HTMLDivElement>) {
     if (event.pointerType === "touch") {
       touchPointers.current.delete(event.pointerId);
+      if (pendingTouchLayer.current?.pointerId === event.pointerId) {
+        pendingTouchLayer.current = null;
+      }
       if (touchPointers.current.size < 2) {
         pinchGesture.current = null;
         delete event.currentTarget.dataset.panning;
@@ -407,6 +570,12 @@ export function ComparisonField({
         [gesture.key]: gesture.latest,
       }));
       setStatus("Layer position updated.");
+    } else if (gesture.mode === "scale-bar") {
+      setScaleBarPosition(gesture.latest);
+      event.currentTarget
+        .querySelector<HTMLElement>("[data-comparison-scale-bar]")
+        ?.removeAttribute("data-dragging");
+      setStatus("Scale bar position updated.");
     }
     activeGesture.current = null;
     delete event.currentTarget.dataset.panning;
@@ -426,6 +595,17 @@ export function ComparisonField({
       };
     });
     setStatus("Layer position updated.");
+  }
+
+  function moveScaleBar(deltaX: number, deltaY: number) {
+    setScaleBarPosition((current) =>
+      clampScaleBarPosition(
+        { x: current.x + deltaX, y: current.y + deltaY },
+        viewportSize,
+        camera.zoom,
+      ),
+    );
+    setStatus("Scale bar position updated.");
   }
 
   function changeLayerStack(key: string, direction: -1 | 1) {
@@ -449,6 +629,9 @@ export function ComparisonField({
     "--camera-x": `${camera.x}px`,
     "--camera-y": `${camera.y}px`,
     "--camera-zoom": camera.zoom,
+    "--camera-ui-scale": Math.min(2, Math.max(0.05, 1 / camera.zoom)),
+    "--camera-label-gap": `${5.6 / camera.zoom}px`,
+    "--camera-toolbar-offset": `${40 / camera.zoom}px`,
     "--comparison-world-width": `${comparisonWorldWidth}px`,
     "--comparison-world-height": `${comparisonWorldHeight}px`,
   } as CSSProperties;
@@ -468,6 +651,9 @@ export function ComparisonField({
             <span>Arrange</span>
             <select
               value={arrangement}
+              onClick={(event) => {
+                if (event.currentTarget.value === arrangement) resetLayout();
+              }}
               onChange={(event) =>
                 onArrangementChange(
                   event.currentTarget.value as ComparisonArrangement,
@@ -494,8 +680,8 @@ export function ComparisonField({
             <input
               aria-labelledby="field-zoom-label"
               type="range"
-              min={25}
-              max={300}
+              min={minimumFieldZoom * 100}
+              max={maximumFieldZoom * 100}
               step={5}
               value={Math.round(camera.zoom * 100)}
               onChange={(event) =>
@@ -527,11 +713,27 @@ export function ComparisonField({
                 <input
                   type="checkbox"
                   checked={showScaleBar}
-                  onChange={(event) =>
-                    setShowScaleBar(event.currentTarget.checked)
-                  }
+                  onChange={(event) => {
+                    const checked = event.currentTarget.checked;
+                    setShowScaleBar(checked);
+                    if (checked) {
+                      setScaleBarPosition(
+                        getScaleBarBottomLeft(viewportSize, camera.zoom),
+                      );
+                    }
+                  }}
                 />
                 Show 100 mm scale bar
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showLayerLabels}
+                  onChange={(event) =>
+                    setShowLayerLabels(event.currentTarget.checked)
+                  }
+                />
+                Show view labels
               </label>
               <button type="button" onClick={resetLayout}>
                 Reset layout
@@ -553,6 +755,22 @@ export function ComparisonField({
         onPointerMove={handlePointerMove}
         onPointerUp={endPointerGesture}
         onPointerCancel={endPointerGesture}
+        onClick={(event) => {
+          const target = event.target;
+          const insideLayerInteraction =
+            target instanceof Element &&
+            (target.closest(".comparison-layer-hit") ||
+              target.closest(".comparison-layer-toolbar") ||
+              target.closest("[data-comparison-scale-bar]"));
+          if (!insideLayerInteraction) {
+            setSelectedLayerKey(null);
+          }
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") setSelectedLayerKey(null);
+        }}
+        tabIndex={0}
+        aria-label="Interactive comparison field"
       >
         {layers.length > 0 ? (
           <div className="comparison-camera">
@@ -565,6 +783,7 @@ export function ComparisonField({
                     layer={layer}
                     placement={placement}
                     opacity={opacityBySubject[layer.subjectId] ?? 100}
+                    showLabel={showLayerLabels}
                     selected={selectedLayerKey === layer.key}
                     register={(element) => {
                       if (element) layerRefs.current.set(layer.key, element);
@@ -582,7 +801,6 @@ export function ComparisonField({
                   />
                 ) : null;
               })}
-              {showScaleBar ? <ComparisonScaleBar /> : null}
             </div>
           </div>
         ) : (
@@ -591,11 +809,20 @@ export function ComparisonField({
             <p>Select up to five calibrated specimens or references.</p>
           </div>
         )}
+        {showScaleBar ? (
+          <ComparisonScaleBar
+            position={scaleBarPosition}
+            zoom={camera.zoom}
+            onPointerDown={beginScaleBarDrag}
+            onMove={moveScaleBar}
+          />
+        ) : null}
       </div>
       <div className="comparison-field-footer">
         <p>
-          Drag a skull to move it; drag empty space to pan. Hold Ctrl or Command
-          while scrolling to zoom.
+          Drag a skull to move it; scroll or drag empty space to pan. Hold Ctrl
+          or Command while scrolling to zoom. On touch screens, use two fingers
+          to navigate the field.
         </p>
         <p className="comparison-field-status" aria-live="polite">
           {status}
@@ -618,6 +845,7 @@ function ComparisonFieldLayer({
   placement,
   opacity,
   selected,
+  showLabel,
   register,
   onSelect,
   onPointerDown,
@@ -629,6 +857,7 @@ function ComparisonFieldLayer({
   placement: ComparisonLayerPlacement;
   opacity: number;
   selected: boolean;
+  showLabel: boolean;
   register: (element: HTMLElement | null) => void;
   onSelect: () => void;
   onPointerDown: (event: PointerEvent<HTMLButtonElement>) => void;
@@ -654,7 +883,9 @@ function ComparisonFieldLayer({
     "--subject-width": `${(media.subjectBounds.width / media.width) * 100}%`,
     "--subject-height": `${(media.subjectBounds.height / media.height) * 100}%`,
   } as CSSProperties;
-  const label = `Skull ${subjectIndex + 1} · ${formatViewLabel(media.view)}`;
+  const viewLabel = formatViewLabel(media.view);
+  const label = `Skull ${subjectIndex + 1} · ${viewLabel}`;
+  const accessibleLabel = `${label} · ${layer.record.label}`;
 
   function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
     const step = event.shiftKey ? 20 : 4;
@@ -684,6 +915,7 @@ function ComparisonFieldLayer({
           alt=""
           fill
           sizes="(max-width: 48rem) 70vw, 32rem"
+          unoptimized
           draggable={false}
           loading={subjectIndex < 2 ? "eager" : "lazy"}
           onError={() => setImageFailed(true)}
@@ -698,7 +930,8 @@ function ComparisonFieldLayer({
       <button
         type="button"
         className="comparison-layer-hit"
-        aria-label={`${label}. Drag or use arrow keys to move; Shift plus arrow moves farther.`}
+        aria-label={`${accessibleLabel}. Drag or use arrow keys to move; Shift plus arrow moves farther.`}
+        title={`${layer.record.label} · ${viewLabel}`}
         aria-pressed={selected}
         onFocus={onSelect}
         onClick={onSelect}
@@ -721,19 +954,22 @@ function ComparisonFieldLayer({
         </svg>
       </button>
       <span className="comparison-layer-outline" aria-hidden="true" />
-      <figcaption>
-        <span
-          className={`subject-marker marker-${subjectIndex + 1}`}
-          aria-hidden="true"
-        >
-          {subjectMarkers[subjectIndex]}
-        </span>
-        {label}
-      </figcaption>
+      {showLabel ? (
+        <figcaption title={`${layer.record.label} · ${viewLabel}`}>
+          <span
+            className={`subject-marker marker-${subjectIndex + 1}`}
+            aria-hidden="true"
+          >
+            {subjectMarkers[subjectIndex]}
+          </span>
+          {label}
+        </figcaption>
+      ) : null}
       {selected ? (
         <div
           className="comparison-layer-toolbar"
-          aria-label={`${label} controls`}
+          aria-label={`${accessibleLabel} controls`}
+          title={layer.record.label}
         >
           <strong>{label}</strong>
           <button
@@ -769,12 +1005,41 @@ function ComparisonFieldLayer({
   );
 }
 
-function ComparisonScaleBar() {
+function ComparisonScaleBar({
+  position,
+  zoom,
+  onPointerDown,
+  onMove,
+}: {
+  position: { x: number; y: number };
+  zoom: number;
+  onPointerDown: (event: PointerEvent<HTMLDivElement>) => void;
+  onMove: (x: number, y: number) => void;
+}) {
   const style = {
-    "--scale-bar-width": `${100 * comparisonWorldPixelsPerMillimetre}px`,
+    "--scale-bar-left": `${position.x}px`,
+    "--scale-bar-top": `${position.y}px`,
+    "--scale-bar-width": `${100 * comparisonWorldPixelsPerMillimetre * zoom}px`,
   } as CSSProperties;
   return (
-    <div className="comparison-scale-bar" style={style}>
+    <div
+      className="comparison-scale-bar"
+      style={style}
+      data-comparison-scale-bar=""
+      tabIndex={0}
+      role="group"
+      aria-label="Movable 100 millimetre relative scale bar"
+      onPointerDown={onPointerDown}
+      onKeyDown={(event) => {
+        const step = event.shiftKey ? 20 : 4;
+        if (event.key === "ArrowLeft") onMove(-step, 0);
+        else if (event.key === "ArrowRight") onMove(step, 0);
+        else if (event.key === "ArrowUp") onMove(0, -step);
+        else if (event.key === "ArrowDown") onMove(0, step);
+        else return;
+        event.preventDefault();
+      }}
+    >
       <span aria-hidden="true" />
       <strong>100 mm</strong>
       <small>Relative scale; not monitor-calibrated</small>
@@ -849,4 +1114,27 @@ function pointMidpoint(
   second: { x: number; y: number },
 ) {
   return { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };
+}
+
+function getScaleBarBottomLeft(
+  viewport: { width: number; height: number },
+  zoom: number,
+) {
+  return clampScaleBarPosition(
+    { x: 24, y: viewport.height - 58 },
+    viewport,
+    zoom,
+  );
+}
+
+function clampScaleBarPosition(
+  position: { x: number; y: number },
+  viewport: { width: number; height: number },
+  zoom: number,
+) {
+  const width = 100 * comparisonWorldPixelsPerMillimetre * zoom;
+  return {
+    x: clamp(position.x, 12, Math.max(12, viewport.width - width - 12)),
+    y: clamp(position.y, 12, Math.max(12, viewport.height - 48)),
+  };
 }
