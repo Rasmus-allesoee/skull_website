@@ -151,15 +151,6 @@
     height: calc(var(--comparison-field-height) + 6.55rem);
   }
 
-  .compare-field-toolbar {
-    flex-wrap: nowrap;
-  }
-
-  .compare-field-controls {
-    flex: 1 1 auto;
-    overflow-x: auto;
-  }
-
   .comparison-field-footer {
     box-sizing: border-box;
     height: 2.2rem;
@@ -640,6 +631,17 @@
   border: 1px solid var(--color-border);
   background: var(--color-surface-elevated);
   box-shadow: 0 0.8rem 2rem rgb(0 0 0 / 40%);
+}
+
+@media (min-width: 64.01rem) {
+  .compare-field-toolbar {
+    flex-wrap: nowrap;
+  }
+
+  .compare-field-controls {
+    flex: 1 1 auto;
+    overflow-x: auto;
+  }
 }
 
 .compare-field-more label,

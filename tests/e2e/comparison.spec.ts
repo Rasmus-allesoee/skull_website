@@ -367,6 +367,24 @@ test("five-subject rail stays bounded and supports card and table-column reorder
   await headers.nth(0).dragTo(headers.nth(1));
   await expect(headers.nth(0).locator("strong")).toHaveText(secondHeader);
   await expect(headers.nth(1).locator("strong")).toHaveText(firstHeader);
+
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.goto("/compare");
+  const mediumRailBounds = await page
+    .locator(".compare-subject-rail")
+    .boundingBox();
+  const mediumPanelBounds = await page
+    .locator(".compare-field-panel")
+    .boundingBox();
+  expect(mediumRailBounds).not.toBeNull();
+  expect(mediumPanelBounds).not.toBeNull();
+  expect(
+    Math.abs(mediumRailBounds!.height - mediumPanelBounds!.height),
+  ).toBeLessThan(2);
+  await expect(page.locator(".compare-field-toolbar")).toHaveCSS(
+    "flex-wrap",
+    "nowrap",
+  );
 });
 
 test("two-finger touch pans and zooms the field camera", async ({
