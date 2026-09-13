@@ -162,6 +162,28 @@ test("desktop field keeps page scrolling separate from zoom, precise hits, and c
     .not.toBe(beforeModifiedWheel);
   expect(await page.evaluate(() => window.scrollY)).toBe(0);
 
+  const emptyFieldPoint = {
+    x: resetFieldBounds!.x + 8,
+    y: resetFieldBounds!.y + 8,
+  };
+  const beforeUnmodifiedPan = await field.getAttribute("style");
+  await page.mouse.move(emptyFieldPoint.x, emptyFieldPoint.y);
+  await page.mouse.down();
+  await page.mouse.move(emptyFieldPoint.x + 56, emptyFieldPoint.y + 24);
+  await page.mouse.up();
+  expect(await field.getAttribute("style")).toBe(beforeUnmodifiedPan);
+
+  const beforeModifiedPan = await field.getAttribute("style");
+  await page.keyboard.down("Control");
+  await page.mouse.move(emptyFieldPoint.x, emptyFieldPoint.y);
+  await page.mouse.down();
+  await page.mouse.move(emptyFieldPoint.x + 56, emptyFieldPoint.y + 24);
+  await page.mouse.up();
+  await page.keyboard.up("Control");
+  await expect
+    .poll(() => field.getAttribute("style"))
+    .not.toBe(beforeModifiedPan);
+
   await page.getByRole("button", { name: "Fit all" }).click();
   const outline = firstLayer.locator(".comparison-layer-outline");
   const outlineBounds = await outline.boundingBox();

@@ -117,7 +117,8 @@ The second desktop review adds the following implementation requirements:
 - Ordinary wheel and trackpad events over the field are allowed to bubble to
   document scrolling. A non-passive native wheel listener consumes only a
   modified gesture for zoom and suppresses both document scrolling and browser
-  page zoom; empty-space pointer drag remains the explicit camera-pan gesture.
+  page zoom. Cmd/Control-modified empty-space pointer drag is the explicit
+  camera-pan gesture; an ordinary empty click only clears selection.
 
 ## 2. Recommended product decisions
 

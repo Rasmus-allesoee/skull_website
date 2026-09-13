@@ -394,6 +394,7 @@ export function ComparisonField({
     }
     if (layerHit) return;
     setSelectedLayerKey(null);
+    if (!event.ctrlKey && !event.metaKey) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     activeGesture.current = {
       mode: "camera",
@@ -854,10 +855,10 @@ export function ComparisonField({
       </div>
       <div className="comparison-field-footer">
         <p>
-          Drag a skull to move it; drag empty space to pan. Scroll normally to
-          move the page. Hold Ctrl or Command while using the mouse wheel or a
-          two-finger trackpad scroll to zoom without moving the page. On touch
-          screens, use two fingers to navigate the field.
+          Drag a skull to move it. Scroll normally to move the page. Hold Ctrl
+          or Command and drag empty space to pan; use the same modifier with a
+          mouse wheel or two-finger trackpad scroll to zoom without moving the
+          page. On touch screens, use two fingers to navigate the field.
         </p>
         <p className="comparison-field-status" aria-live="polite">
           {status}
