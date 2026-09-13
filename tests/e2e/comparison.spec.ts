@@ -45,7 +45,7 @@ test("default comparison is static, semantic, accessible, and error-free", async
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
-test("desktop field supports wheel navigation, reset, compact labels, scale-bar movement, and dismissal", async ({
+test("desktop field keeps page scrolling separate from zoom, precise hits, and controls", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -56,8 +56,33 @@ test("desktop field supports wheel navigation, reset, compact labels, scale-bar 
   expect(fieldBounds).not.toBeNull();
 
   const firstHit = page.locator(".comparison-layer-hit").first();
+  const firstLayer = page.locator(".comparison-layer").first();
+  const subjectBounds = await firstLayer
+    .locator(".comparison-layer-outline")
+    .boundingBox();
+  const hitBounds = await firstHit.locator("svg").boundingBox();
+  const layerBounds = await firstLayer.boundingBox();
+  expect(subjectBounds).not.toBeNull();
+  expect(hitBounds).not.toBeNull();
+  expect(layerBounds).not.toBeNull();
+  expect(hitBounds!.width).toBeLessThan(layerBounds!.width);
+  expect(hitBounds!.height).toBeLessThan(layerBounds!.height);
+  expect(Math.abs(hitBounds!.x - subjectBounds!.x)).toBeLessThanOrEqual(1);
+  expect(Math.abs(hitBounds!.y - subjectBounds!.y)).toBeLessThanOrEqual(1);
+  expect(Math.abs(hitBounds!.width - subjectBounds!.width)).toBeLessThanOrEqual(
+    1,
+  );
+  expect(
+    Math.abs(hitBounds!.height - subjectBounds!.height),
+  ).toBeLessThanOrEqual(1);
   await firstHit.locator("path").click({ force: true });
   await expect(page.locator(".comparison-layer-toolbar")).toHaveCount(1);
+  const toolbarBounds = await page
+    .locator(".comparison-layer-toolbar")
+    .boundingBox();
+  expect(toolbarBounds).not.toBeNull();
+  expect(toolbarBounds!.width).toBeLessThan(160);
+  expect(toolbarBounds!.height).toBeLessThan(36);
   await page.keyboard.press("Escape");
   await expect(page.locator(".comparison-layer-toolbar")).toHaveCount(0);
 
@@ -79,15 +104,32 @@ test("desktop field supports wheel navigation, reset, compact labels, scale-bar 
   ).toBeLessThan(12);
 
   const beforeWheel = await field.getAttribute("style");
+  const beforePageScroll = await page.evaluate(() => window.scrollY);
   await page.mouse.move(
     fieldBounds!.x + fieldBounds!.width / 2,
     fieldBounds!.y + fieldBounds!.height / 2,
   );
-  await page.mouse.wheel(36, 84);
-  await expect.poll(() => field.getAttribute("style")).not.toBe(beforeWheel);
+  await page.mouse.wheel(0, 450);
+  await expect
+    .poll(() => page.evaluate(() => window.scrollY))
+    .toBeGreaterThan(beforePageScroll);
+  expect(await field.getAttribute("style")).toBe(beforeWheel);
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  const beforeModifiedWheel = await field.getAttribute("style");
+  const resetFieldBounds = await field.boundingBox();
+  await page.mouse.move(
+    resetFieldBounds!.x + resetFieldBounds!.width / 2,
+    resetFieldBounds!.y + resetFieldBounds!.height / 2,
+  );
+  await page.keyboard.down("Control");
+  await page.mouse.wheel(0, 84);
+  await page.keyboard.up("Control");
+  await expect
+    .poll(() => field.getAttribute("style"))
+    .not.toBe(beforeModifiedWheel);
 
   await page.getByRole("button", { name: "Fit all" }).click();
-  const firstLayer = page.locator(".comparison-layer").first();
   const outline = firstLayer.locator(".comparison-layer-outline");
   const outlineBounds = await outline.boundingBox();
   const beforeMove = await firstLayer.evaluate((element) =>
@@ -117,6 +159,28 @@ test("desktop field supports wheel navigation, reset, compact labels, scale-bar 
     .not.toBe(moved);
 
   await page.locator(".compare-field-more summary").click();
+  const moreMenu = page.locator(".compare-field-more > div");
+  await expect(moreMenu).toBeVisible();
+  const moreMenuMetrics = await moreMenu.evaluate((element) => {
+    const toolbar = element.closest(".compare-field-toolbar");
+    const toolbarBounds = toolbar?.getBoundingClientRect();
+    const menuBounds = element.getBoundingClientRect();
+    const controls = element.parentElement?.parentElement;
+    return {
+      menuTop: menuBounds.top,
+      toolbarBottom: toolbarBounds?.bottom ?? 0,
+      controlsOverflowY: controls ? getComputedStyle(controls).overflowY : "",
+      controlsScrollHeight: controls?.scrollHeight ?? 0,
+      controlsClientHeight: controls?.clientHeight ?? 0,
+    };
+  });
+  expect(moreMenuMetrics.menuTop).toBeGreaterThanOrEqual(
+    moreMenuMetrics.toolbarBottom,
+  );
+  expect(moreMenuMetrics.controlsOverflowY).not.toBe("auto");
+  expect(moreMenuMetrics.controlsScrollHeight).toBeLessThanOrEqual(
+    moreMenuMetrics.controlsClientHeight + 1,
+  );
   await page.getByLabel("Show 100 mm scale bar").check();
   const scaleBar = page.locator(".comparison-scale-bar");
   const scaleBarBounds = await scaleBar.boundingBox();
@@ -154,6 +218,49 @@ test("desktop field supports wheel navigation, reset, compact labels, scale-bar 
   await page.locator(".compare-field-more summary").click();
   await page.getByLabel("Show view labels").uncheck();
   await expect(page.locator(".comparison-layer figcaption")).toHaveCount(0);
+});
+
+test("custom arrangement keeps manual positions while new views start centred", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(defaultRoute);
+
+  const arrangement = page.locator(".compare-arrangement-control select");
+  await arrangement.selectOption("custom");
+  await expect(arrangement).toHaveValue("custom");
+
+  const firstLayer = page.locator(".comparison-layer").first();
+  const firstOutline = firstLayer.locator(".comparison-layer-outline");
+  const firstOutlineBounds = await firstOutline.boundingBox();
+  expect(firstOutlineBounds).not.toBeNull();
+  await page.mouse.move(
+    firstOutlineBounds!.x + firstOutlineBounds!.width / 2,
+    firstOutlineBounds!.y + firstOutlineBounds!.height / 2,
+  );
+  await page.mouse.down();
+  await page.mouse.move(
+    firstOutlineBounds!.x + firstOutlineBounds!.width / 2 + 80,
+    firstOutlineBounds!.y + firstOutlineBounds!.height / 2 + 24,
+  );
+  await page.mouse.up();
+  const movedPosition = await firstLayer.evaluate((element) => ({
+    x: element.style.getPropertyValue("--layer-x"),
+    y: element.style.getPropertyValue("--layer-y"),
+  }));
+
+  const firstCard = page.locator(".compare-subject-card").first();
+  await firstCard.locator(".compare-view-menu summary").click();
+  await firstCard
+    .getByRole("button", { name: "Frontal Add", exact: true })
+    .click();
+  await expect(page.locator(".comparison-layer")).toHaveCount(3);
+  await expect(firstLayer).toHaveCSS("--layer-x", movedPosition.x);
+  await expect(firstLayer).toHaveCSS("--layer-y", movedPosition.y);
+  await expect(page.locator(".comparison-field")).toHaveAttribute(
+    "data-arrangement",
+    "custom",
+  );
 });
 
 test("multi-view field enforces limits and preserves directed table semantics", async ({

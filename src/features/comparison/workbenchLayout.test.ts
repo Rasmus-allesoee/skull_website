@@ -16,6 +16,10 @@ const layers: ComparisonLayerGeometry[] = [
     view: "lateral",
     width: 240,
     height: 160,
+    subjectX: 20,
+    subjectY: 10,
+    subjectWidth: 200,
+    subjectHeight: 140,
   },
   {
     key: "b:lateral",
@@ -24,6 +28,10 @@ const layers: ComparisonLayerGeometry[] = [
     view: "lateral",
     width: 300,
     height: 180,
+    subjectX: 30,
+    subjectY: 20,
+    subjectWidth: 240,
+    subjectHeight: 150,
   },
 ];
 
@@ -36,6 +44,10 @@ const multiViewLayers: ComparisonLayerGeometry[] = [
     view: "frontal",
     width: 120,
     height: 180,
+    subjectX: 15,
+    subjectY: 24,
+    subjectWidth: 90,
+    subjectHeight: 132,
   },
   {
     key: "b:frontal",
@@ -44,6 +56,10 @@ const multiViewLayers: ComparisonLayerGeometry[] = [
     view: "frontal",
     width: 150,
     height: 210,
+    subjectX: 18,
+    subjectY: 30,
+    subjectWidth: 114,
+    subjectHeight: 150,
   },
   {
     key: "c:lateral",
@@ -52,6 +68,10 @@ const multiViewLayers: ComparisonLayerGeometry[] = [
     view: "lateral",
     width: 220,
     height: 130,
+    subjectX: 12,
+    subjectY: 14,
+    subjectWidth: 190,
+    subjectHeight: 100,
   },
 ];
 
@@ -63,6 +83,7 @@ describe("comparison workbench layout", () => {
       "side-by-side",
       "overlay-pair",
       "vertical-stack",
+      "custom",
     ] as const) {
       const result = arrangeComparisonLayers(layers, arrangement, ["a", "b"]);
       expect(Object.keys(result)).toEqual(["a:lateral", "b:lateral"]);
@@ -118,5 +139,25 @@ describe("comparison workbench layout", () => {
     expect(camera.zoom).toBeLessThanOrEqual(20);
     expect(Number.isFinite(camera.x)).toBe(true);
     expect(Number.isFinite(camera.y)).toBe(true);
+  });
+
+  it("centres every canvas in the custom arrangement", () => {
+    const result = arrangeComparisonLayers(multiViewLayers, "custom", null);
+    for (const layer of multiViewLayers) {
+      expect(result[layer.key]).toEqual({
+        x: (comparisonWorldWidth - layer.width) / 2,
+        y: (comparisonWorldHeight - layer.height) / 2,
+        z: multiViewLayers.indexOf(layer) + 1,
+      });
+    }
+  });
+
+  it("fits visible subject bounds instead of transparent canvas bounds", () => {
+    const placements = arrangeComparisonLayers(layers, "side-by-side", null);
+    const camera = getFittedComparisonCamera(layers, placements, {
+      width: 900,
+      height: 500,
+    });
+    expect(camera.zoom).toBeGreaterThan(1.55);
   });
 });

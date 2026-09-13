@@ -17,6 +17,11 @@ export interface ComparisonLayerGeometry {
   view: string;
   width: number;
   height: number;
+  /** Visible alpha-bounded subject rectangle inside the calibrated canvas. */
+  subjectX: number;
+  subjectY: number;
+  subjectWidth: number;
+  subjectHeight: number;
 }
 
 export interface ComparisonLayerPlacement {
@@ -50,6 +55,9 @@ export function arrangeComparisonLayers(
   if (arrangement === "overlay-pair") {
     return placeOverlayGroups(layers, difference);
   }
+  if (arrangement === "custom") {
+    return placeCentered(layers);
+  }
   return placeGrouped(layers, (layer) => layer.subjectId);
 }
 
@@ -62,7 +70,10 @@ export function getFittedComparisonCamera(
     return { x: 0, y: 0, zoom: 1 };
   }
   const bounds = getLayerBounds(layers, placements);
-  const padding = Math.min(72, Math.max(30, viewport.width * 0.07));
+  // Fit the visible alpha bounds, not the transparent source canvases. A
+  // modest fixed margin keeps the field legible without making Fit all feel
+  // like a distant overview on wide screens.
+  const padding = Math.min(36, Math.max(18, viewport.width * 0.035));
   const availableWidth = Math.max(1, viewport.width - padding * 2);
   const availableHeight = Math.max(1, viewport.height - padding * 2);
   const zoom = clamp(
@@ -105,6 +116,18 @@ function placeLinear(
       axis === "vertical" ? cursor : (comparisonWorldHeight - layer.height) / 2;
     result[layer.key] = { x, y, z: index + 1 };
     cursor += (axis === "horizontal" ? layer.width : layer.height) + gap;
+  });
+  return result;
+}
+
+function placeCentered(layers: ComparisonLayerGeometry[]) {
+  const result: Record<string, ComparisonLayerPlacement> = {};
+  layers.forEach((layer, index) => {
+    result[layer.key] = {
+      x: (comparisonWorldWidth - layer.width) / 2,
+      y: (comparisonWorldHeight - layer.height) / 2,
+      z: index + 1,
+    };
   });
   return result;
 }
@@ -285,13 +308,23 @@ function getLayerBounds(
   if (positioned.length === 0) {
     return { left: 0, top: 0, width: comparisonWorldWidth, height: 900 };
   }
-  const left = Math.min(...positioned.map(({ placement }) => placement.x));
-  const top = Math.min(...positioned.map(({ placement }) => placement.y));
+  const left = Math.min(
+    ...positioned.map(({ layer, placement }) => placement.x + layer.subjectX),
+  );
+  const top = Math.min(
+    ...positioned.map(({ layer, placement }) => placement.y + layer.subjectY),
+  );
   const right = Math.max(
-    ...positioned.map(({ layer, placement }) => placement.x + layer.width),
+    ...positioned.map(
+      ({ layer, placement }) =>
+        placement.x + layer.subjectX + layer.subjectWidth,
+    ),
   );
   const bottom = Math.max(
-    ...positioned.map(({ layer, placement }) => placement.y + layer.height),
+    ...positioned.map(
+      ({ layer, placement }) =>
+        placement.y + layer.subjectY + layer.subjectHeight,
+    ),
   );
   return {
     left,

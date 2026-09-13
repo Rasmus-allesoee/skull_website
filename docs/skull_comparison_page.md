@@ -37,11 +37,11 @@ The first desktop review exposed interaction and density problems that are now
 part of this contract:
 
 - The field remains a genuine shared-scale workbench. Unmodified desktop
-  mousewheel/touchpad input pans the field and is consumed inside the field;
-  Ctrl/Command plus wheel and the visible slider change field zoom. The zoom
-  range is 25–2,000%. The ceiling was chosen from the smallest published
-  calibrated lateral view (SPEC-0016): at 2,000% its subject can nearly fill a
-  desktop field while all layers still use one camera scale.
+  mousewheel/touchpad input remains native document scrolling and never moves
+  the field. Ctrl/Command plus wheel and the visible slider change field zoom.
+  The zoom range is 25–2,000%. The ceiling was chosen from the smallest
+  published calibrated lateral view (SPEC-0016): at 2,000% its subject can
+  nearly fill a desktop field while all layers still use one camera scale.
 - Comparison layers load the validated full public WebP directly instead of a
   small responsive optimizer variant. This preserves the available source
   detail during inspection and does not create a second media source or weaken
@@ -67,6 +67,10 @@ part of this contract:
   accessible layer name. Labels can be hidden under the field's More menu;
   selected controls use inverse camera scaling so they remain compact and
   usable at high zoom.
+- Pointer hit testing uses the compiled alpha silhouette inside each view's
+  visible subject bounds rather than the transparent source canvas. The
+  keyboard target remains a complete labelled layer control, so precision
+  pointer selection does not reduce keyboard access.
 - The selected-subject rail is a fixed-height desktop scroll surface matched
   to the actual field panel row. Cards combine Skull number, common name,
   scientific name, ID, and length densely; the common name opens the exact
@@ -88,6 +92,29 @@ opacity, or camera values enter the share URL; no oblique calibration is added;
 and the original preparation-guide worktree is not touched. The new behavior is
 covered by focused domain tests and Chromium browser checks at desktop and
 touch sizes before owner publication review.
+
+## Owner review v2 corrections (2026-09-13)
+
+The second desktop review adds the following implementation requirements:
+
+- `Fit all` uses the calibrated visible alpha bounds of every active layer, not
+  the full transparent image canvases. A small bounded margin keeps the result
+  close to the available field without cropping the subject.
+- Selecting a layer exposes a compact `S{n} · View` toolbar. Its controls are
+  inverse-camera-scaled, anchored to the visible subject, and kept small enough
+  that a tiny view remains inspectable rather than being covered by its menu.
+- The More control is a normal native disclosure whose menu is positioned below
+  the complete field toolbar. The scrollable strip contains only the ordinary
+  field actions, so opening More never creates a vertical control-bar scroll
+  rail or clips a menu item.
+- `Custom` is a URL-shareable arrangement mode. Selecting it centers all active
+  canvases once. Thereafter add/remove actions preserve existing manual layer
+  positions and camera state; each newly added view starts at the world center
+  with a raised stack order. Reset layout deliberately recenters all layers and
+  refits the camera even in Custom mode.
+- Ordinary wheel and trackpad events over the field are allowed to bubble to
+  document scrolling. Only a modified wheel gesture is consumed for zoom;
+  empty-space pointer drag remains the explicit camera-pan gesture.
 
 ## 2. Recommended product decisions
 

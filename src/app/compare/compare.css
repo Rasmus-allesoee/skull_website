@@ -521,6 +521,7 @@
 }
 
 .compare-field-toolbar {
+  position: relative;
   min-height: 4.35rem;
   flex-wrap: wrap;
   padding: 0.65rem 0.9rem;
@@ -549,9 +550,22 @@
   align-items: center;
   justify-content: flex-end;
   gap: 0.35rem;
+  overflow: visible;
 }
 
-.compare-field-controls > button,
+.compare-field-scroll-controls {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+.compare-field-scroll-controls > button,
 .compare-field-controls summary,
 .compare-arrangement-control select,
 .compare-zoom-control button {
@@ -604,7 +618,7 @@
 }
 
 .compare-field-more {
-  position: relative;
+  position: static;
 }
 
 .compare-field-more summary {
@@ -624,7 +638,7 @@
   position: absolute;
   z-index: 50;
   top: calc(100% + 0.35rem);
-  right: 0;
+  right: 0.9rem;
   display: grid;
   width: 13rem;
   padding: 0.55rem;
@@ -640,7 +654,7 @@
 
   .compare-field-controls {
     flex: 1 1 auto;
-    overflow-x: auto;
+    overflow: visible;
   }
 }
 
@@ -766,8 +780,11 @@
 }
 
 .comparison-layer-hit svg {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: var(--subject-top);
+  left: var(--subject-left);
+  width: var(--subject-width);
+  height: var(--subject-height);
   overflow: visible;
   pointer-events: none;
 }
@@ -811,12 +828,12 @@
   gap: 0.2rem;
   width: max-content;
   max-width: 13rem;
-  padding: 0.12rem 0.28rem;
+  padding: 0.08rem 0.2rem;
   border: 1px solid rgb(255 255 255 / 12%);
   border-radius: 999px;
   background: rgb(13 16 15 / 82%);
   color: #d6d9d7;
-  font-size: 0.48rem;
+  font-size: 0.4rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -833,8 +850,8 @@
   left: var(--subject-left);
   display: flex;
   width: max-content;
-  max-width: max(12rem, var(--subject-width));
-  min-height: 2.5rem;
+  max-width: 10rem;
+  min-height: 1.55rem;
   align-items: center;
   border: 1px solid rgb(255 255 255 / 22%);
   border-radius: 0.18rem;
@@ -845,25 +862,26 @@
 }
 
 .comparison-layer-toolbar strong {
-  max-width: 10rem;
+  max-width: 6rem;
   overflow: hidden;
-  padding: 0.2rem 0.4rem;
+  padding: 0.1rem 0.28rem;
   color: #f3f4f3;
-  font-size: 0.48rem;
+  font-size: 0.4rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .comparison-layer-toolbar button {
   display: grid;
-  width: 2.5rem;
-  min-height: 2.5rem;
+  width: 1.55rem;
+  min-height: 1.55rem;
   padding: 0;
   place-content: center;
   border: 0;
   border-left: 1px solid rgb(255 255 255 / 18%);
   background: transparent;
   color: #f3f4f3;
+  font-size: 0.72rem;
 }
 
 .comparison-layer-hidden-note {
@@ -1346,7 +1364,13 @@
   .compare-field-controls {
     width: 100%;
     justify-content: flex-start;
+    overflow: visible;
+  }
+
+  .compare-field-scroll-controls {
+    justify-content: flex-start;
     overflow-x: auto;
+    overflow-y: hidden;
     padding-bottom: 0.2rem;
   }
 
@@ -1359,7 +1383,7 @@
     clip: rect(0 0 0 0);
   }
 
-  .compare-field-controls > button,
+  .compare-field-scroll-controls > button,
   .compare-field-controls summary,
   .compare-arrangement-control select,
   .compare-zoom-control button {

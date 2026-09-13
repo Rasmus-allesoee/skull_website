@@ -13,6 +13,7 @@ export const arrangementValues = [
   "side-by-side",
   "overlay-pair",
   "vertical-stack",
+  "custom",
 ] as const;
 
 export type ComparisonArrangement = (typeof arrangementValues)[number];

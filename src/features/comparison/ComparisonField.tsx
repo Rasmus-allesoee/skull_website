@@ -154,31 +154,45 @@ export function ComparisonField({
     return () => observer.disconnect();
   }, []);
 
-  /* eslint-disable react-hooks/set-state-in-effect -- The URL-controlled layer and arrangement props must reconcile the field's transient placements and camera after browser-history or responsive viewport changes. */
   useEffect(() => {
     const arranged = arrangeComparisonLayers(layers, arrangement, difference);
     const layersChanged = previousLayerSignature.current !== layerSignature;
     previousLayerSignature.current = layerSignature;
+    const arrangementChanged = previousArrangement.current !== arrangement;
     const overlayPairChanged =
       arrangement === "overlay-pair" &&
       previousDifference.current !== differenceSignature;
     previousDifference.current = differenceSignature;
-    if (
-      layersChanged ||
-      previousArrangement.current !== arrangement ||
-      overlayPairChanged
-    ) {
+    if (layersChanged || arrangementChanged || overlayPairChanged) {
+      const preserveCustomPositions =
+        arrangement === "custom" && layersChanged && !arrangementChanged;
+      const nextPlacements = preserveCustomPositions
+        ? mergeCustomPlacements(layers, placements, arranged)
+        : arranged;
       const arrangementMessage = layersChanged
-        ? "Field updated and fitted to all active views."
+        ? preserveCustomPositions
+          ? "Field updated; existing positions preserved and new views start at center."
+          : "Field updated and fitted to all active views."
         : `${formatArrangement(arrangement)} arrangement applied.`;
       previousArrangement.current = arrangement;
-      setPlacements(arranged);
+      setPlacements(nextPlacements);
       setSelectedLayerKey(null);
-      if (viewportSize.width > 0) {
-        setCamera(getFittedComparisonCamera(layers, arranged, viewportSize));
-        hasInitialFit.current = true;
-      } else {
+      if (layers.length === 0) {
         hasInitialFit.current = false;
+        setCamera({ x: 0, y: 0, zoom: 1 });
+      } else if (preserveCustomPositions) {
+        // Custom mode is the intentional exception to automatic re-layout:
+        // existing manual positions and the current camera remain untouched.
+        hasInitialFit.current = viewportSize.width > 0;
+      } else {
+        if (viewportSize.width > 0) {
+          setCamera(
+            getFittedComparisonCamera(layers, nextPlacements, viewportSize),
+          );
+          hasInitialFit.current = true;
+        } else {
+          hasInitialFit.current = false;
+        }
       }
       setStatus(arrangementMessage);
       return;
@@ -213,8 +227,6 @@ export function ComparisonField({
     hasInitialFit.current = true;
     setCamera(getFittedComparisonCamera(layers, placements, viewportSize));
   }, [layers, placements, viewportSize]);
-  /* eslint-enable react-hooks/set-state-in-effect */
-
   useEffect(() => {
     function clearSelection(event: globalThis.KeyboardEvent) {
       if (event.key === "Escape") setSelectedLayerKey(null);
@@ -292,21 +304,15 @@ export function ComparisonField({
   }
 
   function handleWheel(event: WheelEvent<HTMLDivElement>) {
+    // Ordinary wheel/trackpad scrolling belongs to the document. The field
+    // only claims modified wheel input, which is reserved for camera zoom.
+    if (!event.ctrlKey && !event.metaKey) return;
     event.preventDefault();
-    if (event.ctrlKey || event.metaKey) {
-      const bounds = event.currentTarget.getBoundingClientRect();
-      setZoom(camera.zoom * Math.exp(-event.deltaY * 0.003), {
-        x: event.clientX - bounds.left - bounds.width / 2,
-        y: event.clientY - bounds.top - bounds.height / 2,
-      });
-      return;
-    }
-    setCamera((current) => ({
-      ...current,
-      x: current.x - event.deltaX,
-      y: current.y - event.deltaY,
-    }));
-    setStatus("Field position updated.");
+    const bounds = event.currentTarget.getBoundingClientRect();
+    setZoom(camera.zoom * Math.exp(-event.deltaY * 0.003), {
+      x: event.clientX - bounds.left - bounds.width / 2,
+      y: event.clientY - bounds.top - bounds.height / 2,
+    });
   }
 
   function beginScaleBarDrag(event: PointerEvent<HTMLDivElement>) {
@@ -629,9 +635,9 @@ export function ComparisonField({
     "--camera-x": `${camera.x}px`,
     "--camera-y": `${camera.y}px`,
     "--camera-zoom": camera.zoom,
-    "--camera-ui-scale": Math.min(2, Math.max(0.05, 1 / camera.zoom)),
-    "--camera-label-gap": `${5.6 / camera.zoom}px`,
-    "--camera-toolbar-offset": `${40 / camera.zoom}px`,
+    "--camera-ui-scale": Math.min(1.75, Math.max(0.05, 0.9 / camera.zoom)),
+    "--camera-label-gap": `${4 / camera.zoom}px`,
+    "--camera-toolbar-offset": `${24 / camera.zoom}px`,
     "--comparison-world-width": `${comparisonWorldWidth}px`,
     "--comparison-world-height": `${comparisonWorldHeight}px`,
   } as CSSProperties;
@@ -647,65 +653,67 @@ export function ComparisonField({
           <h2 id="comparison-field-title">Comparison field</h2>
         </div>
         <div className="compare-field-controls" aria-label="Field controls">
-          <label className="compare-arrangement-control">
-            <span>Arrange</span>
-            <select
-              value={arrangement}
-              onClick={(event) => {
-                if (event.currentTarget.value === arrangement) resetLayout();
-              }}
-              onChange={(event) =>
-                onArrangementChange(
-                  event.currentTarget.value as ComparisonArrangement,
-                )
-              }
-            >
-              {arrangementValues.map((value) => (
-                <option value={value} key={value}>
-                  {formatArrangement(value)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="compare-zoom-control">
-            <span id="field-zoom-label">Field zoom</span>
-            <button
-              type="button"
-              title="Zoom out"
-              aria-label="Zoom field out"
-              onClick={() => setZoom(camera.zoom - 0.1)}
-            >
-              −
+          <div className="compare-field-scroll-controls">
+            <label className="compare-arrangement-control">
+              <span>Arrange</span>
+              <select
+                value={arrangement}
+                onClick={(event) => {
+                  if (event.currentTarget.value === arrangement) resetLayout();
+                }}
+                onChange={(event) =>
+                  onArrangementChange(
+                    event.currentTarget.value as ComparisonArrangement,
+                  )
+                }
+              >
+                {arrangementValues.map((value) => (
+                  <option value={value} key={value}>
+                    {formatArrangement(value)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="compare-zoom-control">
+              <span id="field-zoom-label">Field zoom</span>
+              <button
+                type="button"
+                title="Zoom out"
+                aria-label="Zoom field out"
+                onClick={() => setZoom(camera.zoom - 0.1)}
+              >
+                −
+              </button>
+              <input
+                aria-labelledby="field-zoom-label"
+                type="range"
+                min={minimumFieldZoom * 100}
+                max={maximumFieldZoom * 100}
+                step={5}
+                value={Math.round(camera.zoom * 100)}
+                onChange={(event) =>
+                  setZoom(Number(event.currentTarget.value) / 100)
+                }
+              />
+              <button
+                type="button"
+                title="Zoom in"
+                aria-label="Zoom field in"
+                onClick={() => setZoom(camera.zoom + 0.1)}
+              >
+                +
+              </button>
+              <output htmlFor="field-zoom-label">
+                {Math.round(camera.zoom * 100)}%
+              </output>
+            </div>
+            <button type="button" onClick={() => setZoom(1)}>
+              100%
             </button>
-            <input
-              aria-labelledby="field-zoom-label"
-              type="range"
-              min={minimumFieldZoom * 100}
-              max={maximumFieldZoom * 100}
-              step={5}
-              value={Math.round(camera.zoom * 100)}
-              onChange={(event) =>
-                setZoom(Number(event.currentTarget.value) / 100)
-              }
-            />
-            <button
-              type="button"
-              title="Zoom in"
-              aria-label="Zoom field in"
-              onClick={() => setZoom(camera.zoom + 0.1)}
-            >
-              +
+            <button type="button" onClick={() => fitAll()}>
+              Fit all
             </button>
-            <output htmlFor="field-zoom-label">
-              {Math.round(camera.zoom * 100)}%
-            </output>
           </div>
-          <button type="button" onClick={() => setZoom(1)}>
-            100%
-          </button>
-          <button type="button" onClick={() => fitAll()}>
-            Fit all
-          </button>
           <details className="compare-field-more">
             <summary aria-label="More field controls">•••</summary>
             <div>
@@ -971,7 +979,7 @@ function ComparisonFieldLayer({
           aria-label={`${accessibleLabel} controls`}
           title={layer.record.label}
         >
-          <strong>{label}</strong>
+          <strong>{`S${subjectIndex + 1} · ${formatShortViewLabel(media.view)}`}</strong>
           <button
             type="button"
             title="Move layer back"
@@ -1069,6 +1077,19 @@ function buildFieldLayers(selected: SelectedComparisonSubject[]): FieldLayer[] {
               view: media.view,
               width: size.width,
               height: size.height,
+              subjectX:
+                size.width *
+                ((media.orientation === "left"
+                  ? media.width -
+                    media.subjectBounds.x -
+                    media.subjectBounds.width
+                  : media.subjectBounds.x) /
+                  media.width),
+              subjectY: size.height * (media.subjectBounds.y / media.height),
+              subjectWidth:
+                size.width * (media.subjectBounds.width / media.width),
+              subjectHeight:
+                size.height * (media.subjectBounds.height / media.height),
               record,
               media,
             },
@@ -1076,6 +1097,27 @@ function buildFieldLayers(selected: SelectedComparisonSubject[]): FieldLayer[] {
         : [];
     }),
   );
+}
+
+function mergeCustomPlacements(
+  layers: FieldLayer[],
+  current: Record<string, ComparisonLayerPlacement>,
+  centered: Record<string, ComparisonLayerPlacement>,
+) {
+  const next: Record<string, ComparisonLayerPlacement> = {};
+  const activeCurrent: Record<string, ComparisonLayerPlacement> = {};
+  for (const layer of layers) {
+    const placement = current[layer.key];
+    if (placement) activeCurrent[layer.key] = placement;
+  }
+  let nextZ = getNextLayerZ(activeCurrent);
+  for (const layer of layers) {
+    next[layer.key] = activeCurrent[layer.key] ?? {
+      ...centered[layer.key]!,
+      z: nextZ++,
+    };
+  }
+  return next;
 }
 
 function applyLayerPosition(
@@ -1100,6 +1142,11 @@ function formatViewLabel(view: ComparisonView) {
   return view === "mandible-dorsal"
     ? "Mandible — dorsal"
     : `${view.charAt(0).toUpperCase()}${view.slice(1)}`;
+}
+
+function formatShortViewLabel(view: ComparisonView) {
+  if (view === "mandible-dorsal") return "Mandible";
+  return view.charAt(0).toUpperCase() + view.slice(1);
 }
 
 function pointDistance(

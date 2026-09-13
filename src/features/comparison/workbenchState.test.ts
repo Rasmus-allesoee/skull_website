@@ -50,6 +50,15 @@ describe("comparison workbench URL state", () => {
     expect(parsed.state).toEqual(source);
   });
 
+  it("accepts the custom arrangement in shareable state", () => {
+    const parsed = parseComparisonState(
+      "subjects=specimen%3ASPEC-0001&arrange=custom",
+      records,
+    );
+    expect(parsed.warnings).toEqual([]);
+    expect(parsed.state.arrangement).toBe("custom");
+  });
+
   it("retains valid URL state while deduplicating and enforcing limits", () => {
     const ids = records
       .filter((record) => record.kind === "specimen")
