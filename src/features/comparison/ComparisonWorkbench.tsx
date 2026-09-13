@@ -464,6 +464,14 @@ export function ComparisonWorkbench({
                       {record.scientificName}
                     </i>
                   ) : null}
+                  <p className="compare-subject-meta">
+                    {record.specimenId ?? "Reviewed reference"}
+                    {record.measurements.skullLength.status !==
+                      "not_applicable" &&
+                    record.measurements.skullLength.value !== null
+                      ? ` · ${formatComparisonMeasurement(record.measurements.skullLength)}`
+                      : null}
+                  </p>
                 </div>
                 <div className="compare-subject-order-controls">
                   <button
@@ -496,13 +504,6 @@ export function ComparisonWorkbench({
                   </button>
                 </div>
               </header>
-              <p className="compare-subject-meta">
-                {record.specimenId ?? "Reviewed reference"}
-                {record.measurements.skullLength.status !== "not_applicable" &&
-                record.measurements.skullLength.value !== null
-                  ? ` · ${formatComparisonMeasurement(record.measurements.skullLength)}`
-                  : null}
-              </p>
               <ul
                 className="compare-view-chips"
                 aria-label={`Active views for Skull ${index + 1}`}

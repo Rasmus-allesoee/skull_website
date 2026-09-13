@@ -86,11 +86,24 @@ export function reorderComparisonSubjects(
   const sourceIndex = state.subjects.findIndex(({ id }) => id === sourceId);
   const targetIndex = state.subjects.findIndex(({ id }) => id === targetId);
   if (sourceIndex < 0 || targetIndex < 0) return state;
+  const differenceIndexes = state.difference?.map((id) =>
+    state.subjects.findIndex((subject) => subject.id === id),
+  );
   const subjects = [...state.subjects];
   const source = subjects.splice(sourceIndex, 1)[0];
   if (!source) return state;
   subjects.splice(Math.min(targetIndex, subjects.length), 0, source);
-  return { ...state, subjects };
+  // The Difference control names Skull slots, so keep those positions while
+  // replacing the record IDs that now occupy them.
+  const difference =
+    differenceIndexes?.length === 2 &&
+    differenceIndexes.every((index) => index >= 0 && index < subjects.length)
+      ? ([
+          subjects[differenceIndexes[0]!]!.id,
+          subjects[differenceIndexes[1]!]!.id,
+        ] as [string, string])
+      : state.difference;
+  return { ...state, subjects, difference };
 }
 
 export function addComparisonView(

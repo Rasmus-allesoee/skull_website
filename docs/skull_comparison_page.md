@@ -369,7 +369,12 @@ Cards are compact rather than one metadata row per identity field. Dragging a
 card changes the ordered Skull 1–5 sequence; adjacent Arrow buttons provide the
 same operation without a drag gesture. The table subject headers expose the
 same drag reorder operation so users can manage the Difference pair from the
-analytical surface as well.
+analytical surface as well. Reordering either surface preserves the selected
+Difference pair's Skull slot positions: if the control says `S1 ↔ S2`, the
+records now occupying Skull 1 and Skull 2 become the new directed pair, while
+the control remains `S1 ↔ S2`. This lets users choose the pair by moving records
+into the desired numbered slots; changing the pair control itself remains the
+explicit way to choose different slots.
 
 Color is supplementary. Every subject remains identifiable by Skull number,
 name, ID, and repeated marker shape in the field and table.
@@ -390,9 +395,12 @@ name, ID, and repeated marker shape in the field and table.
   requested by the owner.
 - Removing a subject compacts Skull numbering while preserving the relative
   order of the remaining subjects.
-- If both records in the difference pair remain selected, the pair remains
-  anchored to their record IDs despite renumbering. Otherwise it falls back to
-  the first two remaining subjects and announces the change.
+- Reordering a card or table header keeps the selected pair's two positional
+  Skull slots and remaps the directed IDs to the records now occupying those
+  slots.
+- If both records in the difference pair remain selected after a removal, the
+  pair remains anchored to their record IDs. Otherwise it falls back to the
+  first two remaining subjects and announces the change.
 
 ## 7. Comparison field
 
@@ -601,8 +609,10 @@ class-specific values may honestly display `Not applicable` for profiles where
 the definition does not apply.
 
 Changing the difference pair changes only the directed Difference values and
-its compact header labels; changing the selected profile mix changes the row
-matrix. Announce pair/row updates without jumping the page.
+its compact header labels. Reordering subjects or table columns keeps the pair's
+slot labels fixed and changes which record IDs feed those slots; changing the
+selected profile mix changes the row matrix. Announce pair/row updates without
+jumping the page.
 
 ### 8.4 Measurement links and source status
 
@@ -836,8 +846,9 @@ interface ComparisonViewLayer {
 ```
 
 Use a reducer or similarly explicit transition layer for add/remove/reorder,
-limits, difference fallback, reset, URL restore, and arrangement operations.
-Pure transitions should be unit tested independently from pointer behavior.
+limits, positional difference-pair remapping, difference fallback, reset, URL
+restore, and arrangement operations. Pure transitions should be unit tested
+independently from pointer behavior.
 
 ### 15.2 Server/client boundary
 
@@ -961,7 +972,8 @@ pending.
 - Per-subject opacity affects all and only that subject's layers.
 - Add/remove view and last-view-removes-subject behavior.
 - Five-subject and ten-layer boundaries.
-- Deterministic Skull renumbering and difference-pair ID preservation/fallback.
+- Deterministic Skull renumbering, positional difference-pair remapping on
+  reorder, and valid-ID fallback after removal.
 - Existing mammal, bird, cross-class, fallback, approximate, unavailable, equal,
   and unit-mismatch difference calculations.
 - URL parse/serialize round-trip, canonical ordering, malformed state, duplicate

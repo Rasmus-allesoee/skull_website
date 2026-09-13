@@ -45,6 +45,25 @@ test("default comparison is static, semantic, accessible, and error-free", async
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
+test("selected specimen metadata aligns with the card identity stack", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(defaultRoute);
+
+  const firstCard = page.locator(".compare-subject-card").first();
+  const identity = firstCard.locator("header > div").first();
+  const identityBounds = await identity.boundingBox();
+  const metadata = firstCard.locator(".compare-subject-meta");
+  const metadataBounds = await metadata.boundingBox();
+  expect(identityBounds).not.toBeNull();
+  expect(metadataBounds).not.toBeNull();
+  await expect(identity.locator(".compare-subject-meta")).toHaveCount(1);
+  expect(Math.abs(metadataBounds!.x - identityBounds!.x)).toBeLessThanOrEqual(
+    1,
+  );
+});
+
 test("desktop field keeps page scrolling separate from zoom, precise hits, and controls", async ({
   page,
 }) => {
@@ -516,12 +535,37 @@ test("five-subject rail stays bounded and supports card and table-column reorder
 
   const secondCard = page.locator(".compare-subject-card").nth(1);
   const secondName = await secondCard.locator("h2").innerText();
+  const differencePair = page.getByLabel("Difference pair");
+  const initialDifferenceText = await page
+    .locator(".comparison-difference")
+    .first()
+    .innerText();
+  await expect(differencePair).toHaveValue(
+    "specimen:SPEC-0001|specimen:SPEC-0002",
+  );
   await secondCard
     .getByRole("button", { name: "Move Skull 2 before Skull 1" })
     .click();
   await expect(
     page.locator(".compare-subject-card").first().locator("h2"),
   ).toHaveText(secondName);
+  await expect(differencePair).toHaveValue(
+    "specimen:SPEC-0002|specimen:SPEC-0001",
+  );
+  await expect(page.locator(".comparison-difference-heading small")).toHaveText(
+    "S1 − S2",
+  );
+  await expect
+    .poll(() => page.locator(".comparison-difference").first().innerText())
+    .not.toBe(initialDifferenceText);
+
+  await differencePair.selectOption("specimen:SPEC-0001|specimen:SPEC-0003");
+  await expect(differencePair).toHaveValue(
+    "specimen:SPEC-0001|specimen:SPEC-0003",
+  );
+  await expect(page.locator(".comparison-difference-heading small")).toHaveText(
+    "S2 − S3",
+  );
 
   const headers = page.locator(".comparison-table thead th[draggable='true']");
   const firstHeader = await headers.nth(0).locator("strong").innerText();
@@ -529,6 +573,12 @@ test("five-subject rail stays bounded and supports card and table-column reorder
   await headers.nth(0).dragTo(headers.nth(1));
   await expect(headers.nth(0).locator("strong")).toHaveText(secondHeader);
   await expect(headers.nth(1).locator("strong")).toHaveText(firstHeader);
+  await expect(differencePair).toHaveValue(
+    "specimen:SPEC-0002|specimen:SPEC-0003",
+  );
+  await expect(page.locator(".comparison-difference-heading small")).toHaveText(
+    "S2 − S3",
+  );
 
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto("/compare");

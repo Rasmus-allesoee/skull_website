@@ -8,6 +8,37 @@
 
 **Next action:** Owner review of the locally complete `/compare` workbench and its site entry points. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
 
+## 0.12 Selected-card alignment and positional difference-pair correction (2026-09-14)
+
+- Moved each selected card's specimen/reference ID and skull-length metadata
+  into the same identity stack as Skull N, the common name, and scientific name;
+  the metadata now aligns with that content without a brittle compensating
+  offset.
+- Reworked the shared card/table reorder transition so it preserves the
+  Difference pair's numbered Skull slots while remapping the underlying record
+  IDs to the subjects now occupying those slots. The Difference selector stays
+  on S1–S2 or another chosen slot pair while its values follow the reorder.
+  Subject removal retains the existing valid-ID fallback behavior.
+- Added unit and browser coverage for default and non-default pair slots,
+  changed Difference output, card/table reorder behavior, and metadata geometry.
+
+### Verification
+
+- Focused comparison state tests pass: **8/8**.
+- Focused Chromium comparison journeys pass: **2/2**.
+- `CI=true corepack pnpm check` passes formatting, ESLint, media/content
+  validation, strict TypeScript, **108/108 unit/component tests**, and the six
+  expected invalid-fixture failures. The four existing optional-frontal-view
+  content warnings remain unchanged.
+- `CI=true corepack pnpm build` passes and prerenders **79/79 static routes**,
+  including `/compare`.
+- `CI=true PLAYWRIGHT_PORT=3102 corepack pnpm test:e2e` passes **97/97
+  Chromium journeys** against a fresh production server in 4.3 minutes. A
+  visual 1,440 px browser check confirmed aligned metadata and zero console
+  errors. Work remains local on `skull_comparison_page`; no push, merge,
+  deployment, publication, or change to the original/preparation worktrees was
+  made.
+
 ## 0.11 Selected-skull card drag preview correction (2026-09-14)
 
 - Replaced the browser's implicit draggable-subtree snapshot for selected-skull

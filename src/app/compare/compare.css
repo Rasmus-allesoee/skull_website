@@ -237,6 +237,10 @@
   text-transform: uppercase;
 }
 
+.compare-subject-card .compare-subject-meta {
+  margin-top: 0.38rem;
+}
+
 .compare-subject-card h2 {
   overflow: hidden;
   font-family: var(--font-sans);

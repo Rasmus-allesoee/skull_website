@@ -117,7 +117,7 @@ describe("comparison workbench URL state", () => {
     ).toBeNull();
   });
 
-  it("swaps selected subject order without changing the directed pair", () => {
+  it("reorders selected slots while preserving the directed pair positions", () => {
     const initial = getDefaultComparisonState(records);
     const withThird = addComparisonSubject(
       initial,
@@ -135,7 +135,27 @@ describe("comparison workbench URL state", () => {
       "specimen:SPEC-0001",
       "reference:adult-human-skull",
     ]);
-    expect(reordered.difference).toEqual(withThird.difference);
+    expect(reordered.difference).toEqual([
+      "specimen:SPEC-0003",
+      "specimen:SPEC-0001",
+    ]);
+
+    const withLaterPair = {
+      ...withThird,
+      difference: ["reference:adult-human-skull", "specimen:SPEC-0003"] as [
+        string,
+        string,
+      ],
+    };
+    const laterPairReordered = reorderComparisonSubjects(
+      withLaterPair,
+      "specimen:SPEC-0003",
+      "specimen:SPEC-0001",
+    );
+    expect(laterPairReordered.difference).toEqual([
+      "specimen:SPEC-0001",
+      "reference:adult-human-skull",
+    ]);
   });
 
   it("rejects additions at the ten-layer boundary", () => {
