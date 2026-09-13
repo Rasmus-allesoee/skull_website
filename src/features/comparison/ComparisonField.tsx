@@ -5,7 +5,6 @@ import {
   type CSSProperties,
   type KeyboardEvent,
   type PointerEvent,
-  type WheelEvent,
   useEffect,
   useMemo,
   useRef,
@@ -142,16 +141,56 @@ export function ComparisonField({
   const printState = useRef({ camera, layers, placements, viewportSize });
 
   useEffect(() => {
-    const viewport = viewportRef.current;
-    if (!viewport) return;
+    const fieldViewport = viewportRef.current;
+    if (!fieldViewport) return;
     const update = () => {
-      const bounds = viewport.getBoundingClientRect();
+      const bounds = fieldViewport.getBoundingClientRect();
       setViewportSize({ width: bounds.width, height: bounds.height });
     };
     update();
     const observer = new ResizeObserver(update);
-    observer.observe(viewport);
+    observer.observe(fieldViewport);
     return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const fieldViewport = viewportRef.current;
+    if (!fieldViewport) return;
+
+    function handleModifiedWheel(event: globalThis.WheelEvent) {
+      if (!event.ctrlKey && !event.metaKey) return;
+
+      // React's delegated wheel handling may be passive in some browser
+      // combinations. Register this listener directly so modified wheel
+      // gestures reliably suppress document scroll and browser page zoom.
+      event.preventDefault();
+      event.stopPropagation();
+      const bounds = fieldViewport!.getBoundingClientRect();
+      const focalPoint = {
+        x: event.clientX - bounds.left - bounds.width / 2,
+        y: event.clientY - bounds.top - bounds.height / 2,
+      };
+      setCamera((current) => {
+        const zoom = clamp(
+          current.zoom * Math.exp(-event.deltaY * 0.003),
+          minimumFieldZoom,
+          maximumFieldZoom,
+        );
+        if (current.zoom === zoom) return current;
+        const ratio = zoom / current.zoom;
+        return {
+          x: focalPoint.x - (focalPoint.x - current.x) * ratio,
+          y: focalPoint.y - (focalPoint.y - current.y) * ratio,
+          zoom,
+        };
+      });
+    }
+
+    fieldViewport.addEventListener("wheel", handleModifiedWheel, {
+      passive: false,
+    });
+    return () =>
+      fieldViewport.removeEventListener("wheel", handleModifiedWheel);
   }, []);
 
   useEffect(() => {
@@ -300,18 +339,6 @@ export function ComparisonField({
         y: focalPoint.y - (focalPoint.y - current.y) * ratio,
         zoom,
       };
-    });
-  }
-
-  function handleWheel(event: WheelEvent<HTMLDivElement>) {
-    // Ordinary wheel/trackpad scrolling belongs to the document. The field
-    // only claims modified wheel input, which is reserved for camera zoom.
-    if (!event.ctrlKey && !event.metaKey) return;
-    event.preventDefault();
-    const bounds = event.currentTarget.getBoundingClientRect();
-    setZoom(camera.zoom * Math.exp(-event.deltaY * 0.003), {
-      x: event.clientX - bounds.left - bounds.width / 2,
-      y: event.clientY - bounds.top - bounds.height / 2,
     });
   }
 
@@ -758,7 +785,6 @@ export function ComparisonField({
         className="comparison-field"
         style={worldStyle}
         data-arrangement={arrangement}
-        onWheel={handleWheel}
         onPointerDown={beginCameraPan}
         onPointerMove={handlePointerMove}
         onPointerUp={endPointerGesture}
@@ -828,9 +854,10 @@ export function ComparisonField({
       </div>
       <div className="comparison-field-footer">
         <p>
-          Drag a skull to move it; scroll or drag empty space to pan. Hold Ctrl
-          or Command while scrolling to zoom. On touch screens, use two fingers
-          to navigate the field.
+          Drag a skull to move it; drag empty space to pan. Scroll normally to
+          move the page. Hold Ctrl or Command while using the mouse wheel or a
+          two-finger trackpad scroll to zoom without moving the page. On touch
+          screens, use two fingers to navigate the field.
         </p>
         <p className="comparison-field-status" aria-live="polite">
           {status}

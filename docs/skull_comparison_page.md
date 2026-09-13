@@ -69,8 +69,10 @@ part of this contract:
   usable at high zoom.
 - Pointer hit testing uses the compiled alpha silhouette inside each view's
   visible subject bounds rather than the transparent source canvas. The
+  surrounding figure and image containers are pointer-transparent, and the
   keyboard target remains a complete labelled layer control, so precision
-  pointer selection does not reduce keyboard access.
+  pointer selection does not reduce keyboard access or let an invisible canvas
+  block a neighbouring skull.
 - The selected-subject rail is a fixed-height desktop scroll surface matched
   to the actual field panel row. Cards combine Skull number, common name,
   scientific name, ID, and length densely; the common name opens the exact
@@ -113,8 +115,9 @@ The second desktop review adds the following implementation requirements:
   with a raised stack order. Reset layout deliberately recenters all layers and
   refits the camera even in Custom mode.
 - Ordinary wheel and trackpad events over the field are allowed to bubble to
-  document scrolling. Only a modified wheel gesture is consumed for zoom;
-  empty-space pointer drag remains the explicit camera-pan gesture.
+  document scrolling. A non-passive native wheel listener consumes only a
+  modified gesture for zoom and suppresses both document scrolling and browser
+  page zoom; empty-space pointer drag remains the explicit camera-pan gesture.
 
 ## 2. Recommended product decisions
 

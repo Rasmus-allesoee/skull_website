@@ -75,6 +75,38 @@ test("desktop field keeps page scrolling separate from zoom, precise hits, and c
   expect(
     Math.abs(hitBounds!.height - subjectBounds!.height),
   ).toBeLessThanOrEqual(1);
+  const transparentLayerTarget = await page.evaluate(() => {
+    return [...document.querySelectorAll<HTMLElement>(".comparison-layer")].map(
+      (layer) => {
+        const layerBounds = layer.getBoundingClientRect();
+        const subjectBounds = layer
+          .querySelector<HTMLElement>(".comparison-layer-outline")
+          ?.getBoundingClientRect();
+        if (!subjectBounds) return { blocked: false };
+        for (let x = layerBounds.left + 4; x < layerBounds.right; x += 12) {
+          for (let y = layerBounds.top + 4; y < layerBounds.bottom; y += 12) {
+            if (
+              x >= subjectBounds.left &&
+              x <= subjectBounds.right &&
+              y >= subjectBounds.top &&
+              y <= subjectBounds.bottom
+            ) {
+              continue;
+            }
+            const target = document.elementFromPoint(x, y);
+            if (target?.closest(".comparison-layer") === layer) {
+              return {
+                blocked: true,
+                target: target.className || target.tagName,
+              };
+            }
+          }
+        }
+        return { blocked: false };
+      },
+    );
+  });
+  expect(transparentLayerTarget.every(({ blocked }) => !blocked)).toBe(true);
   await firstHit.locator("path").click({ force: true });
   await expect(page.locator(".comparison-layer-toolbar")).toHaveCount(1);
   const toolbarBounds = await page
@@ -128,6 +160,7 @@ test("desktop field keeps page scrolling separate from zoom, precise hits, and c
   await expect
     .poll(() => field.getAttribute("style"))
     .not.toBe(beforeModifiedWheel);
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
 
   await page.getByRole("button", { name: "Fit all" }).click();
   const outline = firstLayer.locator(".comparison-layer-outline");

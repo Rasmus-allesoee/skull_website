@@ -728,6 +728,7 @@
   height: var(--layer-height);
   margin: 0;
   transform: translate3d(var(--layer-x), var(--layer-y), 0);
+  pointer-events: none;
 }
 
 .comparison-layer:has(.comparison-layer-hit:active) {
@@ -738,6 +739,7 @@
   position: absolute;
   inset: 0;
   opacity: var(--layer-opacity);
+  pointer-events: none;
 }
 
 .comparison-layer-image img {
@@ -791,6 +793,7 @@
 
 .comparison-layer-hit path {
   cursor: grab;
+  pointer-events: all;
 }
 
 .comparison-layer-hit:active path {
@@ -859,6 +862,7 @@
   box-shadow: 0 0.45rem 1.2rem rgb(0 0 0 / 35%);
   transform: scale(var(--camera-ui-scale, 1));
   transform-origin: left bottom;
+  pointer-events: auto;
 }
 
 .comparison-layer-toolbar strong {
