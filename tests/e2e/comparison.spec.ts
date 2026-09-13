@@ -549,6 +549,71 @@ test("five-subject rail stays bounded and supports card and table-column reorder
   );
 });
 
+test("selected skull cards use an isolated card-sized drag preview", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(defaultRoute);
+
+  const firstCard = page.locator(".compare-subject-card").first();
+  const cardBounds = await firstCard.boundingBox();
+  expect(cardBounds).not.toBeNull();
+
+  await page.evaluate(() => {
+    const card = document.querySelector<HTMLElement>(".compare-subject-card");
+    if (!card) throw new Error("Selected skull card was not rendered.");
+    const bounds = card.getBoundingClientRect();
+    const dataTransfer = new DataTransfer();
+    card.dispatchEvent(
+      new DragEvent("dragstart", {
+        bubbles: true,
+        cancelable: true,
+        clientX: bounds.left + bounds.width / 3,
+        clientY: bounds.top + bounds.height / 3,
+        dataTransfer,
+      }),
+    );
+  });
+
+  const preview = page.locator("[data-comparison-card-drag-preview]");
+  await expect(preview).toHaveCount(1);
+  const previewDetails = await page.evaluate(() => {
+    const card = document.querySelector<HTMLElement>(".compare-subject-card");
+    const preview = document.querySelector<HTMLElement>(
+      "[data-comparison-card-drag-preview]",
+    );
+    const rail = document.querySelector<HTMLElement>(".compare-subject-rail");
+    if (!card || !preview || !rail) {
+      throw new Error("Card drag preview did not render.");
+    }
+    const cardBounds = card.getBoundingClientRect();
+    const previewBounds = preview.getBoundingClientRect();
+    return {
+      card: { width: cardBounds.width, height: cardBounds.height },
+      preview: { width: previewBounds.width, height: previewBounds.height },
+      isInRail: rail.contains(preview),
+      isAriaHidden: preview.getAttribute("aria-hidden"),
+    };
+  });
+  expect(
+    Math.abs(previewDetails.preview.width - cardBounds!.width),
+  ).toBeLessThanOrEqual(1);
+  expect(
+    Math.abs(previewDetails.preview.height - cardBounds!.height),
+  ).toBeLessThanOrEqual(1);
+  expect(previewDetails.isInRail).toBe(false);
+  expect(previewDetails.isAriaHidden).toBe("true");
+
+  await page.evaluate(() => {
+    const card = document.querySelector<HTMLElement>(".compare-subject-card");
+    if (!card) throw new Error("Selected skull card was not rendered.");
+    card.dispatchEvent(
+      new DragEvent("dragend", { bubbles: true, cancelable: true }),
+    );
+  });
+  await expect(preview).toHaveCount(0);
+});
+
 test("two-finger touch pans and zooms the field camera", async ({
   browser,
   browserName,

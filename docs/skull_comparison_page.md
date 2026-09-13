@@ -1,8 +1,8 @@
 # Skull Comparison page plan
 
-**Status:** Implemented locally on `skull_comparison_page`; owner-feedback refinement under final verification
+**Status:** Implemented and locally verified on `skull_comparison_page`; owner review pending
 
-**Last reviewed:** 2026-09-13
+**Last reviewed:** 2026-09-14
 
 **Proposed public route:** `/compare`
 
@@ -77,9 +77,11 @@ part of this contract:
   to the actual field panel row. Cards combine Skull number, common name,
   scientific name, ID, and length densely; the common name opens the exact
   record. Cards and table subject headers can be reordered by drag, with arrow
-  buttons on cards as a keyboard alternative. Add-view menus close after an
-  action and on outside activation, and the last card opens its menu upward
-  when needed so every option remains visible.
+  buttons on cards as a keyboard alternative. Card drags use an isolated,
+  card-sized native drag preview so the browser never snapshots the surrounding
+  rail or field. Add-view menus close after an action and on outside activation,
+  and the last card opens its menu upward when needed so every option remains
+  visible.
 - The measurement matrix uses the union of every selected profile's primary
   and additional recorded measurements. Mixed mammal/bird primary rows always
   use the reviewed width/height mappings, even when the selected difference
@@ -439,10 +441,11 @@ unlimited detail.
 Interaction:
 
 - mouse/pen dragging an image layer moves that layer;
-- dragging empty field background pans the field;
-- trackpad pinch or Ctrl/Command + wheel over the field zooms around the pointer;
-- an ordinary unmodified desktop wheel/touchpad pans the field; it does not
-  scroll the document while the pointer is inside the field;
+- Cmd/Control-modified dragging of empty field background pans the field;
+- trackpad pinch or Ctrl/Command + wheel over the field zooms around the pointer
+  and suppresses document scrolling;
+- an ordinary unmodified desktop wheel/touchpad remains native document
+  scrolling and does not move the field;
 - one-finger vertical touch remains available for document scrolling;
 - a deliberate horizontal single-finger touch can move a layer, while
   two-finger touch pans and pinches the field; and
@@ -972,6 +975,8 @@ pending.
   focus restoration.
 - Subject cards expose identity, opacity, active views, unavailable reasons,
   exact record links, and removal.
+- Subject-card dragstart creates only a card-sized native drag preview and
+  dragend removes that preview without changing the reorder state.
 - Difference tooltip and pair picker are keyboard/touch operable.
 - Methodology links resolve to existing stable measurement anchors.
 - Comparable-only filtering and live row count.
@@ -987,6 +992,7 @@ At minimum, verify in real Chromium:
 - adding five subjects and ten mixed-view layers;
 - lateral, frontal, dorsal, ventral, and diagonal mandible calibration;
 - free pointer drag, overlap, z-order, remove toolbar, and Fit all;
+- selected-subject card drag preview isolation and reorder preservation;
 - field zoom buttons, slider, pointer-centered trackpad zoom, background pan,
   and invariant scale ratios;
 - per-subject opacity including 0%;

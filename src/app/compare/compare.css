@@ -204,6 +204,23 @@
   cursor: grabbing;
 }
 
+.compare-card-drag-preview {
+  position: fixed !important;
+  top: -10000px !important;
+  left: -10000px !important;
+  z-index: 2147483647;
+  box-sizing: border-box;
+  margin: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+.compare-card-drag-preview * {
+  pointer-events: none !important;
+}
+
 .compare-subject-card header p,
 .compare-subject-card h2,
 .compare-subject-card > i,

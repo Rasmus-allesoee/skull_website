@@ -1,12 +1,43 @@
 # Project status
 
-**Snapshot date:** 2026-09-13
+**Snapshot date:** 2026-09-14
 
 **Current phase:** locally complete owner-feedback refinement of the standalone Skull Comparison implementation on `skull_comparison_page`, pending owner review
 
 **Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. The owner approved all eight standalone-comparison decisions on 2026-09-11. The owner-directed desktop comparison feedback is implemented and fully verified in the isolated comparison worktree on `skull_comparison_page`; the unfinished `preparation_guide_refinement` branch remains separate, intact, and unmerged.
 
 **Next action:** Owner review of the locally complete `/compare` workbench and its site entry points. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
+
+## 0.11 Selected-skull card drag preview correction (2026-09-14)
+
+- Replaced the browser's implicit draggable-subtree snapshot for selected-skull
+  cards with a temporary, exact-size clone of only the active card. The clone
+  is positioned outside the visible document, passed to
+  `DataTransfer.setDragImage`, and removed on drag end or component unmount.
+  This prevents neighboring cards, the subject rail, or the comparison field
+  from appearing as part of the drag ghost while leaving the stable-ID reorder
+  operation unchanged.
+- Added a Chromium regression that dispatches the card drag lifecycle and
+  asserts one card-sized, aria-hidden preview is outside the rail and is
+  removed after `dragend`.
+
+### Verification
+
+- The focused Chromium regression passes: **1/1**.
+- A live browser diagnostic measured the preview at **291 × 155 px**, matching
+  the rendered card within subpixel rounding, and confirmed cleanup to zero
+  preview nodes after `dragend`.
+- `CI=true corepack pnpm check` passes formatting, ESLint, media/content
+  validation, strict TypeScript, **108/108 unit/component tests**, and the six
+  expected invalid-fixture failures. The four existing optional-frontal-view
+  content warnings remain unchanged.
+- `CI=true corepack pnpm build` passes and prerenders **79/79 static routes**,
+  including `/compare`.
+- `CI=true PLAYWRIGHT_PORT=3102 corepack pnpm test:e2e` passes **96/96
+  Chromium journeys** against a fresh production server in 4.0 minutes,
+  including the selected-card preview regression. Work remains local on
+  `skull_comparison_page`; no push, merge, deployment, publication, or change
+  to the original/preparation worktrees was made.
 
 ## 0.10 Follow-up comparison interaction corrections (2026-09-13)
 

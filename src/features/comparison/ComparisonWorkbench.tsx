@@ -82,6 +82,7 @@ export function ComparisonWorkbench({
   >(() => Object.fromEntries(defaults.subjects.map(({ id }) => [id, 100])));
   const hydrated = useRef(false);
   const draggedSubjectId = useRef<string | null>(null);
+  const draggedSubjectPreview = useRef<HTMLElement | null>(null);
   const recordsById = useMemo(
     () => new Map(records.map((record) => [record.id, record])),
     [records],
@@ -108,6 +109,12 @@ export function ComparisonWorkbench({
     window.addEventListener("popstate", restore);
     return () => window.removeEventListener("popstate", restore);
   }, [records]);
+
+  useEffect(() => {
+    return () => {
+      draggedSubjectPreview.current?.remove();
+    };
+  }, []);
 
   useEffect(() => {
     function closeOpenDetails(event: PointerEvent) {
@@ -222,6 +229,11 @@ export function ComparisonWorkbench({
     commit(next, "Skull order updated; table columns reordered.");
   }
 
+  function clearSubjectDragPreview() {
+    draggedSubjectPreview.current?.remove();
+    draggedSubjectPreview.current = null;
+  }
+
   function beginSubjectDrag(event: DragEvent<HTMLElement>, id: string) {
     const target = event.target;
     if (
@@ -231,9 +243,41 @@ export function ComparisonWorkbench({
       event.preventDefault();
       return;
     }
+
+    const card = event.currentTarget;
+    const cardBounds = card.getBoundingClientRect();
+    const preview = card.cloneNode(true) as HTMLElement;
+    const pointerOffsetX = Math.min(
+      Math.max(event.clientX - cardBounds.left, 0),
+      cardBounds.width,
+    );
+    const pointerOffsetY = Math.min(
+      Math.max(event.clientY - cardBounds.top, 0),
+      cardBounds.height,
+    );
+
+    clearSubjectDragPreview();
+    preview.classList.add("compare-card-drag-preview");
+    preview.setAttribute("aria-hidden", "true");
+    preview.setAttribute("data-comparison-card-drag-preview", "true");
+    preview.removeAttribute("draggable");
+    preview.style.width = `${Math.ceil(cardBounds.width)}px`;
+    preview.style.minWidth = `${Math.ceil(cardBounds.width)}px`;
+    preview.style.height = `${Math.ceil(cardBounds.height)}px`;
+    preview.querySelectorAll("details").forEach((details) => {
+      details.removeAttribute("open");
+    });
+    document.body.append(preview);
+    draggedSubjectPreview.current = preview;
+
     draggedSubjectId.current = id;
     event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.setData("text/plain", id);
+    event.dataTransfer.setDragImage(
+      preview,
+      Math.round(pointerOffsetX),
+      Math.round(pointerOffsetY),
+    );
     setActiveSubjectId(id);
   }
 
@@ -393,6 +437,7 @@ export function ComparisonWorkbench({
               onDrop={(event) => dropSubject(event, record.id)}
               onDragEnd={() => {
                 draggedSubjectId.current = null;
+                clearSubjectDragPreview();
               }}
               data-active={activeSubjectId === record.id ? "true" : undefined}
               onFocus={() => setActiveSubjectId(record.id)}
