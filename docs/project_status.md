@@ -8,6 +8,55 @@
 
 **Next action:** Owner review of the locally complete `/compare` workbench and its site entry points. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
 
+## 0.9 Owner-directed comparison review v2 corrections (2026-09-13)
+
+- Corrected field pointer geometry so each view's selectable surface follows its
+  compiled alpha silhouette inside the visible subject bounds. Transparent
+  canvas margins no longer intercept clicks or touches intended for a smaller
+  neighboring skull; keyboard focus and the full accessible layer target remain
+  available independently of the precise pointer path.
+- Separated document navigation from camera manipulation. Ordinary desktop
+  mouse-wheel and touchpad scrolling over the field now remains page scrolling
+  and does not pan the field. Only Cmd/Control-modified wheel input is consumed
+  for pointer-centered field zoom; explicit empty-space drag and the existing
+  two-finger touch gesture retain camera navigation.
+- Tightened `Fit all` around visible skull pixels rather than transparent source
+  canvases, and reduced the selected-layer popup to a compact inverse-scaled
+  `S{n} · View` toolbar anchored above the subject where possible.
+- Reworked the More control so its native dropdown is positioned below the full
+  field toolbar and sits outside the horizontal control scroller. Opening it no
+  longer turns the top bar into a vertical scroll rail or clips its options.
+- Added the URL-shareable `Custom` arrangement. Selecting it centers current
+  layers once; later additions start at the world center while existing manual
+  positions and camera state are preserved. Reset layout still deliberately
+  recenters and refits every active layer.
+- Expanded unit and Chromium coverage for visible-bound hitboxes, compact
+  controls, native wheel scrolling versus modified zoom, More-menu geometry,
+  Custom add-view preservation, and the existing cross-feature comparison
+  journeys.
+
+### Verification
+
+- `CI=true corepack pnpm check` passes formatting, ESLint, media/content
+  validation, strict TypeScript, **108/108 unit/component tests**, and the six
+  expected invalid-fixture failures. The four existing optional-frontal-view
+  content warnings remain unchanged.
+- `CI=true corepack pnpm build` passes and prerenders **79/79 static routes**,
+  including `/compare`.
+- `CI=true PLAYWRIGHT_PORT=3102 corepack pnpm test:e2e` passes **95/95
+  Chromium journeys** against a fresh production server in 4.0 minutes; the
+  dedicated comparison suite passes **14/14**.
+- Manual browser review covered a 1,200 px desktop viewport, a four-view
+  two-specimen field, precise outline/hit-path alignment, a 107 × 24 px
+  selected-layer toolbar, tight Fit all margins, the More dropdown, and a
+  390 × 844 phone layout. No console errors or document horizontal overflow
+  were observed in the relevant checks.
+- Work remains local on `skull_comparison_page` in
+  `/Users/rasmusallesoeenielsen/Documents/skull_website_comparison`; the
+  original `skull_website` and separate `preparation_guide_refinement`
+  worktree were not modified, and nothing was pushed, merged, deployed, or
+  published.
+
 ## 0.8 Owner-directed comparison review refinement (2026-09-13)
 
 - Repaired the comparison field interaction model: desktop mouse-wheel and touchpad input pans the field, modified wheel input zooms around the pointer, mobile one-finger vertical gestures remain page scrolling, and two-finger gestures pan/pinch the field. Direct validated WebP sources are used in the field so high zoom does not introduce an additional optimizer blur; the zoom ceiling is now 2,000% so the smallest calibrated lateral views can be inspected at useful size.
