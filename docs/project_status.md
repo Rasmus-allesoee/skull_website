@@ -8,6 +8,42 @@
 
 **Next action:** Owner review of the locally complete `/compare` workbench and its site entry points. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
 
+## 0.10 Follow-up comparison interaction corrections (2026-09-13)
+
+- Investigated the remaining invisible hitbox defect with browser
+  `elementFromPoint` probes. The alpha SVG had the correct bounds, but the
+  full transparent `.comparison-layer-image` and figure wrappers still
+  intercepted pointer events. Those wrappers are now pointer-transparent;
+  only the alpha path and explicit toolbar controls can claim a pointer.
+- Replaced delegated modified-wheel handling with a non-passive native field
+  listener. Cmd/Control-modified wheel or two-finger trackpad scrolling now
+  consumes the gesture for field zoom and suppresses document scrolling and
+  browser page zoom; ordinary wheel/trackpad scrolling remains page scrolling.
+- Made empty-field camera panning an explicit Cmd/Control-modified pointer
+  drag. Ordinary empty clicks still clear selection, while skull dragging,
+  mobile two-finger navigation, and scale-bar movement remain available.
+- Corrected the field guide and canonical architecture/design documentation to
+  describe these distinct input contracts. Added regression checks for
+  transparent-region event interception, modifier-wheel scroll suppression,
+  and modifier-only empty-field pan.
+
+### Verification
+
+- `CI=true corepack pnpm check` passes formatting, ESLint, media/content
+  validation, strict TypeScript, **108/108 unit/component tests**, and the six
+  expected invalid-fixture failures. The four existing optional-frontal-view
+  content warnings remain unchanged.
+- `CI=true corepack pnpm build` passes and prerenders **79/79 static routes**,
+  including `/compare`.
+- `CI=true PLAYWRIGHT_PORT=3102 corepack pnpm test:e2e` passes **95/95
+  Chromium journeys** against a fresh production server in 3.8 minutes; the
+  dedicated comparison suite passes **14/14**.
+- Manual browser probes confirmed zero sampled transparent canvas points resolve
+  to their owning layer, Cmd/Ctrl wheel zoom with `window.scrollY` unchanged,
+  and modifier-only empty-field panning. Work remains local on
+  `skull_comparison_page`; no push, merge, deployment, publication, or change
+  to the original/preparation worktrees was made.
+
 ## 0.9 Owner-directed comparison review v2 corrections (2026-09-13)
 
 - Corrected field pointer geometry so each view's selectable surface follows its
