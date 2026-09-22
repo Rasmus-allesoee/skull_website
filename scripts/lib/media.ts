@@ -370,6 +370,7 @@ async function validateComparisonReferences(
       relativePath,
       key: source.reference_id,
       diagnostics,
+      includeHitPath: true,
       missingSuggestion:
         "Run pnpm media:process:reference from the approved staged PNG.",
     });

@@ -417,7 +417,7 @@ export interface MediaAsset {
   subjectBounds: SubjectBounds;
   /**
    * Alpha-derived path in a normalized 0–100 viewBox for precise visual hit
-   * testing in the Home specimen field. It is generated from the public WebP,
+   * testing in interactive specimen fields. It is generated from the public WebP,
    * not hand-authored content.
    */
   hitPath?: string;
@@ -445,6 +445,8 @@ export interface ComparisonReferenceRecord {
     height: number;
     bytes: number;
     subjectBounds: SubjectBounds;
+    /** Alpha-derived normalized pointer path for precise comparison-field selection. */
+    hitPath?: string;
     orientation: LateralOrientation;
     comparisonCalibration: ComparisonViewCalibration;
     alt: string;

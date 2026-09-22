@@ -21,7 +21,7 @@ The current `agent_context/skulls_meta.csv` is an incomplete illustrative workin
 | `content/media/{specimen-id}.json` | Canonical views, lateral orientation, alt text, rights declarations, and reviewed comparison-calibration spans | Pixel-derived dimensions/bounds |
 | `content/references/{reference-id}.json` | Stable comparison-reference identity, display/search terms, approximate measurements, default state, orientation, reviewed calibration, credit, and rights | Specimen/taxon identity or universal biological claims |
 | `content/home/home-media.json` | Stable Home-only editorial thumbnail identities, public paths, alt text, credit, and reserved-rights state | Specimen identity, source pixels, or preparation instructions |
-| Media manifests generated from public assets | Dimensions, canonical view, path, subject bounds, alpha-derived Home hit path, technical validation | Rights/provenance source decisions |
+| Media manifests generated from public assets | Dimensions, canonical view, path, subject bounds, alpha-derived Home/specimen/reference hit paths, technical validation | Rights/provenance source decisions |
 | Reviewed taxonomy snapshot | External match evidence and review state | Immutable local identity or curated vernacular names |
 
 Compiled JSON, search indexes, and GeoJSON are generated views. They are never edited as sources.

@@ -1,5 +1,28 @@
 # Project status
 
+## 0.15 Adult-human reference silhouette hitbox (2026-09-23)
+
+- Enabled alpha-hit-path generation for curated comparison-reference WebPs in
+  the existing media validation/compiler pipeline. The compiled reference
+  manifest now carries the normalized silhouette path, and the comparison
+  query attaches it to both the reference's view and image models. The shared
+  field renderer therefore uses the same alpha path as specimen skulls rather
+  than its rectangular fallback.
+
+### Verification
+
+- Content compilation passes and the generated adult-human reference has an
+  alpha path with **69** subpaths; its field model reports no rectangular
+  fallback.
+- TypeScript (`tsc --noEmit --incremental false`) and targeted Prettier checks
+  pass. No automated tests were run for this correction.
+- The existing local port-3000 process had already cached the old generated
+  collection in memory, so its rendered DOM still showed the prior rectangle.
+  A server restart is needed for that already-running preview to load the new
+  compiled reference record. No server process was stopped.
+- Fix is committed locally on `skull_comparison_page`; no remote operation was
+  performed.
+
 ## 0.14 Visible-field PNG export (2026-09-22)
 
 - Added a low-priority `More` menu with pure-black and UI-grid PNG choices.
