@@ -36,6 +36,12 @@ Compiled JSON, search indexes, and GeoJSON are generated views. They are never e
 - Multi-value controlled fields use semicolons with no meaning assigned to item order unless documented.
 - Spreadsheet formulas are resolved to values before export; formula text is invalid input.
 - CSV injection characters in free text are escaped on any future re-export.
+- The `/compare` download is a derived, user-selected export rather than a new
+  canonical CSV. It emits original source measurement column names and numeric
+  values, with a measured/approximate status, in long or wide form; blanks are
+  never converted to zero or UI-derived Difference text. Spreadsheet-facing
+  downloads use UTF-8 with BOM and CRLF row endings for compatibility, while
+  canonical source files retain the LF-only contract above.
 - Rows have stable explicit IDs; row position is never identity.
 - Unknown extra columns fail validation so misspelled headers are not silently ignored.
 

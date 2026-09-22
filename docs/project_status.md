@@ -1,5 +1,41 @@
 # Project status
 
+## 0.14 Visible-field PNG export (2026-09-22)
+
+- Added a low-priority `More` menu with pure-black and UI-grid PNG choices.
+  The export snapshots the current visible field, then draws the public
+  full-resolution derivatives at up to three times CSS resolution (bounded to
+  6,000 pixels per side and 24 million pixels total). It preserves camera
+  zoom/pan, calibrated image sizes, manual positions, stacking, flips,
+  per-subject opacity, and optional labels/100 mm scale bar. Editing outlines,
+  toolbars, and menus are omitted from the image. Errors are announced without
+  downloading a partial composition.
+- Reconciled the comparison contract, implementation plan, data model,
+  architecture, design system, overview, and repository index with the new
+  owner-approved export behavior. The Print button remains removed; the old
+  browser-native print stylesheet still exists as a fallback.
+
+### Verification
+
+- `CI=true corepack pnpm check` passes formatting, ESLint, media/content
+  validation, strict TypeScript, **111/111 unit/component tests**, and six
+  expected invalid-fixture failures. The four previously known optional
+  frontal-view warnings are unchanged.
+- `CI=true corepack pnpm build` passes with **79/79 prerendered routes**, including
+  `/compare`. `CI=true PLAYWRIGHT_PORT=3102 corepack pnpm test:e2e` passes
+  **97/97 Chromium journeys** in 4.7 minutes.
+- Live Chromium downloads produced a **2,567 × 1,440** PNG from the desktop
+  field for both backgrounds. The pure-black corner is RGB 0/0/0, while the
+  grid version preserves the UI background. Visual checks confirmed skull
+  placement, orientation, and proportions; a second export after keyboard
+  movement, hidden labels, and a visible scale bar reflected all three changes.
+  Long and wide CSV downloads contained source measurement columns and
+  approximate reference status. At 390 px, the export controls fit with zero
+  document overflow. Browser console errors/warnings: zero.
+- Work remains local on `skull_comparison_page` in the isolated comparison
+  worktree. The preparation worktree was untouched; no push, pull request,
+  merge, deployment, or publication was performed.
+
 ## 0.13 Comparison source-measurement CSV exports (2026-09-22)
 
 - Replaced the ineffective Print action with a compact CSV download menu.
@@ -16,13 +52,13 @@
 
 - Focused CSV tests pass **3/3**; focused ESLint and strict TypeScript pass.
 
-**Snapshot date:** 2026-09-14
+**Snapshot date:** 2026-09-22
 
-**Current phase:** locally complete owner-feedback refinement of the standalone Skull Comparison implementation on `skull_comparison_page`, pending owner review
+**Current phase:** locally complete Skull Comparison exports and owner-feedback refinement on `skull_comparison_page`, pending owner review
 
-**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. The owner approved all eight standalone-comparison decisions on 2026-09-11. The owner-directed desktop comparison feedback is implemented and fully verified in the isolated comparison worktree on `skull_comparison_page`; the unfinished `preparation_guide_refinement` branch remains separate, intact, and unmerged.
+**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. The owner approved all eight standalone-comparison decisions on 2026-09-11 and later requested source-value CSV and field PNG exports. The comparison feedback and exports are implemented and locally verified in the isolated comparison worktree on `skull_comparison_page`; the unfinished `preparation_guide_refinement` branch remains separate, intact, and unmerged.
 
-**Next action:** Owner review of the locally complete `/compare` workbench and its site entry points. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
+**Next action:** Owner review of the locally complete `/compare` workbench, including its CSV and PNG exports. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
 
 ## 0.12 Selected-card alignment and positional difference-pair correction (2026-09-14)
 

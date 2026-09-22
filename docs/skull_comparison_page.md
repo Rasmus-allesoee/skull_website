@@ -2,7 +2,7 @@
 
 **Status:** Implemented and locally verified on `skull_comparison_page`; owner review pending
 
-**Last reviewed:** 2026-09-14
+**Last reviewed:** 2026-09-22
 
 **Proposed public route:** `/compare`
 
@@ -504,7 +504,7 @@ Keyboard equivalent:
   crowding; they are secondary to the slider.
 - At 0%, keep the subject card, active-view chips, layer focus target, and
   selected-layer outline available. Announce `Skull N hidden in field`.
-- Opacity never affects labels, controls, table text, or print legibility.
+- Opacity never affects labels, controls, table text, or exported label legibility.
 
 ### 7.5 Arrangement presets
 
@@ -776,7 +776,9 @@ placements, z order, calibrated source images, flips, per-subject opacity, and
 optional labels/scale bar. The action must preserve the live field state and
 report image-loading or encoding failures without downloading a partial image.
 The PNG is a composition of the already public image derivatives, not a new
-source asset.
+source asset. Selection outlines, menus, and editing handles are omitted from
+the download so the workbench's transient editing state does not obscure the
+skulls.
 
 ## 13. Visual design system
 
@@ -1033,7 +1035,7 @@ At minimum, verify in real Chromium:
 - touch layer drag versus page scroll, two-finger field pan/pinch, and no trapped
   document scrolling;
 - keyboard-only add, move, reorder, remove, pair change, reset, and navigation;
-- axe, 200% browser zoom, forced colors, reduced motion, failed images, print,
+- axe, 200% browser zoom, forced colors, reduced motion, failed images, CSV/PNG downloads,
   and no document-level horizontal overflow;
 - JavaScript-disabled default pair and complete semantic table; and
 - absence of MapLibre, map-provider, Orama-index, and unrelated route requests.
@@ -1123,7 +1125,7 @@ not authorize push, pull request, merge, deployment, or publication.
 - Add methodology links and comparable-only filtering.
 - Add quick comparisons and taxonomy-derived group suggestions.
 
-### Stage 7 — site integration and print
+### Stage 7 — site integration and exports
 
 - Activate Home, global navigation/footer, specimen-page, catalog/card, sitemap,
   and related-record entry points.

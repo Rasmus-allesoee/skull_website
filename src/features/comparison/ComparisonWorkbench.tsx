@@ -21,6 +21,7 @@ import type {
 
 import {
   ComparisonField,
+  type ComparisonFieldHandle,
   type SelectedComparisonSubject,
 } from "./ComparisonField";
 import { WorkbenchSubjectPicker } from "./WorkbenchSubjectPicker";
@@ -28,7 +29,8 @@ import {
   getComparisonStartingPoints,
   getContextualComparisonSuggestions,
 } from "./comparisonSuggestions";
-import { downloadComparisonCsv } from "./comparisonExport";
+import { downloadBlob, downloadComparisonCsv } from "./comparisonExport";
+import type { FieldPngBackground } from "./fieldPngExport";
 import {
   addComparisonSubject,
   addComparisonView,
@@ -73,6 +75,7 @@ export function ComparisonWorkbench({
   const [state, setState] = useState<ComparisonWorkbenchState>(defaults);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [copyStatus, setCopyStatus] = useState("");
+  const [exportingField, setExportingField] = useState(false);
   const [actionStatus, setActionStatus] = useState("");
   const [showAllMeasurements, setShowAllMeasurements] = useState(false);
   const [activeSubjectId, setActiveSubjectId] = useState(
@@ -84,6 +87,7 @@ export function ComparisonWorkbench({
   const hydrated = useRef(false);
   const draggedSubjectId = useRef<string | null>(null);
   const draggedSubjectPreview = useRef<HTMLElement | null>(null);
+  const fieldRef = useRef<ComparisonFieldHandle>(null);
   const recordsById = useMemo(
     () => new Map(records.map((record) => [record.id, record])),
     [records],
@@ -364,6 +368,25 @@ export function ComparisonWorkbench({
     }
   }
 
+  async function exportField(background: FieldPngBackground) {
+    if (!fieldRef.current || exportingField) return;
+    setExportingField(true);
+    setCopyStatus("Preparing field PNG…");
+    try {
+      const blob = await fieldRef.current.exportPng(background);
+      downloadBlob(blob, `skull-comparison-field-${background}.png`);
+      setCopyStatus("Field PNG downloaded.");
+    } catch (error) {
+      setCopyStatus(
+        error instanceof Error
+          ? `Field export failed: ${error.message}`
+          : "Field export failed. Please try again.",
+      );
+    } finally {
+      setExportingField(false);
+    }
+  }
+
   return (
     <>
       <header className="compare-heading">
@@ -418,6 +441,36 @@ export function ComparisonWorkbench({
                 }}
               >
                 Wide format
+              </button>
+            </div>
+          </details>
+          <details className="compare-field-export-menu">
+            <summary>More</summary>
+            <div>
+              <span>Export field PNG</span>
+              <button
+                type="button"
+                disabled={selected.length === 0 || exportingField}
+                onClick={(event) => {
+                  event.currentTarget
+                    .closest("details")
+                    ?.removeAttribute("open");
+                  void exportField("black");
+                }}
+              >
+                Pure black background
+              </button>
+              <button
+                type="button"
+                disabled={selected.length === 0 || exportingField}
+                onClick={(event) => {
+                  event.currentTarget
+                    .closest("details")
+                    ?.removeAttribute("open");
+                  void exportField("ui");
+                }}
+              >
+                Field grid background
               </button>
             </div>
           </details>
@@ -675,6 +728,7 @@ export function ComparisonWorkbench({
         </aside>
 
         <ComparisonField
+          ref={fieldRef}
           selected={selected}
           arrangement={state.arrangement}
           difference={state.difference}

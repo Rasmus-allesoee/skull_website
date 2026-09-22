@@ -6,6 +6,7 @@ import {
   type KeyboardEvent,
   type PointerEvent,
   useEffect,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
@@ -36,12 +37,17 @@ import {
   arrangementValues,
   type ComparisonArrangement,
 } from "./workbenchState";
+import type { FieldPngBackground, FieldPngSnapshot } from "./fieldPngExport";
 
 const subjectMarkers = ["●", "■", "▲", "◆", "⬟"] as const;
 
 export interface SelectedComparisonSubject {
   subject: { id: string; views: ComparisonView[] };
   record: SkullComparisonRecord;
+}
+
+export interface ComparisonFieldHandle {
+  exportPng: (background: FieldPngBackground) => Promise<Blob>;
 }
 
 interface FieldLayer extends ComparisonLayerGeometry {
@@ -76,6 +82,7 @@ type ActiveGesture =
     };
 
 export function ComparisonField({
+  ref,
   selected,
   arrangement,
   difference,
@@ -85,6 +92,7 @@ export function ComparisonField({
   onResetOpacity,
   onClear,
 }: {
+  ref?: React.Ref<ComparisonFieldHandle>;
   selected: SelectedComparisonSubject[];
   arrangement: ComparisonArrangement;
   difference: [string, string] | null;
@@ -139,6 +147,41 @@ export function ComparisonField({
     useState<Record<string, ComparisonLayerPlacement>>(initialPlacements);
   const [status, setStatus] = useState("");
   const printState = useRef({ camera, layers, placements, viewportSize });
+
+  useImperativeHandle(ref, () => ({
+    exportPng: async (background) => {
+      const snapshot: FieldPngSnapshot = {
+        viewport: { ...viewportSize },
+        camera: { ...camera },
+        layers: layers.flatMap((layer) => {
+          const placement = placements[layer.key];
+          return placement
+            ? [
+                {
+                  src: layer.media.publicPath,
+                  width: layer.width,
+                  height: layer.height,
+                  subjectX: layer.subjectX,
+                  subjectY: layer.subjectY,
+                  subjectWidth: layer.subjectWidth,
+                  subjectHeight: layer.subjectHeight,
+                  placement: { ...placement },
+                  opacity: (opacityBySubject[layer.subjectId] ?? 100) / 100,
+                  flipped: layer.media.orientation === "left",
+                  subjectIndex: layer.subjectIndex,
+                  label: `Skull ${layer.subjectIndex + 1} · ${formatViewLabel(layer.media.view)}`,
+                },
+              ]
+            : [];
+        }),
+        showLabels: showLayerLabels,
+        scaleBar: showScaleBar ? { ...scaleBarPosition } : null,
+        background,
+      };
+      const { renderFieldPng } = await import("./fieldPngExport");
+      return renderFieldPng(snapshot);
+    },
+  }));
 
   useEffect(() => {
     const fieldViewport = viewportRef.current;
