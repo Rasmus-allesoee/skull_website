@@ -28,6 +28,7 @@ import {
   getComparisonStartingPoints,
   getContextualComparisonSuggestions,
 } from "./comparisonSuggestions";
+import { downloadComparisonCsv } from "./comparisonExport";
 import {
   addComparisonSubject,
   addComparisonView,
@@ -383,11 +384,42 @@ export function ComparisonWorkbench({
           <button type="button" onClick={copyLink}>
             Copy link
           </button>
-          <details>
-            <summary>More</summary>
-            <button type="button" onClick={() => window.print()}>
-              Print comparison
-            </button>
+          <details className="compare-download-menu">
+            <summary>Download CSV</summary>
+            <div>
+              <button
+                type="button"
+                disabled={selected.length === 0}
+                onClick={(event) => {
+                  downloadComparisonCsv(
+                    selected.map(({ record }) => record),
+                    "long",
+                  );
+                  event.currentTarget
+                    .closest("details")
+                    ?.removeAttribute("open");
+                  setCopyStatus("Long/tidy CSV downloaded.");
+                }}
+              >
+                Long/tidy format
+              </button>
+              <button
+                type="button"
+                disabled={selected.length === 0}
+                onClick={(event) => {
+                  downloadComparisonCsv(
+                    selected.map(({ record }) => record),
+                    "wide",
+                  );
+                  event.currentTarget
+                    .closest("details")
+                    ?.removeAttribute("open");
+                  setCopyStatus("Wide CSV downloaded.");
+                }}
+              >
+                Wide format
+              </button>
+            </div>
           </details>
           <p className="compare-action-status" aria-live="polite">
             {copyStatus}

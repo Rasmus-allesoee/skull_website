@@ -1,5 +1,21 @@
 # Project status
 
+## 0.13 Comparison source-measurement CSV exports (2026-09-22)
+
+- Replaced the ineffective Print action with a compact CSV download menu.
+  Long/tidy export writes one row per selected subject and recorded numeric
+  measurement; wide export writes one row per selected subject with the union
+  of original measurement columns and companion status columns. Both preserve
+  selected order, stable identities, units, and measured/approximate status.
+  Cross-class display labels, computed Difference text, ratios, and unavailable
+  values are excluded; spreadsheet formula text is escaped.
+- The PNG field export requested in the same owner review is the next local
+  checkpoint. No remote publication action was taken.
+
+### Verification
+
+- Focused CSV tests pass **3/3**; focused ESLint and strict TypeScript pass.
+
 **Snapshot date:** 2026-09-14
 
 **Current phase:** locally complete owner-feedback refinement of the standalone Skull Comparison implementation on `skull_comparison_page`, pending owner review

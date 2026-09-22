@@ -140,7 +140,7 @@ The second desktop review adds the following implementation requirements:
 | Approximation | Inline `~` and accessible status text only; no separate generic approximation note | Preserves honest source status while following the owner's request to remove the extra note |
 | Shareable state | Selected subjects, active views, difference pair, and arrangement preset are URL-backed | Reproduces the useful analytical setup across devices without serializing fragile freehand coordinates |
 | Freehand state | Positions, stacking, opacity, field pan, and field zoom remain transient in the first version | These values are viewport-dependent and would make links long and unreliable on different screens |
-| Print support | A clean print stylesheet; an optional Print action lives under a low-priority `More` menu | Provides the feature without adding a permanent primary control |
+| Exports | Compact CSV download menu and a field-only PNG action under `More` | Source values remain analysis-ready; the visual export preserves manual field composition |
 
 The five-subject and multiple-view ideas are therefore both included, but the
 field is bounded by ten active view layers. Reaching either limit must produce a
@@ -748,21 +748,35 @@ When the route is implemented and verified:
 Do not add a persistent comparison basket across unrelated routes in this
 phase. Each entry point creates an explicit shareable `/compare` destination.
 
-## 12. Print behavior
+## 12. Export behavior
 
-Implement print support primarily through `@media print`:
+The user replaced the ineffective Print action with two compact download
+options beside Copy link: `Long/tidy format` and `Wide format`. Both export only
+selected subjects and their original recorded numeric measurements, regardless
+of the table's primary/all or comparable-only filters. Never serialize the
+Difference column, calculated ratios, cross-class UI mapping labels, camera
+state, or freehand positions into these CSVs.
 
-- hide navigation, picker dialogs, drag handles, layer toolbar, sliders, and
-  field controls;
-- print the selected subject identities, a deterministic fitted field snapshot,
-  scale basis, and complete visible measurement table;
-- force sufficient contrast on white paper without changing data semantics;
-- repeat table headers across pages where supported;
-- prevent individual measurement rows from splitting when practical; and
-- retain photograph credits and the global rights statement.
+- Long/tidy: one row per selected subject and available recorded measurement,
+  with ordered skull slot, stable subject ID, type, display identity, true
+  source `snake_case` measurement name, numeric value, unit, and measured or
+  approximate status.
+- Wide: one row per selected subject, the same identity columns, and the union
+  of selected subjects' available source measurement columns. Each numeric
+  column has a companion status column. Blank cells represent unavailable
+  subject/measurement combinations; never write zero for missing data.
+- Use canonical source names such as `skull_width_mm` and
+  `orbital_width_mm`. Apply CSV escaping and formula-injection protection to
+  identity text. UTF-8 with a BOM supports common spreadsheet imports.
 
-If a visible action is included, place `Print` inside a low-priority `More`
-menu beside `Copy link`; do not add it to the field toolbar.
+The low-priority `More` menu offers `Export field PNG`, followed by a compact
+choice between pure black and the UI grid/radial background. Export the visible
+field rectangle at enhanced pixel resolution using the current camera,
+placements, z order, calibrated source images, flips, per-subject opacity, and
+optional labels/scale bar. The action must preserve the live field state and
+report image-loading or encoding failures without downloading a partial image.
+The PNG is a composition of the already public image derivatives, not a new
+source asset.
 
 ## 13. Visual design system
 
@@ -993,7 +1007,7 @@ pending.
 - Methodology links resolve to existing stable measurement anchors.
 - Comparable-only filtering and live row count.
 - Table headers remain associated with cells for one through five subjects.
-- Print markup retains identity, credits, rights, and table headings.
+- CSVs preserve source measurement keys, units, status, and selected order.
 
 ### 18.3 Browser tests
 
@@ -1113,7 +1127,7 @@ not authorize push, pull request, merge, deployment, or publication.
 
 - Activate Home, global navigation/footer, specimen-page, catalog/card, sitemap,
   and related-record entry points.
-- Add copy-link behavior and the non-prominent print treatment.
+- Add copy-link behavior and compact CSV/PNG exports.
 - Confirm no global comparison basket or custom analytics was introduced.
 
 ### Stage 8 — complete verification and documentation
@@ -1136,7 +1150,7 @@ not authorize push, pull request, merge, deployment, or publication.
 - No more than five selected subjects or ten active view layers in this phase.
 - No saved account collections, cross-route comparison basket, database, or
   server-side short links.
-- No photograph download/export feature in this phase.
+- No archival or unpublished photograph export; the field PNG uses public derivatives only.
 - No custom analytics events for selections, measurements, or shared URLs.
 - No use of ignored staging media, raw filenames, or inferred measurements at
   runtime.
@@ -1157,7 +1171,7 @@ The owner confirmed every recommendation on 2026-09-11:
 6. Share subjects, active views, difference pair, comparable-only state, and a
    deterministic arrangement—but not freehand positions, opacity, or camera
    state—in the first URL format.
-7. Keep print support low prominence through CSS and an optional `More` action.
+7. Keep data and field image exports compact, separate, and source-faithful.
 8. Default an unparameterized page to SPEC-0001 versus the adult-human reference.
 
 Implementation is authorized on `skull_comparison_page`. Publication, push,
