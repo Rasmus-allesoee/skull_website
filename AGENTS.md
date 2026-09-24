@@ -20,7 +20,7 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **v1.1.0 release integration is underway for the standalone skull-comparison workbench and the owner-approved preparation-guide refinement.** Preparation PR #24 merged normally at `2e92d0a`; comparison PR #25 is being refreshed from that updated `main`, with its integrated quality/build/browser checks still to run. The latest release tag is v1.0.1, and the previously deferred `/compare` route is now in the approved release scope. Consult `docs/project_status.md` for exact evidence, dependency-PR dispositions, and the next action.
+Current phase: **v1.1.0 is released from `main`**, adding the standalone skull-comparison workbench and the owner-approved preparation-guide refinement on top of v1.0.1. The comparison workbench, preparation refinement, and approved dependency updates are integrated through normal merge commits; the GitHub release targets `33f9074`. Consult `docs/project_status.md` for the merge map, verification evidence, and current next action.
 
 Use the owner-selected public v1 name **Skull Collection** from central site configuration.
 

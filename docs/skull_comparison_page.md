@@ -1,8 +1,8 @@
 # Skull Comparison page plan
 
-**Status:** Implemented and locally verified on `skull_comparison_page`; owner review pending
+**Status:** Merged into `main` through PR #25 and included in the v1.1.0 release
 
-**Last reviewed:** 2026-09-22
+**Last reviewed:** 2026-09-24
 
 **Proposed public route:** `/compare`
 

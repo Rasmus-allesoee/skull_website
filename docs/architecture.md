@@ -1,8 +1,8 @@
 # Architecture
 
-**Status:** Accepted baseline; measurement-reference compilation, route-scoped interaction architecture, and v1.0.1 production analytics implemented
+**Status:** Accepted baseline; static-first application architecture, calibrated `/compare` workbench, and v1.0.1 production analytics are implemented and included in v1.1.0
 
-**Last reviewed:** 2026-09-10
+**Last reviewed:** 2026-09-24
 
 ## 1. Architectural goals
 

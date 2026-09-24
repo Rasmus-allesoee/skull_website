@@ -2,7 +2,7 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**Current milestone:** v1.0.1 remains the latest release tag at <https://skullwebsite-xi.vercel.app>. Preparation PR #24 has merged into `main` at `2e92d0a`; comparison PR #25 is being refreshed from that updated base and awaits its integrated CI and final review before the planned v1.1.0 release.
+**Current milestone:** v1.1.0 is released at <https://github.com/Rasmus-allesoee/skull_website/releases/tag/v1.1.0> and deployed at <https://skullwebsite-xi.vercel.app>. It adds the standalone `/compare` workbench and the owner-approved preparation-guide refinement; the exact tag target and verification evidence are recorded in [docs/project_status.md](docs/project_status.md).
 
 Start at `/`, browse the catalog at `/species`, compare calibrated skull views at `/compare`, explore public specimen locations at `/map`, inspect the measurement reference at `/methodology`, open the full beginner preparation guide at `/guides/skull-preparation`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`.
 
