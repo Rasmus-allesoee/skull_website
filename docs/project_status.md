@@ -1,12 +1,21 @@
 # Project status
 
-**Snapshot date:** 2026-09-10
+**Snapshot date:** 2026-09-24
 
-**Current phase:** v1.0.1 production-only Web Analytics, dependency remediation, and MapLibre reliability fix released; local preparation-guide refinement pending owner review
+**Current phase:** v1.0.1 remains in production; owner-approved v1.1.0 integration for the comparison workbench and preparation-guide refinement is in progress
 
-**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. PR #14 merged normally at `61964d1`; PR #16 merged normally at `7abfc642`. The canonical collection remains 15 public taxa, 18 public specimens, and 104 specimen images, with 31 source specimens deferred for missing reviewed media and three rejected. Production is live on Vercel at `https://skullwebsite-xi.vercel.app`; the v1.0.1 tag records the verified production state. A bounded preparation-guide refinement is currently local on `preparation_guide_refinement` and changes only the guide’s reviewed media, parser, prose and interaction contract.
+**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction remain merged in `main`. The production site at `https://skullwebsite-xi.vercel.app` is still v1.0.1. Owner-approved preparation PR #24 is open and its full GitHub Actions quality/build/browser-smoke job has passed on head `2efa8146774c243860caa528e41a44d59d656b9d`. Comparison PR #25 is open on `c42a8d2b280c69094c66a5d7809e190aaa3c9d43`; its quality/build/browser-smoke job is still running. Both feature branches are pushed. Dependency PRs #19, #20, and #23 have green checks and await individual landing decisions; #21 is closed because Node 26 type declarations conflict with the Node 24 runtime contract, and #22 is closed because React 19.3.0 with React DOM 19.2.8 fails CI. The canonical collection remains 15 public taxa, 18 public specimens, and 104 specimen images, with 31 source specimens deferred for missing reviewed media and three rejected.
 
-**Next action:** Review the local preparation-guide refinement on desktop and mobile. If approved, decide whether to request its normal publication workflow; independently verify the Google Search Console URL-prefix property and submit `sitemap.xml`.
+**Next action:** Complete PR #24, refresh comparison PR #25 from the updated `main`, resolve the three passing dependency PRs through normal per-PR landing gates, and run the complete merged-main release verification before tagging v1.1.0. The Google Search Console owner-verification action remains separate.
+
+## 0.10 v1.1.0 release integration in progress (2026-09-24)
+
+- The owner approved merging `preparation_guide_refinement` and `skull_comparison_page` and requested a v1.1.0 release focused on the new `/compare` workbench. Both branches are published as PRs #24 and #25; `main` has not yet changed.
+- PR #24 contains the reviewed preparation-guide troubleshooting/media refinement. Its current head passed formatting, lint, content/media validation, typecheck, unit/component tests, invalid-fixture checks, production build, and Chromium browser/accessibility smoke.
+- PR #25 contains the standalone five-subject, multi-view comparison workbench and its desktop/mobile refinements. Its complete quality/build/browser-smoke check is pending; after PR #24 lands, merge the updated `main` into this branch (do not rewrite its published history), resolve any overlapping documentation edits, and rerun checks.
+- Among the five newly discovered dependency PRs, #19 (Vitest 5), #20 (Zod 4.6.2), and #23 (development tooling) currently pass CI. They remain subject to individual exact-head landing confirmation. PR #21 was closed with a note because `@types/node` 26 exceeds the Node 24 runtime contract. PR #22 was closed with a note after CI confirmed mismatched React/React DOM versions fail all test suites.
+- The local shell exposes Node 22 and no `pnpm`, so no new local release gate is claimed for the current integration. GitHub Actions runs the repository-pinned Node/pnpm quality, build, and browser checks on the pushed heads.
+- The release gate remains: merge approved PRs with ordinary merge commits, verify final `main` and the production deployment, publish the v1.1.0 tag/release, and then remove only the comparison worktree after checking its contents. Do not delete either feature branch.
 
 ## 0.9 Owner-directed troubleshooting layout correction (2026-09-10)
 

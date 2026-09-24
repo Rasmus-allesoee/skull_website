@@ -2,7 +2,7 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** v1.0.1 is released; an owner-directed preparation-guide refinement is being verified locally on `preparation_guide_refinement` from the released `main` baseline
+**Current phase:** v1.0.1 remains the production release; owner-approved v1.1.0 integration of the preparation-guide refinement and standalone skull-comparison workbench is in progress through PRs #24 and #25
 
 **Last reviewed:** 2026-09-10
 
