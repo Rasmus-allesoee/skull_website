@@ -2,22 +2,413 @@
 
 **Snapshot date:** 2026-09-24
 
-**Current phase:** v1.0.1 remains in production; owner-approved v1.1.0 integration for the comparison workbench and preparation-guide refinement is in progress
+**Current phase:** v1.0.1 is the latest release tag; the owner-approved v1.1.0 comparison-workbench integration is in its final PR review after the preparation refinement merged
 
-**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction remain merged in `main`. The production site at `https://skullwebsite-xi.vercel.app` is still v1.0.1. Owner-approved preparation PR #24 is open and its full GitHub Actions quality/build/browser-smoke job has passed on head `2efa8146774c243860caa528e41a44d59d656b9d`. Comparison PR #25 is open on `c42a8d2b280c69094c66a5d7809e190aaa3c9d43`; its quality/build/browser-smoke job is still running. Both feature branches are pushed. Dependency PRs #19, #20, and #23 have green checks and await individual landing decisions; #21 is closed because Node 26 type declarations conflict with the Node 24 runtime contract, and #22 is closed because React 19.3.0 with React DOM 19.2.8 fails CI. The canonical collection remains 15 public taxa, 18 public specimens, and 104 specimen images, with 31 source specimens deferred for missing reviewed media and three rejected.
+**Overall state:** Preparation PR #24 merged normally into `main` at `2e92d0a40fe7b2026889c7c8359a4c2cb0819d80`. Comparison PR #25's pre-integration head passed the full quality/build/browser workflow after fixing the medium-width rail-height regression; the comparison branch is now merging the updated `main` and must rerun that workflow before landing. The v1.0.1 tag remains the latest release tag; verify the deployment triggered by the preparation merge together with the final v1.1.0 release. Dependency PRs #19, #20, and #23 have green checks and await individual landing confirmations. PR #21 was closed because Node 26 type declarations exceed the Node 24 runtime contract; PR #22 was closed because mismatched React/React DOM versions fail CI. This shell has Node 25.8.2 and no `pnpm`; because the repository pins Node 24/pnpm 11, final validation relies on repository CI.
 
-**Next action:** Complete PR #24, refresh comparison PR #25 from the updated `main`, resolve the three passing dependency PRs through normal per-PR landing gates, and run the complete merged-main release verification before tagging v1.1.0. The Google Search Console owner-verification action remains separate.
+**Next action:** Complete and push the `main` merge into `skull_comparison_page`, pass all integrated checks, then request landing confirmation for PR #25. Resolve the three passing dependency PRs through their own exact-head gates, verify merged `main` and production, and publish v1.1.0. Remove only the comparison worktree after the release is safely merged and its contents are checked.
 
-## 0.10 v1.1.0 release integration in progress (2026-09-24)
+## 0.20 v1.1.0 integration after preparation-guide merge (2026-09-24)
 
-- The owner approved merging `preparation_guide_refinement` and `skull_comparison_page` and requested a v1.1.0 release focused on the new `/compare` workbench. Both branches are published as PRs #24 and #25; `main` has not yet changed.
-- PR #24 contains the reviewed preparation-guide troubleshooting/media refinement. Its current head passed formatting, lint, content/media validation, typecheck, unit/component tests, invalid-fixture checks, production build, and Chromium browser/accessibility smoke.
-- PR #25 contains the standalone five-subject, multi-view comparison workbench and its desktop/mobile refinements. Its complete quality/build/browser-smoke check is pending; after PR #24 lands, merge the updated `main` into this branch (do not rewrite its published history), resolve any overlapping documentation edits, and rerun checks.
-- Among the five newly discovered dependency PRs, #19 (Vitest 5), #20 (Zod 4.6.2), and #23 (development tooling) currently pass CI. They remain subject to individual exact-head landing confirmation. PR #21 was closed with a note because `@types/node` 26 exceeds the Node 24 runtime contract. PR #22 was closed with a note after CI confirmed mismatched React/React DOM versions fail all test suites.
-- The local shell exposes Node 22 and no `pnpm`, so no new local release gate is claimed for the current integration. GitHub Actions runs the repository-pinned Node/pnpm quality, build, and browser checks on the pushed heads.
-- The release gate remains: merge approved PRs with ordinary merge commits, verify final `main` and the production deployment, publish the v1.1.0 tag/release, and then remove only the comparison worktree after checking its contents. Do not delete either feature branch.
+- PR #24 (`preparation_guide_refinement`) merged normally at `2e92d0a40fe7b2026889c7c8359a4c2cb0819d80`, preserving its individual refinement and documentation commits.
+- PR #25 (`skull_comparison_page`) now incorporates the updated `main` through a normal merge in the dedicated comparison worktree. The latest pre-merge-base head passed the full quality/build/browser workflow after the 1100 px selected-rail height regression was fixed; the combined head must pass CI before it is considered ready.
+- The five newly discovered dependency PRs have been reviewed: #19 (Vitest 5), #20 (Zod 4.6.2), and #23 (development tooling) have green checks and remain pending individual landing confirmations; #21 and #22 were closed with evidence-backed compatibility/CI reasons. Do not delete their branches or silently include their dependency changes in feature commits.
+- The stable feature branches remain preserved. No release tag has been created yet; `v1.1.0` is reserved for the integrated comparison workbench, the preparation refinement, and any individually approved dependency updates.
 
-## 0.9 Owner-directed troubleshooting layout correction (2026-09-10)
+## 0.19 Comparison field toolbar at narrow widths (2026-09-24)
+
+- At 64.01–75rem, the field title now sits above the control row. The Arrange
+  label and select remain fully visible while the selected-subject rail stays
+  beside the field.
+- On phones, moved More out of the title corner and after Fit all on the same
+  row as Arrange and 100%. The scale/label menu opens below that button over
+  the field; zoom controls remain on their own row.
+
+### Verification
+
+- Visual inspection at 1025, 1177, 1201, 390, and 320 CSS pixels confirmed the
+  full Arrange control is visible at intermediate widths; the phone controls
+  stay in the requested order and the More menu opens beneath its button.
+  The 320-pixel page has no horizontal overflow. No automated tests were run
+  for this CSS-only adjustment.
+- Changes are committed locally on `skull_comparison_page`; no remote or
+  publication action was performed.
+
+## 0.18 Comparison mobile measurement table and final local gate (2026-09-24)
+
+- Replaced the narrow-phone measurement cards with one horizontally scrollable
+  semantic table. Measurement remains sticky; each compact subject header
+  stacks `Skull X` above its English name. The Difference column remains at
+  the end, and the named scroll region is keyboard focusable. Wider headers
+  retain their inline names, scientific names, and record IDs.
+- Reconciled the responsive comparison contract and design-system guidance.
+  The mobile owner-feedback refinements are complete locally and await owner
+  review; the preparation-guide worktree was not touched.
+
+### Verification
+
+- Responsive browser inspection at 320, 390, 900, and 1440 CSS pixels found no
+  document-level horizontal overflow. The 390-pixel table shows compact
+  two-line headers; a five-subject table scrolls to Difference while keeping
+  Measurement fixed. Keyboard Right Arrow scrolls the focused table region;
+  the wider table presentation remains unchanged.
+- The complete comparison Chromium suite passes **20/20** journeys after a
+  touch-test assertion was changed to verify actual layer displacement rather
+  than a transient status message. It covers mobile/desktop/tablet controls,
+  touch navigation, menus, cross-class measurements, reordering, missing
+  images, no-JavaScript output, and the field guide.
+- `CI=true pnpm check` passes formatting, ESLint, media/content validation,
+  strict TypeScript, **111/111 unit/component tests**, and six expected
+  invalid-fixture checks. `CI=true pnpm build` succeeds with **79/79** static
+  routes. A live grid-background PNG download with the 100 mm scale bar was
+  inspected: the bar is a bare line and label, with no box or caption.
+- All work remains on the local `skull_comparison_page` branch in the isolated
+  comparison worktree. No push, pull request, merge, deployment, or publication
+  was performed.
+
+## 0.17 Comparison field guidance and scale-bar checkpoint (2026-09-24)
+
+- Replaced the always-visible, desktop-truncated field instructions with a
+  collapsed-by-default guide on both desktop and mobile. Expanded guidance
+  wraps fully, stays open while using other field controls, and explains the
+  relative (not monitor-calibrated) 100 mm scale.
+- Removed the scale bar's box, background, and inline calibration caption from
+  both the interactive field and exported PNG; the movable line and `100 mm`
+  label remain. Preserved the keyboard focus indicator.
+- Made the existing silhouette-bound browser assertion read both rectangles
+  in one layout frame, avoiding false failures while field positions settle.
+
+### Verification
+
+- Live Chromium checks at 1440 × 900 and 390 × 844 confirmed the guide starts
+  closed, stays open while other controls are used, wraps without clipping,
+  and causes no document-level horizontal overflow. The scale bar has no box
+  or background and remains draggable.
+- Focused Chromium journeys pass **2/2**; strict TypeScript passes. The compact
+  mobile measurement table and final cross-feature gate remain. No remote or
+  publication action was performed.
+
+## 0.16 Comparison mobile rail and popup checkpoint (2026-09-24)
+
+- Kept the horizontal selected-skull strip, narrowed phone cards so two fit at
+  390 CSS pixels, and stacked their compact Add view, Opacity, and Remove
+  controls. The field toolbar keeps `100%` and `Fit all` visible above a longer
+  zoom slider on phones.
+- Isolated horizontal scrolling to the card strip at tablet/narrow-laptop
+  widths. The surrounding rail no longer scrolls vertically; Add view for all
+  five slots, Opacity, and Quick comparisons open below their triggers over the
+  field. Their panels are horizontally clamped and scroll internally when
+  needed.
+- A touch beginning on a skull now moves it vertically, horizontally, or
+  diagonally without scrolling the page. One-finger scrolling from empty field
+  space and two-finger field navigation remain available.
+
+### Verification
+
+- Focused Chromium comparison journeys pass **5/5** for phone card/toolbar
+  access, all medium-width menus, skull dragging, empty-field page scrolling,
+  and two-finger camera navigation. Strict TypeScript and focused ESLint pass.
+- Live browser inspection at 900 × 720 confirmed all five Add view menus,
+  Opacity, and Quick comparisons are visible above the field with no vertical
+  rail scrollbar. At 390 CSS pixels, two complete cards fit; 320 and 1440 px
+  checks found no document-level horizontal overflow. The wide desktop rail
+  and field remain side by side.
+- The shared field-guide disclosure, scale-bar simplification, compact mobile
+  measurement table, and complete cross-feature browser gate remain for the
+  next checkpoints. No push, pull request, merge, deployment, or publication
+  was performed.
+
+## 0.15 Adult-human reference silhouette hitbox (2026-09-23)
+
+- Enabled alpha-hit-path generation for curated comparison-reference WebPs in
+  the existing media validation/compiler pipeline. The compiled reference
+  manifest now carries the normalized silhouette path, and the comparison
+  query attaches it to both the reference's view and image models. The shared
+  field renderer therefore uses the same alpha path as specimen skulls rather
+  than its rectangular fallback.
+
+### Verification
+
+- Content compilation passes and the generated adult-human reference has an
+  alpha path with **69** subpaths; its field model reports no rectangular
+  fallback.
+- TypeScript (`tsc --noEmit --incremental false`) and targeted Prettier checks
+  pass. No automated tests were run for this correction.
+- The existing local port-3000 process had already cached the old generated
+  collection in memory, so its rendered DOM still showed the prior rectangle.
+  A server restart is needed for that already-running preview to load the new
+  compiled reference record. No server process was stopped.
+- Fix is committed locally on `skull_comparison_page`; no remote operation was
+  performed.
+
+## 0.14 Visible-field PNG export (2026-09-22)
+
+- Added a low-priority `More` menu with pure-black and UI-grid PNG choices.
+  The export snapshots the current visible field, then draws the public
+  full-resolution derivatives at up to three times CSS resolution (bounded to
+  6,000 pixels per side and 24 million pixels total). It preserves camera
+  zoom/pan, calibrated image sizes, manual positions, stacking, flips,
+  per-subject opacity, and optional labels/100 mm scale bar. Editing outlines,
+  toolbars, and menus are omitted from the image. Errors are announced without
+  downloading a partial composition.
+- Reconciled the comparison contract, implementation plan, data model,
+  architecture, design system, overview, and repository index with the new
+  owner-approved export behavior. The Print button remains removed; the old
+  browser-native print stylesheet still exists as a fallback.
+
+### Verification
+
+- `CI=true corepack pnpm check` passes formatting, ESLint, media/content
+  validation, strict TypeScript, **111/111 unit/component tests**, and six
+  expected invalid-fixture failures. The four previously known optional
+  frontal-view warnings are unchanged.
+- `CI=true corepack pnpm build` passes with **79/79 prerendered routes**, including
+  `/compare`. `CI=true PLAYWRIGHT_PORT=3102 corepack pnpm test:e2e` passes
+  **97/97 Chromium journeys** in 4.7 minutes.
+- Live Chromium downloads produced a **2,567 × 1,440** PNG from the desktop
+  field for both backgrounds. The pure-black corner is RGB 0/0/0, while the
+  grid version preserves the UI background. Visual checks confirmed skull
+  placement, orientation, and proportions; a second export after keyboard
+  movement, hidden labels, and a visible scale bar reflected all three changes.
+  Long and wide CSV downloads contained source measurement columns and
+  approximate reference status. At 390 px, the export controls fit with zero
+  document overflow. Browser console errors/warnings: zero.
+- Work remains local on `skull_comparison_page` in the isolated comparison
+  worktree. The preparation worktree was untouched; no push, pull request,
+  merge, deployment, or publication was performed.
+
+## 0.13 Comparison source-measurement CSV exports (2026-09-22)
+
+- Replaced the ineffective Print action with a compact CSV download menu.
+  Long/tidy export writes one row per selected subject and recorded numeric
+  measurement; wide export writes one row per selected subject with the union
+  of original measurement columns and companion status columns. Both preserve
+  selected order, stable identities, units, and measured/approximate status.
+  Cross-class display labels, computed Difference text, ratios, and unavailable
+  values are excluded; spreadsheet formula text is escaped.
+- The PNG field export requested in the same owner review is the next local
+  checkpoint. No remote publication action was taken.
+
+### Verification
+
+- Focused CSV tests pass **3/3**; focused ESLint and strict TypeScript pass.
+
+**Snapshot date:** 2026-09-24
+
+**Current phase:** Skull Comparison mobile owner-feedback refinement complete locally on `skull_comparison_page`; awaiting owner review
+
+**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. The owner approved all eight standalone-comparison decisions on 2026-09-11 and later requested source-value CSV and field PNG exports. The comparison workbench, exports, and mobile owner-feedback refinements are implemented and locally verified in the isolated `skull_comparison_page` worktree; owner review and any publication remain separate. The unfinished `preparation_guide_refinement` branch remains intact and unmerged.
+
+**Next action:** Owner review of the local mobile comparison workbench. Address any further feedback on `skull_comparison_page`; do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
+
+## 0.12 Selected-card alignment and positional difference-pair correction (2026-09-14)
+
+- Moved each selected card's specimen/reference ID and skull-length metadata
+  into the same identity stack as Skull N, the common name, and scientific name;
+  the metadata now aligns with that content without a brittle compensating
+  offset.
+- Reworked the shared card/table reorder transition so it preserves the
+  Difference pair's numbered Skull slots while remapping the underlying record
+  IDs to the subjects now occupying those slots. The Difference selector stays
+  on S1–S2 or another chosen slot pair while its values follow the reorder.
+  Subject removal retains the existing valid-ID fallback behavior.
+- Added unit and browser coverage for default and non-default pair slots,
+  changed Difference output, card/table reorder behavior, and metadata geometry.
+
+### Verification
+
+- Focused comparison state tests pass: **8/8**.
+- Focused Chromium comparison journeys pass: **2/2**.
+- `CI=true corepack pnpm check` passes formatting, ESLint, media/content
+  validation, strict TypeScript, **108/108 unit/component tests**, and the six
+  expected invalid-fixture failures. The four existing optional-frontal-view
+  content warnings remain unchanged.
+- `CI=true corepack pnpm build` passes and prerenders **79/79 static routes**,
+  including `/compare`.
+- `CI=true PLAYWRIGHT_PORT=3102 corepack pnpm test:e2e` passes **97/97
+  Chromium journeys** against a fresh production server in 4.3 minutes. A
+  visual 1,440 px browser check confirmed aligned metadata and zero console
+  errors. Work remains local on `skull_comparison_page`; no push, merge,
+  deployment, publication, or change to the original/preparation worktrees was
+  made.
+
+## 0.11 Selected-skull card drag preview correction (2026-09-14)
+
+- Replaced the browser's implicit draggable-subtree snapshot for selected-skull
+  cards with a temporary, exact-size clone of only the active card. The clone
+  is positioned outside the visible document, passed to
+  `DataTransfer.setDragImage`, and removed on drag end or component unmount.
+  This prevents neighboring cards, the subject rail, or the comparison field
+  from appearing as part of the drag ghost while leaving the stable-ID reorder
+  operation unchanged.
+- Added a Chromium regression that dispatches the card drag lifecycle and
+  asserts one card-sized, aria-hidden preview is outside the rail and is
+  removed after `dragend`.
+
+### Verification
+
+- The focused Chromium regression passes: **1/1**.
+- A live browser diagnostic measured the preview at **291 × 155 px**, matching
+  the rendered card within subpixel rounding, and confirmed cleanup to zero
+  preview nodes after `dragend`.
+- `CI=true corepack pnpm check` passes formatting, ESLint, media/content
+  validation, strict TypeScript, **108/108 unit/component tests**, and the six
+  expected invalid-fixture failures. The four existing optional-frontal-view
+  content warnings remain unchanged.
+- `CI=true corepack pnpm build` passes and prerenders **79/79 static routes**,
+  including `/compare`.
+- `CI=true PLAYWRIGHT_PORT=3102 corepack pnpm test:e2e` passes **96/96
+  Chromium journeys** against a fresh production server in 4.0 minutes,
+  including the selected-card preview regression. Work remains local on
+  `skull_comparison_page`; no push, merge, deployment, publication, or change
+  to the original/preparation worktrees was made.
+
+## 0.10 Follow-up comparison interaction corrections (2026-09-13)
+
+- Investigated the remaining invisible hitbox defect with browser
+  `elementFromPoint` probes. The alpha SVG had the correct bounds, but the
+  full transparent `.comparison-layer-image` and figure wrappers still
+  intercepted pointer events. Those wrappers are now pointer-transparent;
+  only the alpha path and explicit toolbar controls can claim a pointer.
+- Replaced delegated modified-wheel handling with a non-passive native field
+  listener. Cmd/Control-modified wheel or two-finger trackpad scrolling now
+  consumes the gesture for field zoom and suppresses document scrolling and
+  browser page zoom; ordinary wheel/trackpad scrolling remains page scrolling.
+- Made empty-field camera panning an explicit Cmd/Control-modified pointer
+  drag. Ordinary empty clicks still clear selection, while skull dragging,
+  mobile two-finger navigation, and scale-bar movement remain available.
+- Corrected the field guide and canonical architecture/design documentation to
+  describe these distinct input contracts. Added regression checks for
+  transparent-region event interception, modifier-wheel scroll suppression,
+  and modifier-only empty-field pan.
+
+### Verification
+
+- `CI=true corepack pnpm check` passes formatting, ESLint, media/content
+  validation, strict TypeScript, **108/108 unit/component tests**, and the six
+  expected invalid-fixture failures. The four existing optional-frontal-view
+  content warnings remain unchanged.
+- `CI=true corepack pnpm build` passes and prerenders **79/79 static routes**,
+  including `/compare`.
+- `CI=true PLAYWRIGHT_PORT=3102 corepack pnpm test:e2e` passes **95/95
+  Chromium journeys** against a fresh production server in 3.8 minutes; the
+  dedicated comparison suite passes **14/14**.
+- Manual browser probes confirmed zero sampled transparent canvas points resolve
+  to their owning layer, Cmd/Ctrl wheel zoom with `window.scrollY` unchanged,
+  and modifier-only empty-field panning. Work remains local on
+  `skull_comparison_page`; no push, merge, deployment, publication, or change
+  to the original/preparation worktrees was made.
+
+## 0.9 Owner-directed comparison review v2 corrections (2026-09-13)
+
+- Corrected field pointer geometry so each view's selectable surface follows its
+  compiled alpha silhouette inside the visible subject bounds. Transparent
+  canvas margins no longer intercept clicks or touches intended for a smaller
+  neighboring skull; keyboard focus and the full accessible layer target remain
+  available independently of the precise pointer path.
+- Separated document navigation from camera manipulation. Ordinary desktop
+  mouse-wheel and touchpad scrolling over the field now remains page scrolling
+  and does not pan the field. Only Cmd/Control-modified wheel input is consumed
+  for pointer-centered field zoom; explicit empty-space drag and the existing
+  two-finger touch gesture retain camera navigation.
+- Tightened `Fit all` around visible skull pixels rather than transparent source
+  canvases, and reduced the selected-layer popup to a compact inverse-scaled
+  `S{n} · View` toolbar anchored above the subject where possible.
+- Reworked the More control so its native dropdown is positioned below the full
+  field toolbar and sits outside the horizontal control scroller. Opening it no
+  longer turns the top bar into a vertical scroll rail or clips its options.
+- Added the URL-shareable `Custom` arrangement. Selecting it centers current
+  layers once; later additions start at the world center while existing manual
+  positions and camera state are preserved. Reset layout still deliberately
+  recenters and refits every active layer.
+- Expanded unit and Chromium coverage for visible-bound hitboxes, compact
+  controls, native wheel scrolling versus modified zoom, More-menu geometry,
+  Custom add-view preservation, and the existing cross-feature comparison
+  journeys.
+
+### Verification
+
+- `CI=true corepack pnpm check` passes formatting, ESLint, media/content
+  validation, strict TypeScript, **108/108 unit/component tests**, and the six
+  expected invalid-fixture failures. The four existing optional-frontal-view
+  content warnings remain unchanged.
+- `CI=true corepack pnpm build` passes and prerenders **79/79 static routes**,
+  including `/compare`.
+- `CI=true PLAYWRIGHT_PORT=3102 corepack pnpm test:e2e` passes **95/95
+  Chromium journeys** against a fresh production server in 4.0 minutes; the
+  dedicated comparison suite passes **14/14**.
+- Manual browser review covered a 1,200 px desktop viewport, a four-view
+  two-specimen field, precise outline/hit-path alignment, a 107 × 24 px
+  selected-layer toolbar, tight Fit all margins, the More dropdown, and a
+  390 × 844 phone layout. No console errors or document horizontal overflow
+  were observed in the relevant checks.
+- Work remains local on `skull_comparison_page` in
+  `/Users/rasmusallesoeenielsen/Documents/skull_website_comparison`; the
+  original `skull_website` and separate `preparation_guide_refinement`
+  worktree were not modified, and nothing was pushed, merged, deployed, or
+  published.
+
+## 0.8 Owner-directed comparison review refinement (2026-09-13)
+
+- Repaired the comparison field interaction model: desktop mouse-wheel and touchpad input pans the field, modified wheel input zooms around the pointer, mobile one-finger vertical gestures remain page scrolling, and two-finger gestures pan/pinch the field. Direct validated WebP sources are used in the field so high zoom does not introduce an additional optimizer blur; the zoom ceiling is now 2,000% so the smallest calibrated lateral views can be inspected at useful size.
+- Made the 100 mm scale bar a viewport overlay that opens at the current field's lower-left view position, remains visible while the camera moves, and can be dragged or keyboard-nudged. Re-selecting the active arrangement now reapplies its deterministic layout and resets the camera/opacity state just like Reset layout.
+- Reworked automatic placement and overlay behavior: adding or removing any skull/view rebuilds deterministic non-overlapping placements and fits all active views; overlay-pair groups every active matching view across every selected subject rather than only a two-skull lateral pair; layer selection clears from transparent field clicks or Escape; hover no longer paints a frame-sized rectangle; compact labels can be toggled from More and remain screen-sized while zooming.
+- Rebuilt the selected-skull rail for dense use: cards are compact, vertically scrollable on desktop at the field-panel height, horizontally scrollable on narrow screens, and support common-name record links, per-card view/opacity controls, card reordering, safe last-card menus, and automatic outside dismissal for open details/dropdowns. Measurement-table headers are human-readable and draggable, with the same order controlling the difference pair.
+- Expanded the class-aware table to all recorded measurements. Mixed mammal/bird primary rows consistently use the shared skull-width/skull-height mappings, additional rows expose the selected-profile union, the direction text follows the conditional divider color, and measurement names retain stable methodology links with the calculation explanation in a tooltip.
+- Added regression coverage for desktop wheel/pan/selection/scale-bar/arrangement behavior, 1100 px toolbar alignment, 5-subject card/table reorder, all-view overlay, mixed-class rows, full measurement expansion, touch gestures, failed images, print output, no-JavaScript output, site entry points, and accessible/reduced-motion/forced-color states.
+- Updated the canonical comparison, design-system, architecture, project-overview, implementation-plan, and status documentation. The original `skull_website` worktree and the separate `preparation_guide_refinement` worktree were not modified; no remote operation was performed.
+
+### Verification
+
+- `CI=true corepack pnpm check` passes formatting, ESLint, media/content validation, strict TypeScript, **105/105 unit/component tests**, and the six expected invalid-fixture failures. The existing four missing-optional-frontal-view warnings remain unchanged.
+- `CI=true corepack pnpm build` passes and prerenders **79/79 static routes**, including `/compare`.
+- `CI=true PLAYWRIGHT_PORT=3000 corepack pnpm test:e2e` passes **94/94 Chromium journeys** against a clean production server, including all **13 comparison journeys**, in 3.7 minutes. A preliminary non-CI run reused a dev server whose asset graph had been overwritten by the production build; after the exact server was restarted, the affected catalog/Home checks passed and the canonical production run passed in full.
+- Manual visual/responsive review covered the comparison page at 1440, 1280, 1100, 1024, 390, and iPhone 11 emulation. The 1100 px desktop rail/panel heights differ only by subpixel rounding, the 1024 px breakpoint switches to the horizontal subject strip, document overflow remains zero, and the desktop/mobile screenshots show the compact workbench and field controls. The field's direct specimen image probe reported the original 3200 px source width.
+- Work remains local on `skull_comparison_page` in `/Users/rasmusallesoeenielsen/Documents/skull_website_comparison`; owner review is required before push, pull request, merge, deployment, or publication.
+
+## 0.7 Standalone Skull Comparison authorization and branch boundary (2026-09-11)
+
+- The owner confirmed all eight decisions in `docs/skull_comparison_page.md`, including `/compare`, five subjects, ten active layers, per-subject opacity, explicit alternate-view calibration, a directed difference pair, analytical URL state, unobtrusive print support, and the default SPEC-0001/adult-human comparison.
+- Created `skull_comparison_page` from released `main` in a separate worktree. The local `preparation_guide_refinement` branch and its uncommitted guide content were neither merged nor copied.
+- The first checkpoint owns the approved plan and ADR. Feature implementation, verification evidence, and later checkpoints will be recorded below as they become true.
+
+### Calibration/data-contract implementation in progress
+
+- Advanced specimen-media and reference declarations to schema version 3 and the compiled collection to schema version 7.
+- Added explicit reviewed calibration for 86 eligible specimen views plus the adult-human lateral reference: bounds-based spans for lateral, frontal, dorsal and ventral views, and normalized diagonal landmark spans along one hemimandible for all 18 mandible-dorsal views. Oblique remains uncalibrated and unavailable.
+- Added blocking compiler checks for published lateral calibration, view/profile measurement basis, positive source measurements, and the mandible landmark-span requirement. Added a reusable calibration calculation module, focused tests, and `pnpm comparison:audit`.
+- `pnpm comparison:audit` reports **87 calibrated and eligible views** (86 specimen views plus the adult-human lateral reference) and **8 explicit media-missing states** (four specimen frontal views and four unsupported alternate reference views), with no calibration-missing or measurement-invalid states.
+- `CI=true pnpm check` passes formatting, lint, media/content validation, strict TypeScript, **89/89 unit/component tests**, and the six expected invalid-fixture failures.
+
+### Shared comparison-domain checkpoint
+
+- Generalized each eligible comparison record from one lateral image to an ordered set of calibrated lateral/frontal/dorsal/ventral/mandible views while preserving the existing lateral-image property consumed by specimen pages.
+- Kept all 18 published physical specimens eligible rather than restricting selection to taxon defaults. Added taxon/genus identity for deterministic suggestions and profile-aware row-to-measurement mappings for future one-to-five-subject tables.
+- Focused comparison/calibration/data tests pass **9/9**, the existing specimen-page component regression passes **8/8**, strict TypeScript passes, and `CI=true pnpm build` prerenders the unchanged **78/78 routes** successfully.
+
+### Static comparison-route checkpoint
+
+- Added the static `/compare` route with the approved SPEC-0001/adult-human default, a compact selected-subject rail, calibrated shared-scale field, semantic class-aware measurement table, directed-difference explanation, comparable-only filter, copy-link action, and low-prominence print action.
+- Added resilient versioned URL state for subjects, active views, difference pair, arrangement, and comparable-only filtering. Duplicate, unavailable, malformed, and over-limit values recover to valid state with an explicit notice rather than breaking the route.
+- Preserved a useful server-rendered/no-JavaScript default and added stable methodology anchors for measurement-definition links.
+- Focused URL-state tests pass **3/3**, strict TypeScript passes, and `CI=true pnpm build` prerenders **79/79 routes**, including static `/compare`. Chromium desktop and 390 px mobile checks show the default subjects and table, no development overlay or console errors, no document overflow, and intentional internal horizontal scrolling for the subject rail and measurement table.
+
+### Interactive workbench checkpoint
+
+- Replaced the static field layout with one calibrated world-coordinate system. Layers retain shared physical scale while visitors freely translate and stack them; the shared camera provides 25–300% field zoom, pointer-centred modified-wheel zoom, background pan, `100%`, `Fit all`, five deterministic arrangements, a 100 mm relative scale bar, reset, and clear recovery.
+- Added alpha-path pointer targets, pointer capture and animation-frame transform updates, deterministic keyboard layer order, Arrow/Shift+Arrow movement, explicit forward/back/remove controls, selected outlines, image-failure placeholders, reduced-motion/forced-color support, and transient per-subject opacity that applies to every view of that subject while preserving controls at 0%.
+- Added the searchable one-to-five-subject picker, lateral-on-add behavior, compact per-subject view/opacity menus, all five calibrated view types when available, explicit five-subject/ten-layer boundaries, atomic final-view subject removal, difference-pair ID preservation/fallback, and deterministic quick comparisons/contextual additions derived from canonical taxonomy and recorded lengths.
+- The semantic table now supports all selected subjects plus any directed difference pair, cross-class limitation copy, comparable-only filtering, stable methodology links, red/green-plus-text direction, ratio output, and a narrow-screen card presentation without changing table semantics.
+- Pure URL/transition/layout/suggestion tests pass **11/11**, the existing specimen-page comparison component regression passes **8/8**, strict TypeScript passes, and the production build prerenders **79/79 routes** with static `/compare`. Real Chromium checks exercised alternate-view addition, three-subject selection, URL updates, mammal-to-bird pair switching, 0% multi-layer opacity, keyboard movement, pointer dragging, and the 390 × 844 card table; the document retained zero horizontal overflow and the development overlay/console reported no errors.
+
+### Site-entry and acceptance integration checkpoint
+
+- Added Compare to the global header/footer and sitemap; converted the existing Home Comparison preview into a real whole-card route link; added a preselected `Open full comparison` action to the specimen-page scale card; and added exact-ID Compare actions to taxon/specimen cards and multi-specimen quick views. These remain explicit links rather than a persistent global basket.
+- Added focused URL-link, Home, catalog, and specimen-comparison regressions plus a dedicated Chromium workbench suite covering axe, ten mixed-view layers, free pointer movement, directed cross-class semantics, opacity, invalid URL/history recovery, mobile cards, site entry points, two-finger camera gestures, print output/credits, 320 px forced-color/reduced-motion/failed-image recovery, and no-JavaScript output.
+- `CI=true pnpm check` passes formatting, lint, media/content validation, strict TypeScript, **102/102 unit/component tests**, and the six expected invalid-fixture failures. `CI=true pnpm build` prerenders **79/79 routes**, including static `/compare`; `pnpm test:e2e` passes **90/90 Chromium journeys** in one clean full rerun. The first full browser attempt exposed one stale three-link specimen-chooser assertion after each row gained its Compare action; the corrected test now asserts three record links and three comparison links and passes in isolation and in the complete suite.
+- Work remains local. Nothing was pushed, merged, deployed, or published, and the separate `preparation_guide_refinement` worktree was not modified.
+
+## Preparation refinement checkpoint — troubleshooting layout (2026-09-10)
 
 ### Implementation
 
@@ -33,48 +424,48 @@
 
 ### Boundary
 
-This layout correction remains local on `preparation_guide_refinement`. No push, pull request, merge, deployment, analytics configuration or later editorial phase was started. Owner desktop/mobile review is required before any publication decision.
+This layout correction remained local on `preparation_guide_refinement` at this checkpoint. No push, pull request, merge, deployment, analytics configuration or later editorial phase had been started. Owner desktop/mobile review was required before publication.
 
-## 0.8 Owner-directed Preparation guide feedback refinement (2026-09-10)
+## Preparation refinement checkpoint — feedback and adipocere guidance (2026-09-10)
 
 ### Implementation and content
 
 - Continued the local `preparation_guide_refinement` branch without changing collection CSVs, stable IDs, specimen URLs or routes. This batch responds to the follow-up troubleshooting feedback rather than opening a new editorial page.
 - Numbered the five defleshing methods in the workflow, comparison table and disclosure titles. Troubleshooting is now `1.1. Troubleshooting maceration`, a smaller level-4 disclosure indented beneath `1. Water maceration`; its four case details remain collapsed until selected.
 - Added square owner-photo thumbnails beside the dark-bone and adipocere case titles. The dark-bone paragraph links “almost black” to the same lightbox, and the above-ground comparison table links “mummification” to the new mummified-badger photograph. Thumbnail controls sit beside their native summaries rather than nesting an interactive link inside a summary.
-- Reorganized adipocere into direct “What it is”, “Why it forms”, “How I try to prevent it” and “How to remove it” subheadings. The removal sequence now starts with scraping fresh wax, then warm soapy scrubbing, detergent degreasing, a second scrub, a specified 2.5% clear aqueous ammonia solution for stubborn patches, and optional experienced-only nylon brushing. The mummified-tissue troubleshooting case was removed because mummification is a starting condition or above-ground outcome, not a maceration outcome.
-- Promoted the two new ignored owner sources `prep_black_discolored_skull.jpg` and `prep_mummified_badger.jpg` as metadata-stripped public derivatives. The preparation manifest now contains **18 assets**: 11 owner photographs, one generated degreasing illustration and six generated condition cues. The processor uses deterministic size/quality fallback for large photographs while preserving the existing 750 kB contract.
+- Reorganized adipocere into direct “What it is”, “Why it forms”, “How I try to prevent it” and “How to remove it” subheadings. The removal sequence starts with scraping fresh wax, then warm soapy scrubbing, detergent degreasing, a second scrub, a specified 2.5% clear aqueous ammonia solution for stubborn patches, and optional experienced-only nylon brushing. The mummified-tissue troubleshooting case was removed because mummification is a starting condition or above-ground outcome, not a maceration outcome.
+- Promoted the two new ignored owner sources `prep_black_discolored_skull.jpg` and `prep_mummified_badger.jpg` as metadata-stripped public derivatives. The preparation manifest contains **18 assets**: 11 owner photographs, one generated degreasing illustration and six generated condition cues. The processor uses deterministic size/quality fallback for large photographs while preserving the existing 750 kB contract.
 
 ### Local verification
 
-- `pnpm media:process:preparation` passed with **18 validated preparation WebPs** and metadata stripping; all four owner preparation-photo masters remain ignored staging input.
+- `pnpm media:process:preparation` passed with **18 validated preparation WebPs** and metadata stripping; all four owner preparation-photo masters remained ignored staging input.
 - `pnpm content:build` passed with 15 published taxa, 18 specimens, 104 specimen assets, 67 search documents, 18 map records, 21 measurement definitions, five preparation stages and 22 guide references. The focused guide unit file passed **11/11**.
 - `CI=true pnpm build` passed and prerendered **78/78 routes**. The focused Chromium preparation suite passed **7/7 without retries**, covering the case thumbnails, all four image/lightbox paths, mobile reflow, axe, no-JavaScript direct links, deep links, reduced motion, forced colors, failed images and overflow.
 - Playwright CLI visual checks at 1280 × 720 and 390 × 844 confirmed the smaller indented `1.1` treatment, visible square thumbnails while cases are collapsed, and the body-level adipocere lightbox. The complete `CI=true pnpm check` passed formatting, lint, media/content validation, strict TypeScript, **86/86 unit/component tests** and six expected invalid-fixture failures.
 
 ### Boundary
 
-This second feedback batch is local only. No push, pull request, merge, deployment, analytics configuration or later editorial phase was started. Owner desktop/mobile review is required before any publication decision.
+This second feedback batch was local only at this checkpoint. No push, pull request, merge, deployment, analytics configuration or later editorial phase had been started. Owner desktop/mobile review was required before publication.
 
-## 0.7 Owner-directed Preparation guide refinement (2026-09-10)
+## Preparation refinement checkpoint — reviewed media and disclosures (2026-09-10)
 
 ### Implementation and content
 
-- Created the local branch `preparation_guide_refinement` from `main`. The existing static-first guide remains the only route in scope; no collection CSV, stable ID, specimen URL or route was changed.
+- Created the local branch `preparation_guide_refinement` from `main`. The existing static-first guide remained the only route in scope; no collection CSV, stable ID, specimen URL or route was changed.
 - Added descriptive `[label](asset:asset-id)` media links to the restricted guide dialect. The brain-material phrase in Water maceration and the adipocere photograph link progressively enhance to native body-level lightboxes with captions, credits, backdrop/Close controls and focus restoration; direct WebP links remain the no-JavaScript fallback.
-- Added the owner sources `prep_skull_brain_gunk.png` and `prep_skull_adipocere.jpg` to the maintenance-only source map and promoted only their metadata-stripped `brain-gunk.webp` and `adipocere.webp` derivatives. The preparation manifest now contains 16 validated assets: nine owner photographs, one generated degreasing illustration and six generated condition cues.
+- Added the owner sources `prep_skull_brain_gunk.png` and `prep_skull_adipocere.jpg` to the maintenance-only source map and promoted only their metadata-stripped `brain-gunk.webp` and `adipocere.webp` derivatives. The preparation manifest contains 16 validated assets: nine owner photographs, one generated degreasing illustration and six generated condition cues.
 - Rebuilt Troubleshooting maceration as an outer native disclosure with five collapsed case details. The existing dark-bone, persistent-tendon, lower-jaw and mummified-tissue guidance remains available; the new adipocere case explains what it is, why it forms, practical prevention and a cautious removal sequence. Reviewed practitioner context comes from the [OddArticulations maceration page](https://oddarticulations.com/maceration101/) and [adipocere page](https://oddarticulations.com/adipocere101/), alongside the existing guide sources.
 
 ### Local verification
 
-- `pnpm media:process:preparation` passed with **16 validated preparation WebPs** and metadata stripping; the two ignored owner masters remain outside the public checkpoint.
+- `pnpm media:process:preparation` passed with **16 validated preparation WebPs** and metadata stripping; the two ignored owner masters remained outside the public checkpoint.
 - `pnpm content:build` passed with 15 published taxa, 18 specimens, 104 specimen assets, 67 search documents, 18 map records, 21 measurement definitions, five preparation stages and 22 guide references.
 - `vitest run src/domain/guides/guide.test.ts` passed **10/10**. `CI=true pnpm build` passed and prerendered **78/78 routes**.
 - The focused Chromium preparation suite passed **7/7 without retries**, covering the two new lightboxes, nested troubleshooting details, desktop/mobile reflow, axe, no-JavaScript direct links, deep links, reduced motion, forced colors, failed images and overflow. The complete `CI=true pnpm check` passed formatting, lint, media/content validation, strict TypeScript, **85/85 unit/component tests** and six expected invalid-fixture failures. The complete Chromium regression passed **82/82 without retries** in 3.7 minutes.
 
 ### Boundary
 
-This refinement is local only. No push, pull request, merge, deployment, analytics configuration or later editorial phase was started. Owner desktop/mobile review is required before any publication decision.
+This refinement was local only at this checkpoint. No push, pull request, merge, deployment, analytics configuration or later editorial phase had been started. Owner desktop/mobile review was required before publication.
 
 ## 0.6 Google Search Console verification (2026-09-09)
 
@@ -639,11 +1030,13 @@ Package-manager gates must run sequentially with `CI=true` in non-interactive en
 
 ## 13. Exact next action
 
-1. Owner reviews the redesigned `/` at desktop and mobile widths, including the ten-specimen mixed-angle field's foreground/midground/background hierarchy, boundary-safe identity cards, focus/touch/parallax behavior, compact six-rank strip, and five owner-supplied hub thumbnails.
-2. If changes are wanted, authorize only that bounded Home refinement; otherwise explicitly authorize publication before any push or pull request.
-3. Keep merged Phase 5 and the local Measurements/Home checkpoints as stable fallbacks. Do not begin age/condition methodology or another phase from this branch.
-
-No unresolved content, rights, or publication blocker prevents local Home review. The owner explicitly authorized the Preparation source image; the committed derivative is metadata-stripped and reserved-rights. Formal source/citation expansion would require reviewed citation records; Phase 6 still requires completed/corrected metadata, missing accepted image sets, and final rights/public-note/publication decisions for blocked rows.
+1. Owner reviews the local `/compare` mobile and desktop workbench, including
+   the compact selected-skull strip, medium-width menus, free touch dragging,
+   field guide/scale bar, and five-subject horizontal measurement table.
+2. Address any further bounded feedback on `skull_comparison_page`. Push, pull
+   request, merge, deployment, or publication requires a later owner instruction.
+3. Keep the separate, unfinished `preparation_guide_refinement` worktree and
+   branch intact and unmerged.
 
 ## 14. Decision/blocker protocol
 

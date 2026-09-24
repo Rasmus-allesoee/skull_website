@@ -39,9 +39,10 @@ describe("catalog cards", () => {
       />,
     );
 
-    expect(
-      screen.getByRole("link", { name: new RegExp(longName) }),
-    ).toHaveAttribute("href", "/species/raccoon-dog");
+    expect(document.querySelector(".collection-card-link")).toHaveAttribute(
+      "href",
+      "/species/raccoon-dog",
+    );
     expect(screen.getByText("Lateral view not available")).toBeInTheDocument();
     expect(
       screen.queryByText("Uncertain · Low confidence"),
@@ -59,9 +60,10 @@ describe("catalog cards", () => {
     )!;
     render(<SpecimenCard card={card} />);
 
-    expect(
-      screen.getByRole("link", { name: /SPEC-0001 Raccoon dog/i }),
-    ).toHaveAttribute("href", "/species/raccoon-dog/specimens/SPEC-0001");
+    expect(document.querySelector(".collection-card-link")).toHaveAttribute(
+      "href",
+      "/species/raccoon-dog/specimens/SPEC-0001",
+    );
     expect(screen.getByText("Skull length")).toBeInTheDocument();
     expect(screen.getByText("Skull mass")).toBeInTheDocument();
     expect(screen.getByText("Age")).toBeInTheDocument();
@@ -69,6 +71,12 @@ describe("catalog cards", () => {
     expect(screen.getByText("Condition")).toBeInTheDocument();
     expect(screen.getByText("Date")).toBeInTheDocument();
     expect(screen.queryByText("Location · date")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Compare skull SPEC-0001" }),
+    ).toHaveAttribute(
+      "href",
+      expect.stringMatching(/^\/compare\?.*specimen%3ASPEC-0001/),
+    );
   });
 
   it("uses a compact specimen-count trigger and per-measurement specimen tooltips", () => {
@@ -87,5 +95,8 @@ describe("catalog cards", () => {
       .getAllByRole("tooltip")
       .map((tooltip) => tooltip.textContent);
     expect(tooltipIds).toEqual(expect.arrayContaining(["SPEC-0014"]));
+    expect(
+      screen.getByRole("link", { name: /Compare skull SPEC-0014/ }),
+    ).toHaveAttribute("href", expect.stringContaining("SPEC-0014"));
   });
 });

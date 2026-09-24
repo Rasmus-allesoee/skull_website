@@ -2,6 +2,7 @@ import { getCollection } from "@/data/collection";
 import type { SkullComparisonRecord } from "@/domain/comparison/types";
 import { formatScientificIdentification } from "@/domain/content/display";
 import {
+  canonicalViews,
   comparisonMeasurementKeys,
   resolveMeasurementProfile,
   type CompiledCollection,
@@ -19,12 +20,40 @@ export function getEligibleSkullComparisons(
       isDefault: reference.isDefault,
       scientificName: null,
       specimenId: null,
+      taxonId: null,
+      genusName: null,
+      genusSlug: null,
       href: null,
       aliases: reference.aliases,
       note: reference.note,
       measurementProfile: reference.measurementProfile,
       measurements: reference.measurements,
-      image: reference.media,
+      views: [
+        {
+          view: "lateral",
+          publicPath: reference.media.publicPath,
+          width: reference.media.width,
+          height: reference.media.height,
+          subjectBounds: reference.media.subjectBounds,
+          hitPath: reference.media.hitPath,
+          orientation: reference.media.orientation,
+          calibration: reference.media.comparisonCalibration,
+          alt: reference.media.alt,
+          credit: reference.media.credit,
+        },
+      ],
+      image: {
+        view: "lateral",
+        publicPath: reference.media.publicPath,
+        width: reference.media.width,
+        height: reference.media.height,
+        subjectBounds: reference.media.subjectBounds,
+        hitPath: reference.media.hitPath,
+        orientation: reference.media.orientation,
+        calibration: reference.media.comparisonCalibration,
+        alt: reference.media.alt,
+        credit: reference.media.credit,
+      },
     }));
 
   const specimens: SkullComparisonRecord[] = [];
@@ -47,9 +76,39 @@ export function getEligibleSkullComparisons(
       (asset) =>
         asset.specimenId === specimen.specimenId &&
         asset.view === "lateral" &&
-        asset.orientation !== null,
+        asset.orientation !== null &&
+        asset.comparisonCalibration !== null,
     );
-    if (!lateral || lateral.orientation === null) continue;
+    if (
+      !lateral ||
+      lateral.orientation === null ||
+      lateral.comparisonCalibration === null
+    )
+      continue;
+
+    const views = collection.media
+      .filter(
+        (asset) =>
+          asset.specimenId === specimen.specimenId &&
+          asset.view !== "oblique" &&
+          asset.comparisonCalibration !== null,
+      )
+      .sort(
+        (a, b) =>
+          canonicalViews.indexOf(a.view) - canonicalViews.indexOf(b.view),
+      )
+      .map((asset) => ({
+        view: asset.view as Exclude<typeof asset.view, "oblique">,
+        publicPath: asset.publicPath,
+        width: asset.width,
+        height: asset.height,
+        subjectBounds: asset.subjectBounds,
+        hitPath: asset.hitPath,
+        orientation: asset.orientation,
+        calibration: asset.comparisonCalibration!,
+        alt: asset.alt,
+        credit: asset.credit,
+      }));
 
     const measurements = Object.fromEntries(
       comparisonMeasurementKeys.map((key) => [key, specimen.measurements[key]]),
@@ -61,6 +120,9 @@ export function getEligibleSkullComparisons(
       isDefault: specimen.specimenId === taxon.defaultSpecimenId,
       scientificName: formatScientificIdentification(taxon),
       specimenId: specimen.specimenId,
+      taxonId: taxon.taxonId,
+      genusName: taxon.hierarchy.genusName,
+      genusSlug: taxon.hierarchy.genusSlug,
       href: `/species/${taxon.slug}/specimens/${specimen.specimenId}`,
       aliases: [
         taxon.names.danish,
@@ -73,12 +135,15 @@ export function getEligibleSkullComparisons(
         taxon.hierarchy.className,
       ),
       measurements,
+      views,
       image: {
+        view: "lateral",
         publicPath: lateral.publicPath,
         width: lateral.width,
         height: lateral.height,
         subjectBounds: lateral.subjectBounds,
         orientation: lateral.orientation,
+        calibration: lateral.comparisonCalibration,
         alt: lateral.alt,
         credit: lateral.credit,
       },

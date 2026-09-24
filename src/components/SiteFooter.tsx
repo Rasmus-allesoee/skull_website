@@ -14,6 +14,7 @@ export function SiteFooter({ context }: { context?: string }) {
       </div>
       <nav aria-label="Footer navigation">
         <Link href="/species">Browse species</Link>
+        <Link href="/compare">Compare skulls</Link>
         <Link href="/methodology">Measurements</Link>
         <Link href="/guides/skull-preparation">Preparation guide</Link>
         <Link href="/privacy">Privacy and analytics</Link>

@@ -1,8 +1,8 @@
 # Content and data model
 
-**Status:** Approved contract; schema version 6 and the complete Phase 6 migration are implemented
+**Status:** Approved contract; schema version 7 and reviewed comparison-view calibrations are implemented
 
-**Last reviewed:** 2026-09-10
+**Last reviewed:** 2026-09-24
 
 ## 1. Purpose
 
@@ -18,10 +18,10 @@ The current `agent_context/skulls_meta.csv` is an incomplete illustrative workin
 | `content/specimens/specimens.csv` | One physical skull, biology, condition/observations, provenance, preparation, measurements, rights, publication state | Shared species prose or hierarchy definitions |
 | `content/profiles/{taxon-id}.mdx` | Optional review-gated overview and skull-identification prose | Record fields that need filtering or validation |
 | `content/guides/*.mdx` | Cited editorial guides | Taxon/specimen facts |
-| `content/media/{specimen-id}.json` | Canonical views, lateral orientation, alt text, credit, and rights declarations | Pixel-derived dimensions/bounds |
-| `content/references/{reference-id}.json` | Stable comparison-reference identity, display/search terms, approximate measurements, default state, orientation, credit, and rights | Specimen/taxon identity or universal biological claims |
+| `content/media/{specimen-id}.json` | Canonical views, lateral orientation, alt text, rights declarations, and reviewed comparison-calibration spans | Pixel-derived dimensions/bounds |
+| `content/references/{reference-id}.json` | Stable comparison-reference identity, display/search terms, approximate measurements, default state, orientation, reviewed calibration, credit, and rights | Specimen/taxon identity or universal biological claims |
 | `content/home/home-media.json` | Stable Home-only editorial thumbnail identities, public paths, alt text, credit, and reserved-rights state | Specimen identity, source pixels, or preparation instructions |
-| Media manifests generated from public assets | Dimensions, canonical view, path, subject bounds, alpha-derived Home hit path, technical validation | Rights/provenance source decisions |
+| Media manifests generated from public assets | Dimensions, canonical view, path, subject bounds, alpha-derived Home/specimen/reference hit paths, technical validation | Rights/provenance source decisions |
 | Reviewed taxonomy snapshot | External match evidence and review state | Immutable local identity or curated vernacular names |
 
 Compiled JSON, search indexes, and GeoJSON are generated views. They are never edited as sources.
@@ -36,10 +36,16 @@ Compiled JSON, search indexes, and GeoJSON are generated views. They are never e
 - Multi-value controlled fields use semicolons with no meaning assigned to item order unless documented.
 - Spreadsheet formulas are resolved to values before export; formula text is invalid input.
 - CSV injection characters in free text are escaped on any future re-export.
+- The `/compare` download is a derived, user-selected export rather than a new
+  canonical CSV. It emits original source measurement column names and numeric
+  values, with a measured/approximate status, in long or wide form; blanks are
+  never converted to zero or UI-derived Difference text. Spreadsheet-facing
+  downloads use UTF-8 with BOM and CRLF row endings for compatibility, while
+  canonical source files retain the LF-only contract above.
 - Rows have stable explicit IDs; row position is never identity.
 - Unknown extra columns fail validation so misspelled headers are not silently ignored.
 
-Phase 2 fixed the committed header order in `src/domain/content/schemas.ts` and added strict executable validation. Phase 2.1 advanced the generated contract to version 2; Phase 2.2 advanced it to version 3; and Phase 3 advanced it to version 4 for class-aware measurements. Phase 6 advanced it to version 5 for the curator crosswalk, exact missing-tooth counts, postorbital width, mammal interorbital width, and the final reviewed metadata migration. The release review advances it to version 6 by replacing the mistakenly public `distinguishing_features` field with the purpose-specific `condition_description`. Schema/header changes require the change-management process in section 18; do not create ad-hoc production CSV variants or parallel class-specific specimen tables.
+Phase 2 fixed the committed header order in `src/domain/content/schemas.ts` and added strict executable validation. Phase 2.1 advanced the generated contract to version 2; Phase 2.2 advanced it to version 3; and Phase 3 advanced it to version 4 for class-aware measurements. Phase 6 advanced it to version 5 for the curator crosswalk, exact missing-tooth counts, postorbital width, mammal interorbital width, and the final reviewed metadata migration. The release review advanced it to version 6 by replacing the mistakenly public `distinguishing_features` field with the purpose-specific `condition_description`; schema version 7 adds reviewed per-view comparison calibration to the media/reference contracts. Schema/header changes require the change-management process in section 18; do not create ad-hoc production CSV variants or parallel class-specific specimen tables.
 
 ## 4. Identity, slugs, and references
 
@@ -280,6 +286,7 @@ interface MediaAsset {
   subjectBounds: { x: number; y: number; width: number; height: number };
   hitPath?: string; // normalized alpha-derived SVG path for Home hit testing
   orientation: "left" | "right" | null;
+  comparisonCalibration: ComparisonViewCalibration | null;
   alt: string;
   credit: string;
   rights: string;
@@ -299,6 +306,7 @@ interface ComparisonReferenceRecord {
     height: number;
     subjectBounds: { x: number; y: number; width: number; height: number };
     orientation: "left" | "right";
+    comparisonCalibration: ComparisonViewCalibration;
     alt: string;
     credit: string;
     rights: "all_rights_reserved";
@@ -434,7 +442,7 @@ Preparation media lives in `content/guides/preparation-media.json`: eighteen sta
 
 - Staging input: `{specimen-id}__{view}.png` using ASCII lower-case tokens.
 - Public derivative: `{specimen-id}__{view}.webp` under a specimen-addressable media path.
-- A schema-version-2 specimen media declaration records an explicit `left`/`right` orientation for the lateral asset. Other views have no lateral orientation value. Runtime heuristics must not guess direction.
+- A schema-version-3 specimen media declaration records an explicit `left`/`right` orientation for the lateral asset and optional reviewed comparison calibration per asset. Other views have no lateral orientation value. Runtime heuristics must not guess direction or calibration.
 - No common names, scientific names, spaces, Danish letters, or mutable slugs in filenames.
 - The processing command converts to sRGB, normalizes orientation, strips metadata, validates transparency and dimensions, calculates subject bounds, and writes a maximum 3200 px transparent WebP at quality 90/alpha 100.
 - Lateral is mandatory. Missing optional views generate authoring warnings; unexpected view tokens are errors.
@@ -453,10 +461,10 @@ Alt text describes the useful view and visible specimen condition without repeat
 - Comparison references have stable ASCII IDs, declaration filenames that match those IDs, and public paths derived from those IDs under `public/media/references/`.
 - Exactly one reference has `is_default = true`. Phase 2.2 uses `adult-human-skull` as that default.
 - The adult-human reference stores fixed approximate values: maximum length 182 mm, maximum width 124 mm, height 133 mm, prepared mass 800 g, cranium width 138 mm, and maximum mandible length 117 mm. Its note explicitly says these are representative approximate dimensions, not a universal human average.
-- Reference declaration schema version 2 records `measurement_profile`. It requires that profile's complete comparison suite—six mammal, nine bird, or four shared fallback measurements—plus explicit lateral orientation, alt text, credit, rights, and a validated transparent WebP with compiled subject bounds. Fields outside the profile compile to `not_applicable`.
-- An eligible specimen comparison record is the published default specimen for its taxon and has a validated lateral asset, explicit orientation, and measured maximum skull length. A missing/approximate/unusable scaling value excludes it rather than fabricating scale.
+- Reference declaration schema version 3 records `measurement_profile` and a reviewed lateral comparison calibration. It requires that profile's complete comparison suite—six mammal, nine bird, or four shared fallback measurements—plus explicit lateral orientation, alt text, credit, rights, and a validated transparent WebP with compiled subject bounds. Fields outside the profile compile to `not_applicable`.
+- Every published specimen may be an eligible comparison subject when it has a validated lateral asset, explicit orientation, reviewed calibration, and a positive measured or explicitly approximate maximum skull length. Eligibility is not restricted to a taxon's default specimen.
 - Reference records sort before specimen records in the scoped comparison selector; the current specimen is excluded. That selector matches its eligible reference/specimen labels, names, aliases, and IDs within its own route-specific record set rather than querying the global catalog index.
-- Calibrated rendering maps `subjectBounds.width` to the record's maximum skull length and applies one shared pixels-per-millimetre factor to the pair. Canvas margins never contribute to anatomical length; source aspect ratio and all anatomical endpoints remain intact.
+- Calibrated rendering divides each reviewed pixel span by its linked physical measurement, then applies one shared world-pixels-per-millimetre factor to the complete image canvas. Lateral uses maximum skull length and reviewed subject-bound width; dorsal/ventral use maximum skull length and reviewed subject-bound height; frontal uses maximum skull width for mammals or cranium width for birds/fallback; mandible dorsal uses a normalized diagonal landmark span and maximum mandible length. Oblique has no comparison calibration. Source aspect ratio and all anatomical endpoints remain intact.
 - Approximate reference measurements retain `status = approximate` in the compiled record and display approximation markers. Ratios and differences are derived values, never source measurements.
 - `note` belongs to each comparison record and renders only while that record is selected; specimen records do not inherit the adult-human wording. The difference-level approximation explanation renders only when at least one available displayed difference has an approximate source status.
 
@@ -518,6 +526,7 @@ The owner approved exact public coordinates when known. Therefore:
 - Previous slugs do not collide with current or previous slugs.
 - Media names contain only linked specimen IDs and canonical views.
 - Every lateral specimen asset has explicit orientation; all non-lateral specimen assets have `orientation = null` in compiled output.
+- Every published lateral asset and comparison reference has reviewed calibration; each optional calibrated view uses its view/profile-specific measurement, and every mandible calibration uses distinct normalized diagonal landmark endpoints.
 - Exactly one valid comparison reference is default and every declared reference asset passes the media contract.
 - Generated search URLs and map URLs resolve to generated routes.
 

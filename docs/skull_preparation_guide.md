@@ -1,6 +1,6 @@
 # Skull preparation guide
 
-Status: owner-feedback v1 overhaul and owner-directed condition-table refinements merged through PR #13 at `0e332ac` on 2026-09-08. A further owner-directed refinement is implemented locally on `preparation_guide_refinement` from `main` and remains pending owner review.
+Status: owner-feedback v1 overhaul and owner-directed condition-table refinements merged through PR #13 at `0e332ac` on 2026-09-08. The subsequent owner-directed refinement merged through PR #24 into `main` at `2e92d0a`; production deployment verification remains part of the v1.1.0 release gate.
 
 ## Intent and visitor structure
 
@@ -61,6 +61,6 @@ Generation prompt:
 
 ## Acceptance and next step
 
-The owner-feedback v1 gate and condition-table refinement gate passed locally on 2026-09-07. The first refinement batch added parser coverage for descriptive media links and the brain/adipocere lightboxes. The second batch on `preparation_guide_refinement` adds optional Details assets, internal subheadings, numbered method titles, two thumbnail lightboxes, the dark-skull and mummification links, direct adipocere removal prose, and removes the mummified-tissue troubleshooting case. Exact repository, browser and visual evidence is recorded in `project_status.md`; the branch remains local pending owner desktop/mobile review.
+The owner-feedback v1 gate and condition-table refinement gate passed locally on 2026-09-07. The first refinement batch added parser coverage for descriptive media links and the brain/adipocere lightboxes. The second batch on `preparation_guide_refinement` adds optional Details assets, internal subheadings, numbered method titles, two thumbnail lightboxes, the dark-skull and mummification links, direct adipocere removal prose, and removes the mummified-tissue troubleshooting case. Exact repository, browser and visual evidence is recorded in `project_status.md`; this refinement is merged in PR #24, with production deployment verification pending the v1.1.0 release gate.
 
 The Preparation milestone is public-release scope and remains covered by the repository-wide release gate.

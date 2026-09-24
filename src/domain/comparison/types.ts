@@ -1,10 +1,27 @@
 import type {
+  CanonicalView,
+  ComparisonViewCalibration,
   ComparisonMeasurementKey,
   LateralOrientation,
   Measurement,
   MeasurementProfile,
   SubjectBounds,
 } from "@/domain/content/types";
+
+export type ComparisonView = Exclude<CanonicalView, "oblique">;
+
+export interface SkullComparisonView {
+  view: ComparisonView;
+  publicPath: string;
+  width: number;
+  height: number;
+  subjectBounds: SubjectBounds;
+  hitPath?: string;
+  orientation: LateralOrientation | null;
+  calibration: ComparisonViewCalibration;
+  alt: string;
+  credit: string;
+}
 
 export interface SkullComparisonRecord {
   id: string;
@@ -13,20 +30,16 @@ export interface SkullComparisonRecord {
   isDefault: boolean;
   scientificName: string | null;
   specimenId: string | null;
+  taxonId: string | null;
+  genusName: string | null;
+  genusSlug: string | null;
   href: string | null;
   aliases: string[];
   note: string | null;
   measurementProfile: MeasurementProfile;
   measurements: Record<ComparisonMeasurementKey, Measurement>;
-  image: {
-    publicPath: string;
-    width: number;
-    height: number;
-    subjectBounds: SubjectBounds;
-    orientation: LateralOrientation;
-    alt: string;
-    credit: string;
-  };
+  views: SkullComparisonView[];
+  image: SkullComparisonView & { orientation: LateralOrientation };
 }
 
 export interface ScalePresentation {
@@ -46,6 +59,9 @@ export interface ComparisonDifferenceRow {
   label: string;
   primaryKey: ComparisonMeasurementKey;
   comparisonKey: ComparisonMeasurementKey;
+  measurementKeys: Partial<
+    Record<MeasurementProfile, ComparisonMeasurementKey>
+  >;
 }
 
 export interface MeasurementDifference {

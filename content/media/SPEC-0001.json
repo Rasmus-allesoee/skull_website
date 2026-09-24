@@ -1,11 +1,15 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "specimen_id": "SPEC-0001",
   "assets": [
     {
       "view": "lateral",
       "alt": "Lateral view of raccoon dog skull specimen SPEC-0001 with the cranium and mandibles in occlusion.",
-      "orientation": "right"
+      "orientation": "right",
+      "comparison_calibration": {
+        "measurement": "skull_length_mm",
+        "span": { "kind": "subject-bounds-width" }
+      }
     },
     {
       "view": "oblique",
@@ -13,19 +17,39 @@
     },
     {
       "view": "frontal",
-      "alt": "Frontal view of raccoon dog skull specimen SPEC-0001 showing the orbits, dentition, and small chip at the rostral tip."
+      "alt": "Frontal view of raccoon dog skull specimen SPEC-0001 showing the orbits, dentition, and small chip at the rostral tip.",
+      "comparison_calibration": {
+        "measurement": "skull_width_mm",
+        "span": { "kind": "subject-bounds-width" }
+      }
     },
     {
       "view": "dorsal",
-      "alt": "Dorsal view of raccoon dog skull specimen SPEC-0001 showing the cranial vault and zygomatic arches."
+      "alt": "Dorsal view of raccoon dog skull specimen SPEC-0001 showing the cranial vault and zygomatic arches.",
+      "comparison_calibration": {
+        "measurement": "skull_length_mm",
+        "span": { "kind": "subject-bounds-height" }
+      }
     },
     {
       "view": "ventral",
-      "alt": "Ventral view of raccoon dog skull specimen SPEC-0001 showing the palate, tooth rows, and auditory bullae."
+      "alt": "Ventral view of raccoon dog skull specimen SPEC-0001 showing the palate, tooth rows, and auditory bullae.",
+      "comparison_calibration": {
+        "measurement": "skull_length_mm",
+        "span": { "kind": "subject-bounds-height" }
+      }
     },
     {
       "view": "mandible-dorsal",
-      "alt": "Dorsal view of the separated mandibles from raccoon dog skull specimen SPEC-0001 showing both tooth rows."
+      "alt": "Dorsal view of the separated mandibles from raccoon dog skull specimen SPEC-0001 showing both tooth rows.",
+      "comparison_calibration": {
+        "measurement": "mandible_length_mm",
+        "span": {
+          "kind": "landmark-span",
+          "start": { "x": 0.496, "y": 0.089 },
+          "end": { "x": 0.33, "y": 0.86 }
+        }
+      }
     }
   ]
 }

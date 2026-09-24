@@ -89,6 +89,9 @@ test("metadata, structured data, robots, and every sitemap route are valid", asy
   expect(
     locations.some((location) => new URL(location).pathname === "/privacy"),
   ).toBe(true);
+  expect(
+    locations.some((location) => new URL(location).pathname === "/compare"),
+  ).toBe(true);
   for (const location of locations) {
     const route = new URL(location).pathname;
     const response = await request.get(route);

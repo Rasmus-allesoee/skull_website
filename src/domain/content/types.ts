@@ -208,16 +208,27 @@ export const measurementProfileLayouts = {
 
 export const comparisonMeasurementKeys = [
   "skullLength",
+  "condylobasalLength",
+  "maxillaryToothRowLength",
+  "mandibleLength",
+  "mandibularToothRowLength",
+  "mandibleRamusHeight",
+  "mandibleBodyHeight",
   "skullWidth",
+  "craniumWidth",
+  "postorbitalWidth",
+  "interorbitalWidth",
+  "rostrumWidth",
   "skullHeight",
+  "maxillaryCanineLength",
+  "mandibularCanineLength",
+  "skullMass",
+  "bodyMass",
   "billLength",
   "billWidth",
   "billHeight",
-  "craniumWidth",
   "craniumHeight",
   "orbitalWidth",
-  "mandibleLength",
-  "skullMass",
 ] as const;
 
 export type PublicationStatus = (typeof publicationStatuses)[number];
@@ -379,6 +390,24 @@ export interface SubjectBounds {
   height: number;
 }
 
+export type ComparisonCalibrationMeasurementKey =
+  "skullLength" | "skullWidth" | "craniumWidth" | "mandibleLength";
+
+export type ComparisonCalibrationSpan =
+  | { kind: "subject-bounds-width" }
+  | { kind: "subject-bounds-height" }
+  | {
+      kind: "landmark-span";
+      start: { x: number; y: number };
+      end: { x: number; y: number };
+    };
+
+export interface ComparisonViewCalibration {
+  measurementKey: ComparisonCalibrationMeasurementKey;
+  span: ComparisonCalibrationSpan;
+  pixelSpan: number;
+}
+
 export interface MediaAsset {
   specimenId: string;
   view: CanonicalView;
@@ -388,11 +417,12 @@ export interface MediaAsset {
   subjectBounds: SubjectBounds;
   /**
    * Alpha-derived path in a normalized 0–100 viewBox for precise visual hit
-   * testing in the Home specimen field. It is generated from the public WebP,
+   * testing in interactive specimen fields. It is generated from the public WebP,
    * not hand-authored content.
    */
   hitPath?: string;
   orientation: LateralOrientation | null;
+  comparisonCalibration: ComparisonViewCalibration | null;
   alt: string;
   credit: string;
   rights: "all_rights_reserved";
@@ -415,7 +445,10 @@ export interface ComparisonReferenceRecord {
     height: number;
     bytes: number;
     subjectBounds: SubjectBounds;
+    /** Alpha-derived normalized pointer path for precise comparison-field selection. */
+    hitPath?: string;
     orientation: LateralOrientation;
+    comparisonCalibration: ComparisonViewCalibration;
     alt: string;
     credit: string;
     rights: "all_rights_reserved";
@@ -449,7 +482,7 @@ export interface TaxonProfile {
 }
 
 export interface CompiledCollection {
-  schemaVersion: 6;
+  schemaVersion: 7;
   taxa: TaxonRecord[];
   specimens: SpecimenRecord[];
   media: MediaAsset[];

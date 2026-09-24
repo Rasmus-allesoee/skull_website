@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "reference_id": "adult-human-skull",
   "label": "Adult human skull",
   "is_default": true,
@@ -10,6 +10,10 @@
     "public_path": "/media/references/adult-human-skull.webp",
     "alt": "Lateral view of an adult human skull reference facing right.",
     "orientation": "right",
+    "comparison_calibration": {
+      "measurement": "skull_length_mm",
+      "span": { "kind": "subject-bounds-width" }
+    },
     "credit": "Reference image supplied by Rasmus",
     "rights": "all_rights_reserved"
   },

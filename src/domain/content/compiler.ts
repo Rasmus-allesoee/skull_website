@@ -213,13 +213,23 @@ export function compileCollection(input: CompilationInput): CompilationResult {
     );
     const mediaSource = mediaSourcesBySpecimen.get(specimen.specimenId);
     if (specimen.publicationStatus === "published") {
-      if (!assets.some((asset) => asset.view === "lateral")) {
+      const lateralAsset = assets.find((asset) => asset.view === "lateral");
+      if (!lateralAsset) {
         diagnostics.push({
           source,
           key: specimen.specimenId,
           field: "media",
           rule: "Published specimen is missing the required lateral asset",
           suggestion: "Process a canonical lateral PNG into a public WebP.",
+        });
+      } else if (!lateralAsset.comparisonCalibration) {
+        diagnostics.push({
+          source: `content/media/${specimen.specimenId}.json`,
+          key: specimen.specimenId,
+          field: "assets.lateral.comparison_calibration",
+          rule: "Published lateral media requires reviewed comparison calibration",
+          suggestion:
+            "Declare the reviewed maximum-skull-length span for the lateral asset.",
         });
       }
       if (!mediaSource) {
@@ -230,6 +240,10 @@ export function compileCollection(input: CompilationInput): CompilationResult {
           suggestion: "Add alt text for every canonical asset.",
         });
       }
+    }
+
+    for (const asset of assets) {
+      validateComparisonCalibration(asset, specimen, taxon, diagnostics);
     }
 
     const missingViews = canonicalViews.filter(
@@ -303,7 +317,7 @@ export function compileCollection(input: CompilationInput): CompilationResult {
 
   return {
     collection: {
-      schemaVersion: 6,
+      schemaVersion: 7,
       taxa: taxa.sort((a, b) => a.taxonId.localeCompare(b.taxonId)),
       specimens: specimens.sort((a, b) =>
         a.specimenId.localeCompare(b.specimenId),
@@ -322,6 +336,89 @@ export function compileCollection(input: CompilationInput): CompilationResult {
     },
     warnings,
   };
+}
+
+function validateComparisonCalibration(
+  asset: MediaAsset,
+  specimen: SpecimenRecord,
+  taxon: TaxonRecord,
+  diagnostics: Diagnostic[],
+) {
+  const calibration = asset.comparisonCalibration;
+  if (!calibration) return;
+
+  const profile = resolveMeasurementProfile(
+    taxon.hierarchy.classSlug,
+    taxon.hierarchy.className,
+  );
+  const expectedMeasurement =
+    asset.view === "lateral" ||
+    asset.view === "dorsal" ||
+    asset.view === "ventral"
+      ? "skullLength"
+      : asset.view === "frontal"
+        ? profile === "mammal"
+          ? "skullWidth"
+          : "craniumWidth"
+        : asset.view === "mandible-dorsal"
+          ? "mandibleLength"
+          : null;
+  const source = `content/media/${specimen.specimenId}.json`;
+
+  if (expectedMeasurement === null) {
+    diagnostics.push({
+      source,
+      key: specimen.specimenId,
+      field: `assets.${asset.view}.comparison_calibration`,
+      rule: "This documentary view is not eligible for comparison calibration",
+      suggestion: "Remove the calibration and keep the asset gallery-only.",
+    });
+    return;
+  }
+
+  if (calibration.measurementKey !== expectedMeasurement) {
+    diagnostics.push({
+      source,
+      key: specimen.specimenId,
+      field: `assets.${asset.view}.comparison_calibration.measurement`,
+      value: calibration.measurementKey,
+      rule: `Comparison calibration must use ${expectedMeasurement} for ${asset.view}`,
+      suggestion: "Use the view-specific reviewed measurement basis.",
+    });
+  }
+
+  if (
+    asset.view === "mandible-dorsal" &&
+    calibration.span.kind !== "landmark-span"
+  ) {
+    diagnostics.push({
+      source,
+      key: specimen.specimenId,
+      field: `assets.${asset.view}.comparison_calibration.span`,
+      value: calibration.span.kind,
+      rule: "Mandible comparison calibration requires a diagonal landmark span",
+      suggestion:
+        "Declare normalized endpoints from the anterior symphysis to one posterior condyle.",
+    });
+  }
+
+  const measurement = specimen.measurements[calibration.measurementKey];
+  if (
+    (measurement.status !== "measured" &&
+      measurement.status !== "approximate") ||
+    measurement.value === null ||
+    measurement.value <= 0
+  ) {
+    diagnostics.push({
+      source,
+      key: specimen.specimenId,
+      field: `measurements.${calibration.measurementKey}`,
+      value: measurement.status,
+      rule: "Comparison calibration requires a positive recorded measurement",
+      suggestion:
+        "Record the reviewed measurement or remove this view's comparison calibration.",
+    });
+  }
 }
 
 function transformTaxon(

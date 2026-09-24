@@ -5,6 +5,7 @@ import type { Measurement } from "@/domain/content/types";
 import {
   calculateMeasurementDifference,
   getComparisonDifferenceRows,
+  getComparisonMeasurementSections,
   getScalePresentation,
 } from "./scale";
 import type { SkullComparisonRecord } from "./types";
@@ -33,16 +34,30 @@ const record = (
   isDefault: false,
   scientificName: null,
   specimenId: id,
+  taxonId: null,
+  genusName: null,
+  genusSlug: null,
   href: null,
   aliases: [],
   note: null,
   measurementProfile: "mammal",
   measurements: {
     skullLength: measured(length),
+    condylobasalLength: measured(1),
+    maxillaryToothRowLength: measured(1),
+    mandibularToothRowLength: measured(1),
+    mandibleRamusHeight: measured(1),
+    mandibleBodyHeight: measured(1),
     skullWidth: measured(1),
-    skullHeight: measured(1),
-    skullMass: measured(1, "g"),
     craniumWidth: measured(1),
+    postorbitalWidth: measured(1),
+    interorbitalWidth: measured(1),
+    rostrumWidth: measured(1),
+    skullHeight: measured(1),
+    maxillaryCanineLength: measured(1),
+    mandibularCanineLength: measured(1),
+    skullMass: measured(1, "g"),
+    bodyMass: measured(1, "g"),
     mandibleLength: measured(1),
     billLength: notApplicable(),
     billWidth: notApplicable(),
@@ -50,12 +65,19 @@ const record = (
     craniumHeight: notApplicable(),
     orbitalWidth: notApplicable(),
   },
+  views: [],
   image: {
+    view: "lateral",
     publicPath: `/${id}.webp`,
     width: canvasWidth,
     height: 500,
     subjectBounds: { x: subjectX, y: 50, width: subjectWidth, height: 400 },
     orientation: "right",
+    calibration: {
+      measurementKey: "skullLength",
+      span: { kind: "subject-bounds-width" },
+      pixelSpan: subjectWidth,
+    },
     alt: id,
     credit: "Test",
   },
@@ -165,6 +187,42 @@ describe("true-scale comparison", () => {
         primaryKey: "skullHeight",
         comparisonKey: "craniumHeight",
       }),
+    );
+    expect(mammalToBird[1]?.measurementKeys).toEqual({
+      mammal: "skullWidth",
+      bird: "orbitalWidth",
+    });
+  });
+
+  it("uses shared landmark mappings when a bird is selected beside mammals", () => {
+    const sections = getComparisonMeasurementSections([
+      "mammal",
+      "mammal",
+      "bird",
+    ]);
+    expect(sections.primary.map((item) => item.key)).toEqual([
+      "skullLength",
+      "crossWidth",
+      "crossHeight",
+      "craniumWidth",
+      "mandibleLength",
+      "skullMass",
+    ]);
+    expect(sections.primary[1]?.measurementKeys).toEqual({
+      mammal: "skullWidth",
+      bird: "orbitalWidth",
+    });
+    expect(sections.primary[2]?.measurementKeys).toEqual({
+      mammal: "skullHeight",
+      bird: "craniumHeight",
+    });
+    expect(sections.additional.map((item) => item.key)).toEqual(
+      expect.arrayContaining([
+        "billLength",
+        "billWidth",
+        "billHeight",
+        "bodyMass",
+      ]),
     );
   });
 });

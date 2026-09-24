@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { SubjectImage } from "@/components/SubjectImage";
 import type { SpecimenCardRecord } from "@/domain/catalog/queries";
+import { buildComparisonHref } from "@/domain/comparison/link";
 import { formatMeasurement, humanizeToken } from "@/domain/content/display";
 import type { Measurement, PartialDate } from "@/domain/content/types";
 
@@ -56,7 +57,7 @@ export function SpecimenQuickView({
           <ul>
             {specimens.map(({ specimen, image, href }) => (
               <li key={specimen.specimenId}>
-                <Link href={href}>
+                <Link href={href} className="specimen-quick-record-link">
                   <div className="specimen-quick-image">
                     {image ? (
                       <SubjectImage asset={image} sizes="8rem" />
@@ -106,6 +107,14 @@ export function SpecimenQuickView({
                       </div>
                     </dl>
                   </div>
+                </Link>
+                <Link
+                  className="specimen-quick-compare"
+                  href={buildComparisonHref([
+                    { id: `specimen:${specimen.specimenId}` },
+                  ])}
+                >
+                  Compare {specimen.specimenId} →
                 </Link>
               </li>
             ))}

@@ -1,11 +1,15 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "specimen_id": "SPEC-0005",
   "assets": [
     {
       "view": "lateral",
       "alt": "Lateral view of Eurasian oystercatcher skull specimen SPEC-0005.",
-      "orientation": "right"
+      "orientation": "right",
+      "comparison_calibration": {
+        "measurement": "skull_length_mm",
+        "span": { "kind": "subject-bounds-width" }
+      }
     },
     {
       "view": "oblique",
@@ -13,15 +17,31 @@
     },
     {
       "view": "dorsal",
-      "alt": "Dorsal view of Eurasian oystercatcher skull specimen SPEC-0005."
+      "alt": "Dorsal view of Eurasian oystercatcher skull specimen SPEC-0005.",
+      "comparison_calibration": {
+        "measurement": "skull_length_mm",
+        "span": { "kind": "subject-bounds-height" }
+      }
     },
     {
       "view": "ventral",
-      "alt": "Ventral view of Eurasian oystercatcher skull specimen SPEC-0005."
+      "alt": "Ventral view of Eurasian oystercatcher skull specimen SPEC-0005.",
+      "comparison_calibration": {
+        "measurement": "skull_length_mm",
+        "span": { "kind": "subject-bounds-height" }
+      }
     },
     {
       "view": "mandible-dorsal",
-      "alt": "Dorsal view of the separated mandibles from Eurasian oystercatcher skull specimen SPEC-0005."
+      "alt": "Dorsal view of the separated mandibles from Eurasian oystercatcher skull specimen SPEC-0005.",
+      "comparison_calibration": {
+        "measurement": "mandible_length_mm",
+        "span": {
+          "kind": "landmark-span",
+          "start": { "x": 0.498, "y": 0.104 },
+          "end": { "x": 0.44, "y": 0.9 }
+        }
+      }
     }
   ]
 }

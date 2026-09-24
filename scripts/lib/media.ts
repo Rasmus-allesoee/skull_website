@@ -14,6 +14,7 @@ import {
 import type {
   ComparisonMeasurementKey,
   ComparisonReferenceRecord,
+  ComparisonViewCalibration,
   Diagnostic,
   Measurement,
   LateralOrientation,
@@ -157,6 +158,7 @@ export async function validatePublicMedia(options?: {
         alt: sourceAsset.alt,
         orientation:
           sourceAsset.view === "lateral" ? sourceAsset.orientation : null,
+        comparisonCalibration: sourceAsset.comparison_calibration ?? null,
         credit: rights.credit,
         diagnostics,
       });
@@ -232,6 +234,7 @@ async function inspectPublicAsset(options: {
   view: MediaAsset["view"];
   alt: string;
   orientation: LateralOrientation | null;
+  comparisonCalibration: ComparisonCalibrationSource | null;
   credit: string;
   diagnostics: Diagnostic[];
 }): Promise<MediaAsset | null> {
@@ -242,6 +245,7 @@ async function inspectPublicAsset(options: {
     view,
     alt,
     orientation,
+    comparisonCalibration,
     credit,
     diagnostics,
   } = options;
@@ -261,6 +265,10 @@ async function inspectPublicAsset(options: {
     view,
     ...inspected,
     orientation,
+    comparisonCalibration: compileComparisonCalibration(
+      comparisonCalibration,
+      inspected,
+    ),
     alt,
     credit,
     rights: "all_rights_reserved",
@@ -362,31 +370,45 @@ async function validateComparisonReferences(
       relativePath,
       key: source.reference_id,
       diagnostics,
+      includeHitPath: true,
       missingSuggestion:
         "Run pnpm media:process:reference from the approved staged PNG.",
     });
     if (!inspected) continue;
 
-    const sourceFields: Record<
-      ComparisonMeasurementKey,
-      keyof typeof source.measurements
+    const sourceFields: Partial<
+      Record<ComparisonMeasurementKey, keyof typeof source.measurements>
     > = {
       skullLength: "skull_length_mm",
+      condylobasalLength: "condylobasal_length_mm",
+      maxillaryToothRowLength: "maxillary_tooth_row_length_mm",
+      mandibleLength: "mandible_length_mm",
+      mandibularToothRowLength: "mandibular_tooth_row_length_mm",
+      mandibleRamusHeight: "mandible_ramus_height_mm",
+      mandibleBodyHeight: "mandible_body_height_mm",
       skullWidth: "skull_width_mm",
+      craniumWidth: "cranium_width_mm",
+      postorbitalWidth: "postorbital_width_mm",
+      interorbitalWidth: "interorbital_width_mm",
+      rostrumWidth: "rostrum_width_mm",
       skullHeight: "skull_height_mm",
+      maxillaryCanineLength: "maxillary_canine_length_mm",
+      mandibularCanineLength: "mandibular_canine_length_mm",
+      skullMass: "skull_mass_g",
+      bodyMass: "body_mass_g",
       billLength: "bill_length_mm",
       billWidth: "bill_width_mm",
       billHeight: "bill_height_mm",
-      skullMass: "skull_mass_g",
-      craniumWidth: "cranium_width_mm",
       craniumHeight: "cranium_height_mm",
       orbitalWidth: "orbital_width_mm",
-      mandibleLength: "mandible_length_mm",
     };
     const measurements = Object.fromEntries(
       comparisonMeasurementKeys.map((key) => {
-        const unit = key === "skullMass" ? "g" : "mm";
-        const value = source.measurements[sourceFields[key]];
+        const unit = key === "skullMass" || key === "bodyMass" ? "g" : "mm";
+        const sourceField = sourceFields[key];
+        const value = sourceField
+          ? source.measurements[sourceField]
+          : undefined;
         let measurement: Measurement;
         if (!isMeasurementApplicable(key, source.measurement_profile)) {
           measurement = { status: "not_applicable", value: null, unit };
@@ -409,6 +431,10 @@ async function validateComparisonReferences(
       media: {
         ...inspected,
         orientation: source.asset.orientation,
+        comparisonCalibration: compileComparisonCalibration(
+          source.asset.comparison_calibration,
+          inspected,
+        )!,
         alt: source.asset.alt,
         credit: source.asset.credit,
         rights: source.asset.rights,
@@ -451,6 +477,58 @@ interface InspectedTransparentWebp {
   subjectBounds: SubjectBounds;
   publicPath: string;
   hitPath?: string;
+}
+
+interface ComparisonCalibrationSource {
+  measurement:
+    | "skull_length_mm"
+    | "skull_width_mm"
+    | "cranium_width_mm"
+    | "mandible_length_mm";
+  span:
+    | { kind: "subject-bounds-width" }
+    | { kind: "subject-bounds-height" }
+    | {
+        kind: "landmark-span";
+        start: { x: number; y: number };
+        end: { x: number; y: number };
+      };
+}
+
+function compileComparisonCalibration(
+  source: ComparisonCalibrationSource | null,
+  asset: InspectedTransparentWebp,
+): ComparisonViewCalibration | null {
+  if (!source) return null;
+
+  const measurementKeys: Record<
+    ComparisonCalibrationSource["measurement"],
+    ComparisonViewCalibration["measurementKey"]
+  > = {
+    skull_length_mm: "skullLength",
+    skull_width_mm: "skullWidth",
+    cranium_width_mm: "craniumWidth",
+    mandible_length_mm: "mandibleLength",
+  };
+  const measurementKey = measurementKeys[source.measurement];
+
+  let pixelSpan: number;
+  if (source.span.kind === "subject-bounds-width") {
+    pixelSpan = asset.subjectBounds.width;
+  } else if (source.span.kind === "subject-bounds-height") {
+    pixelSpan = asset.subjectBounds.height;
+  } else {
+    pixelSpan = Math.hypot(
+      (source.span.end.x - source.span.start.x) * asset.width,
+      (source.span.end.y - source.span.start.y) * asset.height,
+    );
+  }
+
+  return {
+    measurementKey,
+    span: source.span,
+    pixelSpan,
+  };
 }
 
 async function inspectTransparentWebp(options: {

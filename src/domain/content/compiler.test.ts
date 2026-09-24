@@ -5,7 +5,7 @@ import { calculateSubjectBounds } from "../../../scripts/lib/media";
 import { classifyTaxonomyMatch } from "./compiler";
 import { parseStrictCsv } from "./csv";
 import { parseProfile } from "./profile";
-import { rawTaxonSchema, taxonHeaders } from "./schemas";
+import { mediaSourceSchema, rawTaxonSchema, taxonHeaders } from "./schemas";
 import { ValidationError } from "./types";
 
 describe("content compiler", () => {
@@ -27,7 +27,7 @@ describe("content compiler", () => {
       value: null,
       unit: "g",
     });
-    expect(collection.schemaVersion).toBe(6);
+    expect(collection.schemaVersion).toBe(7);
     expect(specimen.condition).toBe("good");
     expect(specimen.conditionDescription).toBeNull();
     expect(specimen.ageDetail).toBeNull();
@@ -65,6 +65,12 @@ describe("content compiler", () => {
       collection.media.every((asset) => asset.hitPath?.startsWith("M")),
     ).toBe(true);
     expect(collection.media[0]?.orientation).toBe("right");
+    expect(collection.media[0]?.comparisonCalibration).toEqual(
+      expect.objectContaining({
+        measurementKey: "skullLength",
+        pixelSpan: expect.any(Number),
+      }),
+    );
     expect(
       collection.media.every((asset) =>
         asset.view === "lateral"
@@ -83,6 +89,10 @@ describe("content compiler", () => {
         media: expect.objectContaining({
           publicPath: "/media/references/adult-human-skull.webp",
           orientation: "right",
+          comparisonCalibration: expect.objectContaining({
+            measurementKey: "skullLength",
+            pixelSpan: 847,
+          }),
           subjectBounds: { x: 283, y: 122, width: 847, height: 777 },
         }),
       }),
@@ -165,6 +175,49 @@ describe("content compiler", () => {
         }),
       );
     }
+  });
+
+  it("rejects oblique calibration and zero-length landmark spans", () => {
+    const base = {
+      schema_version: 3,
+      specimen_id: "SPEC-TEST",
+    } as const;
+
+    expect(
+      mediaSourceSchema.safeParse({
+        ...base,
+        assets: [
+          {
+            view: "oblique",
+            alt: "Oblique test view.",
+            comparison_calibration: {
+              measurement: "skull_length_mm",
+              span: { kind: "subject-bounds-width" },
+            },
+          },
+        ],
+      }).success,
+    ).toBe(false);
+
+    expect(
+      mediaSourceSchema.safeParse({
+        ...base,
+        assets: [
+          {
+            view: "mandible-dorsal",
+            alt: "Mandible test view.",
+            comparison_calibration: {
+              measurement: "mandible_length_mm",
+              span: {
+                kind: "landmark-span",
+                start: { x: 0.4, y: 0.2 },
+                end: { x: 0.4, y: 0.2 },
+              },
+            },
+          },
+        ],
+      }).success,
+    ).toBe(false);
   });
 
   it("rejects unresolved profile citations and raw JSX", async () => {

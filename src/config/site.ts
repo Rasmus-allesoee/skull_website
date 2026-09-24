@@ -23,6 +23,7 @@ export const siteConfig = {
     { label: "Home", href: "/" },
     { label: "Species", href: "/species" },
     { label: "Map", href: "/map" },
+    { label: "Compare", href: "/compare" },
     { label: "Measurements", href: "/methodology" },
     { label: "Preparation guide", href: "/guides/skull-preparation" },
   ],

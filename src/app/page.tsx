@@ -169,21 +169,18 @@ export default function Home() {
           </article>
 
           <article className="home-hub-card home-hub-card-comparison">
-            <div className="home-hub-copy">
-              <p className="card-overline">Calibrated comparison</p>
-              <div className="home-comparison-title-row">
+            <Link href="/compare" aria-label="Open Skull Comparison">
+              <div className="home-hub-copy">
+                <p className="card-overline">Calibrated comparison</p>
                 <h3>Skull Comparison</h3>
-                <span className="coming-soon-label">Coming soon</span>
+                <p>
+                  Compare up to five skulls at one physical scale, arrange
+                  calibrated views, and inspect class-aware differences.
+                </p>
+                <span className="home-card-action">Open workbench →</span>
               </div>
-              <p>
-                Compare skulls at a shared physical scale and inspect their
-                class-aware measurement differences in one dedicated workspace.
-              </p>
-              <span className="home-card-status">
-                Preview based on the current specimen comparison engine
-              </span>
-            </div>
-            <ComparisonCardPreview asset={comparisonThumbnail} />
+              <ComparisonCardPreview asset={comparisonThumbnail} />
+            </Link>
           </article>
         </div>
       </section>

@@ -292,29 +292,83 @@ export const rawSpecimenSchema = z.strictObject({
   source_references: cell,
 });
 
+const comparisonCalibrationMeasurementSchema = z.enum([
+  "skull_length_mm",
+  "skull_width_mm",
+  "cranium_width_mm",
+  "mandible_length_mm",
+]);
+
+const normalizedCalibrationPointSchema = z.strictObject({
+  x: z.number().min(0).max(1),
+  y: z.number().min(0).max(1),
+});
+
+const comparisonCalibrationSpanSourceSchema = z
+  .discriminatedUnion("kind", [
+    z.strictObject({ kind: z.literal("subject-bounds-width") }),
+    z.strictObject({ kind: z.literal("subject-bounds-height") }),
+    z.strictObject({
+      kind: z.literal("landmark-span"),
+      start: normalizedCalibrationPointSchema,
+      end: normalizedCalibrationPointSchema,
+    }),
+  ])
+  .superRefine((span, context) => {
+    if (
+      span.kind === "landmark-span" &&
+      span.start.x === span.end.x &&
+      span.start.y === span.end.y
+    ) {
+      context.addIssue({
+        code: "custom",
+        message: "Calibration landmark endpoints must be distinct",
+      });
+    }
+  });
+
+const comparisonCalibrationSourceSchema = z.strictObject({
+  measurement: comparisonCalibrationMeasurementSchema,
+  span: comparisonCalibrationSpanSourceSchema,
+});
+
 const lateralMediaSourceAssetSchema = z.strictObject({
   view: z.literal("lateral"),
   alt: z.string().min(1),
   orientation: z.enum(["left", "right"]),
+  comparison_calibration: comparisonCalibrationSourceSchema.optional(),
 });
 
 const nonLateralMediaSourceAssetSchema = z.strictObject({
   view: z.enum(canonicalViews.filter((view) => view !== "lateral")),
   alt: z.string().min(1),
+  comparison_calibration: comparisonCalibrationSourceSchema.optional(),
 });
 
-export const mediaSourceSchema = z.strictObject({
-  schema_version: z.literal(2),
-  specimen_id: z.string(),
-  assets: z
-    .array(
-      z.discriminatedUnion("view", [
-        lateralMediaSourceAssetSchema,
-        nonLateralMediaSourceAssetSchema,
-      ]),
-    )
-    .min(1),
-});
+export const mediaSourceSchema = z
+  .strictObject({
+    schema_version: z.literal(3),
+    specimen_id: z.string(),
+    assets: z
+      .array(
+        z.discriminatedUnion("view", [
+          lateralMediaSourceAssetSchema,
+          nonLateralMediaSourceAssetSchema,
+        ]),
+      )
+      .min(1),
+  })
+  .superRefine((source, context) => {
+    source.assets.forEach((asset, index) => {
+      if (asset.view === "oblique" && asset.comparison_calibration) {
+        context.addIssue({
+          code: "custom",
+          path: ["assets", index, "comparison_calibration"],
+          message: "Oblique views cannot be calibrated for comparison",
+        });
+      }
+    });
+  });
 
 export const mediaAssetSchema = z.strictObject({
   specimenId: z.string(),
@@ -330,6 +384,26 @@ export const mediaAssetSchema = z.strictObject({
   }),
   hitPath: z.string().min(1).optional(),
   orientation: z.enum(["left", "right"]).nullable(),
+  comparisonCalibration: z
+    .strictObject({
+      measurementKey: z.enum([
+        "skullLength",
+        "skullWidth",
+        "craniumWidth",
+        "mandibleLength",
+      ]),
+      span: z.discriminatedUnion("kind", [
+        z.strictObject({ kind: z.literal("subject-bounds-width") }),
+        z.strictObject({ kind: z.literal("subject-bounds-height") }),
+        z.strictObject({
+          kind: z.literal("landmark-span"),
+          start: normalizedCalibrationPointSchema,
+          end: normalizedCalibrationPointSchema,
+        }),
+      ]),
+      pixelSpan: z.number().positive(),
+    })
+    .nullable(),
   alt: z.string().min(1),
   credit: z.string().min(1),
   rights: z.literal("all_rights_reserved"),
@@ -341,21 +415,32 @@ const optionalPositiveMeasurement = positiveMeasurement.optional();
 
 const comparisonReferenceMeasurementSchema = z.strictObject({
   skull_length_mm: optionalPositiveMeasurement,
+  condylobasal_length_mm: optionalPositiveMeasurement,
+  maxillary_tooth_row_length_mm: optionalPositiveMeasurement,
+  mandible_length_mm: optionalPositiveMeasurement,
+  mandibular_tooth_row_length_mm: optionalPositiveMeasurement,
+  mandible_ramus_height_mm: optionalPositiveMeasurement,
+  mandible_body_height_mm: optionalPositiveMeasurement,
   skull_width_mm: optionalPositiveMeasurement,
+  cranium_width_mm: optionalPositiveMeasurement,
+  postorbital_width_mm: optionalPositiveMeasurement,
+  interorbital_width_mm: optionalPositiveMeasurement,
+  rostrum_width_mm: optionalPositiveMeasurement,
   skull_height_mm: optionalPositiveMeasurement,
+  maxillary_canine_length_mm: optionalPositiveMeasurement,
+  mandibular_canine_length_mm: optionalPositiveMeasurement,
+  skull_mass_g: optionalPositiveMeasurement,
+  body_mass_g: optionalPositiveMeasurement,
   bill_length_mm: optionalPositiveMeasurement,
   bill_width_mm: optionalPositiveMeasurement,
   bill_height_mm: optionalPositiveMeasurement,
-  skull_mass_g: optionalPositiveMeasurement,
-  cranium_width_mm: optionalPositiveMeasurement,
   cranium_height_mm: optionalPositiveMeasurement,
   orbital_width_mm: optionalPositiveMeasurement,
-  mandible_length_mm: optionalPositiveMeasurement,
 });
 
 export const comparisonReferenceSourceSchema = z
   .strictObject({
-    schema_version: z.literal(2),
+    schema_version: z.literal(3),
     reference_id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
     label: z.string().min(1),
     is_default: z.boolean(),
@@ -366,12 +451,20 @@ export const comparisonReferenceSourceSchema = z
       public_path: z.string().startsWith("/media/references/"),
       alt: z.string().min(1),
       orientation: z.enum(["left", "right"]),
+      comparison_calibration: comparisonCalibrationSourceSchema,
       credit: z.string().min(1),
       rights: z.literal("all_rights_reserved"),
     }),
     measurements: comparisonReferenceMeasurementSchema,
   })
   .superRefine((source, context) => {
+    if (source.asset.comparison_calibration.measurement !== "skull_length_mm") {
+      context.addIssue({
+        code: "custom",
+        path: ["asset", "comparison_calibration", "measurement"],
+        message: "Lateral reference calibration must use skull_length_mm",
+      });
+    }
     const requiredByProfile = {
       mammal: [
         "skull_length_mm",

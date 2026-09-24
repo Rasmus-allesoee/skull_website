@@ -2,9 +2,9 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** v1.0.1 remains the production release; owner-approved v1.1.0 integration of the preparation-guide refinement and standalone skull-comparison workbench is in progress through PRs #24 and #25
+**Current phase:** v1.0.1 remains the latest release tag; preparation PR #24 has merged, and owner-approved comparison PR #25 is being refreshed from `main` for the planned v1.1.0 release
 
-**Last reviewed:** 2026-09-10
+**Last reviewed:** 2026-09-24
 
 ## 1. How to use this plan
 
@@ -527,7 +527,11 @@ After Phase 0/1:
 
 ### Skull comparison
 
-Phase 2.2 completed the reusable calibrated foundation on the specimen page: explicit lateral orientation, generated transparent subject bounds, one shared maximum-length scale, a reference/specimen selector, approximate-value labels, and semantic measurement differences. A dedicated public comparison route with two independent selectors, overlays, split-slider, opacity controls, shareable state, and non-calibrated-record handling remains deferred until enough reviewed specimens exist and keyboard-equivalent behavior is designed.
+Phase 2.2 completed the reusable calibrated foundation on the specimen page: explicit lateral orientation, generated transparent subject bounds, one shared maximum-length scale, a reference/specimen selector, approximate-value labels, and semantic measurement differences. On 2026-09-11 the owner approved the dedicated `/compare` workbench with up to five selected subjects, ten calibrated orthogonal-view layers, free placement, shared field zoom/pan, compact per-subject opacity, a selectable directed difference pair, methodology links, quick comparisons, URL-backed analytical state, low-prominence print support, and site-wide entry points. On 2026-09-22 the owner replaced the ineffective Print action with source-measurement CSV downloads and an optional field PNG export.
+
+The binding product, calibration, architecture, responsive, accessibility, performance, test, and staged-delivery contract is [skull_comparison_page.md](skull_comparison_page.md). Implementation proceeds through coherent verified checkpoints on `skull_comparison_page`; the separate `preparation_guide_refinement` branch remains unmerged.
+
+The local implementation now includes the calibrated data contract, generalized comparison domain, static `/compare` baseline, interactive multi-subject/multi-view field, responsive directed measurement table, quick comparisons, source-value CSV/field PNG downloads, and approved site-wide entry points. The current verification evidence is recorded in `docs/project_status.md`. Owner review remains required before any push, pull request, merge, deployment, or publication.
 
 ### Specimen-location map action
 

@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useId, useMemo, useState } from "react";
 
+import { buildComparisonHref } from "@/domain/comparison/link";
 import { getMeasuredValue } from "@/domain/comparison/scale";
 import type { SkullComparisonRecord } from "@/domain/comparison/types";
 
@@ -83,6 +85,15 @@ export function ScaleComparison({
           {comparison.note ? (
             <p className="comparison-reference-note">{comparison.note}</p>
           ) : null}
+          <Link
+            className="comparison-full-link"
+            href={buildComparisonHref(
+              [{ id: primary.id }, { id: comparison.id }],
+              [primary.id, comparison.id],
+            )}
+          >
+            Open full comparison →
+          </Link>
         </div>
         <MeasurementDifferences primary={primary} comparison={comparison} />
       </div>

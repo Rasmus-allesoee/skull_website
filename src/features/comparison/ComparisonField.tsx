@@ -1,0 +1,1278 @@
+"use client";
+
+import Image from "next/image";
+import {
+  type CSSProperties,
+  type KeyboardEvent,
+  type PointerEvent,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
+import { getCalibratedCanvasSize } from "@/domain/comparison/calibration";
+import type {
+  ComparisonView,
+  SkullComparisonRecord,
+  SkullComparisonView,
+} from "@/domain/comparison/types";
+
+import {
+  arrangeComparisonLayers,
+  clamp,
+  comparisonWorldHeight,
+  comparisonWorldPixelsPerMillimetre,
+  comparisonWorldWidth,
+  getFittedComparisonCamera,
+  getNextLayerZ,
+  maximumFieldZoom,
+  minimumFieldZoom,
+  type ComparisonCamera,
+  type ComparisonLayerGeometry,
+  type ComparisonLayerPlacement,
+} from "./workbenchLayout";
+import {
+  arrangementValues,
+  type ComparisonArrangement,
+} from "./workbenchState";
+import type { FieldPngBackground, FieldPngSnapshot } from "./fieldPngExport";
+
+const subjectMarkers = ["●", "■", "▲", "◆", "⬟"] as const;
+
+export interface SelectedComparisonSubject {
+  subject: { id: string; views: ComparisonView[] };
+  record: SkullComparisonRecord;
+}
+
+export interface ComparisonFieldHandle {
+  exportPng: (background: FieldPngBackground) => Promise<Blob>;
+}
+
+interface FieldLayer extends ComparisonLayerGeometry {
+  record: SkullComparisonRecord;
+  media: SkullComparisonView;
+}
+
+type ActiveGesture =
+  | {
+      mode: "layer";
+      pointerId: number;
+      key: string;
+      startClientX: number;
+      startClientY: number;
+      origin: ComparisonLayerPlacement;
+      latest: ComparisonLayerPlacement;
+    }
+  | {
+      mode: "camera";
+      pointerId: number;
+      startClientX: number;
+      startClientY: number;
+      origin: ComparisonCamera;
+    }
+  | {
+      mode: "scale-bar";
+      pointerId: number;
+      startClientX: number;
+      startClientY: number;
+      origin: { x: number; y: number };
+      latest: { x: number; y: number };
+    };
+
+export function ComparisonField({
+  ref,
+  selected,
+  arrangement,
+  difference,
+  opacityBySubject,
+  onArrangementChange,
+  onRemoveView,
+  onResetOpacity,
+  onClear,
+}: {
+  ref?: React.Ref<ComparisonFieldHandle>;
+  selected: SelectedComparisonSubject[];
+  arrangement: ComparisonArrangement;
+  difference: [string, string] | null;
+  opacityBySubject: Record<string, number>;
+  onArrangementChange: (arrangement: ComparisonArrangement) => void;
+  onRemoveView: (subjectId: string, view: ComparisonView) => void;
+  onResetOpacity: () => void;
+  onClear: () => void;
+}) {
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const layerRefs = useRef(new Map<string, HTMLElement>());
+  const activeGesture = useRef<ActiveGesture | null>(null);
+  const touchPointers = useRef(new Map<number, { x: number; y: number }>());
+  const pinchGesture = useRef<{
+    distance: number;
+    midpoint: { x: number; y: number };
+    camera: ComparisonCamera;
+  } | null>(null);
+  const animationFrame = useRef<number | null>(null);
+  const prePrintCamera = useRef<ComparisonCamera | null>(null);
+  const pendingTouchLayer = useRef<{
+    pointerId: number;
+    key: string;
+    startClientX: number;
+    startClientY: number;
+    origin: ComparisonLayerPlacement;
+  } | null>(null);
+  const hasInitialFit = useRef(false);
+  const previousArrangement = useRef(arrangement);
+  const previousDifference = useRef(difference?.join("|") ?? "");
+  const [selectedLayerKey, setSelectedLayerKey] = useState<string | null>(null);
+  const [showLayerLabels, setShowLayerLabels] = useState(true);
+  const [showScaleBar, setShowScaleBar] = useState(false);
+  const [scaleBarPosition, setScaleBarPosition] = useState({ x: 24, y: 24 });
+  const [camera, setCamera] = useState<ComparisonCamera>({
+    x: 0,
+    y: 0,
+    zoom: 1,
+  });
+  const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
+  const layers = useMemo(() => buildFieldLayers(selected), [selected]);
+  const layerSignature = layers.map(({ key }) => key).join("|");
+  const previousLayerSignature = useRef(layerSignature);
+  const differenceSignature = difference?.join("|") ?? "";
+  const initialPlacements = useMemo(
+    () => arrangeComparisonLayers(layers, arrangement, difference),
+    // The stable signature intentionally owns recalculation when layers change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [layerSignature],
+  );
+  const [placements, setPlacements] =
+    useState<Record<string, ComparisonLayerPlacement>>(initialPlacements);
+  const [status, setStatus] = useState("");
+  const printState = useRef({ camera, layers, placements, viewportSize });
+
+  useImperativeHandle(ref, () => ({
+    exportPng: async (background) => {
+      const snapshot: FieldPngSnapshot = {
+        viewport: { ...viewportSize },
+        camera: { ...camera },
+        layers: layers.flatMap((layer) => {
+          const placement = placements[layer.key];
+          return placement
+            ? [
+                {
+                  src: layer.media.publicPath,
+                  width: layer.width,
+                  height: layer.height,
+                  subjectX: layer.subjectX,
+                  subjectY: layer.subjectY,
+                  subjectWidth: layer.subjectWidth,
+                  subjectHeight: layer.subjectHeight,
+                  placement: { ...placement },
+                  opacity: (opacityBySubject[layer.subjectId] ?? 100) / 100,
+                  flipped: layer.media.orientation === "left",
+                  subjectIndex: layer.subjectIndex,
+                  label: `Skull ${layer.subjectIndex + 1} · ${formatViewLabel(layer.media.view)}`,
+                },
+              ]
+            : [];
+        }),
+        showLabels: showLayerLabels,
+        scaleBar: showScaleBar ? { ...scaleBarPosition } : null,
+        background,
+      };
+      const { renderFieldPng } = await import("./fieldPngExport");
+      return renderFieldPng(snapshot);
+    },
+  }));
+
+  useEffect(() => {
+    const fieldViewport = viewportRef.current;
+    if (!fieldViewport) return;
+    const update = () => {
+      const bounds = fieldViewport.getBoundingClientRect();
+      setViewportSize({ width: bounds.width, height: bounds.height });
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(fieldViewport);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const fieldViewport = viewportRef.current;
+    if (!fieldViewport) return;
+
+    function handleModifiedWheel(event: globalThis.WheelEvent) {
+      if (!event.ctrlKey && !event.metaKey) return;
+
+      // React's delegated wheel handling may be passive in some browser
+      // combinations. Register this listener directly so modified wheel
+      // gestures reliably suppress document scroll and browser page zoom.
+      event.preventDefault();
+      event.stopPropagation();
+      const bounds = fieldViewport!.getBoundingClientRect();
+      const focalPoint = {
+        x: event.clientX - bounds.left - bounds.width / 2,
+        y: event.clientY - bounds.top - bounds.height / 2,
+      };
+      setCamera((current) => {
+        const zoom = clamp(
+          current.zoom * Math.exp(-event.deltaY * 0.003),
+          minimumFieldZoom,
+          maximumFieldZoom,
+        );
+        if (current.zoom === zoom) return current;
+        const ratio = zoom / current.zoom;
+        return {
+          x: focalPoint.x - (focalPoint.x - current.x) * ratio,
+          y: focalPoint.y - (focalPoint.y - current.y) * ratio,
+          zoom,
+        };
+      });
+    }
+
+    fieldViewport.addEventListener("wheel", handleModifiedWheel, {
+      passive: false,
+    });
+    return () =>
+      fieldViewport.removeEventListener("wheel", handleModifiedWheel);
+  }, []);
+
+  useEffect(() => {
+    const arranged = arrangeComparisonLayers(layers, arrangement, difference);
+    const layersChanged = previousLayerSignature.current !== layerSignature;
+    previousLayerSignature.current = layerSignature;
+    const arrangementChanged = previousArrangement.current !== arrangement;
+    const overlayPairChanged =
+      arrangement === "overlay-pair" &&
+      previousDifference.current !== differenceSignature;
+    previousDifference.current = differenceSignature;
+    if (layersChanged || arrangementChanged || overlayPairChanged) {
+      const preserveCustomPositions =
+        arrangement === "custom" && layersChanged && !arrangementChanged;
+      const nextPlacements = preserveCustomPositions
+        ? mergeCustomPlacements(layers, placements, arranged)
+        : arranged;
+      const arrangementMessage = layersChanged
+        ? preserveCustomPositions
+          ? "Field updated; existing positions preserved and new views start at center."
+          : "Field updated and fitted to all active views."
+        : `${formatArrangement(arrangement)} arrangement applied.`;
+      previousArrangement.current = arrangement;
+      setPlacements(nextPlacements);
+      setSelectedLayerKey(null);
+      if (layers.length === 0) {
+        hasInitialFit.current = false;
+        setCamera({ x: 0, y: 0, zoom: 1 });
+      } else if (preserveCustomPositions) {
+        // Custom mode is the intentional exception to automatic re-layout:
+        // existing manual positions and the current camera remain untouched.
+        hasInitialFit.current = viewportSize.width > 0;
+      } else {
+        if (viewportSize.width > 0) {
+          setCamera(
+            getFittedComparisonCamera(layers, nextPlacements, viewportSize),
+          );
+          hasInitialFit.current = true;
+        } else {
+          hasInitialFit.current = false;
+        }
+      }
+      setStatus(arrangementMessage);
+      return;
+    }
+    setPlacements((current) => {
+      const next: Record<string, ComparisonLayerPlacement> = {};
+      for (const layer of layers) {
+        next[layer.key] = current[layer.key] ?? arranged[layer.key]!;
+      }
+      return next;
+    });
+    setSelectedLayerKey((current) =>
+      current && layers.some(({ key }) => key === current) ? current : null,
+    );
+    if (layers.length === 0) {
+      hasInitialFit.current = false;
+      setCamera({ x: 0, y: 0, zoom: 1 });
+    }
+    // Arrangement and pair changes have their own deliberate toolbar behavior.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [layerSignature, arrangement, differenceSignature]);
+
+  useEffect(() => {
+    if (
+      hasInitialFit.current ||
+      layers.length === 0 ||
+      viewportSize.width <= 0 ||
+      Object.keys(placements).length === 0
+    ) {
+      return;
+    }
+    hasInitialFit.current = true;
+    setCamera(getFittedComparisonCamera(layers, placements, viewportSize));
+  }, [layers, placements, viewportSize]);
+  useEffect(() => {
+    function clearSelection(event: globalThis.KeyboardEvent) {
+      if (event.key === "Escape") setSelectedLayerKey(null);
+    }
+    window.addEventListener("keydown", clearSelection);
+    return () => window.removeEventListener("keydown", clearSelection);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (animationFrame.current !== null) {
+        cancelAnimationFrame(animationFrame.current);
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    printState.current = { camera, layers, placements, viewportSize };
+  }, [camera, layers, placements, viewportSize]);
+
+  useEffect(() => {
+    function fitForPrint() {
+      const current = printState.current;
+      prePrintCamera.current = current.camera;
+      setCamera(
+        getFittedComparisonCamera(
+          current.layers,
+          current.placements,
+          current.viewportSize,
+        ),
+      );
+    }
+
+    function restoreAfterPrint() {
+      if (prePrintCamera.current) {
+        setCamera(prePrintCamera.current);
+      }
+      prePrintCamera.current = null;
+    }
+
+    window.addEventListener("beforeprint", fitForPrint);
+    window.addEventListener("afterprint", restoreAfterPrint);
+    return () => {
+      window.removeEventListener("beforeprint", fitForPrint);
+      window.removeEventListener("afterprint", restoreAfterPrint);
+    };
+  }, []);
+
+  function fitAll(message = "All active views fitted in the field.") {
+    setCamera(getFittedComparisonCamera(layers, placements, viewportSize));
+    setStatus(message);
+  }
+
+  function resetLayout() {
+    const arranged = arrangeComparisonLayers(layers, arrangement, difference);
+    setPlacements(arranged);
+    setSelectedLayerKey(null);
+    onResetOpacity();
+    setCamera(getFittedComparisonCamera(layers, arranged, viewportSize));
+    setStatus("Layout, stacking, opacity, and field view reset.");
+  }
+
+  function setZoom(nextZoom: number, focalPoint?: { x: number; y: number }) {
+    setCamera((current) => {
+      const zoom = clamp(nextZoom, minimumFieldZoom, maximumFieldZoom);
+      if (!focalPoint || current.zoom === zoom) return { ...current, zoom };
+      const ratio = zoom / current.zoom;
+      return {
+        x: focalPoint.x - (focalPoint.x - current.x) * ratio,
+        y: focalPoint.y - (focalPoint.y - current.y) * ratio,
+        zoom,
+      };
+    });
+  }
+
+  function beginScaleBarDrag(event: PointerEvent<HTMLDivElement>) {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const position = scaleBarPosition;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    activeGesture.current = {
+      mode: "scale-bar",
+      pointerId: event.pointerId,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      origin: position,
+      latest: position,
+    };
+    event.currentTarget.dataset.dragging = "true";
+  }
+
+  function beginCameraPan(event: PointerEvent<HTMLDivElement>) {
+    if (event.button !== 0) return;
+    const target = event.target;
+    const layerHit =
+      target instanceof Element && target.closest(".comparison-layer-hit");
+    if (
+      target instanceof Element &&
+      (target.closest(".comparison-layer-toolbar") ||
+        target.closest("[data-comparison-scale-bar]"))
+    ) {
+      return;
+    }
+    if (event.pointerType === "touch") {
+      touchPointers.current.set(event.pointerId, {
+        x: event.clientX,
+        y: event.clientY,
+      });
+      if (touchPointers.current.size === 2) {
+        pendingTouchLayer.current = null;
+        const [first, second] = [...touchPointers.current.values()];
+        if (first && second) {
+          event.preventDefault();
+          event.currentTarget.setPointerCapture(event.pointerId);
+          pinchGesture.current = {
+            distance: pointDistance(first, second),
+            midpoint: pointMidpoint(first, second),
+            camera,
+          };
+          event.currentTarget.dataset.panning = "true";
+        }
+      }
+      return;
+    }
+    if (layerHit) return;
+    setSelectedLayerKey(null);
+    if (!event.ctrlKey && !event.metaKey) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    activeGesture.current = {
+      mode: "camera",
+      pointerId: event.pointerId,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      origin: camera,
+    };
+    event.currentTarget.dataset.panning = "true";
+  }
+
+  function beginLayerDrag(
+    event: PointerEvent<HTMLButtonElement>,
+    layer: FieldLayer,
+  ) {
+    if (event.button !== 0) return;
+    const placement = placements[layer.key];
+    if (!placement) return;
+    if (event.pointerType === "touch") {
+      setSelectedLayerKey(layer.key);
+      pendingTouchLayer.current = {
+        pointerId: event.pointerId,
+        key: layer.key,
+        startClientX: event.clientX,
+        startClientY: event.clientY,
+        origin: placement,
+      };
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    const raised = {
+      ...placement,
+      z: getNextLayerZ(placements),
+    };
+    setPlacements((current) => ({ ...current, [layer.key]: raised }));
+    setSelectedLayerKey(layer.key);
+    activeGesture.current = {
+      mode: "layer",
+      pointerId: event.pointerId,
+      key: layer.key,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      origin: raised,
+      latest: raised,
+    };
+  }
+
+  function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
+    const gesture = activeGesture.current;
+    if (
+      gesture?.mode === "scale-bar" &&
+      gesture.pointerId === event.pointerId
+    ) {
+      event.preventDefault();
+      const latest = clampScaleBarPosition(
+        {
+          x: gesture.origin.x + event.clientX - gesture.startClientX,
+          y: gesture.origin.y + event.clientY - gesture.startClientY,
+        },
+        viewportSize,
+        camera.zoom,
+      );
+      gesture.latest = latest;
+      setScaleBarPosition(latest);
+      return;
+    }
+    if (
+      event.pointerType === "touch" &&
+      touchPointers.current.has(event.pointerId)
+    ) {
+      touchPointers.current.set(event.pointerId, {
+        x: event.clientX,
+        y: event.clientY,
+      });
+      const pinch = pinchGesture.current;
+      const [first, second] = [...touchPointers.current.values()];
+      if (pinch && first && second) {
+        event.preventDefault();
+        const bounds = event.currentTarget.getBoundingClientRect();
+        const midpoint = pointMidpoint(first, second);
+        const distance = Math.max(1, pointDistance(first, second));
+        const zoom = clamp(
+          pinch.camera.zoom * (distance / Math.max(1, pinch.distance)),
+          minimumFieldZoom,
+          maximumFieldZoom,
+        );
+        const ratio = zoom / pinch.camera.zoom;
+        const initialFocal = {
+          x: pinch.midpoint.x - bounds.left - bounds.width / 2,
+          y: pinch.midpoint.y - bounds.top - bounds.height / 2,
+        };
+        const currentFocal = {
+          x: midpoint.x - bounds.left - bounds.width / 2,
+          y: midpoint.y - bounds.top - bounds.height / 2,
+        };
+        setCamera({
+          x: currentFocal.x - (initialFocal.x - pinch.camera.x) * ratio,
+          y: currentFocal.y - (initialFocal.y - pinch.camera.y) * ratio,
+          zoom,
+        });
+        return;
+      }
+      const pending = pendingTouchLayer.current;
+      if (
+        pending &&
+        touchPointers.current.size === 1 &&
+        pending.pointerId === event.pointerId
+      ) {
+        const deltaX = event.clientX - pending.startClientX;
+        const deltaY = event.clientY - pending.startClientY;
+        if (Math.hypot(deltaX, deltaY) > 8) {
+          const raised = {
+            ...pending.origin,
+            z: getNextLayerZ(placements),
+          };
+          activeGesture.current = {
+            mode: "layer",
+            pointerId: event.pointerId,
+            key: pending.key,
+            startClientX: pending.startClientX,
+            startClientY: pending.startClientY,
+            origin: raised,
+            latest: raised,
+          };
+          pendingTouchLayer.current = null;
+          event.preventDefault();
+          event.currentTarget.setPointerCapture(event.pointerId);
+          setPlacements((current) => ({
+            ...current,
+            [pending.key]: raised,
+          }));
+        }
+      }
+      const active = activeGesture.current;
+      if (active?.mode === "layer" && active.pointerId === event.pointerId) {
+        event.preventDefault();
+        const latest = {
+          ...active.origin,
+          x:
+            active.origin.x +
+            (event.clientX - active.startClientX) / camera.zoom,
+          y:
+            active.origin.y +
+            (event.clientY - active.startClientY) / camera.zoom,
+        };
+        active.latest = latest;
+        if (animationFrame.current !== null) return;
+        animationFrame.current = requestAnimationFrame(() => {
+          animationFrame.current = null;
+          const current = activeGesture.current;
+          if (!current || current.mode !== "layer") return;
+          applyLayerPosition(
+            layerRefs.current.get(current.key),
+            current.latest,
+          );
+        });
+      }
+      return;
+    }
+    if (!gesture || gesture.pointerId !== event.pointerId) return;
+    if (gesture.mode === "camera") {
+      setCamera({
+        ...gesture.origin,
+        x: gesture.origin.x + event.clientX - gesture.startClientX,
+        y: gesture.origin.y + event.clientY - gesture.startClientY,
+      });
+      return;
+    }
+    const latest = {
+      ...gesture.origin,
+      x:
+        gesture.origin.x + (event.clientX - gesture.startClientX) / camera.zoom,
+      y:
+        gesture.origin.y + (event.clientY - gesture.startClientY) / camera.zoom,
+    };
+    gesture.latest = latest;
+    if (animationFrame.current !== null) return;
+    animationFrame.current = requestAnimationFrame(() => {
+      animationFrame.current = null;
+      const active = activeGesture.current;
+      if (!active || active.mode !== "layer") return;
+      applyLayerPosition(layerRefs.current.get(active.key), active.latest);
+    });
+  }
+
+  function endPointerGesture(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType === "touch") {
+      touchPointers.current.delete(event.pointerId);
+      if (pendingTouchLayer.current?.pointerId === event.pointerId) {
+        pendingTouchLayer.current = null;
+      }
+      if (touchPointers.current.size < 2) {
+        pinchGesture.current = null;
+        delete event.currentTarget.dataset.panning;
+        if (touchPointers.current.size === 1) {
+          setStatus("Field pan and zoom updated.");
+        }
+      }
+    }
+    const gesture = activeGesture.current;
+    if (!gesture || gesture.pointerId !== event.pointerId) return;
+    if (gesture.mode === "layer") {
+      setPlacements((current) => ({
+        ...current,
+        [gesture.key]: gesture.latest,
+      }));
+      setStatus("Layer position updated.");
+    } else if (gesture.mode === "scale-bar") {
+      setScaleBarPosition(gesture.latest);
+      event.currentTarget
+        .querySelector<HTMLElement>("[data-comparison-scale-bar]")
+        ?.removeAttribute("data-dragging");
+      setStatus("Scale bar position updated.");
+    }
+    activeGesture.current = null;
+    delete event.currentTarget.dataset.panning;
+  }
+
+  function moveLayer(key: string, deltaX: number, deltaY: number) {
+    setPlacements((current) => {
+      const placement = current[key];
+      if (!placement) return current;
+      return {
+        ...current,
+        [key]: {
+          ...placement,
+          x: placement.x + deltaX,
+          y: placement.y + deltaY,
+        },
+      };
+    });
+    setStatus("Layer position updated.");
+  }
+
+  function moveScaleBar(deltaX: number, deltaY: number) {
+    setScaleBarPosition((current) =>
+      clampScaleBarPosition(
+        { x: current.x + deltaX, y: current.y + deltaY },
+        viewportSize,
+        camera.zoom,
+      ),
+    );
+    setStatus("Scale bar position updated.");
+  }
+
+  function changeLayerStack(key: string, direction: -1 | 1) {
+    setPlacements((current) => {
+      const placement = current[key];
+      if (!placement) return current;
+      const zValues = Object.values(current).map(({ z }) => z);
+      return {
+        ...current,
+        [key]: {
+          ...placement,
+          z:
+            direction > 0 ? Math.max(...zValues) + 1 : Math.min(...zValues) - 1,
+        },
+      };
+    });
+    setStatus(direction > 0 ? "Layer moved forward." : "Layer moved back.");
+  }
+
+  const worldStyle = {
+    "--camera-x": `${camera.x}px`,
+    "--camera-y": `${camera.y}px`,
+    "--camera-zoom": camera.zoom,
+    "--camera-ui-scale": Math.min(1.75, Math.max(0.05, 0.9 / camera.zoom)),
+    "--camera-label-gap": `${4 / camera.zoom}px`,
+    "--camera-toolbar-offset": `${24 / camera.zoom}px`,
+    "--comparison-world-width": `${comparisonWorldWidth}px`,
+    "--comparison-world-height": `${comparisonWorldHeight}px`,
+  } as CSSProperties;
+
+  return (
+    <section
+      className="compare-field-panel"
+      aria-labelledby="comparison-field-title"
+    >
+      <div className="compare-field-toolbar">
+        <div className="compare-field-title">
+          <p className="data-label">Shared physical scale</p>
+          <h2 id="comparison-field-title">Comparison field</h2>
+        </div>
+        <div className="compare-field-controls" aria-label="Field controls">
+          <div className="compare-field-scroll-controls">
+            <label className="compare-arrangement-control">
+              <span>Arrange</span>
+              <select
+                value={arrangement}
+                onClick={(event) => {
+                  if (event.currentTarget.value === arrangement) resetLayout();
+                }}
+                onChange={(event) =>
+                  onArrangementChange(
+                    event.currentTarget.value as ComparisonArrangement,
+                  )
+                }
+              >
+                {arrangementValues.map((value) => (
+                  <option value={value} key={value}>
+                    {formatArrangement(value)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="compare-zoom-control">
+              <span id="field-zoom-label">Field zoom</span>
+              <button
+                type="button"
+                title="Zoom out"
+                aria-label="Zoom field out"
+                onClick={() => setZoom(camera.zoom - 0.1)}
+              >
+                −
+              </button>
+              <input
+                aria-labelledby="field-zoom-label"
+                type="range"
+                min={minimumFieldZoom * 100}
+                max={maximumFieldZoom * 100}
+                step={5}
+                value={Math.round(camera.zoom * 100)}
+                onChange={(event) =>
+                  setZoom(Number(event.currentTarget.value) / 100)
+                }
+              />
+              <button
+                type="button"
+                title="Zoom in"
+                aria-label="Zoom field in"
+                onClick={() => setZoom(camera.zoom + 0.1)}
+              >
+                +
+              </button>
+              <output htmlFor="field-zoom-label">
+                {Math.round(camera.zoom * 100)}%
+              </output>
+            </div>
+            <button
+              type="button"
+              className="compare-zoom-reset"
+              onClick={() => setZoom(1)}
+            >
+              100%
+            </button>
+            <button
+              type="button"
+              className="compare-fit-all"
+              onClick={() => fitAll()}
+            >
+              Fit all
+            </button>
+          </div>
+          <details className="compare-field-more">
+            <summary aria-label="More field controls">•••</summary>
+            <div>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showScaleBar}
+                  onChange={(event) => {
+                    const checked = event.currentTarget.checked;
+                    setShowScaleBar(checked);
+                    if (checked) {
+                      setScaleBarPosition(
+                        getScaleBarBottomLeft(viewportSize, camera.zoom),
+                      );
+                    }
+                  }}
+                />
+                Show 100 mm scale bar
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showLayerLabels}
+                  onChange={(event) =>
+                    setShowLayerLabels(event.currentTarget.checked)
+                  }
+                />
+                Show view labels
+              </label>
+              <button type="button" onClick={resetLayout}>
+                Reset layout
+              </button>
+              <button type="button" onClick={onClear}>
+                Clear all
+              </button>
+            </div>
+          </details>
+        </div>
+      </div>
+      <div
+        ref={viewportRef}
+        className="comparison-field"
+        style={worldStyle}
+        data-arrangement={arrangement}
+        onPointerDown={beginCameraPan}
+        onPointerMove={handlePointerMove}
+        onPointerUp={endPointerGesture}
+        onPointerCancel={endPointerGesture}
+        onClick={(event) => {
+          const target = event.target;
+          const insideLayerInteraction =
+            target instanceof Element &&
+            (target.closest(".comparison-layer-hit") ||
+              target.closest(".comparison-layer-toolbar") ||
+              target.closest("[data-comparison-scale-bar]"));
+          if (!insideLayerInteraction) {
+            setSelectedLayerKey(null);
+          }
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") setSelectedLayerKey(null);
+        }}
+        tabIndex={0}
+        aria-label="Interactive comparison field"
+      >
+        {layers.length > 0 ? (
+          <div className="comparison-camera">
+            <div className="comparison-world">
+              {layers.map((layer) => {
+                const placement = placements[layer.key];
+                return placement ? (
+                  <ComparisonFieldLayer
+                    key={layer.key}
+                    layer={layer}
+                    placement={placement}
+                    opacity={opacityBySubject[layer.subjectId] ?? 100}
+                    showLabel={showLayerLabels}
+                    selected={selectedLayerKey === layer.key}
+                    register={(element) => {
+                      if (element) layerRefs.current.set(layer.key, element);
+                      else layerRefs.current.delete(layer.key);
+                    }}
+                    onSelect={() => setSelectedLayerKey(layer.key)}
+                    onPointerDown={(event) => beginLayerDrag(event, layer)}
+                    onMove={(x, y) => moveLayer(layer.key, x, y)}
+                    onStack={(direction) =>
+                      changeLayerStack(layer.key, direction)
+                    }
+                    onRemove={() =>
+                      onRemoveView(layer.subjectId, layer.media.view)
+                    }
+                  />
+                ) : null;
+              })}
+            </div>
+          </div>
+        ) : (
+          <div className="comparison-empty-state">
+            <h2>Add a skull to begin</h2>
+            <p>Select up to five calibrated specimens or references.</p>
+          </div>
+        )}
+        {showScaleBar ? (
+          <ComparisonScaleBar
+            position={scaleBarPosition}
+            zoom={camera.zoom}
+            onPointerDown={beginScaleBarDrag}
+            onMove={moveScaleBar}
+          />
+        ) : null}
+      </div>
+      <div className="comparison-field-footer">
+        <details className="comparison-field-help">
+          <summary>How to use the field</summary>
+          <div>
+            <p>
+              Drag a skull to move it in any direction. Scroll normally to move
+              the page. Hold Ctrl or Command while dragging empty space to pan,
+              or while scrolling to zoom the field without moving the page.
+            </p>
+            <p>
+              On touch screens, start on a skull to move it, start on empty
+              field space to scroll the page, and use two fingers to navigate
+              the field. The 100 mm bar shows relative image scale; your monitor
+              is not calibrated as a life-size ruler.
+            </p>
+          </div>
+        </details>
+        <p className="comparison-field-status" aria-live="polite">
+          {status}
+        </p>
+      </div>
+      <ul className="comparison-print-credits" aria-label="Photograph credits">
+        {layers.map((layer) => (
+          <li key={layer.key}>
+            Skull {layer.subjectIndex + 1} · {formatViewLabel(layer.media.view)}{" "}
+            · Photograph: {layer.media.credit}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function ComparisonFieldLayer({
+  layer,
+  placement,
+  opacity,
+  selected,
+  showLabel,
+  register,
+  onSelect,
+  onPointerDown,
+  onMove,
+  onStack,
+  onRemove,
+}: {
+  layer: FieldLayer;
+  placement: ComparisonLayerPlacement;
+  opacity: number;
+  selected: boolean;
+  showLabel: boolean;
+  register: (element: HTMLElement | null) => void;
+  onSelect: () => void;
+  onPointerDown: (event: PointerEvent<HTMLButtonElement>) => void;
+  onMove: (x: number, y: number) => void;
+  onStack: (direction: -1 | 1) => void;
+  onRemove: () => void;
+}) {
+  const { media, subjectIndex } = layer;
+  const [imageFailed, setImageFailed] = useState(false);
+  const flip = media.orientation === "left";
+  const subjectX = flip
+    ? media.width - media.subjectBounds.x - media.subjectBounds.width
+    : media.subjectBounds.x;
+  const style = {
+    "--layer-x": `${placement.x}px`,
+    "--layer-y": `${placement.y}px`,
+    "--layer-z": placement.z,
+    "--layer-width": `${layer.width}px`,
+    "--layer-height": `${layer.height}px`,
+    "--layer-opacity": opacity / 100,
+    "--subject-left": `${(subjectX / media.width) * 100}%`,
+    "--subject-top": `${(media.subjectBounds.y / media.height) * 100}%`,
+    "--subject-width": `${(media.subjectBounds.width / media.width) * 100}%`,
+    "--subject-height": `${(media.subjectBounds.height / media.height) * 100}%`,
+  } as CSSProperties;
+  const viewLabel = formatViewLabel(media.view);
+  const label = `Skull ${subjectIndex + 1} · ${viewLabel}`;
+  const accessibleLabel = `${label} · ${layer.record.label}`;
+
+  function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+    const step = event.shiftKey ? 20 : 4;
+    if (event.key === "ArrowLeft") onMove(-step, 0);
+    else if (event.key === "ArrowRight") onMove(step, 0);
+    else if (event.key === "ArrowUp") onMove(0, -step);
+    else if (event.key === "ArrowDown") onMove(0, step);
+    else if (event.key === "[") onStack(-1);
+    else if (event.key === "]") onStack(1);
+    else if (event.key === "Enter" || event.key === " ") onSelect();
+    else return;
+    event.preventDefault();
+  }
+
+  return (
+    <figure
+      ref={register}
+      className="comparison-layer"
+      style={style}
+      data-comparison-layer=""
+      data-selected={selected ? "true" : undefined}
+      data-hidden={opacity === 0 ? "true" : undefined}
+    >
+      <div className="comparison-layer-image" aria-hidden="true">
+        <Image
+          src={media.publicPath}
+          alt=""
+          fill
+          sizes="(max-width: 48rem) 70vw, 32rem"
+          unoptimized
+          draggable={false}
+          loading={subjectIndex < 2 ? "eager" : "lazy"}
+          onError={() => setImageFailed(true)}
+          style={{ transform: flip ? "scaleX(-1)" : undefined }}
+        />
+        {imageFailed ? (
+          <span className="comparison-layer-image-fallback">
+            Image unavailable · {formatViewLabel(media.view)}
+          </span>
+        ) : null}
+      </div>
+      <button
+        type="button"
+        className="comparison-layer-hit"
+        aria-label={`${accessibleLabel}. Drag or use arrow keys to move; Shift plus arrow moves farther.`}
+        title={`${layer.record.label} · ${viewLabel}`}
+        aria-pressed={selected}
+        onFocus={onSelect}
+        onClick={onSelect}
+        onPointerDown={onPointerDown}
+        onKeyDown={handleKeyDown}
+      >
+        <svg
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path
+            d={media.hitPath ?? "M0 0H100V100H0Z"}
+            fill="transparent"
+            fillRule="nonzero"
+            pointerEvents="all"
+            transform={flip ? "translate(100 0) scale(-1 1)" : undefined}
+          />
+        </svg>
+      </button>
+      <span className="comparison-layer-outline" aria-hidden="true" />
+      {showLabel ? (
+        <figcaption title={`${layer.record.label} · ${viewLabel}`}>
+          <span
+            className={`subject-marker marker-${subjectIndex + 1}`}
+            aria-hidden="true"
+          >
+            {subjectMarkers[subjectIndex]}
+          </span>
+          {label}
+        </figcaption>
+      ) : null}
+      {selected ? (
+        <div
+          className="comparison-layer-toolbar"
+          aria-label={`${accessibleLabel} controls`}
+          title={layer.record.label}
+        >
+          <strong>{`S${subjectIndex + 1} · ${formatShortViewLabel(media.view)}`}</strong>
+          <button
+            type="button"
+            title="Move layer back"
+            aria-label={`Move ${label} back`}
+            onClick={() => onStack(-1)}
+          >
+            ↓
+          </button>
+          <button
+            type="button"
+            title="Move layer forward"
+            aria-label={`Move ${label} forward`}
+            onClick={() => onStack(1)}
+          >
+            ↑
+          </button>
+          <button
+            type="button"
+            title="Remove view"
+            aria-label={`Remove ${label} view`}
+            onClick={onRemove}
+          >
+            ×
+          </button>
+        </div>
+      ) : null}
+      {opacity === 0 ? (
+        <span className="comparison-layer-hidden-note">Hidden</span>
+      ) : null}
+    </figure>
+  );
+}
+
+function ComparisonScaleBar({
+  position,
+  zoom,
+  onPointerDown,
+  onMove,
+}: {
+  position: { x: number; y: number };
+  zoom: number;
+  onPointerDown: (event: PointerEvent<HTMLDivElement>) => void;
+  onMove: (x: number, y: number) => void;
+}) {
+  const style = {
+    "--scale-bar-left": `${position.x}px`,
+    "--scale-bar-top": `${position.y}px`,
+    "--scale-bar-width": `${100 * comparisonWorldPixelsPerMillimetre * zoom}px`,
+  } as CSSProperties;
+  return (
+    <div
+      className="comparison-scale-bar"
+      style={style}
+      data-comparison-scale-bar=""
+      tabIndex={0}
+      role="group"
+      aria-label="Movable 100 millimetre relative scale bar"
+      onPointerDown={onPointerDown}
+      onKeyDown={(event) => {
+        const step = event.shiftKey ? 20 : 4;
+        if (event.key === "ArrowLeft") onMove(-step, 0);
+        else if (event.key === "ArrowRight") onMove(step, 0);
+        else if (event.key === "ArrowUp") onMove(0, -step);
+        else if (event.key === "ArrowDown") onMove(0, step);
+        else return;
+        event.preventDefault();
+      }}
+    >
+      <span aria-hidden="true" />
+      <strong>100 mm</strong>
+    </div>
+  );
+}
+
+function buildFieldLayers(selected: SelectedComparisonSubject[]): FieldLayer[] {
+  return selected.flatMap(({ subject, record }, subjectIndex) =>
+    subject.views.flatMap((viewName) => {
+      const media = record.views.find(({ view }) => view === viewName);
+      if (!media) return [];
+      const measurement = record.measurements[media.calibration.measurementKey];
+      const size = getCalibratedCanvasSize({
+        sourceWidth: media.width,
+        sourceHeight: media.height,
+        calibration: media.calibration,
+        measurement,
+        worldPixelsPerMillimetre: comparisonWorldPixelsPerMillimetre,
+      });
+      return size
+        ? [
+            {
+              key: `${record.id}:${media.view}`,
+              subjectId: record.id,
+              subjectIndex,
+              view: media.view,
+              width: size.width,
+              height: size.height,
+              subjectX:
+                size.width *
+                ((media.orientation === "left"
+                  ? media.width -
+                    media.subjectBounds.x -
+                    media.subjectBounds.width
+                  : media.subjectBounds.x) /
+                  media.width),
+              subjectY: size.height * (media.subjectBounds.y / media.height),
+              subjectWidth:
+                size.width * (media.subjectBounds.width / media.width),
+              subjectHeight:
+                size.height * (media.subjectBounds.height / media.height),
+              record,
+              media,
+            },
+          ]
+        : [];
+    }),
+  );
+}
+
+function mergeCustomPlacements(
+  layers: FieldLayer[],
+  current: Record<string, ComparisonLayerPlacement>,
+  centered: Record<string, ComparisonLayerPlacement>,
+) {
+  const next: Record<string, ComparisonLayerPlacement> = {};
+  const activeCurrent: Record<string, ComparisonLayerPlacement> = {};
+  for (const layer of layers) {
+    const placement = current[layer.key];
+    if (placement) activeCurrent[layer.key] = placement;
+  }
+  let nextZ = getNextLayerZ(activeCurrent);
+  for (const layer of layers) {
+    next[layer.key] = activeCurrent[layer.key] ?? {
+      ...centered[layer.key]!,
+      z: nextZ++,
+    };
+  }
+  return next;
+}
+
+function applyLayerPosition(
+  element: HTMLElement | undefined,
+  placement: ComparisonLayerPlacement,
+) {
+  if (!element) return;
+  element.style.setProperty("--layer-x", `${placement.x}px`);
+  element.style.setProperty("--layer-y", `${placement.y}px`);
+}
+
+function formatArrangement(arrangement: ComparisonArrangement) {
+  return arrangement
+    .split("-")
+    .map((word, index) =>
+      index === 0 ? `${word.charAt(0).toUpperCase()}${word.slice(1)}` : word,
+    )
+    .join(" ");
+}
+
+function formatViewLabel(view: ComparisonView) {
+  return view === "mandible-dorsal"
+    ? "Mandible — dorsal"
+    : `${view.charAt(0).toUpperCase()}${view.slice(1)}`;
+}
+
+function formatShortViewLabel(view: ComparisonView) {
+  if (view === "mandible-dorsal") return "Mandible";
+  return view.charAt(0).toUpperCase() + view.slice(1);
+}
+
+function pointDistance(
+  first: { x: number; y: number },
+  second: { x: number; y: number },
+) {
+  return Math.hypot(second.x - first.x, second.y - first.y);
+}
+
+function pointMidpoint(
+  first: { x: number; y: number },
+  second: { x: number; y: number },
+) {
+  return { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };
+}
+
+function getScaleBarBottomLeft(
+  viewport: { width: number; height: number },
+  zoom: number,
+) {
+  return clampScaleBarPosition(
+    { x: 24, y: viewport.height - 58 },
+    viewport,
+    zoom,
+  );
+}
+
+function clampScaleBarPosition(
+  position: { x: number; y: number },
+  viewport: { width: number; height: number },
+  zoom: number,
+) {
+  const width = Math.max(
+    100 * comparisonWorldPixelsPerMillimetre * zoom + 12,
+    56,
+  );
+  return {
+    x: clamp(position.x, 12, Math.max(12, viewport.width - width - 12)),
+    y: clamp(position.y, 12, Math.max(12, viewport.height - 48)),
+  };
+}

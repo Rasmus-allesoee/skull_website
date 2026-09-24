@@ -486,6 +486,7 @@ export function MeasurementReferenceBoard({
               {reference.definitions.map((definition) => (
                 <tr
                   key={definition.number}
+                  id={`measurement-definition-${definition.number}`}
                   data-measurement-row={definition.number}
                   data-selected={selectedNumber === definition.number}
                 >

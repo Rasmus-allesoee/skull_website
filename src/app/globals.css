@@ -1170,6 +1170,16 @@ h3 {
   font-weight: 600;
 }
 
+.comparison-full-link {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  margin-top: 0.6rem;
+  color: var(--color-accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
 .comparison-reference-note,
 .difference-note,
 .comparison-eligibility-note {
@@ -5604,6 +5614,27 @@ h3 {
   background: var(--color-surface-elevated);
 }
 
+.collection-card-compare {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.45rem 1rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-accent);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.035em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.collection-card-compare:hover {
+  background: var(--color-surface-elevated);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
 .collection-card-image {
   display: grid;
   container-type: size;
@@ -5899,7 +5930,7 @@ h3 {
   border-top: 1px solid var(--color-border);
 }
 
-.specimen-quick-dialog li > a {
+.specimen-quick-dialog li > .specimen-quick-record-link {
   display: grid;
   grid-template-columns: 9rem minmax(0, 1fr);
   gap: 1.25rem;
@@ -5908,8 +5939,23 @@ h3 {
   text-decoration: none;
 }
 
-.specimen-quick-dialog li > a:hover {
+.specimen-quick-dialog li > .specimen-quick-record-link:hover {
   background: var(--color-surface-elevated);
+}
+
+.specimen-quick-dialog li > .specimen-quick-compare {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.35rem 1.25rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-accent);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.035em;
+  text-decoration: none;
+  text-transform: uppercase;
 }
 
 .specimen-quick-image {
