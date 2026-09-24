@@ -2,7 +2,7 @@
 
 **Status:** Combined Phase 3.2 catalog-first and Phase 4 discovery system implemented; owner review pending
 
-**Last reviewed:** 2026-09-02
+**Last reviewed:** 2026-09-10
 
 ## 1. Design intent
 
@@ -203,7 +203,9 @@ Responsive checkpoints are content-derived, with explicit QA at:
 - **Callout:** information, caution, or safety state with explicit heading/icon/text.
 - **Preparation workflow:** five bounded stage cards with internal method dividers, an explicit `Move on when` label, and a separate basic-route callout. On phones the same cards stack without losing their image, method links or outcome hierarchy.
 - **Preparation method disclosure:** native summary plus brass italic H3 or brass H4, explicit open/close text, bordered body and stable deep-link ID. Hash navigation progressively opens the target; without JavaScript the native summary remains the complete control. Shared preliminary steps remain visible while method-dependent instructions stay collapsed by default.
+- **Preparation troubleshooting cases:** the maceration troubleshooting block is an outer native disclosure whose body presents only case summaries by default. Each case is a nested native `details` panel, so a reader can open one diagnosis at a time without losing the direct method context or no-JavaScript behavior.
 - **Preparation citation card:** the brass inline reference number is a button that opens one small native popover with author, title and external source action. The complete numbered reference list remains below the article for scanning and fallback.
+- **Preparation media link/lightbox:** a brass underlined descriptive phrase is an ordinary direct WebP link first. JavaScript progressively enhances it to a native body-level lightbox with an explicit “Close image” control, backdrop dismissal, caption/credit, and focus restoration; the image itself is not required in the prose flow.
 
 ## 10. Interaction states
 
@@ -302,6 +304,6 @@ The combined Phase 3.2/4 checkpoint recasts `/species` as a working visual catal
 
 ## Preparation reference page
 
-The preparation guide uses a five-stage image workflow with real phase/method links, short completion outcomes and an optional-whitening branch. A bounded sticky strip opens a native left-hand contents drawer; Escape/backdrop/Close restore focus, destination links focus their heading, and a native disclosure provides the static fallback. Reading position is a navigation cue, not a progress-completion claim.
+The preparation guide uses a five-stage image workflow with real phase/method links, short completion outcomes and an optional-whitening branch. Defleshing methods are numbered (`1.`–`5.`), and maceration troubleshooting is a smaller, indented `1.1.` disclosure beneath Water maceration. It opens four collapsed case rows; the dark-bone and adipocere rows show compact square owner-photo thumbnails in a left gutter outside the case divider lines, with the thumbnail links kept beside (not inside) the native summaries for valid interactive semantics. All case summaries share one minimum row height. The adipocere detail uses smaller muted sans-serif subheadings so its hierarchy stays below the case title and body copy. A bounded sticky strip opens a native left-hand contents drawer; Escape/backdrop/Close restore focus, destination links focus their heading, and a native disclosure provides the static fallback. Reading position is a navigation cue, not a progress-completion claim.
 
-Prose remains at roughly 72 characters, with wide semantic comparison tables that become labelled rows on phones. Larger figures preserve complete source framing; cropped workflow previews remain supplementary to text. AI provenance is visibly labelled. Safety/completion callouts stay open; only nonessential detail uses native disclosures. Reuse existing neutral/brass tokens, visible focus, reduced-motion anchor behavior and forced-color semantics. Page architecture and content decisions live in [skull_preparation_guide.md](skull_preparation_guide.md).
+Prose remains at roughly 72 characters, with wide semantic comparison tables that become labelled rows on phones. Larger figures preserve complete source framing; cropped workflow previews remain supplementary to text. AI provenance is visibly labelled. Safety/completion callouts stay open; only nonessential detail uses native disclosures. Descriptive case-image links use brass underlines in prose and a square zoom affordance in troubleshooting summaries; JavaScript lightboxes always retain direct image-link fallbacks. Reuse existing neutral/brass tokens, visible focus, reduced-motion anchor behavior and forced-color semantics. Page architecture and content decisions live in [skull_preparation_guide.md](skull_preparation_guide.md).

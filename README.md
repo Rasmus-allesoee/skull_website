@@ -2,7 +2,7 @@
 
 Skull Collection is a visual-first online natural-history museum for animal skulls. It will combine consistent multi-angle photography with taxonomy, measurements, specimen provenance, preparation records, maps, and cited identification notes.
 
-**Current milestone:** v1.0.1 is released and deployed at <https://skullwebsite-xi.vercel.app>. The standalone Skull Comparison workbench is implemented and verified locally on `skull_comparison_page`, pending owner review; it is not yet published.
+**Current milestone:** v1.0.1 remains the latest release tag at <https://skullwebsite-xi.vercel.app>. Preparation PR #24 has merged into `main` at `2e92d0a`; comparison PR #25 is being refreshed from that updated base and awaits its integrated CI and final review before the planned v1.1.0 release.
 
 Start at `/`, browse the catalog at `/species`, compare calibrated skull views at `/compare`, explore public specimen locations at `/map`, inspect the measurement reference at `/methodology`, open the full beginner preparation guide at `/guides/skull-preparation`, or follow the static taxonomy from `/taxonomy/class/mammals` or `/taxonomy/class/birds`. Published taxon displays include `/species/raccoon-dog` and `/species/razorbill`; exact physical records use nested URLs such as `/species/harbour-seal/specimens/SPEC-0013`.
 
@@ -179,4 +179,4 @@ Repository development guidance is in [CONTRIBUTING.md](CONTRIBUTING.md). Public
 
 ### Preparation guide maintenance
 
-The full page system and source decisions are documented in [docs/skull_preparation_guide.md](docs/skull_preparation_guide.md). Edit its reviewed MDX and media declaration under `content/guides/`. Run `pnpm media:process:preparation` only when deliberately promoting the owner-authorized ignored source images; `pnpm check` and `pnpm build` validate/use the curated public derivatives without those masters.
+The full page system and source decisions are documented in [docs/skull_preparation_guide.md](docs/skull_preparation_guide.md). Edit its reviewed MDX and media declaration under `content/guides/`. Run `pnpm media:process:preparation` only when deliberately promoting the owner-authorized ignored source images; the command applies deterministic size/quality fallbacks and writes only curated public derivatives. `pnpm check` and `pnpm build` validate/use those derivatives without the ignored masters.

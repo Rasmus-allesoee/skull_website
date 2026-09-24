@@ -1,5 +1,20 @@
 # Project status
 
+**Snapshot date:** 2026-09-24
+
+**Current phase:** v1.0.1 is the latest release tag; the owner-approved v1.1.0 comparison-workbench integration is in its final PR review after the preparation refinement merged
+
+**Overall state:** Preparation PR #24 merged normally into `main` at `2e92d0a40fe7b2026889c7c8359a4c2cb0819d80`. Comparison PR #25's pre-integration head passed the full quality/build/browser workflow after fixing the medium-width rail-height regression; the comparison branch is now merging the updated `main` and must rerun that workflow before landing. The v1.0.1 tag remains the latest release tag; verify the deployment triggered by the preparation merge together with the final v1.1.0 release. Dependency PRs #19, #20, and #23 have green checks and await individual landing confirmations. PR #21 was closed because Node 26 type declarations exceed the Node 24 runtime contract; PR #22 was closed because mismatched React/React DOM versions fail CI. This shell has Node 25.8.2 and no `pnpm`; because the repository pins Node 24/pnpm 11, final validation relies on repository CI.
+
+**Next action:** Complete and push the `main` merge into `skull_comparison_page`, pass all integrated checks, then request landing confirmation for PR #25. Resolve the three passing dependency PRs through their own exact-head gates, verify merged `main` and production, and publish v1.1.0. Remove only the comparison worktree after the release is safely merged and its contents are checked.
+
+## 0.20 v1.1.0 integration after preparation-guide merge (2026-09-24)
+
+- PR #24 (`preparation_guide_refinement`) merged normally at `2e92d0a40fe7b2026889c7c8359a4c2cb0819d80`, preserving its individual refinement and documentation commits.
+- PR #25 (`skull_comparison_page`) now incorporates the updated `main` through a normal merge in the dedicated comparison worktree. The latest pre-merge-base head passed the full quality/build/browser workflow after the 1100 px selected-rail height regression was fixed; the combined head must pass CI before it is considered ready.
+- The five newly discovered dependency PRs have been reviewed: #19 (Vitest 5), #20 (Zod 4.6.2), and #23 (development tooling) have green checks and remain pending individual landing confirmations; #21 and #22 were closed with evidence-backed compatibility/CI reasons. Do not delete their branches or silently include their dependency changes in feature commits.
+- The stable feature branches remain preserved. No release tag has been created yet; `v1.1.0` is reserved for the integrated comparison workbench, the preparation refinement, and any individually approved dependency updates.
+
 ## 0.19 Comparison field toolbar at narrow widths (2026-09-24)
 
 - At 64.01–75rem, the field title now sits above the control row. The Arrange
@@ -392,6 +407,65 @@
 - Added focused URL-link, Home, catalog, and specimen-comparison regressions plus a dedicated Chromium workbench suite covering axe, ten mixed-view layers, free pointer movement, directed cross-class semantics, opacity, invalid URL/history recovery, mobile cards, site entry points, two-finger camera gestures, print output/credits, 320 px forced-color/reduced-motion/failed-image recovery, and no-JavaScript output.
 - `CI=true pnpm check` passes formatting, lint, media/content validation, strict TypeScript, **102/102 unit/component tests**, and the six expected invalid-fixture failures. `CI=true pnpm build` prerenders **79/79 routes**, including static `/compare`; `pnpm test:e2e` passes **90/90 Chromium journeys** in one clean full rerun. The first full browser attempt exposed one stale three-link specimen-chooser assertion after each row gained its Compare action; the corrected test now asserts three record links and three comparison links and passes in isolation and in the complete suite.
 - Work remains local. Nothing was pushed, merged, deployed, or published, and the separate `preparation_guide_refinement` worktree was not modified.
+
+## Preparation refinement checkpoint — troubleshooting layout (2026-09-10)
+
+### Implementation
+
+- Kept the `1.1. Troubleshooting maceration` hierarchy and moved the dark-bone and adipocere thumbnails into a compact left gutter outside each case's divider lines. The thumbnails now stay aligned with the summary row while the native summary remains the only disclosure control.
+- Restored one shared minimum summary height for all four troubleshooting cases so image-bearing rows no longer collapse or let their thumbnails overlap the body text. The responsive size is smaller on phones and the layout remains free of horizontal overflow.
+- Reworked the adipocere subheadings to use the same IBM Plex Sans family as the case and method titles, with a smaller muted treatment below the body/title hierarchy. Added browser assertions for the left-gutter geometry, equal desktop summary heights and heading typography.
+
+### Local verification
+
+- `CI=true pnpm check` passed formatting, lint, media/content validation, strict TypeScript, **86/86 unit/component tests** and six expected invalid-fixture failures. `CI=true pnpm build` passed with **78/78 static routes**.
+- The focused Chromium preparation suite passed **7/7 without retries** against the rebuilt artifact, including the new left-gutter geometry and heading-style assertions, lightbox focus restoration, mobile reflow, axe, no-JavaScript links, deep links, reduced motion, forced colors, failed images and overflow.
+- Playwright CLI screenshots at 1280 × 720 and 390 × 844 confirmed compact thumbnails outside the case divider lines, equal desktop summary spacing, centered mobile thumbnails and the smaller muted sans-serif adipocere subheadings.
+
+### Boundary
+
+This layout correction remained local on `preparation_guide_refinement` at this checkpoint. No push, pull request, merge, deployment, analytics configuration or later editorial phase had been started. Owner desktop/mobile review was required before publication.
+
+## Preparation refinement checkpoint — feedback and adipocere guidance (2026-09-10)
+
+### Implementation and content
+
+- Continued the local `preparation_guide_refinement` branch without changing collection CSVs, stable IDs, specimen URLs or routes. This batch responds to the follow-up troubleshooting feedback rather than opening a new editorial page.
+- Numbered the five defleshing methods in the workflow, comparison table and disclosure titles. Troubleshooting is now `1.1. Troubleshooting maceration`, a smaller level-4 disclosure indented beneath `1. Water maceration`; its four case details remain collapsed until selected.
+- Added square owner-photo thumbnails beside the dark-bone and adipocere case titles. The dark-bone paragraph links “almost black” to the same lightbox, and the above-ground comparison table links “mummification” to the new mummified-badger photograph. Thumbnail controls sit beside their native summaries rather than nesting an interactive link inside a summary.
+- Reorganized adipocere into direct “What it is”, “Why it forms”, “How I try to prevent it” and “How to remove it” subheadings. The removal sequence starts with scraping fresh wax, then warm soapy scrubbing, detergent degreasing, a second scrub, a specified 2.5% clear aqueous ammonia solution for stubborn patches, and optional experienced-only nylon brushing. The mummified-tissue troubleshooting case was removed because mummification is a starting condition or above-ground outcome, not a maceration outcome.
+- Promoted the two new ignored owner sources `prep_black_discolored_skull.jpg` and `prep_mummified_badger.jpg` as metadata-stripped public derivatives. The preparation manifest contains **18 assets**: 11 owner photographs, one generated degreasing illustration and six generated condition cues. The processor uses deterministic size/quality fallback for large photographs while preserving the existing 750 kB contract.
+
+### Local verification
+
+- `pnpm media:process:preparation` passed with **18 validated preparation WebPs** and metadata stripping; all four owner preparation-photo masters remained ignored staging input.
+- `pnpm content:build` passed with 15 published taxa, 18 specimens, 104 specimen assets, 67 search documents, 18 map records, 21 measurement definitions, five preparation stages and 22 guide references. The focused guide unit file passed **11/11**.
+- `CI=true pnpm build` passed and prerendered **78/78 routes**. The focused Chromium preparation suite passed **7/7 without retries**, covering the case thumbnails, all four image/lightbox paths, mobile reflow, axe, no-JavaScript direct links, deep links, reduced motion, forced colors, failed images and overflow.
+- Playwright CLI visual checks at 1280 × 720 and 390 × 844 confirmed the smaller indented `1.1` treatment, visible square thumbnails while cases are collapsed, and the body-level adipocere lightbox. The complete `CI=true pnpm check` passed formatting, lint, media/content validation, strict TypeScript, **86/86 unit/component tests** and six expected invalid-fixture failures.
+
+### Boundary
+
+This second feedback batch was local only at this checkpoint. No push, pull request, merge, deployment, analytics configuration or later editorial phase had been started. Owner desktop/mobile review was required before publication.
+
+## Preparation refinement checkpoint — reviewed media and disclosures (2026-09-10)
+
+### Implementation and content
+
+- Created the local branch `preparation_guide_refinement` from `main`. The existing static-first guide remained the only route in scope; no collection CSV, stable ID, specimen URL or route was changed.
+- Added descriptive `[label](asset:asset-id)` media links to the restricted guide dialect. The brain-material phrase in Water maceration and the adipocere photograph link progressively enhance to native body-level lightboxes with captions, credits, backdrop/Close controls and focus restoration; direct WebP links remain the no-JavaScript fallback.
+- Added the owner sources `prep_skull_brain_gunk.png` and `prep_skull_adipocere.jpg` to the maintenance-only source map and promoted only their metadata-stripped `brain-gunk.webp` and `adipocere.webp` derivatives. The preparation manifest contains 16 validated assets: nine owner photographs, one generated degreasing illustration and six generated condition cues.
+- Rebuilt Troubleshooting maceration as an outer native disclosure with five collapsed case details. The existing dark-bone, persistent-tendon, lower-jaw and mummified-tissue guidance remains available; the new adipocere case explains what it is, why it forms, practical prevention and a cautious removal sequence. Reviewed practitioner context comes from the [OddArticulations maceration page](https://oddarticulations.com/maceration101/) and [adipocere page](https://oddarticulations.com/adipocere101/), alongside the existing guide sources.
+
+### Local verification
+
+- `pnpm media:process:preparation` passed with **16 validated preparation WebPs** and metadata stripping; the two ignored owner masters remained outside the public checkpoint.
+- `pnpm content:build` passed with 15 published taxa, 18 specimens, 104 specimen assets, 67 search documents, 18 map records, 21 measurement definitions, five preparation stages and 22 guide references.
+- `vitest run src/domain/guides/guide.test.ts` passed **10/10**. `CI=true pnpm build` passed and prerendered **78/78 routes**.
+- The focused Chromium preparation suite passed **7/7 without retries**, covering the two new lightboxes, nested troubleshooting details, desktop/mobile reflow, axe, no-JavaScript direct links, deep links, reduced motion, forced colors, failed images and overflow. The complete `CI=true pnpm check` passed formatting, lint, media/content validation, strict TypeScript, **85/85 unit/component tests** and six expected invalid-fixture failures. The complete Chromium regression passed **82/82 without retries** in 3.7 minutes.
+
+### Boundary
+
+This refinement was local only at this checkpoint. No push, pull request, merge, deployment, analytics configuration or later editorial phase had been started. Owner desktop/mobile review was required before publication.
 
 ## 0.6 Google Search Console verification (2026-09-09)
 

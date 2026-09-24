@@ -311,6 +311,20 @@
   margin-block: 1.75rem;
   border-block: 1px solid var(--color-border);
 }
+.prep-details-row {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  max-width: calc(76ch + 4rem);
+  margin-block: 1.75rem;
+}
+.prep-details-row > .prep-details {
+  grid-column: 2;
+  min-width: 0;
+  margin-block: 0;
+  max-width: none;
+}
 .prep-method {
   max-width: 76ch;
   margin-block: 1rem;
@@ -357,15 +371,92 @@
 .prep-method[open] .prep-method-close {
   display: inline;
 }
-.prep-details summary,
+.prep-details summary {
+  cursor: pointer;
+  box-sizing: border-box;
+  min-height: 4.25rem;
+  padding: 0.75rem 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
 .prep-static-contents summary {
   cursor: pointer;
   padding: 0.85rem 0.5rem;
   font-weight: 600;
   min-height: 2.75rem;
 }
+.prep-details > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.prep-details-title {
+  min-width: 0;
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+.prep-details-with-thumbnail > .prep-image-thumbnail-link {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin-top: 0.5rem;
+}
+.prep-article .prep-details-heading {
+  margin: 1.25rem 0 0.45rem;
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+}
+.prep-article .prep-details-heading:first-child {
+  margin-top: 0;
+}
 .prep-details > div {
   padding: 0.8rem 0.5rem 0.3rem;
+}
+.prep-image-link,
+.prep-image-thumbnail-link {
+  cursor: zoom-in;
+}
+.prep-image-thumbnail-link {
+  display: block;
+  flex: none;
+  width: 3.25rem;
+  height: 3.25rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-elevated);
+  line-height: 0;
+}
+.prep-image-thumbnail-link:hover,
+.prep-image-thumbnail-link:focus-visible {
+  border-color: var(--color-accent);
+}
+.prep-image-thumbnail {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.prep-method.prep-submethod {
+  margin-block: 0.75rem 1.25rem;
+  margin-left: 1.25rem;
+  border-left: 3px solid var(--color-border);
+  background: transparent;
+}
+.prep-submethod > summary h4 {
+  font-size: 1rem;
+  padding: 0.75rem 0.9rem;
+}
+.prep-submethod .prep-method-body {
+  padding: 0.8rem 0.9rem 0.25rem;
 }
 .prep-figure {
   margin: 2rem 0;
@@ -447,7 +538,8 @@
   text-decoration-thickness: 1px;
   text-underline-offset: 0.16em;
 }
-.prep-condition-lightbox {
+.prep-condition-lightbox,
+.prep-image-lightbox {
   width: min(48rem, calc(100vw - 2rem));
   max-width: calc(100vw - 2rem);
   max-height: calc(100dvh - 2rem);
@@ -458,31 +550,37 @@
   color: var(--color-text);
   box-shadow: 0 1.25rem 4rem rgb(0 0 0 / 45%);
 }
-.prep-condition-lightbox::backdrop {
+.prep-condition-lightbox::backdrop,
+.prep-image-lightbox::backdrop {
   background: rgb(0 0 0 / 62%);
 }
-.prep-condition-lightbox-frame {
+.prep-condition-lightbox-frame,
+.prep-image-lightbox-frame {
   position: relative;
   display: grid;
   gap: 0.75rem;
 }
-.prep-condition-lightbox-frame form {
+.prep-condition-lightbox-frame form,
+.prep-image-lightbox-frame form {
   justify-self: end;
 }
-.prep-condition-lightbox h2 {
+.prep-condition-lightbox h2,
+.prep-image-lightbox h2 {
   margin: 0;
   color: var(--color-accent);
   font-size: 1.1rem;
   font-weight: 600;
 }
-.prep-condition-lightbox-image {
+.prep-condition-lightbox-image,
+.prep-image-lightbox-image {
   display: block;
   width: 100%;
   max-height: min(68dvh, 36rem);
   object-fit: contain;
   background: var(--color-surface);
 }
-.prep-condition-lightbox p {
+.prep-condition-lightbox p,
+.prep-image-lightbox p {
   margin: 0;
   color: var(--color-text-muted);
   font-size: 0.8125rem;
@@ -678,6 +776,21 @@
   .prep-method-body {
     padding: 1rem 0.9rem 0.25rem;
   }
+  .prep-image-thumbnail-link {
+    width: 3rem;
+    height: 3rem;
+  }
+  .prep-details-with-thumbnail > .prep-image-thumbnail-link {
+    width: 3rem;
+    height: 3rem;
+    margin-top: 0.5rem;
+  }
+  .prep-method.prep-submethod {
+    margin-left: 0.65rem;
+  }
+  .prep-submethod > summary h4 {
+    padding: 0.7rem 0.75rem;
+  }
   .prep-table table,
   .prep-table tbody,
   .prep-table tr,
@@ -742,7 +855,8 @@
   .prep-note,
   .prep-nav-bar,
   .prep-drawer,
-  .prep-workflow > ol > li {
+  .prep-workflow > ol > li,
+  .prep-image-thumbnail-link {
     border-color: CanvasText;
   }
   .prep-drawer a[aria-current] {

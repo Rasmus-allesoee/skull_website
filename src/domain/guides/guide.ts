@@ -6,6 +6,7 @@ import type { MediaAsset } from "../content/types";
 const id = z.string().regex(/^[a-z][a-z0-9-]*$/);
 const internalLinkPattern = /\[([^\]\n]+)\]\(#([a-z][a-z0-9-]*)\)/g;
 const mediaPattern = /!\[([^\]\n]+)\]\(asset:([a-z][a-z0-9-]*)\)/g;
+const mediaLinkPattern = /(?<!\!)\[([^\]\n]+)\]\(asset:([a-z][a-z0-9-]*)\)/g;
 const reference = citationSchema.extend({
   year: citationSchema.shape.year.nullable(),
 });
@@ -37,7 +38,14 @@ export type GuideBlock =
   | { kind: "list"; ordered: boolean; items: string[] }
   | { kind: "table"; headers: string[]; rows: string[][] }
   | { kind: "figure"; asset: string }
-  | { kind: "details" | "aside"; title: string; blocks: GuideBlock[] }
+  | { kind: "subheading"; text: string }
+  | { kind: "aside"; title: string; blocks: GuideBlock[] }
+  | {
+      kind: "details";
+      title: string;
+      asset?: string;
+      blocks: GuideBlock[];
+    }
   | {
       kind: "disclosure";
       level: 3 | 4;
@@ -73,7 +81,10 @@ export function extractGuideAnchorIds(text: string): string[] {
 
 /** Return preparation-media IDs authored in a text node. */
 export function extractGuideMediaIds(text: string): string[] {
-  return [...text.matchAll(mediaPattern)].map((match) => match[2]!);
+  return [
+    ...[...text.matchAll(mediaPattern)].map((match) => match[2]!),
+    ...[...text.matchAll(mediaLinkPattern)].map((match) => match[2]!),
+  ];
 }
 
 /** Parse a deliberately restricted MDX dialect; never compile or execute JSX. */
@@ -122,6 +133,13 @@ export function parseGuide(source: string): Omit<PreparationGuide, "media"> {
         blocks.push({ kind: "figure", asset: figure[1]! });
         continue;
       }
+      const subheading = /^<Subheading title="([^"<>]+)" \/>$/.exec(line);
+      if (subheading) {
+        if (!end)
+          throw new Error("Guide subheadings must remain inside blocks");
+        blocks.push({ kind: "subheading", text: subheading[1]! });
+        continue;
+      }
       const disclosure =
         /^<Disclosure id="([a-z][a-z0-9-]*)" level="([34])" title="([^"<>]+)">$/.exec(
           line,
@@ -143,15 +161,29 @@ export function parseGuide(source: string): Omit<PreparationGuide, "media"> {
         });
         continue;
       }
-      const container = /^<(Details|Aside) title="([^"<>]+)">$/.exec(line);
+      const container =
+        /^<(Details|Aside) title="([^"<>]+)"(?: asset="([a-z][a-z0-9-]*)")?>$/.exec(
+          line,
+        );
       if (container) {
         if (end && !allowContainers)
           throw new Error("Nested guide disclosures are not supported");
-        blocks.push({
-          kind: container[1] === "Details" ? "details" : "aside",
-          title: container[2]!,
-          blocks: blocksUntil(`</${container[1]}>`),
-        });
+        if (container[3] && container[1] !== "Details")
+          throw new Error("Only guide details may carry media");
+        if (container[1] === "Details") {
+          blocks.push({
+            kind: "details",
+            title: container[2]!,
+            ...(container[3] ? { asset: container[3] } : {}),
+            blocks: blocksUntil(`</${container[1]}>`),
+          });
+        } else {
+          blocks.push({
+            kind: "aside",
+            title: container[2]!,
+            blocks: blocksUntil(`</${container[1]}>`),
+          });
+        }
         continue;
       }
       if (/^\|/.test(line)) {
@@ -249,6 +281,7 @@ function validateText(text: string) {
   const plain = text
     .replace(/\[cite:[a-z0-9-]+\]/g, "")
     .replace(mediaPattern, "")
+    .replace(mediaLinkPattern, "")
     .replace(internalLinkPattern, "");
   if (/[<>{}\[\]`#]/.test(plain) || /^(?:import|export)\s/.test(plain))
     throw new Error(`Unsupported guide syntax: ${text.slice(0, 80)}`);
