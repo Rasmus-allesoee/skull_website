@@ -2,11 +2,24 @@
 
 **Snapshot date:** 2026-09-24
 
-**Current phase:** v1.0.1 is the latest release tag; the owner-approved v1.1.0 comparison-workbench integration is in its final PR review after the preparation refinement merged
+**Current phase:** v1.1.0 is released; the next product milestone is at the owner's discretion
 
-**Overall state:** Preparation PR #24 merged normally into `main` at `2e92d0a40fe7b2026889c7c8359a4c2cb0819d80`. Comparison PR #25's pre-integration head passed the full quality/build/browser workflow after fixing the medium-width rail-height regression; the comparison branch is now merging the updated `main` and must rerun that workflow before landing. The v1.0.1 tag remains the latest release tag; verify the deployment triggered by the preparation merge together with the final v1.1.0 release. Dependency PRs #19, #20, and #23 have green checks and await individual landing confirmations. PR #21 was closed because Node 26 type declarations exceed the Node 24 runtime contract; PR #22 was closed because mismatched React/React DOM versions fail CI. This shell has Node 25.8.2 and no `pnpm`; because the repository pins Node 24/pnpm 11, final validation relies on repository CI.
+**Overall state:** GitHub release [v1.1.0](https://github.com/Rasmus-allesoee/skull_website/releases/tag/v1.1.0) targets `33f907416658bcaccf2b9b1b543dcd3f95f3b9a7`, the normal merge commit for PR #26 and the latest `main` commit when the release was published. PR #24 (preparation refinement) and PR #25 (comparison workbench) are merged normally at `2e92d0a` and `ce1b48b`; approved dependency updates PR #19, #20, and #26 are also merged. PR #23 was superseded by #26; #21 and #22 were closed for Node-runtime and React-version compatibility respectively. The v1.1.0 main commit has a successful Vercel status, and production smoke checks returned HTTP 200 for Home, `/compare`, the preparation guide, and the sitemap. Full pinned-toolchain checks ran in GitHub Actions; this local shell has Node 25.8.2 and no `pnpm`, while the repository requires Node 24 and pnpm 11.
 
-**Next action:** Complete and push the `main` merge into `skull_comparison_page`, pass all integrated checks, then request landing confirmation for PR #25. Resolve the three passing dependency PRs through their own exact-head gates, verify merged `main` and production, and publish v1.1.0. Remove only the comparison worktree after the release is safely merged and its contents are checked.
+**Next action:** No implementation work is currently authorized or required. When work resumes, select the next owner-approved milestone from the deferred scope in [implementation_plan.md](implementation_plan.md) and branch from the updated `main`.
+
+## 0.21 v1.1.0 release (2026-09-24)
+
+- Published GitHub release [v1.1.0](https://github.com/Rasmus-allesoee/skull_website/releases/tag/v1.1.0), tagged at `33f907416658bcaccf2b9b1b543dcd3f95f3b9a7`. The release covers the standalone comparison workbench, preparation-guide refinement, and approved dependency maintenance since v1.0.1.
+- Integrated preparation PR #24 at `2e92d0a`, comparison PR #25 at `ce1b48b`, Vitest PR #19 at `9cbad36`, Zod PR #20 at `d6822a7`, and replacement development-tooling PR #26 at `33f9074`. Normal merge commits preserve each branch's coherent commits.
+- PR #23 was superseded by Dependabot's replacement PR #26. PR #21 (Node 26 type declarations) and #22 (mismatched React/React DOM versions) were closed after compatibility checks.
+
+### Verification
+
+- The combined comparison branch passed the full GitHub Actions quality, build, and Chromium browser workflow before PR #25 merged. The approved dependency PRs passed their required checks.
+- GitHub reports Vercel success for release target `33f9074`. Production smoke checks returned HTTP 200 for `/`, `/compare`, `/guides/skull-preparation`, and `/sitemap.xml`.
+- Desktop and narrow-mobile Chromium smoke checks confirmed the comparison page loads its field and semantic measurement table, no page-level horizontal overflow occurs at 390 px, and no browser errors were observed.
+- The complete repository check was not rerun locally because the available shell is Node 25.8.2 without pnpm; the pinned Node 24/pnpm 11 CI workflow is the validation authority for this release.
 
 ## 0.20 v1.1.0 integration after preparation-guide merge (2026-09-24)
 
@@ -192,14 +205,6 @@
 ### Verification
 
 - Focused CSV tests pass **3/3**; focused ESLint and strict TypeScript pass.
-
-**Snapshot date:** 2026-09-24
-
-**Current phase:** Skull Comparison mobile owner-feedback refinement complete locally on `skull_comparison_page`; awaiting owner review
-
-**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. The owner approved all eight standalone-comparison decisions on 2026-09-11 and later requested source-value CSV and field PNG exports. The comparison workbench, exports, and mobile owner-feedback refinements are implemented and locally verified in the isolated `skull_comparison_page` worktree; owner review and any publication remain separate. The unfinished `preparation_guide_refinement` branch remains intact and unmerged.
-
-**Next action:** Owner review of the local mobile comparison workbench. Address any further feedback on `skull_comparison_page`; do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
 
 ## 0.12 Selected-card alignment and positional difference-pair correction (2026-09-14)
 

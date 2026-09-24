@@ -2,7 +2,7 @@
 
 **Status:** Approved phased roadmap
 
-**Current phase:** v1.0.1 remains the latest release tag; preparation PR #24 has merged, and owner-approved comparison PR #25 is being refreshed from `main` for the planned v1.1.0 release
+**Current phase:** v1.1.0 has shipped the approved standalone comparison workbench and preparation-guide refinement; future work remains in the deferred backlog until separately authorized
 
 **Last reviewed:** 2026-09-24
 
@@ -473,7 +473,14 @@ All product acceptance criteria in [project_overview.md](project_overview.md) an
 - [x] Keep analytics to automatic page views, force production mode, and remove query parameters/fragments before transmission.
 - [x] Publish a concise `/privacy` notice, link it from the global footer, and include it in the sitemap.
 - [x] Retain the existing same-origin CSP boundary; verify the analytics script/request path and absence of Preview/local tracking in browser checks.
-- [ ] Merge the verified branch into `main`, create the `v1.0.1` tag/release, and record the production dashboard/deployment evidence.
+- [x] Merge the verified branch into `main`, create the `v1.0.1` tag/release, and record the production dashboard/deployment evidence.
+
+### v1.1.0 comparison and preparation-guide release
+
+- [x] Merge preparation-guide refinement PR #24 and standalone comparison PR #25 into `main` with normal merge commits.
+- [x] Merge individually reviewed dependency updates PRs #19, #20, and replacement PR #26; close incompatible PRs #21 and #22, and supersede PR #23 with #26.
+- [x] Run the complete comparison quality/build/Chromium workflow on the integrated branch and verify the merged production routes.
+- [x] Publish GitHub release `v1.1.0` at `33f907416658bcaccf2b9b1b543dcd3f95f3b9a7`.
 
 ## 11. Cross-cutting test matrix
 

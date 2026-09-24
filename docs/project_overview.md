@@ -6,7 +6,7 @@
 
 **Interface language:** English
 
-**Last reviewed:** 2026-09-10
+**Last reviewed:** 2026-09-24
 
 ## 1. Vision
 
@@ -14,7 +14,7 @@ Skull Collection will be a fast, visually led online natural-history museum buil
 
 The site begins with the collector's own Danish specimens but is designed for a larger, carefully curated reference collection. It must be credible enough for identification and comparison, accessible enough for curious non-specialists, and structured enough to remain maintainable as specimens, contributors, countries, and media types grow.
 
-The shared museum shell, redesigned Home hub, class/order/family/genus routes, review-quality 15-taxon/18-specimen collection, combined Phase 3.2/Phase 4 catalog discovery, focused Phase 5 `/map` workspace, and standalone `/compare` workbench are implemented locally. The Home entrance now combines a static-first interactive specimen field, canonical six-rank counts, and compact previews of Species, Map, Measurements, Preparation, and Comparison. The owner-authorized Measurements milestone adds the static `/methodology` reference with 21 definitions, five real-skull diagrams, 24 registered programmatic SVG occurrences, responsive interaction, compact tappable mobile previews, adaptive diagram-anchored previews/details, and a complete semantic fallback. The comprehensive interactive tree (Phase 3.3), remaining supporting/editorial routes, complete audited collection migration, and production remain later work.
+The v1.1.0 release is live at the assigned production domain. It adds the standalone `/compare` workbench and the owner-approved preparation-guide refinement to the v1.0.1 baseline. The museum also includes the shared shell, redesigned Home, class/order/family/genus routes, reviewed 15-taxon/18-specimen collection, catalog discovery, `/map`, and the static `/methodology` reference with 21 definitions, five skull diagrams, and 24 registered SVG occurrences. The comprehensive interactive tree (Phase 3.3), remaining supporting/editorial routes, and any further collection migration remain deferred.
 
 ## 2. Product principles
 
@@ -85,7 +85,9 @@ The shared museum shell, redesigned Home hub, class/order/family/genus routes, r
 - E-commerce or monetization.
 - The Guides hub, Contribution protocol, About, Rights, Accessibility, broader methodology sections, comprehensive taxonomy tree, and standalone Comparison page. The owner explicitly deferred these supporting routes from v1 so the first technical release could prove deployment; the Comparison workbench was approved as a focused post-v1 addition on 2026-09-11, and the concise Privacy notice is included in v1.0.1 because production analytics is enabled.
 
-Exclusion from v1 does not mean rejection. Each feature remains in the deferred backlog with prerequisites in [implementation_plan.md](implementation_plan.md).
+These exclusions describe the original v1.0.0 scope. The standalone comparison workbench and preparation-guide refinement were subsequently approved and shipped in v1.1.0; the remaining deferred items and their prerequisites are tracked in [implementation_plan.md](implementation_plan.md).
+
+The current release includes the standalone comparison workbench and the preparation-guide refinement with reviewed photos, numbered method disclosures, and expandable maceration/adipocere troubleshooting.
 
 ## 5. Information architecture
 
