@@ -699,6 +699,10 @@
 }
 
 @media (min-width: 64.01rem) and (max-width: 75rem) {
+  .compare-subject-rail {
+    height: calc(var(--comparison-field-height) + 8.55rem);
+  }
+
   .compare-field-toolbar {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
