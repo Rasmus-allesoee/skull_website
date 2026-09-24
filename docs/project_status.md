@@ -1,5 +1,24 @@
 # Project status
 
+## 0.19 Comparison field toolbar at narrow widths (2026-09-24)
+
+- At 64.01–75rem, the field title now sits above the control row. The Arrange
+  label and select remain fully visible while the selected-subject rail stays
+  beside the field.
+- On phones, moved More out of the title corner and after Fit all on the same
+  row as Arrange and 100%. The scale/label menu opens below that button over
+  the field; zoom controls remain on their own row.
+
+### Verification
+
+- Visual inspection at 1025, 1177, 1201, 390, and 320 CSS pixels confirmed the
+  full Arrange control is visible at intermediate widths; the phone controls
+  stay in the requested order and the More menu opens beneath its button.
+  The 320-pixel page has no horizontal overflow. No automated tests were run
+  for this CSS-only adjustment.
+- Changes are committed locally on `skull_comparison_page`; no remote or
+  publication action was performed.
+
 ## 0.18 Comparison mobile measurement table and final local gate (2026-09-24)
 
 - Replaced the narrow-phone measurement cards with one horizontally scrollable

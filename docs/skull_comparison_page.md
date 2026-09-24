@@ -322,6 +322,9 @@ MEASUREMENTS                       [Show only comparable]
   subjects are present; the document itself must never overflow horizontally.
 - The Measurement column stays sticky at the left of an internally scrolling
   desktop/tablet table when browser testing confirms reliable behavior.
+- While the subject rail and field remain side by side at 64.01–75rem viewport
+  widths, put the field title on its own row above the complete control row so
+  the arrangement select cannot be clipped by the horizontal control strip.
 
 ### 5.3 Phone
 
@@ -330,8 +333,9 @@ MEASUREMENTS                       [Show only comparable]
   Common name and record ID remain visible; compact view, opacity, and remove
   actions form a vertical control column. Their menus open over the viewport
   so the horizontal strip cannot clip them.
-- The field toolbar keeps `100%` and `Fit all` beside Arrange, with a separate
-  full-width zoom row and More in the upper-right corner.
+- The field toolbar keeps `100%`, `Fit all`, and More on the Arrange row, in
+  that order. More opens from its own button after Fit all; the zoom controls
+  stay on a separate full-width row below.
 - The field follows with a practical touch height; it is not forced to a full
   viewport because the measurement table remains part of the same journey.
 - The same semantic table remains visible in its own horizontal scroller.
