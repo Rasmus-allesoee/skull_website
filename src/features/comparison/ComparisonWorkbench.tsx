@@ -976,7 +976,12 @@ function ComparisonTable({
   }
 
   return (
-    <div className="comparison-table-wrap">
+    <div
+      className="comparison-table-wrap"
+      role="region"
+      aria-label="Measurement comparison table"
+      tabIndex={0}
+    >
       <table className="comparison-table">
         <caption className="visually-hidden">
           Recorded skull measurements and the directed difference between the
@@ -999,7 +1004,12 @@ function ComparisonTable({
                 title="Drag to change skull order"
               >
                 <span>
-                  Skull {index + 1} · <strong>{record.label}</strong>
+                  Skull {index + 1}
+                  <span className="comparison-table-heading-separator">
+                    {" "}
+                    ·{" "}
+                  </span>
+                  <strong>{record.label}</strong>
                 </span>
                 {record.scientificName ? <i>{record.scientificName}</i> : null}
                 <small>{record.specimenId ?? "Reviewed reference"}</small>
@@ -1055,10 +1065,7 @@ function ComparisonTable({
                     record.measurementProfile,
                   );
                   return (
-                    <td
-                      key={record.id}
-                      data-label={`Skull ${selected.indexOf(record) + 1} · ${formatComparisonRecordIdentity(record)}`}
-                    >
+                    <td key={record.id}>
                       {key
                         ? formatComparisonMeasurement(record.measurements[key])
                         : "Not applicable"}
@@ -1123,16 +1130,6 @@ function formatComparisonMeasurement(measurement: Measurement) {
     maximumFractionDigits: 2,
   }).format(measurement.value ?? 0);
   return `${measurement.status === "approximate" ? "~" : ""}${value} ${measurement.unit}`;
-}
-
-function formatComparisonRecordIdentity(record: SkullComparisonRecord) {
-  return [
-    record.label,
-    record.scientificName,
-    record.specimenId ?? "Reviewed reference",
-  ]
-    .filter((value): value is string => Boolean(value))
-    .join(" · ");
 }
 
 function getMethodologyHref(key: ComparisonMeasurementKey | null) {

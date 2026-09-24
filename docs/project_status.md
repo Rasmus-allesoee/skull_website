@@ -1,5 +1,37 @@
 # Project status
 
+## 0.18 Comparison mobile measurement table and final local gate (2026-09-24)
+
+- Replaced the narrow-phone measurement cards with one horizontally scrollable
+  semantic table. Measurement remains sticky; each compact subject header
+  stacks `Skull X` above its English name. The Difference column remains at
+  the end, and the named scroll region is keyboard focusable. Wider headers
+  retain their inline names, scientific names, and record IDs.
+- Reconciled the responsive comparison contract and design-system guidance.
+  The mobile owner-feedback refinements are complete locally and await owner
+  review; the preparation-guide worktree was not touched.
+
+### Verification
+
+- Responsive browser inspection at 320, 390, 900, and 1440 CSS pixels found no
+  document-level horizontal overflow. The 390-pixel table shows compact
+  two-line headers; a five-subject table scrolls to Difference while keeping
+  Measurement fixed. Keyboard Right Arrow scrolls the focused table region;
+  the wider table presentation remains unchanged.
+- The complete comparison Chromium suite passes **20/20** journeys after a
+  touch-test assertion was changed to verify actual layer displacement rather
+  than a transient status message. It covers mobile/desktop/tablet controls,
+  touch navigation, menus, cross-class measurements, reordering, missing
+  images, no-JavaScript output, and the field guide.
+- `CI=true pnpm check` passes formatting, ESLint, media/content validation,
+  strict TypeScript, **111/111 unit/component tests**, and six expected
+  invalid-fixture checks. `CI=true pnpm build` succeeds with **79/79** static
+  routes. A live grid-background PNG download with the 100 mm scale bar was
+  inspected: the bar is a bare line and label, with no box or caption.
+- All work remains on the local `skull_comparison_page` branch in the isolated
+  comparison worktree. No push, pull request, merge, deployment, or publication
+  was performed.
+
 ## 0.17 Comparison field guidance and scale-bar checkpoint (2026-09-24)
 
 - Replaced the always-visible, desktop-truncated field instructions with a
@@ -129,11 +161,11 @@
 
 **Snapshot date:** 2026-09-24
 
-**Current phase:** Skull Comparison mobile owner-feedback refinement on `skull_comparison_page`; field-controls and field-guide checkpoints complete
+**Current phase:** Skull Comparison mobile owner-feedback refinement complete locally on `skull_comparison_page`; awaiting owner review
 
-**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. The owner approved all eight standalone-comparison decisions on 2026-09-11 and later requested source-value CSV and field PNG exports. The comparison workbench and exports are implemented in the isolated `skull_comparison_page` worktree; the mobile owner-feedback refinements are underway and the final gate is pending. The unfinished `preparation_guide_refinement` branch remains separate, intact, and unmerged.
+**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. The owner approved all eight standalone-comparison decisions on 2026-09-11 and later requested source-value CSV and field PNG exports. The comparison workbench, exports, and mobile owner-feedback refinements are implemented and locally verified in the isolated `skull_comparison_page` worktree; owner review and any publication remain separate. The unfinished `preparation_guide_refinement` branch remains intact and unmerged.
 
-**Next action:** Replace narrow-mobile measurement cards with the compact horizontal table, then perform the final cross-feature browser gate. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
+**Next action:** Owner review of the local mobile comparison workbench. Address any further feedback on `skull_comparison_page`; do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
 
 ## 0.12 Selected-card alignment and positional difference-pair correction (2026-09-14)
 
@@ -905,11 +937,13 @@ Package-manager gates must run sequentially with `CI=true` in non-interactive en
 
 ## 13. Exact next action
 
-1. Owner reviews the redesigned `/` at desktop and mobile widths, including the ten-specimen mixed-angle field's foreground/midground/background hierarchy, boundary-safe identity cards, focus/touch/parallax behavior, compact six-rank strip, and five owner-supplied hub thumbnails.
-2. If changes are wanted, authorize only that bounded Home refinement; otherwise explicitly authorize publication before any push or pull request.
-3. Keep merged Phase 5 and the local Measurements/Home checkpoints as stable fallbacks. Do not begin age/condition methodology or another phase from this branch.
-
-No unresolved content, rights, or publication blocker prevents local Home review. The owner explicitly authorized the Preparation source image; the committed derivative is metadata-stripped and reserved-rights. Formal source/citation expansion would require reviewed citation records; Phase 6 still requires completed/corrected metadata, missing accepted image sets, and final rights/public-note/publication decisions for blocked rows.
+1. Owner reviews the local `/compare` mobile and desktop workbench, including
+   the compact selected-skull strip, medium-width menus, free touch dragging,
+   field guide/scale bar, and five-subject horizontal measurement table.
+2. Address any further bounded feedback on `skull_comparison_page`. Push, pull
+   request, merge, deployment, or publication requires a later owner instruction.
+3. Keep the separate, unfinished `preparation_guide_refinement` worktree and
+   branch intact and unmerged.
 
 ## 14. Decision/blocker protocol
 

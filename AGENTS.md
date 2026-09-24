@@ -20,7 +20,7 @@ GitHub authentication is verified valid in the user’s regular Terminal; if Cod
 
 Build a fast, visually led online natural-history museum for animal skulls. Photography leads; taxonomy, measurements, specimen provenance, preparation, rights, and citations are progressively disclosed.
 
-Current phase: **the owner-approved standalone Skull Comparison workbench is receiving mobile owner-feedback refinements on `skull_comparison_page` from the released `main` baseline**. The unfinished `preparation_guide_refinement` branch remains separate and unmerged. The approved comparison contract lives in `docs/skull_comparison_page.md`; completion does not authorize push, pull request, merge, deployment, or publication. Consult `docs/project_status.md` for exact evidence and the next action.
+Current phase: **the owner-approved standalone Skull Comparison workbench has completed its local mobile owner-feedback refinements on `skull_comparison_page` and awaits owner review**. The unfinished `preparation_guide_refinement` branch remains separate and unmerged. The approved comparison contract lives in `docs/skull_comparison_page.md`; completion does not authorize push, pull request, merge, deployment, or publication. Consult `docs/project_status.md` for exact evidence and the next action.
 
 Use the owner-selected public v1 name **Skull Collection** from central site configuration.
 

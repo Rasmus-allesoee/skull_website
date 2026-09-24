@@ -81,7 +81,9 @@ test("desktop field keeps page scrolling separate from zoom, precise hits, and c
       subjectBounds: layer
         .querySelector(".comparison-layer-outline")
         ?.getBoundingClientRect(),
-      hitBounds: layer.querySelector(".comparison-layer-hit svg")?.getBoundingClientRect(),
+      hitBounds: layer
+        .querySelector(".comparison-layer-hit svg")
+        ?.getBoundingClientRect(),
       layerBounds: layer.getBoundingClientRect(),
     }),
   );
@@ -453,20 +455,52 @@ test("invalid shared state recovers valid entries and browser history restores s
   await expect(page.locator(".compare-subject-card")).toHaveCount(2);
 });
 
-test("mobile comparison uses internal strips and stacked measurement cards", async ({
+test("mobile comparison keeps a compact, scrollable table with a frozen measurement column", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(defaultRoute);
   await expect(page.locator(".comparison-field")).toBeVisible();
-  await expect(page.locator(".comparison-table tbody")).toHaveCSS(
-    "display",
-    "grid",
+  const wrap = page.locator(".comparison-table-wrap");
+  const table = wrap.locator("table");
+  const firstHeading = table.locator("thead th").first();
+  const firstRow = table.locator("tbody tr").first();
+  await expect(table.locator("thead")).toBeVisible();
+  await expect(firstRow).toHaveCSS("display", "table-row");
+  await expect(
+    table.locator(".comparison-table-heading-separator").first(),
+  ).toBeHidden();
+  await expect(table.locator("thead th:nth-child(2) strong")).toBeVisible();
+  expect(await wrap.evaluate((element) => element.scrollWidth)).toBeGreaterThan(
+    await wrap.evaluate((element) => element.clientWidth),
   );
-  await expect(page.locator(".comparison-table tbody tr").first()).toHaveCSS(
-    "display",
-    "grid",
+  const leftBefore = (await firstHeading.boundingBox())!.x;
+  await wrap.evaluate((element) => {
+    element.scrollLeft = 200;
+  });
+  await expect
+    .poll(() => wrap.evaluate((element) => element.scrollLeft))
+    .toBeGreaterThan(0);
+  expect(
+    Math.abs((await firstHeading.boundingBox())!.x - leftBefore),
+  ).toBeLessThanOrEqual(1);
+  expect(await firstRow.locator("td").count()).toBe(3);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth - innerWidth,
+    ),
+  ).toBeLessThanOrEqual(0);
+
+  await page.goto(
+    "/compare?subjects=specimen%3ASPEC-0001%2Cspecimen%3ASPEC-0002%2Cspecimen%3ASPEC-0003%2Cspecimen%3ASPEC-0004%2Cspecimen%3ASPEC-0005&views=specimen%3ASPEC-0001%40lateral%3Bspecimen%3ASPEC-0002%40lateral%3Bspecimen%3ASPEC-0003%40lateral%3Bspecimen%3ASPEC-0004%40lateral%3Bspecimen%3ASPEC-0005%40lateral",
   );
+  await expect(page.locator(".comparison-table thead th")).toHaveCount(7);
+  const fiveSubjectWrap = page.locator(".comparison-table-wrap");
+  await fiveSubjectWrap.scrollIntoViewIfNeeded();
+  await fiveSubjectWrap.evaluate((element) => {
+    element.scrollLeft = element.scrollWidth;
+  });
+  await expect(page.locator(".comparison-difference-heading")).toBeInViewport();
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth - innerWidth,
@@ -917,9 +951,14 @@ test("vertical and diagonal touches move a skull without scrolling the page", as
       type: "touchEnd",
       touchPoints: [],
     });
-    await expect(page.locator(".comparison-field-status")).toContainText(
-      "Layer position updated",
-    );
+    await expect
+      .poll(() =>
+        layer.evaluate((element) => ({
+          x: Number.parseFloat(element.style.getPropertyValue("--layer-x")),
+          y: Number.parseFloat(element.style.getPropertyValue("--layer-y")),
+        })),
+      )
+      .not.toEqual(before);
     const after = await layer.evaluate((element) => ({
       x: Number.parseFloat(element.style.getPropertyValue("--layer-x")),
       y: Number.parseFloat(element.style.getPropertyValue("--layer-y")),

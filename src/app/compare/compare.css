@@ -1156,6 +1156,11 @@
   border: 1px solid var(--color-border);
 }
 
+.comparison-table-wrap:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
 .comparison-table {
   width: 100%;
   min-width: 52rem;
@@ -1736,70 +1741,60 @@
   }
 
   .comparison-table {
-    min-width: 0;
+    width: max-content;
+    min-width: 100%;
   }
 
   .comparison-table-wrap {
-    overflow: visible;
-    border: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
   }
 
-  .comparison-table thead {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
+  .comparison-table th,
+  .comparison-table td {
+    padding: 0.5rem 0.55rem;
   }
 
-  .comparison-table tbody {
-    display: grid;
-    gap: 0.65rem;
+  .comparison-table thead th:first-child,
+  .comparison-table tbody th {
+    width: 7.75rem;
+    min-width: 7.75rem;
+    max-width: 7.75rem;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    box-shadow: 1px 0 0 var(--color-border);
   }
 
-  .comparison-table tbody tr {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    border: 1px solid var(--color-border);
-    background: var(--color-surface);
+  .comparison-table thead th:not(:first-child):not(:last-child),
+  .comparison-table tbody td:not(:last-child) {
+    min-width: 7.75rem;
+    max-width: 7.75rem;
   }
 
-  .comparison-table tbody th,
-  .comparison-table tbody td {
-    position: static;
-    display: grid;
-    min-width: 0;
-    padding: 0.6rem 0.7rem;
-    border-right: 0;
+  .comparison-table thead th:not(:first-child):not(:last-child) > span {
+    max-width: 6.65rem;
     white-space: normal;
   }
 
-  .comparison-table tbody th {
-    grid-column: 1 / -1;
-    border-bottom: 1px solid var(--color-border);
-    background: var(--color-surface-elevated);
-    font-size: 0.82rem;
+  .comparison-table-heading-separator,
+  .comparison-table thead th:not(:first-child):not(:last-child) > i,
+  .comparison-table thead th:not(:first-child):not(:last-child) > small {
+    display: none;
   }
 
-  .comparison-table tbody td::before {
-    margin-bottom: 0.2rem;
-    color: var(--color-text-muted);
-    content: attr(data-label);
-    font-size: 0.6rem;
-    font-weight: 600;
-    letter-spacing: 0.035em;
-    text-transform: uppercase;
+  .comparison-table
+    thead
+    th:not(:first-child):not(:last-child)
+    > span
+    > strong {
+    display: block;
+    max-width: 6.65rem;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
 
-  .comparison-table tbody .comparison-difference {
-    grid-column: 1 / -1;
-    grid-template-columns: 1fr auto;
-    border-top: 1px solid var(--color-border);
-    border-left-width: 0.2rem;
-  }
-
-  .comparison-table tbody .comparison-difference::before {
-    grid-column: 1 / -1;
+  .comparison-table tbody td:last-child {
+    min-width: 9.5rem;
   }
 
   .comparison-pair-control {

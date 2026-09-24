@@ -334,8 +334,9 @@ MEASUREMENTS                       [Show only comparable]
   full-width zoom row and More in the upper-right corner.
 - The field follows with a practical touch height; it is not forced to a full
   viewport because the measurement table remains part of the same journey.
-- The semantic table visually becomes one card per measurement. Each card shows
-  all selected subject values in a compact grid, then the chosen difference.
+- The same semantic table remains visible in its own horizontal scroller.
+  Measurement stays sticky while compact subject headers show `Skull X` above
+  the English name; the Difference column follows all selected skulls.
 - Every control remains at least 44 CSS pixels in its actionable dimension.
 - Internal strips may scroll; the page itself must have no horizontal overflow.
 
@@ -660,9 +661,12 @@ URL-backed because it changes the analytical result presentation.
   selected.
 - At intermediate widths, contain horizontal scrolling inside the table region
   and keep the Measurement header/column visible when robust.
-- At narrow widths, preserve the semantic table in the DOM but present each row
-  as a stacked card: measurement/link first, selected subject values in a small
-  grid, and the active-pair difference last.
+- At narrow widths, keep the same semantic table visible inside its own
+  horizontal scroller rather than converting rows to cards. Freeze the compact
+  Measurement column; show each subject header as `Skull X` above its English
+  name, while the scientific name and specimen ID remain available in the
+  selected-subject strip. At wider widths, retain the inline
+  `Skull X · English name` header and the full header metadata.
 - Do not abbreviate `Not recorded` or `Not applicable` in this reference surface.
 - Never let the table force document-level horizontal overflow.
 
