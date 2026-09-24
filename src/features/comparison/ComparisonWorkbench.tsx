@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { type DragEvent, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type DragEvent,
+  type MouseEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import {
   calculateMeasurementDifference,
@@ -177,6 +184,34 @@ export function ComparisonWorkbench({
     if (!hydrated.current) return;
     const query = serializeComparisonState(next);
     window.history.pushState(null, "", `${window.location.pathname}?${query}`);
+  }
+
+  function positionRailPopup(
+    event: MouseEvent<HTMLElement>,
+    widthInRem: number,
+  ) {
+    if (
+      !window.matchMedia("(min-width: 48.01rem) and (max-width: 64rem)").matches
+    )
+      return;
+    const details = event.currentTarget.closest("details");
+    if (!details) return;
+    const trigger = event.currentTarget.getBoundingClientRect();
+    const rootFontSize = Number.parseFloat(
+      window.getComputedStyle(document.documentElement).fontSize,
+    );
+    const width = Math.min(widthInRem * rootFontSize, window.innerWidth - 24);
+    const left = Math.max(
+      12,
+      Math.min(trigger.left, window.innerWidth - width - 12),
+    );
+    const top = trigger.bottom + 6;
+    details.style.setProperty("--compare-menu-left", `${left}px`);
+    details.style.setProperty("--compare-menu-top", `${top}px`);
+    details.style.setProperty(
+      "--compare-menu-max-height",
+      `${Math.max(32, window.innerHeight - top - 12)}px`,
+    );
   }
 
   function addSubject(id: string) {
@@ -512,216 +547,256 @@ export function ComparisonWorkbench({
               {maximumComparisonLayers} views
             </span>
           </div>
-          {selected.map(({ record, subject }, index) => (
-            <article
-              className={`compare-subject-card marker-${index + 1}`}
-              key={record.id}
-              draggable
-              onDragStart={(event) => beginSubjectDrag(event, record.id)}
-              onDragOver={(event) => event.preventDefault()}
-              onDrop={(event) => dropSubject(event, record.id)}
-              onDragEnd={() => {
-                draggedSubjectId.current = null;
-                clearSubjectDragPreview();
-              }}
-              data-active={activeSubjectId === record.id ? "true" : undefined}
-              onFocus={() => setActiveSubjectId(record.id)}
-              onPointerDown={() => setActiveSubjectId(record.id)}
-            >
-              <header>
-                <span
-                  className={`subject-marker marker-${index + 1}`}
-                  aria-hidden="true"
-                >
-                  {subjectMarkers[index]}
-                </span>
-                <div>
-                  <p>Skull {index + 1}</p>
-                  <h2>
-                    {record.href ? (
-                      <Link href={record.href}>{record.label}</Link>
-                    ) : (
-                      record.label
-                    )}
-                  </h2>
-                  {record.scientificName ? (
-                    <i className="compare-subject-scientific">
-                      {record.scientificName}
-                    </i>
-                  ) : null}
-                  <p className="compare-subject-meta">
-                    {record.specimenId ?? "Reviewed reference"}
-                    {record.measurements.skullLength.status !==
-                      "not_applicable" &&
-                    record.measurements.skullLength.value !== null
-                      ? ` · ${formatComparisonMeasurement(record.measurements.skullLength)}`
-                      : null}
-                  </p>
-                </div>
-                <div className="compare-subject-order-controls">
-                  <button
-                    type="button"
-                    disabled={index === 0}
-                    aria-label={`Move Skull ${index + 1} before Skull ${index}`}
-                    title="Move earlier"
-                    onClick={() =>
-                      reorderSubjects(
-                        record.id,
-                        selected[index - 1]?.record.id ?? record.id,
-                      )
-                    }
-                  >
-                    ←
-                  </button>
-                  <button
-                    type="button"
-                    disabled={index === selected.length - 1}
-                    aria-label={`Move Skull ${index + 1} after Skull ${index + 2}`}
-                    title="Move later"
-                    onClick={() =>
-                      reorderSubjects(
-                        record.id,
-                        selected[index + 1]?.record.id ?? record.id,
-                      )
-                    }
-                  >
-                    →
-                  </button>
-                </div>
-              </header>
-              <ul
-                className="compare-view-chips"
-                aria-label={`Active views for Skull ${index + 1}`}
+          <div className="compare-subject-strip">
+            {selected.map(({ record, subject }, index) => (
+              <article
+                className={`compare-subject-card marker-${index + 1}`}
+                key={record.id}
+                draggable
+                onDragStart={(event) => beginSubjectDrag(event, record.id)}
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={(event) => dropSubject(event, record.id)}
+                onDragEnd={() => {
+                  draggedSubjectId.current = null;
+                  clearSubjectDragPreview();
+                }}
+                data-active={activeSubjectId === record.id ? "true" : undefined}
+                onFocus={() => setActiveSubjectId(record.id)}
+                onPointerDown={() => setActiveSubjectId(record.id)}
               >
-                {subject.views.map((view) => (
-                  <li key={view}>
-                    <span>{formatViewLabel(view)}</span>
+                <header>
+                  <span
+                    className={`subject-marker marker-${index + 1}`}
+                    aria-hidden="true"
+                  >
+                    {subjectMarkers[index]}
+                  </span>
+                  <div>
+                    <p>Skull {index + 1}</p>
+                    <h2>
+                      {record.href ? (
+                        <Link href={record.href}>{record.label}</Link>
+                      ) : (
+                        record.label
+                      )}
+                    </h2>
+                    {record.scientificName ? (
+                      <i className="compare-subject-scientific">
+                        {record.scientificName}
+                      </i>
+                    ) : null}
+                    <p className="compare-subject-meta">
+                      <span>{record.specimenId ?? "Reviewed reference"}</span>
+                      {record.measurements.skullLength.status !==
+                        "not_applicable" &&
+                      record.measurements.skullLength.value !== null ? (
+                        <span className="compare-subject-length">
+                          {` · ${formatComparisonMeasurement(record.measurements.skullLength)}`}
+                        </span>
+                      ) : null}
+                    </p>
+                  </div>
+                  <div className="compare-subject-order-controls">
                     <button
                       type="button"
-                      aria-label={`Remove Skull ${index + 1} ${formatViewLabel(view)} view`}
-                      onClick={() => removeView(record.id, view)}
+                      disabled={index === 0}
+                      aria-label={`Move Skull ${index + 1} before Skull ${index}`}
+                      title="Move earlier"
+                      onClick={() =>
+                        reorderSubjects(
+                          record.id,
+                          selected[index - 1]?.record.id ?? record.id,
+                        )
+                      }
                     >
-                      ×
+                      ←
                     </button>
-                  </li>
-                ))}
-              </ul>
-              <div className="compare-subject-controls">
-                <details className="compare-view-menu">
-                  <summary>Add view</summary>
-                  <div>
-                    {record.views.map((view) => {
-                      const active = subject.views.includes(view.view);
-                      return (
-                        <button
-                          type="button"
-                          key={view.view}
-                          disabled={
-                            active || layerCount >= maximumComparisonLayers
-                          }
-                          onClick={(event) => {
-                            addView(record.id, view.view);
-                            event.currentTarget
-                              .closest("details")
-                              ?.removeAttribute("open");
-                          }}
-                        >
-                          {formatViewLabel(view.view)}
-                          <small>{active ? "Active" : "Add"}</small>
-                        </button>
-                      );
-                    })}
-                    {layerCount >= maximumComparisonLayers ? (
-                      <p>10-view field limit reached.</p>
-                    ) : null}
+                    <button
+                      type="button"
+                      disabled={index === selected.length - 1}
+                      aria-label={`Move Skull ${index + 1} after Skull ${index + 2}`}
+                      title="Move later"
+                      onClick={() =>
+                        reorderSubjects(
+                          record.id,
+                          selected[index + 1]?.record.id ?? record.id,
+                        )
+                      }
+                    >
+                      →
+                    </button>
                   </div>
-                </details>
-                <details className="compare-opacity-control">
-                  <summary title="Adjust opacity">Opacity</summary>
-                  <label>
-                    <span>Skull {index + 1} opacity</span>
-                    <input
-                      type="range"
-                      min={0}
-                      max={100}
-                      step={5}
-                      value={opacityBySubject[record.id] ?? 100}
-                      onChange={(event) => {
-                        const value = Number(event.currentTarget.value);
-                        setOpacityBySubject((current) => ({
-                          ...current,
-                          [record.id]: value,
-                        }));
-                        setActionStatus(
-                          value === 0
-                            ? `Skull ${index + 1} hidden in field.`
-                            : `Skull ${index + 1} opacity ${value}%.`,
-                        );
-                      }}
-                    />
-                    <output>{opacityBySubject[record.id] ?? 100}%</output>
-                  </label>
-                </details>
-                <button
-                  type="button"
-                  className="compare-remove-skull"
-                  aria-label={`Remove Skull ${index + 1}: ${record.label}`}
-                  onClick={() => removeSubject(record.id)}
+                </header>
+                <ul
+                  className="compare-view-chips"
+                  aria-label={`Active views for Skull ${index + 1}`}
                 >
-                  Remove
-                </button>
-              </div>
-            </article>
-          ))}
-          <WorkbenchSubjectPicker
-            records={records}
-            selectedIds={state.subjects.map(({ id }) => id)}
-            disabled={
-              state.subjects.length >= maximumComparisonSubjects ||
-              layerCount >= maximumComparisonLayers
-            }
-            disabledReason={
-              state.subjects.length >= maximumComparisonSubjects
-                ? "5-skull limit reached"
-                : "10-view field limit reached"
-            }
-            onSelect={addSubject}
-          />
-          <details className="compare-suggestions">
-            <summary>Quick comparisons</summary>
-            <div>
-              <p>Starting points</p>
-              {startingPoints.map((suggestion) => (
-                <button
-                  type="button"
-                  key={suggestion.id}
-                  onClick={() =>
-                    applyStartingPoint(suggestion.subjectIds, suggestion.label)
-                  }
-                >
-                  {suggestion.label}
-                </button>
-              ))}
-              {contextualSuggestions.length > 0 &&
-              state.subjects.length < maximumComparisonSubjects ? (
-                <>
-                  <p>Suggested additions</p>
-                  {contextualSuggestions
-                    .slice(0, maximumComparisonSubjects - state.subjects.length)
-                    .map((record) => (
+                  {subject.views.map((view) => (
+                    <li key={view}>
+                      <span>{formatViewLabel(view)}</span>
                       <button
                         type="button"
-                        key={record.id}
-                        onClick={() => addSubject(record.id)}
+                        aria-label={`Remove Skull ${index + 1} ${formatViewLabel(view)} view`}
+                        onClick={() => removeView(record.id, view)}
                       >
-                        {record.label}
-                        <small>{record.specimenId ?? "Reference"}</small>
+                        ×
                       </button>
-                    ))}
-                </>
-              ) : null}
-            </div>
-          </details>
+                    </li>
+                  ))}
+                </ul>
+                <div className="compare-subject-controls">
+                  <details className="compare-view-menu">
+                    <summary
+                      aria-label={`Add view to Skull ${index + 1}`}
+                      title="Add view"
+                      onClick={(event) => positionRailPopup(event, 14)}
+                    >
+                      <span className="compare-control-label">Add view</span>
+                      <span
+                        className="compare-control-symbol"
+                        aria-hidden="true"
+                      >
+                        +
+                      </span>
+                    </summary>
+                    <div>
+                      {record.views.map((view) => {
+                        const active = subject.views.includes(view.view);
+                        return (
+                          <button
+                            type="button"
+                            key={view.view}
+                            disabled={
+                              active || layerCount >= maximumComparisonLayers
+                            }
+                            onClick={(event) => {
+                              addView(record.id, view.view);
+                              event.currentTarget
+                                .closest("details")
+                                ?.removeAttribute("open");
+                            }}
+                          >
+                            {formatViewLabel(view.view)}
+                            <small>{active ? "Active" : "Add"}</small>
+                          </button>
+                        );
+                      })}
+                      {layerCount >= maximumComparisonLayers ? (
+                        <p>10-view field limit reached.</p>
+                      ) : null}
+                    </div>
+                  </details>
+                  <details className="compare-opacity-control">
+                    <summary
+                      aria-label={`Adjust Skull ${index + 1} opacity`}
+                      title="Adjust opacity"
+                      onClick={(event) => positionRailPopup(event, 14)}
+                    >
+                      <span className="compare-control-label">Opacity</span>
+                      <span
+                        className="compare-control-symbol"
+                        aria-hidden="true"
+                      >
+                        ◐
+                      </span>
+                    </summary>
+                    <label>
+                      <span>Skull {index + 1} opacity</span>
+                      <input
+                        type="range"
+                        min={0}
+                        max={100}
+                        step={5}
+                        value={opacityBySubject[record.id] ?? 100}
+                        onChange={(event) => {
+                          const value = Number(event.currentTarget.value);
+                          setOpacityBySubject((current) => ({
+                            ...current,
+                            [record.id]: value,
+                          }));
+                          setActionStatus(
+                            value === 0
+                              ? `Skull ${index + 1} hidden in field.`
+                              : `Skull ${index + 1} opacity ${value}%.`,
+                          );
+                        }}
+                      />
+                      <output>{opacityBySubject[record.id] ?? 100}%</output>
+                    </label>
+                  </details>
+                  <button
+                    type="button"
+                    className="compare-remove-skull"
+                    aria-label={`Remove Skull ${index + 1}: ${record.label}`}
+                    title="Remove skull"
+                    onClick={() => removeSubject(record.id)}
+                  >
+                    <span className="compare-control-label">Remove</span>
+                    <span className="compare-control-symbol" aria-hidden="true">
+                      ×
+                    </span>
+                  </button>
+                </div>
+              </article>
+            ))}
+            <WorkbenchSubjectPicker
+              records={records}
+              selectedIds={state.subjects.map(({ id }) => id)}
+              disabled={
+                state.subjects.length >= maximumComparisonSubjects ||
+                layerCount >= maximumComparisonLayers
+              }
+              disabledReason={
+                state.subjects.length >= maximumComparisonSubjects
+                  ? "5-skull limit reached"
+                  : "10-view field limit reached"
+              }
+              onSelect={addSubject}
+            />
+            <details className="compare-suggestions">
+              <summary onClick={(event) => positionRailPopup(event, 17)}>
+                Quick comparisons
+              </summary>
+              <div>
+                <p>Starting points</p>
+                {startingPoints.map((suggestion) => (
+                  <button
+                    type="button"
+                    key={suggestion.id}
+                    onClick={() =>
+                      applyStartingPoint(
+                        suggestion.subjectIds,
+                        suggestion.label,
+                      )
+                    }
+                  >
+                    {suggestion.label}
+                  </button>
+                ))}
+                {contextualSuggestions.length > 0 &&
+                state.subjects.length < maximumComparisonSubjects ? (
+                  <>
+                    <p>Suggested additions</p>
+                    {contextualSuggestions
+                      .slice(
+                        0,
+                        maximumComparisonSubjects - state.subjects.length,
+                      )
+                      .map((record) => (
+                        <button
+                          type="button"
+                          key={record.id}
+                          onClick={() => addSubject(record.id)}
+                        >
+                          {record.label}
+                          <small>{record.specimenId ?? "Reference"}</small>
+                        </button>
+                      ))}
+                  </>
+                ) : null}
+              </div>
+            </details>
+          </div>
           <p className="compare-rail-status" aria-live="polite">
             {actionStatus}
           </p>

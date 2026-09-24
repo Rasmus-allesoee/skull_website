@@ -470,6 +470,107 @@ test("mobile comparison uses internal strips and stacked measurement cards", asy
   ).toBeLessThanOrEqual(0);
 });
 
+test("mobile selected cards and field controls remain reachable", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(defaultRoute);
+  const strip = page.locator(".compare-subject-strip");
+  const cards = strip.locator(".compare-subject-card");
+  const stripBounds = await strip.boundingBox();
+  const firstBounds = await cards.nth(0).boundingBox();
+  const secondBounds = await cards.nth(1).boundingBox();
+  expect(stripBounds && firstBounds && secondBounds).toBeTruthy();
+  expect(firstBounds!.width).toBeLessThanOrEqual(165);
+  expect(secondBounds!.x + secondBounds!.width).toBeLessThanOrEqual(
+    stripBounds!.x + stripBounds!.width + 1,
+  );
+  await expect(page.getByRole("button", { name: "100%" })).toBeInViewport();
+  await expect(page.getByRole("button", { name: "Fit all" })).toBeInViewport();
+  const sliderBounds = await page.getByLabel("Field zoom").boundingBox();
+  expect(sliderBounds!.width).toBeGreaterThan(120);
+
+  await cards.nth(0).locator(".compare-view-menu summary").click();
+  const menu = cards.nth(0).locator(".compare-view-menu > div");
+  await expect(menu).toBeInViewport();
+  await page.getByRole("button", { name: "Frontal Add" }).click();
+  await expect(menu).toBeHidden();
+
+  await page.setViewportSize({ width: 320, height: 700 });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth - innerWidth,
+    ),
+  ).toBeLessThanOrEqual(0);
+});
+
+test("medium-width skull menus open below their controls over the field", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 900, height: 720 });
+  const ids = [1, 2, 3, 4, 5].map(
+    (number) => `specimen:SPEC-${String(number).padStart(4, "0")}`,
+  );
+  const query = new URLSearchParams({
+    subjects: ids.join(","),
+    views: ids.map((id) => `${id}@lateral`).join(";"),
+  });
+  await page.goto(`/compare?${query}`);
+  const cards = page.locator(".compare-subject-card");
+  await expect(cards).toHaveCount(5);
+  const rail = page.locator(".compare-subject-rail");
+  await expect(rail).toHaveCSS("overflow-y", "visible");
+
+  async function expectMenuBelowControl(
+    summary: import("@playwright/test").Locator,
+    panel: import("@playwright/test").Locator,
+  ) {
+    await summary.click();
+    await expect(panel).toBeVisible();
+    const geometry = await panel.evaluate((element) => {
+      const panelBounds = element.getBoundingClientRect();
+      const summaryBounds = element
+        .parentElement!.querySelector("summary")!
+        .getBoundingClientRect();
+      const target = document.elementFromPoint(
+        panelBounds.left + 20,
+        panelBounds.top + 20,
+      );
+      return {
+        top: panelBounds.top,
+        bottom: panelBounds.bottom,
+        summaryBottom: summaryBounds.bottom,
+        hit: element.contains(target),
+      };
+    });
+    expect(geometry.top).toBeGreaterThanOrEqual(geometry.summaryBottom);
+    expect(geometry.bottom).toBeLessThanOrEqual(721);
+    expect(geometry.hit).toBe(true);
+    await page.mouse.click(5, 5);
+    await expect(panel).toBeHidden();
+  }
+
+  for (let index = 0; index < 5; index += 1) {
+    await expectMenuBelowControl(
+      cards.nth(index).locator(".compare-view-menu summary"),
+      cards.nth(index).locator(".compare-view-menu > div"),
+    );
+  }
+  await expectMenuBelowControl(
+    cards.nth(4).locator(".compare-opacity-control summary"),
+    cards.nth(4).locator(".compare-opacity-control > label"),
+  );
+  await expectMenuBelowControl(
+    page.locator(".compare-suggestions summary"),
+    page.locator(".compare-suggestions > div"),
+  );
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth - innerWidth,
+    ),
+  ).toBeLessThanOrEqual(0);
+});
+
 test("mixed-class tables keep mapped shared rows and reveal the full measurement set", async ({
   page,
 }) => {
@@ -708,6 +809,82 @@ test("two-finger touch pans and zooms the field camera", async ({
   await expect(page.locator(".comparison-field-status")).toContainText(
     "Field pan and zoom updated",
   );
+  await context.close();
+});
+
+test("vertical and diagonal touches move a skull without scrolling the page", async ({
+  browser,
+  browserName,
+}) => {
+  test.skip(browserName !== "chromium", "Touch injection requires CDP.");
+  const context = await browser.newContext({
+    hasTouch: true,
+    isMobile: true,
+    viewport: { width: 390, height: 844 },
+  });
+  const page = await context.newPage();
+  await page.goto(defaultRoute);
+  const field = page.locator(".comparison-field");
+  const layer = page.locator(".comparison-layer").first();
+  await field.scrollIntoViewIfNeeded();
+  const session = await context.newCDPSession(page);
+
+  async function dragSkull(deltaX: number, deltaY: number, id: number) {
+    const start = await page.evaluate(() => {
+      const path = document.querySelector<SVGPathElement>(
+        ".comparison-layer-hit path",
+      );
+      if (!path) return null;
+      const bounds = path.getBoundingClientRect();
+      for (let y = bounds.top + 8; y < bounds.bottom - 8; y += 8) {
+        for (let x = bounds.left + 8; x < bounds.right - 8; x += 8) {
+          if (document.elementFromPoint(x, y) === path) return { x, y };
+        }
+      }
+      return null;
+    });
+    expect(start).not.toBeNull();
+    const before = await layer.evaluate((element) => ({
+      x: Number.parseFloat(element.style.getPropertyValue("--layer-x")),
+      y: Number.parseFloat(element.style.getPropertyValue("--layer-y")),
+    }));
+    const scrollY = await page.evaluate(() => window.scrollY);
+    await session.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [{ x: start!.x, y: start!.y, id }],
+    });
+    for (const fraction of [0.25, 0.5, 0.75, 1]) {
+      await session.send("Input.dispatchTouchEvent", {
+        type: "touchMove",
+        touchPoints: [
+          {
+            x: start!.x + deltaX * fraction,
+            y: start!.y + deltaY * fraction,
+            id,
+          },
+        ],
+      });
+    }
+    await session.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
+    });
+    await expect(page.locator(".comparison-field-status")).toContainText(
+      "Layer position updated",
+    );
+    const after = await layer.evaluate((element) => ({
+      x: Number.parseFloat(element.style.getPropertyValue("--layer-x")),
+      y: Number.parseFloat(element.style.getPropertyValue("--layer-y")),
+    }));
+    expect(Math.abs(after.x - before.x)).toBeGreaterThan(
+      Math.abs(deltaX) > 0 ? 5 : -1,
+    );
+    expect(Math.abs(after.y - before.y)).toBeGreaterThan(5);
+    expect(await page.evaluate(() => window.scrollY)).toBe(scrollY);
+  }
+
+  await dragSkull(0, 64, 71);
+  await dragSkull(40, 48, 72);
   await context.close();
 });
 

@@ -550,7 +550,7 @@ export function ComparisonField({
       ) {
         const deltaX = event.clientX - pending.startClientX;
         const deltaY = event.clientY - pending.startClientY;
-        if (Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (Math.hypot(deltaX, deltaY) > 8) {
           const raised = {
             ...pending.origin,
             z: getNextLayerZ(placements),
@@ -778,10 +778,18 @@ export function ComparisonField({
                 {Math.round(camera.zoom * 100)}%
               </output>
             </div>
-            <button type="button" onClick={() => setZoom(1)}>
+            <button
+              type="button"
+              className="compare-zoom-reset"
+              onClick={() => setZoom(1)}
+            >
               100%
             </button>
-            <button type="button" onClick={() => fitAll()}>
+            <button
+              type="button"
+              className="compare-fit-all"
+              onClick={() => fitAll()}
+            >
               Fit all
             </button>
           </div>

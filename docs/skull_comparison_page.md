@@ -56,9 +56,10 @@ part of this contract:
   layer by matching view token (lateral with lateral, frontal with frontal,
   and so on) across all selected subjects; it is not restricted to the
   difference pair or lateral view.
-- On touch screens, one-finger vertical movement remains native document
-  scrolling. A deliberate horizontal single-finger movement on a layer can
-  still move that layer; two fingers claim the field for camera pan/pinch.
+- On touch screens, a gesture beginning on a skull moves that layer in any
+  direction without scrolling the page. One-finger movement beginning on empty
+  field space remains native document scrolling; two fingers claim the field
+  for camera pan/pinch.
   Empty-field activation clears a selected layer, and Escape dismisses its
   toolbar. The transparent alpha hit surface has no hover rectangle; its
   native tooltip identifies the species/view.
@@ -309,8 +310,12 @@ MEASUREMENTS                       [Show only comparable]
 
 ### 5.2 Tablet and narrow laptop
 
-- The rail becomes a compact selected-subject strip above the field.
-- One active subject card expands below the strip for opacity and view controls.
+- The rail becomes a horizontal selected-subject card strip above the field.
+- Each card retains its own view and opacity controls inside the strip.
+- The strip scrolls horizontally without a vertical rail scrollbar. At these
+  widths, Add view, Opacity, and Quick comparisons open below their controls as
+  viewport-positioned panels above the field. Panels stay within the viewport
+  horizontally and scroll internally when there is not enough height.
 - The field remains the largest surface.
 - The table may scroll within its own bounded container when four or five
   subjects are present; the document itself must never overflow horizontally.
@@ -319,9 +324,13 @@ MEASUREMENTS                       [Show only comparable]
 
 ### 5.3 Phone
 
-- A horizontally scrollable, text-labelled `Skull 1`–`Skull 5` tab strip shows
-  all selected subjects without rendering five full cards before the field.
-- The active subject's compact detail card appears below the strip.
+- The selected-skull count sits above a horizontally scrollable strip of narrow
+  cards. At 390 CSS pixels, two complete selected cards fit before scrolling.
+  Common name and record ID remain visible; compact view, opacity, and remove
+  actions form a vertical control column. Their menus open over the viewport
+  so the horizontal strip cannot clip them.
+- The field toolbar keeps `100%` and `Fit all` beside Arrange, with a separate
+  full-width zoom row and More in the upper-right corner.
 - The field follows with a practical touch height; it is not forced to a full
   viewport because the measurement table remains part of the same journey.
 - The semantic table visually becomes one card per measurement. Each card shows
@@ -454,9 +463,11 @@ Interaction:
   and suppresses document scrolling;
 - an ordinary unmodified desktop wheel/touchpad remains native document
   scrolling and does not move the field;
-- one-finger vertical touch remains available for document scrolling;
-- a deliberate horizontal single-finger touch can move a layer, while
-  two-finger touch pans and pinches the field; and
+- one-finger touch beginning outside a skull remains available for document
+  scrolling;
+- a touch beginning on a skull moves that layer vertically, horizontally, or
+  diagonally without scrolling, while two-finger touch pans and pinches the
+  field; and
 - all operations have visible button/slider alternatives.
 
 Clamp only the camera enough that the complete arrangement can always be
@@ -468,9 +479,9 @@ visible viewport. `Fit all` and `Reset layout` are the primary rescue actions.
 - Use the existing generated alpha hit path so transparent canvas does not
   block lower overlapping layers.
 - Pointer down selects a layer and captures the pointer for smooth mouse/pen
-  dragging. Touch uses a direction-aware threshold so vertical movement is
-  left to document scrolling while deliberate horizontal movement becomes a
-  layer drag.
+  dragging. A skull silhouette suppresses native page panning from touch start;
+  a small distance threshold then starts layer movement in any direction.
+  Empty field space retains native one-finger page scrolling.
 - Update CSS transform variables through `requestAnimationFrame` during pointer
   movement rather than rerendering the entire React tree for every event.
 - Commit the final normalized world position to state on pointer release.

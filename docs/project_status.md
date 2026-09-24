@@ -1,5 +1,35 @@
 # Project status
 
+## 0.16 Comparison mobile rail and popup checkpoint (2026-09-24)
+
+- Kept the horizontal selected-skull strip, narrowed phone cards so two fit at
+  390 CSS pixels, and stacked their compact Add view, Opacity, and Remove
+  controls. The field toolbar keeps `100%` and `Fit all` visible above a longer
+  zoom slider on phones.
+- Isolated horizontal scrolling to the card strip at tablet/narrow-laptop
+  widths. The surrounding rail no longer scrolls vertically; Add view for all
+  five slots, Opacity, and Quick comparisons open below their triggers over the
+  field. Their panels are horizontally clamped and scroll internally when
+  needed.
+- A touch beginning on a skull now moves it vertically, horizontally, or
+  diagonally without scrolling the page. One-finger scrolling from empty field
+  space and two-finger field navigation remain available.
+
+### Verification
+
+- Focused Chromium comparison journeys pass **5/5** for phone card/toolbar
+  access, all medium-width menus, skull dragging, empty-field page scrolling,
+  and two-finger camera navigation. Strict TypeScript and focused ESLint pass.
+- Live browser inspection at 900 × 720 confirmed all five Add view menus,
+  Opacity, and Quick comparisons are visible above the field with no vertical
+  rail scrollbar. At 390 CSS pixels, two complete cards fit; 320 and 1440 px
+  checks found no document-level horizontal overflow. The wide desktop rail
+  and field remain side by side.
+- The shared field-guide disclosure, scale-bar simplification, compact mobile
+  measurement table, and complete cross-feature browser gate remain for the
+  next checkpoints. No push, pull request, merge, deployment, or publication
+  was performed.
+
 ## 0.15 Adult-human reference silhouette hitbox (2026-09-23)
 
 - Enabled alpha-hit-path generation for curated comparison-reference WebPs in
@@ -75,13 +105,13 @@
 
 - Focused CSV tests pass **3/3**; focused ESLint and strict TypeScript pass.
 
-**Snapshot date:** 2026-09-22
+**Snapshot date:** 2026-09-24
 
-**Current phase:** locally complete Skull Comparison exports and owner-feedback refinement on `skull_comparison_page`, pending owner review
+**Current phase:** Skull Comparison mobile owner-feedback refinement on `skull_comparison_page`; first responsive-control checkpoint complete
 
-**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. The owner approved all eight standalone-comparison decisions on 2026-09-11 and later requested source-value CSV and field PNG exports. The comparison feedback and exports are implemented and locally verified in the isolated comparison worktree on `skull_comparison_page`; the unfinished `preparation_guide_refinement` branch remains separate, intact, and unmerged.
+**Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. The owner approved all eight standalone-comparison decisions on 2026-09-11 and later requested source-value CSV and field PNG exports. The comparison workbench and exports are implemented in the isolated `skull_comparison_page` worktree; the mobile owner-feedback refinements are underway and the final gate is pending. The unfinished `preparation_guide_refinement` branch remains separate, intact, and unmerged.
 
-**Next action:** Owner review of the locally complete `/compare` workbench, including its CSV and PNG exports. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
+**Next action:** Complete the collapsible field guidance and bare 100 mm scale bar, then replace narrow-mobile measurement cards with the compact horizontal table and perform the final cross-feature browser gate. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
 
 ## 0.12 Selected-card alignment and positional difference-pair correction (2026-09-14)
 
