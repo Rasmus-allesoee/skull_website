@@ -179,13 +179,6 @@ function drawScaleBar(
   const barWidth = 100 * comparisonWorldPixelsPerMillimetre * zoom;
   context.save();
   context.translate(position.x, position.y);
-  context.font = "9px Arial, sans-serif";
-  const boxWidth = Math.max(
-    barWidth + 12,
-    context.measureText("Relative scale; not monitor-calibrated").width + 12,
-  );
-  context.fillStyle = "rgb(13 16 15 / 82%)";
-  context.fillRect(0, 0, boxWidth, 42);
   context.strokeStyle = "#f3f4f3";
   context.lineWidth = 1;
   context.beginPath();
@@ -197,7 +190,5 @@ function drawScaleBar(
   context.fillStyle = "#f3f4f3";
   context.font = "700 11px Arial, sans-serif";
   context.fillText("100 mm", 6, 28);
-  context.font = "9px Arial, sans-serif";
-  context.fillText("Relative scale; not monitor-calibrated", 6, 38);
   context.restore();
 }

@@ -1,5 +1,27 @@
 # Project status
 
+## 0.17 Comparison field guidance and scale-bar checkpoint (2026-09-24)
+
+- Replaced the always-visible, desktop-truncated field instructions with a
+  collapsed-by-default guide on both desktop and mobile. Expanded guidance
+  wraps fully, stays open while using other field controls, and explains the
+  relative (not monitor-calibrated) 100 mm scale.
+- Removed the scale bar's box, background, and inline calibration caption from
+  both the interactive field and exported PNG; the movable line and `100 mm`
+  label remain. Preserved the keyboard focus indicator.
+- Made the existing silhouette-bound browser assertion read both rectangles
+  in one layout frame, avoiding false failures while field positions settle.
+
+### Verification
+
+- Live Chromium checks at 1440 × 900 and 390 × 844 confirmed the guide starts
+  closed, stays open while other controls are used, wraps without clipping,
+  and causes no document-level horizontal overflow. The scale bar has no box
+  or background and remains draggable.
+- Focused Chromium journeys pass **2/2**; strict TypeScript passes. The compact
+  mobile measurement table and final cross-feature gate remain. No remote or
+  publication action was performed.
+
 ## 0.16 Comparison mobile rail and popup checkpoint (2026-09-24)
 
 - Kept the horizontal selected-skull strip, narrowed phone cards so two fit at
@@ -107,11 +129,11 @@
 
 **Snapshot date:** 2026-09-24
 
-**Current phase:** Skull Comparison mobile owner-feedback refinement on `skull_comparison_page`; first responsive-control checkpoint complete
+**Current phase:** Skull Comparison mobile owner-feedback refinement on `skull_comparison_page`; field-controls and field-guide checkpoints complete
 
 **Overall state:** Measurements, Home, Preparation, the audited Phase 6 migration, release hardening, and the v1.0.1 analytics/MapLibre correction are merged into `main`. The owner approved all eight standalone-comparison decisions on 2026-09-11 and later requested source-value CSV and field PNG exports. The comparison workbench and exports are implemented in the isolated `skull_comparison_page` worktree; the mobile owner-feedback refinements are underway and the final gate is pending. The unfinished `preparation_guide_refinement` branch remains separate, intact, and unmerged.
 
-**Next action:** Complete the collapsible field guidance and bare 100 mm scale bar, then replace narrow-mobile measurement cards with the compact horizontal table and perform the final cross-feature browser gate. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
+**Next action:** Replace narrow-mobile measurement cards with the compact horizontal table, then perform the final cross-feature browser gate. Do not push, open a pull request, merge, deploy, or publish without a later owner instruction.
 
 ## 0.12 Selected-card alignment and positional difference-pair correction (2026-09-14)
 

@@ -76,11 +76,15 @@ test("desktop field keeps page scrolling separate from zoom, precise hits, and c
 
   const firstHit = page.locator(".comparison-layer-hit").first();
   const firstLayer = page.locator(".comparison-layer").first();
-  const subjectBounds = await firstLayer
-    .locator(".comparison-layer-outline")
-    .boundingBox();
-  const hitBounds = await firstHit.locator("svg").boundingBox();
-  const layerBounds = await firstLayer.boundingBox();
+  const { subjectBounds, hitBounds, layerBounds } = await firstLayer.evaluate(
+    (layer) => ({
+      subjectBounds: layer
+        .querySelector(".comparison-layer-outline")
+        ?.getBoundingClientRect(),
+      hitBounds: layer.querySelector(".comparison-layer-hit svg")?.getBoundingClientRect(),
+      layerBounds: layer.getBoundingClientRect(),
+    }),
+  );
   expect(subjectBounds).not.toBeNull();
   expect(hitBounds).not.toBeNull();
   expect(layerBounds).not.toBeNull();
@@ -569,6 +573,50 @@ test("medium-width skull menus open below their controls over the field", async 
       () => document.documentElement.scrollWidth - innerWidth,
     ),
   ).toBeLessThanOrEqual(0);
+});
+
+test("field guidance stays collapsed until opened and the scale bar has no box", async ({
+  page,
+}) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto(defaultRoute);
+    const help = page.locator(".comparison-field-help");
+    await expect(help).toHaveJSProperty("open", false);
+    await expect(help.locator("p").first()).toBeHidden();
+    await help.locator("summary").click();
+    await expect(help.locator("p").first()).toBeVisible();
+    await expect(help.locator("p").last()).toContainText(
+      "monitor is not calibrated",
+    );
+
+    await page.locator(".compare-field-more summary").click();
+    await page.getByLabel("Show 100 mm scale bar").check();
+    await page.mouse.click(5, 5);
+    await expect(help).toHaveJSProperty("open", true);
+    const scaleBar = page.locator(".comparison-scale-bar");
+    await expect(scaleBar).toHaveText("100 mm");
+    const appearance = await scaleBar.evaluate((element) => {
+      const style = getComputedStyle(element);
+      const footer = document.querySelector(".comparison-field-footer")!;
+      const paragraph = document.querySelector(".comparison-field-help p")!;
+      return {
+        borderWidth: style.borderTopWidth,
+        background: style.backgroundColor,
+        footerFits: footer.scrollHeight <= footer.clientHeight + 1,
+        whiteSpace: getComputedStyle(paragraph).whiteSpace,
+        textOverflow: getComputedStyle(paragraph).textOverflow,
+      };
+    });
+    expect(appearance.borderWidth).toBe("0px");
+    expect(appearance.background).toBe("rgba(0, 0, 0, 0)");
+    expect(appearance.footerFits).toBe(true);
+    expect(appearance.whiteSpace).toBe("normal");
+    expect(appearance.textOverflow).not.toBe("ellipsis");
+  }
 });
 
 test("mixed-class tables keep mapped shared rows and reveal the full measurement set", async ({

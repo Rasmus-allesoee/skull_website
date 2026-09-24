@@ -133,7 +133,9 @@ export function ComparisonWorkbench({
       const target = event.target;
       if (!(target instanceof Node)) return;
       document
-        .querySelectorAll<HTMLDetailsElement>(".compare-page details[open]")
+        .querySelectorAll<HTMLDetailsElement>(
+          ".compare-page details[open]:not(.comparison-field-help)",
+        )
         .forEach((details) => {
           if (!details.contains(target)) details.open = false;
         });

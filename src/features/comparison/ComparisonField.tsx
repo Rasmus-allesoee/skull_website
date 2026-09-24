@@ -905,12 +905,22 @@ export function ComparisonField({
         ) : null}
       </div>
       <div className="comparison-field-footer">
-        <p>
-          Drag a skull to move it. Scroll normally to move the page. Hold Ctrl
-          or Command and drag empty space to pan; use the same modifier with a
-          mouse wheel or two-finger trackpad scroll to zoom without moving the
-          page. On touch screens, use two fingers to navigate the field.
-        </p>
+        <details className="comparison-field-help">
+          <summary>How to use the field</summary>
+          <div>
+            <p>
+              Drag a skull to move it in any direction. Scroll normally to move
+              the page. Hold Ctrl or Command while dragging empty space to pan,
+              or while scrolling to zoom the field without moving the page.
+            </p>
+            <p>
+              On touch screens, start on a skull to move it, start on empty
+              field space to scroll the page, and use two fingers to navigate
+              the field. The 100 mm bar shows relative image scale; your monitor
+              is not calibrated as a life-size ruler.
+            </p>
+          </div>
+        </details>
         <p className="comparison-field-status" aria-live="polite">
           {status}
         </p>
@@ -1129,7 +1139,6 @@ function ComparisonScaleBar({
     >
       <span aria-hidden="true" />
       <strong>100 mm</strong>
-      <small>Relative scale; not monitor-calibrated</small>
     </div>
   );
 }
@@ -1258,7 +1267,10 @@ function clampScaleBarPosition(
   viewport: { width: number; height: number },
   zoom: number,
 ) {
-  const width = 100 * comparisonWorldPixelsPerMillimetre * zoom;
+  const width = Math.max(
+    100 * comparisonWorldPixelsPerMillimetre * zoom + 12,
+    56,
+  );
   return {
     x: clamp(position.x, 12, Math.max(12, viewport.width - width - 12)),
     y: clamp(position.y, 12, Math.max(12, viewport.height - 48)),

@@ -49,7 +49,8 @@ part of this contract:
 - The scale bar is a viewport overlay whose 100 mm span still grows with field
   zoom. It opens at the bottom-left of the current visible field, can be
   dragged or nudged with Arrow keys, and does not disappear when the camera is
-  panned or zoomed.
+  panned or zoomed. Only its line and `100 mm` label appear in the field; its
+  relative-scale caveat belongs in the collapsed-by-default field guide.
 - Reapplying the active arrangement is an explicit reset action. Adding or
   removing a subject/view deterministically lays out every active layer again
   and fits the camera to the new set. `Overlay pair` now overlays every active
@@ -470,6 +471,12 @@ Interaction:
   field; and
 - all operations have visible button/slider alternatives.
 
+Below the field, keep the movement and scale explanation inside a native
+`How to use the field` disclosure that starts closed on every viewport. Opening
+it reveals the complete instructions with natural line wrapping and no
+ellipsis. The live action status remains outside the disclosure so feedback is
+visible and announced while the guide is closed.
+
 Clamp only the camera enough that the complete arrangement can always be
 recovered. Do not snap or constrain individual layers to rows, columns, or the
 visible viewport. `Fit all` and `Reset layout` are the primary rescue actions.
@@ -546,9 +553,9 @@ Offer a restrained `Show 100 mm scale bar` toggle in More controls. The bar is a
 viewport overlay positioned from the current visible bottom-left corner, while
 its line width is derived from the same world scale and field zoom as the skulls.
 It remains visible during camera movement, is freely draggable, and supports
-Arrow-key nudging. Its label remains readable and includes an accessible
-explanation that the page compares relative dimensions and is not a monitor
-calibration tool.
+Arrow-key nudging. Show only the line and `100 mm` label, with no enclosing box
+or extra field caption. The field guide explains that the bar is relative scale
+and the display is not calibrated for life-size measurement.
 
 ## 8. Measurement table
 
@@ -784,7 +791,7 @@ The low-priority `More` menu offers `Export field PNG`, followed by a compact
 choice between pure black and the UI grid/radial background. Export the visible
 field rectangle at enhanced pixel resolution using the current camera,
 placements, z order, calibrated source images, flips, per-subject opacity, and
-optional labels/scale bar. The action must preserve the live field state and
+optional labels/bare scale bar. The action must preserve the live field state and
 report image-loading or encoding failures without downloading a partial image.
 The PNG is a composition of the already public image derivatives, not a new
 source asset. Selection outlines, menus, and editing handles are omitted from
