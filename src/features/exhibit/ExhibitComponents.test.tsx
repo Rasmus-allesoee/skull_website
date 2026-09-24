@@ -363,6 +363,8 @@ describe("exhibit components", () => {
     ).not.toBeInTheDocument();
   });
 
+  // The composite axe scan can exceed Vitest's 5 s default when test files run
+  // in parallel; keep the accessibility assertion while allowing that load.
   it("has no detectable axe violations in the interactive component group", async () => {
     const { container } = render(
       <main>
@@ -392,5 +394,5 @@ describe("exhibit components", () => {
       rules: { "color-contrast": { enabled: false } },
     });
     expect(results.violations).toEqual([]);
-  });
+  }, 10_000);
 });

@@ -6,7 +6,7 @@
 
 **Interface language:** English
 
-**Last reviewed:** 2026-09-02
+**Last reviewed:** 2026-09-10
 
 ## 1. Vision
 
@@ -98,7 +98,7 @@ Exclusion from v1 does not mean rejection. Each feature remains in the deferred 
 | `/species/{taxon-slug}/specimens/{specimen-id}` | Exact specimen display | Same composition focused on one physical specimen, with unique metadata and canonical relationship |
 | `/map` | Geographic exploration | Clustered map, filters, selected-specimen popup, synchronized accessible result list |
 | `/guides` | Editorial guide hub | Deferred after the first technical release |
-| `/guides/skull-preparation` | Preparation guide | Implemented illustrated five-phase guide, method comparisons, contents drawer, preparation photographs, source-checked practical text and one reference list |
+| `/guides/skull-preparation` | Preparation guide | Implemented illustrated five-phase guide, numbered method comparisons, nested maceration troubleshooting, contents drawer, preparation photographs, source-checked practical text and one reference list |
 | `/contribute` | Contribution protocol | Deferred after the first technical release; public contact remains in the footer |
 | `/about` | Collector and project story | Deferred after the first technical release |
 | `/methodology` | Measurement reference; later broader data transparency | Implemented five-view cropped diagram board, 21 exact definition rows, compact non-blocking details, diagram-targeting table actions with return-to-row behavior, and semantic static fallback; identification confidence, taxonomy, missing-data, coordinate, and update sections remain later scope |
@@ -234,8 +234,8 @@ The combined Phase 3.2/4 implementation makes `/species` the operational collect
 ### Guides and preparation guide
 
 - Guides use editorial long-form layouts with stable headings and a table of contents.
-- The permanent preparation route now contains the owner-authorized beginner guide; its five-stage illustrated workflow and sticky contents drawer expose phase/method anchors, with native no-JavaScript navigation. Method-specific preparation, all five defleshing methods and all three degreasers use native disclosures so visitors open only the instructions they need.
-- The preparation guide covers first-find intake, separation/skinning, method-specific trimming, defleshing, degreasing, optional whitening, teeth/jaw assembly, drying, storage and optional records. Six responsive comparison tables, actionable callouts and click-to-open single-source citation cards support quick reference. Seven collector photographs plus one clearly labelled AI degreasing illustration are curated through the media pipeline. Personal and community observations remain explicit and cited recommendations remain claim-linked. See [skull_preparation_guide.md](skull_preparation_guide.md).
+- The permanent preparation route now contains the owner-authorized beginner guide; its five-stage illustrated workflow and sticky contents drawer expose phase/method anchors, with native no-JavaScript navigation. Method-specific preparation, all five numbered defleshing methods and all three degreasers use native disclosures so visitors open only the instructions they need. Maceration troubleshooting is a smaller `1.1.` disclosure nested visually under `1. Water maceration`.
+- The preparation guide covers first-find intake, separation/skinning, method-specific trimming, defleshing, degreasing, optional whitening, teeth/jaw assembly, drying, storage and optional records. Six responsive comparison tables, actionable callouts and click-to-open single-source citation cards support quick reference. Eleven owner photographs, one clearly labelled AI degreasing illustration and six AI-generated condition cues are curated through the media pipeline. Brain-material and dark-skull phrases use brass underlined links; dark-skull and adipocere cases also show square thumbnails that open native lightboxes when JavaScript is available and remain direct image links otherwise. The mummified-badger photograph is linked from the above-ground method comparison, not troubleshooting. Personal and community observations remain explicit and cited recommendations remain claim-linked. See [skull_preparation_guide.md](skull_preparation_guide.md).
 - Methodology will later include dedicated illustrated measurement, age-estimation, and specimen-condition sections. The owner must supply/review real-skull landmark and reference imagery; age claims require species-aware citations and caveats.
 - Specific chemical or biological safety claims require source review before publication.
 - Images, diagrams, warnings, and comparisons should carry information that prose cannot convey as clearly.

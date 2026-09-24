@@ -35,6 +35,22 @@
       "source_file": "mårhund_angle_1.png"
     },
     {
+      "asset_id": "brain-gunk",
+      "source_file": "prep_skull_brain_gunk.png"
+    },
+    {
+      "asset_id": "adipocere",
+      "source_file": "prep_skull_adipocere.jpg"
+    },
+    {
+      "asset_id": "discolored-skull",
+      "source_file": "prep_black_discolored_skull.jpg"
+    },
+    {
+      "asset_id": "mummification",
+      "source_file": "prep_mummified_badger.jpg"
+    },
+    {
       "asset_id": "condition-fresh-body",
       "source_file": "condition-fresh-body.png"
     },
